@@ -1,7 +1,7 @@
 // app/_layout.tsx
 import { Slot, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { AuthProvider, useAuth } from '../src/AuthContext';
+import { AuthProvider, useAuth } from '../src/features/auth';
 
 function ProtectedRoutes() {
   const { session, isLoading } = useAuth();

@@ -14,15 +14,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import ChatMessageBubble from '../../src/components/ChatMessageBubble';
-import { useChat } from '../../src/hooks/useChat';
-import { supabase } from '../../src/supabase';
+import { ChatMessageBubble } from '../../src/features/chat/components';
+import { useChat } from '../../src/features/chat/hooks';
+import { supabase } from '../../src/shared/lib/supabase';
 import { styles } from './chat.styles';
 
-type ChatMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-};
 
 export default function ChatScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
@@ -147,6 +143,8 @@ export default function ChatScreen() {
             }
           }}
           autoFocus
+          key={`input-${numericRoomId || 'new'}`} // Force recreate input when room changes
+          editable={!sending && !isTyping} // Disable input while sending or typing
         />
         <TouchableOpacity 
           style={[styles.sendButton, sending && styles.disabledButton]} 
