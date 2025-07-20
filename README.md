@@ -1,50 +1,80 @@
-# Welcome to your Expo app 👋
+# ChatGPT Clone
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A feature-rich chat application built with React Native, Expo, and Supabase that mimics the functionality of ChatGPT.
 
-## Get started
+## Features
 
-1. Install dependencies
+- 💬 Real-time chat interface with AI responses
+- 🔄 Message regeneration capability
+- 📱 Cross-platform support (iOS, Android, Web)
+- 🔒 Secure authentication with Google OAuth
+- 📋 Multiple chat rooms management
+- 🤖 Support for multiple AI models (GPT-3.5, GPT-4, etc.)
+- 🎨 Beautiful and responsive UI
 
+## Tech Stack
+
+- **Frontend**: React Native, Expo Router
+- **Backend**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth with Google OAuth
+- **State Management**: React Hooks
+- **Styling**: React Native StyleSheet
+
+## Project Structure
+
+The project follows a feature-based architecture:
+
+```
+src/
+├── features/
+│   ├── auth/       # Authentication related code
+│   └── chat/       # Chat functionality
+│       ├── components/
+│       ├── hooks/
+│       ├── services/
+│       └── types/
+└── shared/
+    ├── components/ # Shared UI components
+    ├── hooks/      # Shared hooks
+    └── lib/        # Shared utilities
+```
+
+## Database Schema
+
+The application uses Supabase with the following tables:
+- `chatrooms`: Stores chat rooms with fields for id, user_id, name, and model
+- `messages`: Stores chat messages with fields for id, room_id, user_id, role, and content
+- `profiles`: Stores user profile information
+
+## Getting Started
+
+1. Clone the repository
+
+2. Install dependencies
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Set up Supabase
+   - Create a Supabase project
+   - Run the migrations in `supabase/migrations`
+   - Configure your environment variables
 
+4. Start the development server
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Environment Setup
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Create a `.env` file in the root directory with the following variables:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENAI_API_KEY=your_openai_api_key
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Contributing
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Contributions are welcome! Please feel free to submit a Pull Request.
