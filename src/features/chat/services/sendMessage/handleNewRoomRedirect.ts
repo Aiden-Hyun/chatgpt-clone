@@ -1,5 +1,6 @@
 // src/features/chat/services/sendMessage/handleNewRoomRedirect.ts
 import { router } from 'expo-router';
+import mobileStorage from '../../../../shared/lib/mobileStorage';
 import { ChatMessage } from '../../types';
 
 /**
@@ -22,17 +23,20 @@ export const handleNewRoomRedirect = ({
       userMsg,
       { role: 'assistant', content: fullContent }
     ];
-    sessionStorage.setItem(`chat_messages_${roomId}`, JSON.stringify(messagesForStorage));
+    // Persist messages using mobile-safe storage
+    mobileStorage.setItem(`chat_messages_${roomId}`, JSON.stringify(messagesForStorage));
+    console.log(`[storage] Saved initial messages for room ${roomId}`);
     
     // Store the selected model to ensure it persists
-    sessionStorage.setItem(`chat_model_${roomId}`, model);
+    mobileStorage.setItem(`chat_model_${roomId}`, model);
+    console.log(`[storage] Saved selected model (${model}) for room ${roomId}`);
     
     // Store a flag to indicate this is a newly created room that needs special handling
-    sessionStorage.setItem(`new_room_created_${roomId}`, 'true');
+    mobileStorage.setItem(`new_room_created_${roomId}`, 'true');
     
-    console.log(`Stored model in sessionStorage: ${model} for room ${roomId}`);
+    // (Retained above individual debug logs)
   } catch (e) {
-    console.log('Could not store data in sessionStorage');
+    console.log('[storage] Failed to persist data in mobileStorage');
   }
   
   // Now navigate to the new room

@@ -21,13 +21,15 @@ export type SendMessageArgs = {
   setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   model: string;
   regenerateIndex?: number; // Optional index for regenerating a specific message
+  /** Original assistant content when regenerating */
+  originalAssistantContent?: string;
 };
 
 /**
  * Main controller for sending or regenerating messages
  */
 export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> => {
-  const { userContent, numericRoomId, messages, setMessages, setIsTyping, setDrafts, model, regenerateIndex } = args;
+  const { userContent, numericRoomId, messages, setMessages, setIsTyping, setDrafts, model, regenerateIndex, originalAssistantContent } = args;
 
   const userMsg: ChatMessage = { role: 'user', content: userContent };
   const assistantMsg: ChatMessage = { role: 'assistant', content: '' };
@@ -91,6 +93,7 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
           fullContent, 
           session, 
           userMsg, 
+          originalAssistantContent,
           insertMessages, 
           updateAssistantMessage 
         });

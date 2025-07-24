@@ -11,12 +11,14 @@ export const handlePostAnimation = async ({
   fullContent,
   session,
   userMsg,
+  originalAssistantContent,
   insertMessages,
   updateAssistantMessage,
 }: {
   regenerateIndex?: number;
   roomId: number;
   fullContent: string;
+  originalAssistantContent?: string;
   session: Session;
   userMsg: ChatMessage;
   insertMessages: (args: {
@@ -27,7 +29,8 @@ export const handlePostAnimation = async ({
   }) => Promise<void>;
   updateAssistantMessage: (args: {
     roomId: number;
-    content: string;
+    newContent: string;
+    originalContent: string;
     session: Session;
   }) => Promise<void>;
 }): Promise<void> => {
@@ -36,11 +39,16 @@ export const handlePostAnimation = async ({
     // Otherwise, insert both user and assistant messages
     if (regenerateIndex !== undefined) {
       console.log(`🔄 Updating regenerated message in database for room ${roomId}`);
-      await updateAssistantMessage({
-        roomId,
-        content: fullContent,
-        session,
-      });
+      if (originalAssistantContent) {
+        await updateAssistantMessage({
+          roomId,
+          newContent: fullContent,
+          originalContent: originalAssistantContent,
+          session,
+        });
+      } else {
+        console.warn('[regen] originalAssistantContent missing; skipping DB update');
+      }
     } else {
       console.log(`📝 Inserting new messages in database for room ${roomId}`);
       await insertMessages({

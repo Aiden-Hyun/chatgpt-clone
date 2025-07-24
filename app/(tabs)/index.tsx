@@ -1,12 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { supabase } from '../../src/shared/lib/supabase';
 import { RoomListItem } from '../../src/features/chat/components';
 import { useChatRooms } from '../../src/features/chat/hooks';
+import { supabase } from '../../src/shared/lib/supabase';
 import { styles } from './index.styles';
-import { useAuth } from '../../src/features/auth';
 
 
 export default function HomeScreen() {

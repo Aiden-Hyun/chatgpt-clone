@@ -1,6 +1,7 @@
 // useMessages.ts - Hook for managing chat messages and interactions with the backend
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
+import mobileStorage from '../../../shared/lib/mobileStorage';
 import { supabase } from '../../../shared/lib/supabase';
 import { loadMessages } from '../services/loadMessages';
 import { sendMessageHandler } from '../services/sendMessage/index';
@@ -44,23 +45,23 @@ export const useMessages = (numericRoomId: number | null) => {
         let storedMessages = null;
         try {
           // Check for stored messages
-          const storedData = sessionStorage.getItem(`chat_messages_${numericRoomId}`);
+          const storedData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
           if (storedData) {
             storedMessages = JSON.parse(storedData);
             // Clear the stored messages to avoid showing them again on refresh
-            sessionStorage.removeItem(`chat_messages_${numericRoomId}`);
+            await mobileStorage.removeItem(`chat_messages_${numericRoomId}`);
             
             // Check for stored model and use it if available
-            const storedModel = sessionStorage.getItem(`chat_model_${numericRoomId}`);
+            const storedModel = await mobileStorage.getItem(`chat_model_${numericRoomId}`);
             if (storedModel) {
               console.log(`Retrieved model from sessionStorage: ${storedModel} for room ${numericRoomId}`);
               setSelectedModel(storedModel);
               // Clear the stored model to avoid using it again on refresh
-              sessionStorage.removeItem(`chat_model_${numericRoomId}`);
+              await mobileStorage.removeItem(`chat_model_${numericRoomId}`);
             }
           }
         } catch (e) {
-          console.log('No stored data found in sessionStorage');
+          console.log('[storage] No stored data found for room in mobileStorage');
         }
         
         // If we have stored messages from navigation, use those
@@ -127,7 +128,10 @@ export const useMessages = (numericRoomId: number | null) => {
       // Create a copy of messages up to but not including the assistant message to regenerate
       const messagesUpToUser = messages.slice(0, index);
       
+      // Capture the original assistant content before it gets cleared
+      const originalAssistantContent = messages[index].content;
       // Call sendMessageHandler with the user message content and a flag to replace the existing assistant message
+
       await sendMessageHandler({
         userContent: userMessage.content,
         numericRoomId,
@@ -137,6 +141,7 @@ export const useMessages = (numericRoomId: number | null) => {
         setDrafts,
         model: selectedModel,
         regenerateIndex: index,
+        originalAssistantContent,
       });
     } catch (error) {
       console.error('Error regenerating message:', error);

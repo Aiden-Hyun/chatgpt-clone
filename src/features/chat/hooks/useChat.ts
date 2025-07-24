@@ -1,6 +1,7 @@
 // useChat.ts - Coordinator hook that combines useMessages and useMessageInput
 import { useEffect, useState } from 'react';
 import { useMessageInput } from './useMessageInput';
+import mobileStorage from '../../../shared/lib/mobileStorage';
 import { useMessages } from './useMessages';
 
 export const useChat = (numericRoomId: number | null) => {
@@ -8,21 +9,22 @@ export const useChat = (numericRoomId: number | null) => {
   
   // Check if this is a newly created room
   useEffect(() => {
-    if (numericRoomId) {
-      try {
-        const storedData = sessionStorage.getItem(`chat_messages_${numericRoomId}`);
-        const isNewRoom = !!storedData;
-        setIsNewlyCreatedRoom(isNewRoom);
-        
-        // Debug log for room detection
-        console.log(`Room ${numericRoomId} detected as ${isNewRoom ? 'newly created' : 'existing'} room`);
-      } catch (e) {
-        // Ignore sessionStorage errors
+    const checkRoom = async () => {
+      if (numericRoomId) {
+        try {
+          const storedData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
+          const isNewRoom = !!storedData;
+          setIsNewlyCreatedRoom(isNewRoom);
+          console.log(`Room ${numericRoomId} detected as ${isNewRoom ? 'newly created' : 'existing'} room`);
+        } catch {
+          setIsNewlyCreatedRoom(false);
+        }
+      } else {
         setIsNewlyCreatedRoom(false);
       }
-    } else {
-      setIsNewlyCreatedRoom(false);
-    }
+    };
+
+    checkRoom();
   }, [numericRoomId]);
   
   // Use the extracted hooks

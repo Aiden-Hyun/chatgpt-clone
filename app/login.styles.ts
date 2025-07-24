@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, fontSizes, spacing, fontFamily, fontWeights } from '../src/shared/lib/theme';
+import { colors, fontFamily, fontSizes, fontWeights, spacing } from '../src/shared/lib/theme';
 
 export const styles = StyleSheet.create({
   center: { 

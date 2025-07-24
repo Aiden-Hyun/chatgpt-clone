@@ -1,5 +1,6 @@
 // useMessageInput.ts - Hook for managing chat input and draft messages
 import { useEffect, useRef, useState } from 'react';
+import mobileStorage from '../../../shared/lib/mobileStorage';
 
 /**
  * Hook for managing chat input and draft messages across different chat rooms
@@ -24,37 +25,36 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
   
   // Update input when room changes
   useEffect(() => {
-    const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
-    
-    // Check if this is a newly created room from sessionStorage
-    let isNewRoom = isNewlyCreatedRoom;
-    
-    if (numericRoomId) {
-      try {
-        const newRoomFlag = sessionStorage.getItem(`new_room_created_${numericRoomId}`);
-        if (newRoomFlag === 'true') {
-          // Found a new room flag, clear it and set isNewRoom to true
-          isNewRoom = true;
-          sessionStorage.removeItem(`new_room_created_${numericRoomId}`);
-          console.log(`Detected newly created room ${numericRoomId} from sessionStorage flag`);
+    const run = async () => {
+      const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
+      let isNewRoom = isNewlyCreatedRoom;
+
+      // Detect "newly created" room via storage flag
+      if (numericRoomId) {
+        try {
+          const flag = await mobileStorage.getItem(`new_room_created_${numericRoomId}`);
+          if (flag === 'true') {
+            isNewRoom = true;
+            await mobileStorage.removeItem(`new_room_created_${numericRoomId}`);
+            console.log(`[storage] new_room_created flag detected for room ${numericRoomId}`);
+          }
+        } catch {
+          /* swallow */
         }
-      } catch (e) {
-        // Ignore sessionStorage errors
       }
-    }
-    
-    // For newly created rooms, always start with empty input
-    if (isNewRoom) {
-      setInput('');
-      // Also clear the draft for this room to ensure it's empty
-      setDrafts(prev => ({ ...prev, [roomKey]: '' }));
-      console.log(`Cleared input for new room ${roomKey}`);
-    } else {
-      // Otherwise, restore draft from saved drafts
-      const currentDraft = draftsRef.current[roomKey] || '';
-      setInput(currentDraft);
-      console.log(`Restored draft for room ${roomKey}: "${currentDraft}"`); 
-    }
+
+      if (isNewRoom) {
+        setInput('');
+        setDrafts(prev => ({ ...prev, [roomKey]: '' }));
+        console.log(`Cleared input for room ${roomKey}`);
+      } else {
+        const currentDraft = draftsRef.current[roomKey] || '';
+        setInput(currentDraft);
+        console.log(`Restored draft for room ${roomKey}: "${currentDraft}"`);
+      }
+    };
+
+    run();
   }, [numericRoomId, isNewlyCreatedRoom]); // Removed drafts from dependencies
 
   /**
@@ -75,7 +75,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
     // Also clear the current room's draft when explicitly clearing input
     // This helps with the new chatroom case where the room ID changes
     const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
-    setDrafts(prev => ({ ...prev, [roomKey]: '' }));
+        setDrafts(prev => ({ ...prev, [roomKey]: '' }));
   };
 
   /**

@@ -4,7 +4,10 @@ import { supabase } from '../../../shared/lib/supabase';
 
 type UpdateAssistantMessageArgs = {
   roomId: number;
-  content: string;
+  /** New regenerated assistant content */
+  newContent: string;
+  /** The original assistant content we are replacing */
+  originalContent: string;
   session: Session;
 };
 
@@ -14,40 +17,42 @@ type UpdateAssistantMessageArgs = {
  */
 export const updateAssistantMessage = async ({
   roomId,
-  content,
+  newContent,
+  originalContent,
   session,
 }: UpdateAssistantMessageArgs): Promise<void> => {
   try {
-    // First, find the most recent assistant message in this room
-    const { data: existingMessages } = await supabase
+    // Match by the OLD assistant content so we touch the correct row
+    const { data: target } = await supabase
       .from('messages')
       .select('id')
       .eq('room_id', roomId)
       .eq('role', 'assistant')
       .eq('user_id', session.user.id)
+      .eq('content', originalContent)
       .order('created_at', { ascending: false })
       .limit(1);
     
-    if (!existingMessages || existingMessages.length === 0) {
+    if (!target || target.length === 0) {
       console.error('⚠️ No assistant message found to update');
       return;
     }
     
-    const messageId = existingMessages[0].id;
+    const messageId = target[0].id;
     
     // Update the message with the new content and explicitly set updated_at
     const { error } = await supabase
       .from('messages')
       .update({
-        content,
+        content: newContent,
         updated_at: new Date().toISOString()
       })
       .eq('id', messageId);
     
     if (error) {
-      console.error('❌ Failed to update assistant message:', error);
+      console.error('❌ Failed to update regenerated assistant message:', error);
     } else {
-      console.log(`✅ Updated assistant message with ID: ${messageId}`);
+      console.log(`✅ Regenerated assistant message updated (ID: ${messageId})`);
     }
   } catch (e) {
     console.error('❌ Unexpected error updating assistant message:', e);
