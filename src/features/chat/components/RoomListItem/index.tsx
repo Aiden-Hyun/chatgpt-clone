@@ -1,46 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { borderRadius, colors, fontFamily, fontSizes, fontWeights, letterSpacing, shadows, spacing } from '../../../../shared/lib/theme';
-
-const styles = StyleSheet.create({
-  roomContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.background.primary,
-    marginHorizontal: spacing.lg,
-    marginVertical: spacing.xs,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    ...shadows.medium
-  },
-  room: {
-    flex: 1,
-    padding: spacing.xl,
-  },
-  roomName: { 
-    fontSize: fontSizes.md,
-    fontWeight: fontWeights.regular as '400',
-    color: colors.text.primary,
-    lineHeight: 26,
-    fontFamily: fontFamily.primary,
-    letterSpacing: letterSpacing.normal
-  },
-  deleteButton: {
-    padding: spacing.md,
-    backgroundColor: colors.primary,
-    marginRight: spacing.md,
-    borderRadius: borderRadius.md,
-    ...shadows.medium
-  },
-  deleteText: {
-    fontSize: fontSizes.md,
-    color: colors.text.inverted,
-    fontWeight: fontWeights.medium as '500',
-    fontFamily: fontFamily.primary,
-    letterSpacing: letterSpacing.wide
-  },
-});
+import { Text, TouchableOpacity, View } from 'react-native';
+import { createRoomListItemStyles } from './RoomListItem.styles';
 
 interface ChatRoom {
   id: number;
@@ -54,6 +14,9 @@ interface Props {
 }
 
 const RoomListItem: React.FC<Props> = ({ room, onDelete, onPress }) => {
+  // Get styles from dedicated style file
+  const styles = createRoomListItemStyles();
+  
   return (
     <View style={styles.roomContainer}>
       <TouchableOpacity style={styles.room} onPress={onPress}>

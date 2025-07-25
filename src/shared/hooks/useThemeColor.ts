@@ -1,4 +1,7 @@
 /**
+ * @deprecated This hook is part of the old theme system and should not be used in new code.
+ * Use the new `useAppTheme()` hook instead for consistent dark mode support.
+ * 
  * Learn more about light and dark modes:
  * https://docs.expo.dev/guides/color-schemes/
  */

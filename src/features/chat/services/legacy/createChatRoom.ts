@@ -1,5 +1,6 @@
-// src/features/chat/services/createChatRoom.ts
-import { supabase } from '../../../shared/lib/supabase';
+// src/features/chat/services/legacy/createChatRoom.ts
+// Original implementation - moved to legacy folder
+import { supabase } from '../../../../shared/lib/supabase';
 
 export const createChatRoom = async (
   userId: string,
@@ -19,4 +20,4 @@ export const createChatRoom = async (
   }
 
   return data.id;
-};
+}; 

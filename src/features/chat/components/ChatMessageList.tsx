@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 
-import ChatMessageBubble from './ChatMessageBubble';
+import { useAppTheme } from '../../../shared/hooks';
 import { ChatMessage } from '../types';
-import { spacing } from '../../../shared/lib/theme';
+import ChatMessageBubble from './ChatMessageBubble';
 
 interface ChatMessageListProps {
   messages: ChatMessage[];
@@ -22,6 +22,15 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
   regenerateMessage,
 }) => {
   const flatListRef = useRef<FlatList>(null);
+  const theme = useAppTheme();
+
+  const styles = StyleSheet.create({
+    messagesList: {
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.xs,
+      flexGrow: 1,
+    },
+  });
 
   return (
     <FlatList
@@ -61,13 +70,5 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  messagesList: {
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xs,
-    flexGrow: 1,
-  },
-});
 
 export default ChatMessageList;

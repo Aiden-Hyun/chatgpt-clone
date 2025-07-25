@@ -1,6 +1,7 @@
-// src/features/chat/services/insertMessages.ts
+// src/features/chat/services/legacy/insertMessages.ts
+// Original implementation - moved to legacy folder
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '../../../shared/lib/supabase';
+import { supabase } from '../../../../shared/lib/supabase';
 import { ChatMessage } from '../types';
 
 type InsertMessagesArgs = {
@@ -41,4 +42,4 @@ export const insertMessages = async ({
   } catch (e) {
     console.error('❌ Unexpected error inserting messages:', e);
   }
-};
+}; 

@@ -3,26 +3,23 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useRef } from 'react';
 import {
-  ActivityIndicator,
-  BackHandler,
-
-
-  KeyboardAvoidingView,
-  Platform,
-
-  TextInput,
-  View,
+    ActivityIndicator,
+    BackHandler,
+    KeyboardAvoidingView,
+    Platform,
+    TextInput,
+    View,
 } from 'react-native';
 import { ChatHeader, ChatInput, ChatMessageList } from '../../src/features/chat/components';
 import { useChat } from '../../src/features/chat/hooks';
 import { supabase } from '../../src/shared/lib/supabase';
-import { styles } from './chat.styles';
-
+import { createChatStyles } from './chat.styles';
 
 export default function ChatScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
   const numericRoomId = roomId ? parseInt(roomId, 10) : null;
   const inputRef = useRef<TextInput | null>(null);
+  const styles = createChatStyles();
 
   const {
     messages,

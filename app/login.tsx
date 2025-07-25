@@ -3,11 +3,12 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, Text, View } from 'react-native';
 import { supabase } from '../src/shared/lib/supabase';
-import { styles } from './login.styles';
+import { createLoginStyles } from './login.styles';
 
 export default function LoginScreen() {
   const [loading, setLoading] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
+  const styles = createLoginStyles();
 
   useEffect(() => {
     const checkSession = async () => {

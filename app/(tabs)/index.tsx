@@ -5,12 +5,12 @@ import { ActivityIndicator, FlatList, SafeAreaView, Text, TouchableOpacity, View
 import { RoomListItem } from '../../src/features/chat/components';
 import { useChatRooms } from '../../src/features/chat/hooks';
 import { supabase } from '../../src/shared/lib/supabase';
-import { styles } from './index.styles';
-
+import { createIndexStyles } from './index.styles';
 
 export default function HomeScreen() {
   const { rooms, loading, fetchRooms, deleteRoom, startNewChat } = useChatRooms();
   const [userName, setUserName] = useState<string>('');
+  const styles = createIndexStyles();
   
   // Get user's name from session
   useEffect(() => {
@@ -31,8 +31,6 @@ export default function HomeScreen() {
   const refreshOnFocus = useCallback(() => {
     fetchRooms();
   }, [fetchRooms]);
-
-
 
   useFocusEffect(refreshOnFocus);
 

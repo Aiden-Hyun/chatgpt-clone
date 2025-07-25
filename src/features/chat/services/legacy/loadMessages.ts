@@ -1,5 +1,6 @@
-// src/features/chat/services/loadMessages.ts
-import { supabase } from '../../../shared/lib/supabase';
+// src/features/chat/services/legacy/loadMessages.ts
+// Original implementation - moved to legacy folder
+import { supabase } from '../../../../shared/lib/supabase';
 import { ChatMessage } from '../types';
 
 export const loadMessages = async (roomId: number | null): Promise<ChatMessage[]> => {
@@ -17,4 +18,4 @@ export const loadMessages = async (roomId: number | null): Promise<ChatMessage[]
   }
 
   return data as ChatMessage[];
-};
+}; 

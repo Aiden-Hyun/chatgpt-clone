@@ -1,4 +1,5 @@
-// src/features/chat/services/fetchOpenAIResponse.ts
+// src/features/chat/services/legacy/fetchOpenAIResponse.ts
+// Original implementation - moved to legacy folder
 
 /**
  * Call the Supabase edge function that proxies OpenAI chat completion.
@@ -24,4 +25,4 @@ export async function fetchOpenAIResponse(payload: object, accessToken: string):
     console.error('Failed to parse OpenAI response:', text);
     throw err;
   }
-}
+} 

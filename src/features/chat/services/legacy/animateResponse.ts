@@ -1,4 +1,5 @@
-// src/features/chat/services/animateResponse.ts
+// src/features/chat/services/legacy/animateResponse.ts
+// Original implementation - moved to legacy folder
 import { ChatMessage } from '../types';
 
 type AnimateResponseArgs = {
@@ -37,4 +38,4 @@ export const animateResponse = ({
       onComplete();
     }
   }, 20);
-};
+}; 

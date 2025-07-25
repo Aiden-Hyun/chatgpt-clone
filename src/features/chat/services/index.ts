@@ -1,8 +1,17 @@
 // src/features/chat/services/index.ts
-export { createChatRoom } from './createChatRoom';
-export { loadMessages } from './loadMessages';
+
+// Legacy exports (for backward compatibility) - moved to legacy folder
+export * from './legacy';
+
+// Main sendMessageHandler (now uses SOLID architecture)
 export { sendMessageHandler } from './sendMessage/index';
-export { insertMessages } from './insertMessages';
-export { updateAssistantMessage } from './updateAssistantMessage';
-export { animateResponse } from './animateResponse';
+
+// SOLID architecture exports
+export * from './core';
+export * from './implementations';
+export * from './interfaces';
+export * from './types';
+
+// Configuration
+export { configureServices } from './config/ServiceConfiguration';
 

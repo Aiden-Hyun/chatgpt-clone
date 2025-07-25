@@ -1,6 +1,7 @@
-// src/features/chat/services/updateAssistantMessage.ts
+// src/features/chat/services/legacy/updateAssistantMessage.ts
+// Original implementation - moved to legacy folder
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '../../../shared/lib/supabase';
+import { supabase } from '../../../../shared/lib/supabase';
 
 type UpdateAssistantMessageArgs = {
   roomId: number;
@@ -13,7 +14,6 @@ type UpdateAssistantMessageArgs = {
 
 /**
  * Updates an existing assistant message in the database
- * Used specifically for the regeneration flow
  */
 export const updateAssistantMessage = async ({
   roomId,
@@ -22,39 +22,38 @@ export const updateAssistantMessage = async ({
   session,
 }: UpdateAssistantMessageArgs): Promise<void> => {
   try {
-    // Match by the OLD assistant content so we touch the correct row
-    const { data: target } = await supabase
+    // First, find the message to update
+    const { data: messages, error: findError } = await supabase
       .from('messages')
       .select('id')
       .eq('room_id', roomId)
       .eq('role', 'assistant')
-      .eq('user_id', session.user.id)
       .eq('content', originalContent)
       .order('created_at', { ascending: false })
       .limit(1);
-    
-    if (!target || target.length === 0) {
-      console.error('⚠️ No assistant message found to update');
+
+    if (findError || !messages || messages.length === 0) {
+      console.error('❌ Failed to find message to update:', findError);
       return;
     }
-    
-    const messageId = target[0].id;
-    
-    // Update the message with the new content and explicitly set updated_at
-    const { error } = await supabase
+
+    const messageId = messages[0].id;
+
+    // Update the message
+    const { error: updateError } = await supabase
       .from('messages')
       .update({
         content: newContent,
         updated_at: new Date().toISOString()
       })
       .eq('id', messageId);
-    
-    if (error) {
-      console.error('❌ Failed to update regenerated assistant message:', error);
-    } else {
-      console.log(`✅ Regenerated assistant message updated (ID: ${messageId})`);
+
+    if (updateError) {
+      console.error('❌ Failed to update message:', updateError);
+      throw updateError;
     }
-  } catch (e) {
-    console.error('❌ Unexpected error updating assistant message:', e);
+  } catch (error) {
+    console.error('❌ Error updating assistant message:', error);
+    throw error;
   }
-};
+}; 

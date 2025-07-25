@@ -2,6 +2,10 @@
 import { Slot, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../src/features/auth';
+import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
+
+// Initialize services
+configureServices();
 
 function ProtectedRoutes() {
   const { session, isLoading } = useAuth();
