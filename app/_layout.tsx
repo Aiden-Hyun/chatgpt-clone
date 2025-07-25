@@ -1,11 +1,14 @@
 // app/_layout.tsx
 import { Slot, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
+import * as WebBrowser from 'expo-web-browser';
 import { AuthProvider, useAuth } from '../src/features/auth';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 
 // Initialize services
 configureServices();
+
+WebBrowser.maybeCompleteAuthSession();
 
 function ProtectedRoutes() {
   const { session, isLoading } = useAuth();
