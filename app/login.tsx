@@ -1,5 +1,5 @@
-import Constants from 'expo-constants';
 import { router } from 'expo-router';
+import * as AuthSession from 'expo-auth-session';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Button, Text, View } from 'react-native';
 import { supabase } from '../src/shared/lib/supabase';
@@ -26,7 +26,7 @@ export default function LoginScreen() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${Constants.linkingUri}`,
+        redirectTo: AuthSession.makeRedirectUri({ scheme: 'aidengpt' }),
         queryParams: {
           prompt: 'select_account',
         },
