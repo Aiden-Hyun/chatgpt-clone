@@ -13,8 +13,8 @@ function ProtectedRoutes() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isLoading && !session && pathname !== '/login') {
-      router.replace('/login');
+    if (!isLoading && !session && pathname !== '/(auth)/login') {
+      router.replace('/(auth)/login');
     }
   }, [isLoading, session, pathname]);
 

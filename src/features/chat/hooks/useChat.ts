@@ -1,7 +1,7 @@
 // useChat.ts - Coordinator hook that combines useMessages and useMessageInput
 import { useEffect, useState } from 'react';
-import { useMessageInput } from './useMessageInput';
 import mobileStorage from '../../../shared/lib/mobileStorage';
+import { useMessageInput } from './useMessageInput';
 import { useMessages } from './useMessages';
 
 export const useChat = (numericRoomId: number | null) => {

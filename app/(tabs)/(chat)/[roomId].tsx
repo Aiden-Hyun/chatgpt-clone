@@ -1,24 +1,24 @@
 // Moved Picker inside ChatHeader component
 import { useFocusEffect } from '@react-navigation/native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useCallback, useRef } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useCallback } from 'react';
 import {
-    ActivityIndicator,
-    BackHandler,
-    KeyboardAvoidingView,
-    Platform,
-    TextInput,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  View,
 } from 'react-native';
-import { ChatHeader, ChatInput, ChatMessageList } from '../../src/features/chat/components';
-import { useChat } from '../../src/features/chat/hooks';
-import { supabase } from '../../src/shared/lib/supabase';
+import { useLogout } from '../../../src/features/auth';
+import { ChatHeader, ChatInput, ChatMessageList } from '../../../src/features/chat/components';
+import { useChat } from '../../../src/features/chat/hooks';
+import { useBackButtonHandler, useInputFocus } from '../../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
 
 export default function ChatScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
   const numericRoomId = roomId ? parseInt(roomId, 10) : null;
-  const inputRef = useRef<TextInput | null>(null);
+  const { inputRef, maintainFocus } = useInputFocus();
+  const { disableBackButton } = useBackButtonHandler();
   const styles = createChatStyles();
 
   const {
@@ -33,21 +33,19 @@ export default function ChatScreen() {
     updateModel,
     regenerateMessage,
   } = useChat(numericRoomId);
+  const { logout } = useLogout();
   
   // Wrap sendMessage to maintain focus after sending
   const sendMessage = async () => {
     await originalSendMessage();
-    // Focus the input field after sending
-    setTimeout(() => inputRef.current?.focus(), 50);
+    maintainFocus();
   };
 
-  // Disable Android back button
+  // Disable Android back button using hook
   useFocusEffect(
     useCallback(() => {
-      const onBackPress = () => true;
-      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      return () => subscription.remove();
-    }, [])
+      return disableBackButton();
+    }, [disableBackButton])
   );
 
   if (loading) {
@@ -66,10 +64,7 @@ export default function ChatScreen() {
       <ChatHeader
         selectedModel={selectedModel}
         updateModel={updateModel}
-        onLogout={async () => {
-          await supabase.auth.signOut();
-          router.replace('/login');
-        }}
+        onLogout={logout}
       />
 
       {/* Messages */}

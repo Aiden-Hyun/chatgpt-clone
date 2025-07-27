@@ -1,32 +1,17 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { RoomListItem } from '../../src/features/chat/components';
-import { useChatRooms } from '../../src/features/chat/hooks';
-import { supabase } from '../../src/shared/lib/supabase';
+import { useLogout, useUserInfo } from '../../../src/features/auth';
+import { RoomListItem } from '../../../src/features/chat/components';
+import { useChatRooms } from '../../../src/features/chat/hooks';
 import { createIndexStyles } from './index.styles';
 
 export default function HomeScreen() {
   const { rooms, loading, fetchRooms, deleteRoom, startNewChat } = useChatRooms();
-  const [userName, setUserName] = useState<string>('');
+  const { userName } = useUserInfo();
+  const { logout, isLoggingOut } = useLogout();
   const styles = createIndexStyles();
-  
-  // Get user's name from session
-  useEffect(() => {
-    const getUserInfo = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        // Try to get name from user metadata or use email as fallback
-        const name = session.user.user_metadata?.full_name || 
-                    session.user.user_metadata?.name || 
-                    session.user.email?.split('@')[0] || 
-                    'User';
-        setUserName(name);
-      }
-    };
-    getUserInfo();
-  }, []);
 
   const refreshOnFocus = useCallback(() => {
     fetchRooms();
@@ -69,19 +54,19 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <RoomListItem
             room={item}
-            onPress={() => router.push({ pathname: '/chat', params: { roomId: item.id.toString(), room: item.name } })}
+            onPress={() => router.push({ pathname: '/(tabs)/(chat)/[roomId]', params: { roomId: item.id.toString(), room: item.name } })}
             onDelete={() => deleteRoom(item.id)}
           />
         )}
       />
       <TouchableOpacity
         style={styles.logoutButton}
-        onPress={async () => {
-          await supabase.auth.signOut();
-          router.replace('/login');
-        }}
+        onPress={logout}
+        disabled={isLoggingOut}
       >
-        <Text style={styles.logoutText}>Logout</Text>
+        <Text style={styles.logoutText}>
+          {isLoggingOut ? 'Logging out...' : 'Logout'}
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
