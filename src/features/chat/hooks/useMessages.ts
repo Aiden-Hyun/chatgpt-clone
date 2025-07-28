@@ -29,7 +29,7 @@ export const useMessages = (numericRoomId: number | null) => {
       // Check session
       const session = await supabase.auth.getSession();
       if (!session.data.session) {
-        router.replace('/login');
+        router.replace('/(auth)/login');
         return;
       }
       

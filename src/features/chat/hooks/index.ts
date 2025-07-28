@@ -8,3 +8,6 @@ export * from './useMessages';
 export * from './useMessageStorage';
 export * from './useModelSelection';
 
+// Modularized message hooks
+export * from './messages';
+

@@ -1,8 +1,8 @@
 // useChat.ts - Coordinator hook that combines useMessages and useMessageInput
 import { useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
+import { useMessagesCombined } from './messages';
 import { useMessageInput } from './useMessageInput';
-import { useMessages } from './useMessages';
 
 export const useChat = (numericRoomId: number | null) => {
   const [isNewlyCreatedRoom, setIsNewlyCreatedRoom] = useState(false);
@@ -37,7 +37,7 @@ export const useChat = (numericRoomId: number | null) => {
     sendMessage: sendMessageToBackend,
     regenerateMessage: regenerateMessageInBackend,
     updateModel
-  } = useMessages(numericRoomId);
+  } = useMessagesCombined(numericRoomId);
   
   const {
     input,
@@ -56,11 +56,20 @@ export const useChat = (numericRoomId: number | null) => {
     const currentRoomKey = numericRoomId ? numericRoomId.toString() : 'new';
     console.log(`Sending message from room ${currentRoomKey}`);
     
-    // Clear input before sending to prevent stale input state
+    // Clear input immediately for better UX
     clearInput();
     
-    // Send the message and handle drafts
-    await sendMessageToBackend(userContent, drafts, setDrafts);
+    try {
+      // Send the message and handle drafts
+      await sendMessageToBackend(userContent, drafts, setDrafts);
+      
+      // Message sent successfully - input is already cleared
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Restore the input content on error so user can retry
+      handleInputChange(userContent);
+      // You might want to show an error message to the user here
+    }
     
     // We don't need to manually clear drafts here as clearInput() already does that
     // and we want to avoid multiple state updates that could cause infinite loops

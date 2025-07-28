@@ -12,7 +12,7 @@ export const useChatRooms = () => {
   const fetchRooms = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      router.replace('/login');
+      router.replace('/(auth)/login');
       return;
     }
 
@@ -74,7 +74,7 @@ export const useChatRooms = () => {
   };
 
   const startNewChat = () => {
-    router.push('/chat');
+    router.push('/(tabs)/(chat)');
   };
 
   return {

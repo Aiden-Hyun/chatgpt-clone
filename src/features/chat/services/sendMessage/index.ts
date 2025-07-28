@@ -35,7 +35,9 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
 
   // Get session
   const session = await getSession();
-  if (!session) return;
+  if (!session) {
+    throw new Error('No active session found. Please log in again.');
+  }
 
   // Create the MessageSenderService with all dependencies injected
   const messageSender = ServiceFactory.createMessageSender(setMessages, setIsTyping, setDrafts);
@@ -56,5 +58,6 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
 
   if (!result.success && result.error) {
     console.error('Message sending failed:', result.error);
+    throw new Error(result.error);
   }
 };
