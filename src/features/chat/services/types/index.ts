@@ -12,12 +12,12 @@ export interface AIApiRequest {
 }
 
 export interface AIApiResponse {
-  choices: Array<{
+  choices: {
     message: {
       content: string;
       role: string;
     };
-  }>;
+  }[];
   model?: string;
   error?: any;
 } 

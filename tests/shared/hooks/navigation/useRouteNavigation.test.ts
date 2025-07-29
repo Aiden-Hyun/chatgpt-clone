@@ -67,7 +67,7 @@ describe('useRouteNavigation', () => {
         await result.current.navigateToLogin();
       });
 
-      expect(options.navigateTo).toHaveBeenCalledWith('/(auth)/login', true);
+      expect(options.navigateTo).toHaveBeenCalledWith('/login', true);
     });
 
     it('should not navigate when already navigating', async () => {
@@ -192,7 +192,7 @@ describe('useRouteNavigation', () => {
 
       expect(options.navigateTo).toHaveBeenCalledTimes(4);
       expect(options.navigateTo).toHaveBeenCalledWith('/(tabs)/(home)', true);
-      expect(options.navigateTo).toHaveBeenCalledWith('/(auth)/login', true);
+      expect(options.navigateTo).toHaveBeenCalledWith('/login', true);
       expect(options.navigateTo).toHaveBeenCalledWith('/(tabs)/(chat)/room-123');
       expect(options.navigateTo).toHaveBeenCalledWith('/(tabs)/(explore)');
     });
@@ -211,7 +211,7 @@ describe('useRouteNavigation', () => {
       await act(async () => {
         await result.current.navigateToLogin();
       });
-      expect(options.navigateTo).toHaveBeenCalledWith('/(auth)/login', true);
+      expect(options.navigateTo).toHaveBeenCalledWith('/login', true);
 
       await act(async () => {
         await result.current.navigateToChat('test-room');
@@ -236,7 +236,7 @@ describe('useRouteNavigation', () => {
       await act(async () => {
         await result.current.navigateToLogin();
       });
-      expect(options.navigateTo).toHaveBeenCalledWith('/(auth)/login', true);
+      expect(options.navigateTo).toHaveBeenCalledWith('/login', true);
     });
 
     it('should use push for chat and explore routes', async () => {

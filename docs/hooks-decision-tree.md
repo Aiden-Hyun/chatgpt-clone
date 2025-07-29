@@ -87,6 +87,10 @@ Use this decision tree to quickly find the right hook for your use case.
 ## 🔐 Need Authentication?
 
 ```
+├── Email Authentication
+│   ├── Email signup → `useEmailSignup()`
+│   ├── Email signin → `useEmailSignin()`
+│   └── Password reset → `usePasswordReset()`
 ├── Logout functionality
 │   └── → `useLogout()`
 ├── User information
@@ -106,7 +110,8 @@ Use this decision tree to quickly find the right hook for your use case.
 5. **Back Button**: `useBackButtonHandler({ enabled: true })`
 6. **Chat**: `useChat(roomId)` + `useChatRooms()`
 7. **Theme**: `useAppTheme()` + `useThemeColor()` + `useBottomTabOverflow()`
-8. **Context**: `useChatContext()` + `useAuth()`
+8. **Authentication**: `useEmailSignup()` + `useEmailSignin()` + `useLogout()`
+9. **Context**: `useChatContext()` + `useAuth()`
 
 ### **Import Patterns**
 
@@ -116,6 +121,9 @@ import { useLoadingState, useErrorStateCombined, useNavigationCombined } from '@
 
 // Feature hooks
 import { useChat, useChatRooms } from '@/features/chat/hooks';
+
+// Authentication hooks
+import { useEmailSignup, useEmailSignin, usePasswordReset, useLogout, useUserInfo } from '@/features/auth/hooks';
 
 // UI components
 import { LoadingWrapper } from '@/shared/components';
@@ -148,4 +156,48 @@ import { useAuth } from '@/features/auth/context/AuthContext';
    - Combine them following the patterns in the catalog
 
 4. **Not sure?**
-   - Check the Master Hooks Catalog for detailed examples 
+   - Check the Master Hooks Catalog for detailed examples
+
+## 📧 Email Authentication Examples
+
+### **Email Signup**
+```typescript
+import { useEmailSignup } from '@/features/auth/hooks';
+
+const { signUp, isLoading } = useEmailSignup();
+
+const handleSignup = async (email: string, password: string) => {
+  const result = await signUp(email, password);
+  if (result.success) {
+    // Navigate to signin or show confirmation message
+  }
+};
+```
+
+### **Email Signin**
+```typescript
+import { useEmailSignin } from '@/features/auth/hooks';
+
+const { signIn, isLoading } = useEmailSignin();
+
+const handleSignin = async (email: string, password: string) => {
+  const result = await signIn(email, password);
+  if (result.success) {
+    // User is automatically signed in and redirected
+  }
+};
+```
+
+### **Password Reset**
+```typescript
+import { usePasswordReset } from '@/features/auth/hooks';
+
+const { resetPassword, isLoading } = usePasswordReset();
+
+const handleResetPassword = async (email: string) => {
+  const result = await resetPassword(email);
+  if (result.success) {
+    // Show success message
+  }
+};
+``` 

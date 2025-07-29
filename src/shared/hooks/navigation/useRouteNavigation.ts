@@ -21,7 +21,7 @@ export const useRouteNavigation = (options: UseRouteNavigationOptions) => {
   // Navigation to login
   const navigateToLogin = useCallback(async () => {
     if (isNavigating) return;
-    await navigateTo('/(auth)/login', true);
+    await navigateTo('/login', true);
   }, [navigateTo, isNavigating]);
 
   // Navigation to chat room

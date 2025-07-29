@@ -6,7 +6,7 @@ export const getSession = async () => {
   const { data: { session } } = await supabase.auth.getSession();
   
   if (!session) {
-    router.replace('/(auth)/login');
+    router.replace('/login');
     return null;
   }
   

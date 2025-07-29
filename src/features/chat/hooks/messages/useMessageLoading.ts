@@ -23,7 +23,7 @@ export const useMessageLoading = (
       // Check session
       const session = await supabase.auth.getSession();
       if (!session.data.session) {
-        router.replace('/(auth)/login');
+        router.replace('/login');
         return;
       }
       

@@ -1,26 +1,30 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../src/shared/hooks';
 
 // Note: This file now exports a function that returns styles based on the current theme
 // Components should use this function instead of importing styles directly
 
 export const createLoginStyles = () => {
-  const theme = useAppTheme();
-  
   return StyleSheet.create({
     center: { 
       flex: 1, 
       justifyContent: 'center', 
       alignItems: 'center', 
-      padding: theme.spacing.xxl,
-      backgroundColor: theme.colors.background.primary
+      padding: 24,
     },
     title: { 
-      fontSize: theme.fontSizes.xxl, 
-      marginBottom: theme.spacing.xl,
-      fontFamily: theme.fontFamily.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.text.primary
+      marginBottom: 20,
+      fontFamily: 'System',
+      fontWeight: '600',
+    },
+    divider: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 16,
+      width: '100%',
+    },
+    dividerText: {
+      fontSize: 14,
+      marginHorizontal: 12,
     },
   });
 };
