@@ -21,13 +21,16 @@ export const useUpdateProfile = () => {
   const updateProfile = useCallback(async (data: UpdateProfileData, options?: UpdateProfileOptions) => {
     try {
       setIsUpdating(true);
+      console.log('🔄 Starting profile update with data:', data);
       
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         throw new Error('No active session');
       }
+      console.log('👤 User session found:', session.user.id);
 
       // Update the profiles table
+      console.log('📝 Updating profiles table...');
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
@@ -38,10 +41,13 @@ export const useUpdateProfile = () => {
         .eq('id', session.user.id);
 
       if (profileError) {
+        console.error('❌ Profile update error:', profileError);
         throw profileError;
       }
+      console.log('✅ Profiles table updated successfully');
 
       // Update auth metadata (for backward compatibility)
+      console.log('🔐 Updating auth metadata...');
       const { error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: data.display_name,
@@ -50,15 +56,18 @@ export const useUpdateProfile = () => {
       });
 
       if (authError) {
+        console.error('❌ Auth update error:', authError);
         throw authError;
       }
+      console.log('✅ Auth metadata updated successfully');
 
+      console.log('🎉 Profile update completed successfully');
       // Call success callback if provided
       options?.onSuccess?.();
 
       return { success: true };
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('❌ Error updating profile:', error);
       
       // Call error callback if provided
       options?.onError?.(error);
