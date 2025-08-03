@@ -23,7 +23,12 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
             styles.languageButton,
             currentLanguage === lang.code && styles.activeLanguageButton
           ]}
-          onPress={() => setLanguage(lang.code)}
+          onPress={() => {
+            console.log('🌍 Language button pressed:', lang.code);
+            console.log('🌍 Current language before:', currentLanguage);
+            setLanguage(lang.code);
+            console.log('🌍 Language set to:', lang.code);
+          }}
         >
           <Text style={[
             styles.languageText,

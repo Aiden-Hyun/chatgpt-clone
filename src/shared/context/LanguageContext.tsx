@@ -69,14 +69,24 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = React.useState('en');
 
+  // Debug when currentLanguage changes
+  React.useEffect(() => {
+    console.log('🌍 Language changed to:', currentLanguage);
+  }, [currentLanguage]);
+
   const t: TranslationFunction = (key: string) => {
     const languageTranslations = translations[currentLanguage] || translations.en;
     return languageTranslations[key] || key;
   };
 
   const setLanguage = (language: string) => {
+    console.log('🌍 setLanguage called with:', language);
+    console.log('🌍 Available languages:', Object.keys(translations));
     if (translations[language]) {
+      console.log('🌍 Setting language to:', language);
       setCurrentLanguage(language);
+    } else {
+      console.log('🌍 Language not found:', language);
     }
   };
 
