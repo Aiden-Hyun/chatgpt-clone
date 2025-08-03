@@ -12,7 +12,7 @@ export const createChatInputStyles = (isInputFocused: boolean) => {
     inputRow: {
       flexDirection: 'row',
       padding: theme.spacing.lg,
-      paddingBottom: Platform.OS === 'ios' ? theme.spacing.lg + 20 : theme.spacing.lg, // Extra padding for iOS safe area
+      paddingBottom: Platform.OS === 'ios' ? theme.spacing.lg + 10 : theme.spacing.lg, // Extra padding for iOS
       alignItems: 'flex-end',
       backgroundColor: theme.colors.background.primary,
       borderTopWidth: 1,
