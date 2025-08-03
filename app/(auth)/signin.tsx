@@ -63,7 +63,7 @@ export default function SigninScreen() {
       if (result.success) {
         console.log('Signin successful, navigating to home');
         // Navigation will be handled by the auth context
-        router.replace('/(tabs)/(home)');
+        router.replace('/');
       } else {
         console.error('Signin failed:', result.error);
         // Use direct Alert.alert for better error display

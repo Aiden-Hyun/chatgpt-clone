@@ -39,7 +39,7 @@ export default function LoginScreen() {
       }
       
       if (session) {
-        router.replace('/(tabs)/(home)');
+        router.replace('/');
       } else {
         stopLoading();
       }

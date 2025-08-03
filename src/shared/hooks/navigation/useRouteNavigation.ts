@@ -15,7 +15,7 @@ export const useRouteNavigation = (options: UseRouteNavigationOptions) => {
   // Navigation to home
   const navigateToHome = useCallback(async () => {
     if (isNavigating) return;
-    await navigateTo('/(tabs)/(home)', true);
+    await navigateTo('/', true);
   }, [navigateTo, isNavigating]);
 
   // Navigation to login
@@ -27,13 +27,13 @@ export const useRouteNavigation = (options: UseRouteNavigationOptions) => {
   // Navigation to chat room
   const navigateToChat = useCallback(async (roomId: string) => {
     if (isNavigating) return;
-    await navigateTo(`/(tabs)/(chat)/${roomId}`);
+    await navigateTo(`/chat/${roomId}`);
   }, [navigateTo, isNavigating]);
 
   // Navigation to explore
   const navigateToExplore = useCallback(async () => {
     if (isNavigating) return;
-    await navigateTo('/(tabs)/(explore)');
+    await navigateTo('/explore');
   }, [navigateTo, isNavigating]);
 
   return {

@@ -42,6 +42,6 @@ export const handleNewRoomRedirect = ({
   // Now navigate to the new room
   // Use setTimeout to ensure all state updates are processed before navigation
   setTimeout(() => {
-    router.replace(`/(tabs)/(chat)/${roomId}`);
+    router.replace(`/chat/${roomId}`);
   }, 50);
 };

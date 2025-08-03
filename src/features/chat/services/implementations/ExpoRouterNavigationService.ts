@@ -6,15 +6,15 @@ import { ChatMessage } from '../types';
 
 export class ExpoRouterNavigationService implements INavigationService {
   async navigateToRoom(roomId: number): Promise<void> {
-    router.replace(`/(tabs)/(chat)/${roomId}`);
+    router.replace(`/chat/${roomId}`);
   }
 
   async navigateToHome(): Promise<void> {
-    router.replace('/(tabs)/(home)');
+    router.replace('/');
   }
 
   async navigateToNewChat(): Promise<void> {
-    router.replace('/(tabs)/(chat)');
+    router.replace('/chat');
   }
 
   async handleNewRoomNavigation(roomId: number, userMsg: ChatMessage, fullContent: string, model: string): Promise<void> {
