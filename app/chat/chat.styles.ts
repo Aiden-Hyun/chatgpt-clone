@@ -12,6 +12,9 @@ export const createChatStyles = () => {
       flex: 1, 
       backgroundColor: theme.colors.background.primary 
     },
+    keyboardContainer: {
+      flex: 1,
+    },
     center: { 
       flex: 1, 
       justifyContent: 'center', 

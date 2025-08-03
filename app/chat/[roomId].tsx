@@ -3,6 +3,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import {
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import { useLogout } from '../../src/features/auth';
 import { ChatHeader, ChatInput, ChatMessageList } from '../../src/features/chat/components';
@@ -46,35 +47,37 @@ export default function ChatScreen() {
 
   return (
     <LoadingWrapper loading={loading}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-      >
-        <ChatHeader
-          onLogout={logout}
-          onSettings={() => router.push('/settings')}
-          onBack={() => router.push('/')}
-          selectedModel={selectedModel}
-          onModelChange={updateModel}
-        />
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.keyboardContainer}
+        >
+          <ChatHeader
+            onLogout={logout}
+            onSettings={() => router.push('/settings')}
+            onBack={() => router.push('/')}
+            selectedModel={selectedModel}
+            onModelChange={updateModel}
+          />
 
-        {/* Messages */}
-        <ChatMessageList
-          messages={messages}
-          isTyping={isTyping}
-          regenerateMessage={regenerateMessage}
-        />
+          {/* Messages */}
+          <ChatMessageList
+            messages={messages}
+            isTyping={isTyping}
+            regenerateMessage={regenerateMessage}
+          />
 
-        {/* Input */}
-        <ChatInput
-          input={input}
-          onChangeText={handleInputChange}
-          onSend={sendMessage}
-          sending={sending}
-          isTyping={isTyping}
-          inputRef={inputRef}
-        />
-      </KeyboardAvoidingView>
+          {/* Input */}
+          <ChatInput
+            input={input}
+            onChangeText={handleInputChange}
+            onSend={sendMessage}
+            sending={sending}
+            isTyping={isTyping}
+            inputRef={inputRef}
+          />
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </LoadingWrapper>
   );
 } 

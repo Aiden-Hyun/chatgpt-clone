@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { useAppTheme } from '../../../../shared/hooks';
 
 /**
@@ -12,6 +12,7 @@ export const createChatInputStyles = (isInputFocused: boolean) => {
     inputRow: {
       flexDirection: 'row',
       padding: theme.spacing.lg,
+      paddingBottom: Platform.OS === 'ios' ? theme.spacing.lg + 20 : theme.spacing.lg, // Extra padding for iOS safe area
       alignItems: 'flex-end',
       backgroundColor: theme.colors.background.primary,
       borderTopWidth: 1,
