@@ -1,5 +1,5 @@
 // Moved Picker inside ChatHeader component
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -26,8 +26,6 @@ export default function ChatScreen() {
     isTyping,
     sendMessage: originalSendMessage,
     handleInputChange,
-    selectedModel,
-    updateModel,
     regenerateMessage,
   } = useChat(numericRoomId);
   const { logout } = useLogout();
@@ -47,9 +45,8 @@ export default function ChatScreen() {
         style={styles.container}
       >
         <ChatHeader
-          selectedModel={selectedModel}
-          updateModel={updateModel}
           onLogout={logout}
+          onSettings={() => router.push('/settings')}
         />
 
         {/* Messages */}

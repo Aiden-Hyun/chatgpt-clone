@@ -19,45 +19,26 @@ export const createChatHeaderStyles = () => {
       borderBottomColor: theme.colors.border.light,
       ...theme.shadows.light,
     },
-    modelSelector: {
-      flexDirection: 'row',
-      alignItems: 'center',
+    titleContainer: {
       flex: 1,
-      backgroundColor: theme.colors.status.info.background,
-      borderRadius: theme.borderRadius.md,
+    },
+    title: {
+      fontSize: theme.fontSizes.lg,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.semiBold as '600',
+    },
+    menuButton: {
       padding: theme.spacing.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.status.info.border,
-    },
-    modelLabel: {
-      fontSize: theme.fontSizes.sm,
-      marginRight: theme.spacing.sm,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.status.info.primary,
-      fontWeight: theme.fontWeights.medium as '500',
-    },
-    picker: {
-      width: 150,
-      height: 30,
-      color: theme.colors.text.primary,
-    },
-    pickerItem: {
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-    },
-    logoutButton: {
-      backgroundColor: theme.colors.status.error.primary,
       borderRadius: theme.borderRadius.md,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
+      backgroundColor: theme.colors.background.secondary,
       ...theme.shadows.light,
     },
-    logoutButtonText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.sm,
+    menuButtonText: {
+      fontSize: theme.fontSizes.xl,
+      color: theme.colors.text.primary,
       fontWeight: theme.fontWeights.medium as '500',
-      fontFamily: theme.fontFamily.primary,
+      textAlign: 'center',
     },
   });
 }; 
