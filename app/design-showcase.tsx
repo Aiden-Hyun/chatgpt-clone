@@ -355,6 +355,111 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.fontSizes.md,
       fontFamily: theme.fontFamily.primary,
     },
+    // Sharp Corners Alert Demo Styles
+    sharpToastDemo: {
+      marginBottom: theme.spacing.md,
+    },
+    sharpToastContainer: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.md,
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
+      ...theme.shadows.medium,
+    },
+    sharpErrorToastContainer: {
+      borderColor: theme.colors.status.error.primary,
+      backgroundColor: theme.colors.status.error.background,
+    },
+    sharpToastIcon: {
+      width: 24,
+      height: 24,
+      borderRadius: 2, // Very slight rounding
+      backgroundColor: theme.colors.status.success.primary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginRight: theme.spacing.md,
+    },
+    sharpErrorToastIcon: {
+      backgroundColor: theme.colors.status.error.primary,
+    },
+    sharpToastIconText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontWeights.bold as '700',
+    },
+    sharpToastContent: {
+      flex: 1,
+    },
+    sharpToastTitle: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.semibold as '600',
+      marginBottom: theme.spacing.xs,
+    },
+    sharpToastMessage: {
+      fontSize: theme.fontSizes.sm,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.secondary,
+    },
+    sharpAlertDialogDemo: {
+      marginTop: theme.spacing.md,
+    },
+    sharpAlertOverlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.lg,
+    },
+    sharpAlertDialog: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.lg,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
+      ...theme.shadows.heavy,
+    },
+    sharpAlertHeader: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      marginBottom: theme.spacing.md,
+    },
+    sharpAlertIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 2, // Very slight rounding
+      backgroundColor: theme.colors.status.success.primary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginRight: theme.spacing.md,
+    },
+    sharpSuccessAlertIcon: {
+      backgroundColor: theme.colors.status.success.primary,
+    },
+    sharpAlertIconText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.md,
+      fontWeight: theme.fontWeights.bold as '700',
+    },
+    sharpAlertDialogTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.semibold as '600',
+    },
+    sharpAlertDialogMessage: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.secondary,
+      lineHeight: theme.fontSizes.md * 1.4,
+      marginBottom: theme.spacing.lg,
+    },
+    sharpAlertButtons: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+    },
   };
 
   return (
@@ -602,35 +707,60 @@ export default function DesignShowcaseScreen() {
             </View>
 
             <Text style={styles.label}>Sharp Corner Alert Examples</Text>
-            <View style={styles.row}>
-              <TouchableOpacity 
-                style={[styles.sharpButton, styles.sharpSuccessButton]}
-                onPress={() => showSuccess('Professional success message!', 3000)}
-              >
-                <Text style={[styles.sharpButtonText, styles.sharpSuccessButtonText]}>Success Alert</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.sharpButton, styles.sharpErrorButton]}
-                onPress={() => showError('Professional error message!', 3000)}
-              >
-                <Text style={[styles.sharpButtonText, styles.sharpErrorButtonText]}>Error Alert</Text>
-              </TouchableOpacity>
+            <Text style={styles.caption}>Demo of how Sharp Corners alerts would look (visual examples)</Text>
+            
+            {/* Demo Sharp Corner Toast Alert */}
+            <View style={styles.sharpToastDemo}>
+              <View style={styles.sharpToastContainer}>
+                <View style={styles.sharpToastIcon}>
+                  <Text style={styles.sharpToastIconText}>✓</Text>
+                </View>
+                <View style={styles.sharpToastContent}>
+                  <Text style={styles.sharpToastTitle}>Success</Text>
+                  <Text style={styles.sharpToastMessage}>Professional success message with sharp corners</Text>
+                </View>
+              </View>
             </View>
 
-            <Text style={styles.label}>Sharp Corner Alert Dialogs</Text>
-            <View style={styles.row}>
-              <TouchableOpacity 
-                style={[styles.sharpButton, styles.sharpPrimaryButton]}
-                onPress={() => showSuccessAlert('Success', 'This is a professional success alert with sharp corners.')}
-              >
-                <Text style={[styles.sharpButtonText, styles.sharpPrimaryButtonText]}>Success Dialog</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.sharpButton, styles.sharpErrorButton]}
-                onPress={() => showErrorAlert('Error', 'This is a professional error alert with sharp corners.')}
-              >
-                <Text style={[styles.sharpButtonText, styles.sharpErrorButtonText]}>Error Dialog</Text>
-              </TouchableOpacity>
+            {/* Demo Sharp Corner Error Toast */}
+            <View style={styles.sharpToastDemo}>
+              <View style={[styles.sharpToastContainer, styles.sharpErrorToastContainer]}>
+                <View style={[styles.sharpToastIcon, styles.sharpErrorToastIcon]}>
+                  <Text style={styles.sharpToastIconText}>✕</Text>
+                </View>
+                <View style={styles.sharpToastContent}>
+                  <Text style={styles.sharpToastTitle}>Error</Text>
+                  <Text style={styles.sharpToastMessage}>Professional error message with sharp corners</Text>
+                </View>
+              </View>
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Alert Dialog Demo</Text>
+            <Text style={styles.caption}>Visual example of Sharp Corners alert dialog</Text>
+            
+            {/* Demo Sharp Corner Alert Dialog */}
+            <View style={styles.sharpAlertDialogDemo}>
+              <View style={styles.sharpAlertOverlay}>
+                <View style={styles.sharpAlertDialog}>
+                  <View style={styles.sharpAlertHeader}>
+                    <View style={[styles.sharpAlertIcon, styles.sharpSuccessAlertIcon]}>
+                      <Text style={styles.sharpAlertIconText}>✓</Text>
+                    </View>
+                    <Text style={styles.sharpAlertDialogTitle}>Success</Text>
+                  </View>
+                  <Text style={styles.sharpAlertDialogMessage}>
+                    This is a professional success alert dialog with sharp corners and structured layout.
+                  </Text>
+                  <View style={styles.sharpAlertButtons}>
+                    <TouchableOpacity style={[styles.sharpButton, styles.sharpSecondaryButton, { flex: 1, marginRight: theme.spacing.sm }]}>
+                      <Text style={[styles.sharpButtonText, styles.sharpSecondaryButtonText]}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.sharpButton, styles.sharpSuccessButton, { flex: 1 }]}>
+                      <Text style={[styles.sharpButtonText, styles.sharpSuccessButtonText]}>Confirm</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
             </View>
 
             <Text style={styles.label}>Sharp Corner Message Bubbles</Text>
