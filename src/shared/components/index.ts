@@ -9,6 +9,9 @@ export { ThemedText } from './ThemedText';
 export { ThemedTextInput } from './ThemedTextInput';
 export { ThemedView } from './ThemedView';
 
+// Export alert components
+export * from './alert';
+
 // Export UI components
 export * from './ui';
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput, Alert } from 'react-native';
+import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
-import { LanguageSelector } from '../../src/shared/components';
+import { LanguageSelector, useCustomAlert, CustomAlert } from '../../src/shared/components';
 import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { useAppTheme } from '../../src/shared/hooks';
 import { createSettingsStyles } from './settings.styles';
@@ -13,6 +13,7 @@ export default function SettingsScreen() {
   const { userName, userEmail, refresh } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
   const { updateProfile, isUpdating } = useUpdateProfile();
+  const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
   const styles = createSettingsStyles();
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -41,7 +42,7 @@ export default function SettingsScreen() {
 
   const handleNameSave = async () => {
     if (editedName.trim() === '') {
-      Alert.alert('Error', 'Name cannot be empty');
+      showErrorAlert('Error', 'Name cannot be empty');
       return;
     }
     
@@ -55,9 +56,9 @@ export default function SettingsScreen() {
       await refresh();
       
       setIsEditingName(false);
-      Alert.alert('Success', 'Name updated successfully');
+      showSuccessAlert('Success', 'Name updated successfully');
     } catch (error) {
-      Alert.alert('Error', `Failed to update name: ${error.message}`);
+      showErrorAlert('Error', `Failed to update name: ${error.message}`);
     }
   };
 
@@ -196,6 +197,24 @@ export default function SettingsScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+      
+      {/* Custom Alert */}
+      <CustomAlert
+        visible={alert.visible}
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+        confirmText={alert.confirmText}
+        cancelText={alert.cancelText}
+        onConfirm={() => {
+          alert.onConfirm?.();
+          hideAlert();
+        }}
+        onCancel={() => {
+          alert.onCancel?.();
+          hideAlert();
+        }}
+      />
     </SafeAreaView>
   );
 } 
