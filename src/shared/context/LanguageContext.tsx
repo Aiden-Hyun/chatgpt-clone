@@ -103,6 +103,11 @@ const translations: Record<string, Record<string, string>> = {
     // Explore
     'explore.title': 'Explore',
     'explore.coming_soon': 'Coming soon...',
+    
+    // Toast Messages
+    'toast.language_changed': 'Language successfully changed to {language}',
+    'toast.language_changed_es': 'Idioma cambiado exitosamente a {language}',
+    'toast.language_changed_ko': '언어가 {language}로 성공적으로 변경되었습니다',
   },
   es: {
     // Common
@@ -192,6 +197,11 @@ const translations: Record<string, Record<string, string>> = {
     // Explore
     'explore.title': 'Explorar',
     'explore.coming_soon': 'Próximamente...',
+    
+    // Toast Messages
+    'toast.language_changed': 'Language successfully changed to {language}',
+    'toast.language_changed_es': 'Idioma cambiado exitosamente a {language}',
+    'toast.language_changed_ko': '언어가 {language}로 성공적으로 변경되었습니다',
   },
   ko: {
     // Common
@@ -281,6 +291,11 @@ const translations: Record<string, Record<string, string>> = {
     // Explore
     'explore.title': '탐색',
     'explore.coming_soon': '곧 출시 예정...',
+    
+    // Toast Messages
+    'toast.language_changed': 'Language successfully changed to {language}',
+    'toast.language_changed_es': 'Idioma cambiado exitosamente a {language}',
+    'toast.language_changed_ko': '언어가 {language}로 성공적으로 변경되었습니다',
   }
 };
 

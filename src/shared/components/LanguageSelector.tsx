@@ -1,19 +1,48 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from '../context/LanguageContext';
+import { useToast } from './alert/useToast';
 
 interface LanguageSelectorProps {
   style?: any;
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
-  const { currentLanguage, setLanguage } = useLanguageContext();
+  const { currentLanguage, setLanguage, t } = useLanguageContext();
+  const { showSuccess } = useToast();
 
   const languages = [
     { code: 'en', name: 'English' },
     { code: 'es', name: 'Español' },
     { code: 'ko', name: '한국어' },
   ];
+
+  const handleLanguageChange = (newLanguage: string) => {
+    console.log('🌍 Language button pressed:', newLanguage);
+    console.log('🌍 Current language before:', currentLanguage);
+    
+    // Set the new language
+    setLanguage(newLanguage);
+    console.log('🌍 Language set to:', newLanguage);
+    
+    // Show toast in the new language
+    const languageNames = {
+      'en': 'English',
+      'es': 'Español', 
+      'ko': '한국어'
+    };
+    
+    // Get the appropriate translation key based on the new language
+    const translationKey = newLanguage === 'en' ? 'toast.language_changed' :
+                          newLanguage === 'es' ? 'toast.language_changed_es' :
+                          'toast.language_changed_ko';
+    
+    // Replace the placeholder with the actual language name
+    const message = t(translationKey).replace('{language}', languageNames[newLanguage as keyof typeof languageNames]);
+    
+    // Show success toast
+    showSuccess(message, 3000);
+  };
 
   return (
     <View style={[styles.container, style]}>
@@ -24,12 +53,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
             styles.languageButton,
             currentLanguage === lang.code && styles.activeLanguageButton
           ]}
-          onPress={() => {
-            console.log('🌍 Language button pressed:', lang.code);
-            console.log('🌍 Current language before:', currentLanguage);
-            setLanguage(lang.code);
-            console.log('🌍 Language set to:', lang.code);
-          }}
+          onPress={() => handleLanguageChange(lang.code)}
         >
           <Text style={[
             styles.languageText,

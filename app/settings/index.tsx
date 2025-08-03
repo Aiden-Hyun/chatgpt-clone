@@ -3,6 +3,7 @@ import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInp
 import { router } from 'expo-router';
 import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
 import { LanguageSelector, useCustomAlert, CustomAlert } from '../../src/shared/components';
+import { Toast, useToast } from '../../src/shared/components/alert';
 import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { useAppTheme } from '../../src/shared/hooks';
 import { createSettingsStyles } from './settings.styles';
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
   const { logout, isLoggingOut } = useLogout();
   const { updateProfile, isUpdating } = useUpdateProfile();
   const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
+  const { toast, hideToast } = useToast();
   const styles = createSettingsStyles();
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -94,6 +96,10 @@ export default function SettingsScreen() {
                     placeholder={t('settings.name')}
                     placeholderTextColor={theme.colors.text.tertiary}
                     autoFocus
+                    onBlur={() => {
+                      console.log('👁️ TextInput blurred');
+                      // Don't cancel on blur - let user press save button
+                    }}
                   />
                   <TouchableOpacity 
                     onPress={handleNameSave}
@@ -104,12 +110,17 @@ export default function SettingsScreen() {
                       {isUpdating ? t('common.loading') : t('common.save')}
                     </Text>
                   </TouchableOpacity>
+                  <TouchableOpacity onPress={handleNameCancel} style={styles.cancelButton}>
+                    <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
+                  </TouchableOpacity>
                 </View>
               ) : (
-                <TouchableOpacity onPress={handleNameEdit} style={styles.editableValue}>
+                <View style={styles.nameContainer}>
                   <Text style={styles.settingValue}>{userName || t('settings.not_set')}</Text>
-                  <Text style={styles.editIcon}>✏️</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity onPress={handleNameEdit} style={styles.editButton}>
+                    <Text style={styles.editButtonText}>{t('common.edit')}</Text>
+                  </TouchableOpacity>
+                </View>
               )}
             </View>
             <View style={styles.settingItem}>
@@ -214,6 +225,15 @@ export default function SettingsScreen() {
           alert.onCancel?.();
           hideAlert();
         }}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        duration={toast.duration}
+        onHide={hideToast}
       />
     </SafeAreaView>
   );
