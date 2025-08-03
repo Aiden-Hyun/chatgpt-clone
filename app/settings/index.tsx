@@ -42,7 +42,7 @@ export default function SettingsScreen() {
 
   const handleNameSave = async () => {
     if (editedName.trim() === '') {
-      showErrorAlert('Error', 'Name cannot be empty');
+      showErrorAlert(t('common.error'), t('settings.name_empty'));
       return;
     }
     
@@ -56,9 +56,9 @@ export default function SettingsScreen() {
       await refresh();
       
       setIsEditingName(false);
-      showSuccessAlert('Success', 'Name updated successfully');
+      showSuccessAlert(t('common.success'), t('settings.name_updated'));
     } catch (error) {
-      showErrorAlert('Error', `Failed to update name: ${error.message}`);
+      showErrorAlert(t('common.error'), t('settings.name_update_failed'));
     }
   };
 
@@ -74,24 +74,24 @@ export default function SettingsScreen() {
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Account Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
+          <Text style={styles.sectionTitle}>{t('settings.account')}</Text>
           <View style={styles.card}>
             <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Name</Text>
+              <Text style={styles.settingLabel}>{t('settings.name')}</Text>
               {isEditingName ? (
                 <View style={styles.editContainer}>
                   <TextInput
                     style={styles.nameInput}
                     value={editedName}
                     onChangeText={setEditedName}
-                    placeholder="Enter your name"
+                    placeholder={t('settings.name')}
                     placeholderTextColor={theme.colors.text.tertiary}
                     autoFocus
                   />
@@ -101,34 +101,34 @@ export default function SettingsScreen() {
                     disabled={isUpdating}
                   >
                     <Text style={styles.saveButtonText}>
-                      {isUpdating ? 'Saving...' : 'Save'}
+                      {isUpdating ? t('common.loading') : t('common.save')}
                     </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
                 <TouchableOpacity onPress={handleNameEdit} style={styles.editableValue}>
-                  <Text style={styles.settingValue}>{userName || 'Not set'}</Text>
+                  <Text style={styles.settingValue}>{userName || t('settings.not_set')}</Text>
                   <Text style={styles.editIcon}>✏️</Text>
                 </TouchableOpacity>
               )}
             </View>
             <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Email</Text>
-              <Text style={styles.settingValue}>{userEmail || 'Not set'}</Text>
+              <Text style={styles.settingLabel}>{t('settings.email')}</Text>
+              <Text style={styles.settingValue}>{userEmail || t('settings.not_set')}</Text>
             </View>
           </View>
         </View>
 
         {/* Preferences Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
+          <Text style={styles.sectionTitle}>{t('settings.preferences')}</Text>
           <View style={styles.card}>
             <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Language</Text>
+              <Text style={styles.settingLabel}>{t('settings.language')}</Text>
               <LanguageSelector style={styles.languageSelector} />
             </View>
             <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Notifications</Text>
+              <Text style={styles.settingLabel}>{t('settings.notifications')}</Text>
               <Switch
                 value={notificationsEnabled}
                 onValueChange={setNotificationsEnabled}
@@ -137,7 +137,7 @@ export default function SettingsScreen() {
               />
             </View>
             <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Dark Mode</Text>
+              <Text style={styles.settingLabel}>{t('settings.dark_mode')}</Text>
               <Switch
                 value={darkModeEnabled}
                 onValueChange={setDarkModeEnabled}
@@ -150,18 +150,18 @@ export default function SettingsScreen() {
 
         {/* Data & Privacy Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data & Privacy</Text>
+          <Text style={styles.sectionTitle}>{t('settings.data_privacy')}</Text>
           <View style={styles.card}>
             <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Export Data</Text>
+              <Text style={styles.settingLabel}>{t('settings.export_data')}</Text>
               <Text style={styles.settingValue}>→</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Clear All Conversations</Text>
+              <Text style={styles.settingLabel}>{t('settings.clear_conversations')}</Text>
               <Text style={styles.settingValue}>→</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Privacy Policy</Text>
+              <Text style={styles.settingLabel}>{t('settings.privacy_policy')}</Text>
               <Text style={styles.settingValue}>→</Text>
             </TouchableOpacity>
           </View>
@@ -169,18 +169,18 @@ export default function SettingsScreen() {
 
         {/* About Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={styles.sectionTitle}>{t('settings.about')}</Text>
           <View style={styles.card}>
             <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Version</Text>
+              <Text style={styles.settingLabel}>{t('settings.version')}</Text>
               <Text style={styles.settingValue}>1.0.0</Text>
             </View>
             <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Terms of Service</Text>
+              <Text style={styles.settingLabel}>{t('settings.terms_of_service')}</Text>
               <Text style={styles.settingValue}>→</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>Support</Text>
+              <Text style={styles.settingLabel}>{t('settings.support')}</Text>
               <Text style={styles.settingValue}>→</Text>
             </TouchableOpacity>
           </View>
@@ -193,7 +193,7 @@ export default function SettingsScreen() {
           disabled={isLoggingOut}
         >
           <Text style={styles.logoutText}>
-            {isLoggingOut ? 'Logging out...' : 'Logout'}
+            {isLoggingOut ? t('home.logging_out') : t('home.logout')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

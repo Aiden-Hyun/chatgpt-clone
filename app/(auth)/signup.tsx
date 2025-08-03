@@ -3,9 +3,11 @@ import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useEmailSignup } from '../../src/features/auth/hooks';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/shared/components';
+import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
+  const { t } = useLanguageContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,21 +33,21 @@ export default function SignupScreen() {
     const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
 
     if (!email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('auth.enter_email');
     } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('auth.enter_valid_email');
     }
 
     if (!password.trim()) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('auth.enter_password');
     } else if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 8 characters long';
+      newErrors.password = t('auth.password_too_short');
     }
 
     if (!confirmPassword.trim()) {
-      newErrors.confirmPassword = 'Please confirm your password';
+      newErrors.confirmPassword = t('auth.confirm_password');
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('auth.passwords_must_match');
     }
 
     setErrors(newErrors);
@@ -70,8 +72,8 @@ export default function SignupScreen() {
         
         // Use direct Alert.alert to bypass the error system
         Alert.alert(
-          'Account Created Successfully!', 
-          'Please check your email and click the confirmation link to activate your account. You can then sign in.',
+          t('auth.account_created'), 
+          t('auth.confirm_email_instructions'),
           [
             { 
               text: 'OK', 
@@ -89,11 +91,11 @@ export default function SignupScreen() {
       } else {
         console.error('Signup failed:', result.error);
         // Use direct Alert.alert for error too
-        Alert.alert('Signup Failed', result.error || 'Failed to create account. Please try again.');
+        Alert.alert(t('auth.signup_failed'), result.error || t('auth.unexpected_error'));
       }
     } catch (error) {
       console.error('Signup error:', error);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      Alert.alert(t('common.error'), t('auth.unexpected_error'));
     }
   };
 
@@ -127,12 +129,12 @@ export default function SignupScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView style={styles.container}>
-          <ThemedText type="title" style={styles.title}>Create Account</ThemedText>
+          <ThemedText type="title" style={styles.title}>{t('auth.create_account')}</ThemedText>
           
           <FormWrapper onSubmit={handleSignup} style={{ width: '100%' }}>
             <ThemedTextInput
               ref={emailRef}
-              placeholder="Email"
+              placeholder={t('auth.email')}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -159,7 +161,7 @@ export default function SignupScreen() {
             
             <ThemedTextInput
               ref={passwordRef}
-              placeholder="Password"
+              placeholder={t('auth.password')}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -183,7 +185,7 @@ export default function SignupScreen() {
             
             <ThemedTextInput
               ref={confirmPasswordRef}
-              placeholder="Confirm Password"
+              placeholder={t('auth.confirm_password')}
               value={confirmPassword}
               onChangeText={(text) => {
                 setConfirmPassword(text);
@@ -215,7 +217,7 @@ export default function SignupScreen() {
             activeOpacity={0.7}
           >
             <ThemedText style={styles.buttonText}>
-              {isLoading ? 'Creating Account...' : 'Sign Up'}
+              {isLoading ? t('common.loading') : t('auth.sign_up')}
             </ThemedText>
           </TouchableOpacity>
           
@@ -225,7 +227,7 @@ export default function SignupScreen() {
             disabled={isLoading}
             activeOpacity={0.7}
           >
-            <ThemedText type="link" style={styles.linkText}>Already have an account? Sign In</ThemedText>
+            <ThemedText type="link" style={styles.linkText}>Already have an account? {t('auth.sign_in')}</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>
