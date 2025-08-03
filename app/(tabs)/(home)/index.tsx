@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { FlatList, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { useLogout, useUserInfo } from '../../../src/features/auth';
 import { RoomListItem } from '../../../src/features/chat/components';
 import { useChatRooms } from '../../../src/features/chat/hooks';
-import { LoadingWrapper } from '../../../src/shared/components';
+import { LoadingWrapper, SettingsMenu } from '../../../src/shared/components';
+import { useLanguageContext } from '../../../src/shared/context/LanguageContext';
 import { useRefreshOnFocus } from '../../../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
 
@@ -11,7 +13,9 @@ export default function HomeScreen() {
   const { rooms, loading, fetchRooms, deleteRoom, startNewChat } = useChatRooms();
   const { userName } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
+  const { t } = useLanguageContext();
   const styles = createIndexStyles();
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // Refresh rooms when screen comes into focus
   useRefreshOnFocus(fetchRooms, [fetchRooms]);
@@ -20,20 +24,28 @@ export default function HomeScreen() {
     <LoadingWrapper loading={loading}>
       {rooms.length === 0 ? (
         <SafeAreaView style={styles.center}>
-          <Text style={styles.emptyStateText}>No conversations yet.</Text>
-          <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
-            <Text style={styles.buttonText}>New Conversation</Text>
+                  <Text style={styles.emptyStateText}>{t('home.no_conversations')}</Text>
+        <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
+          <Text style={styles.buttonText}>{t('home.new_conversation')}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       ) : (
         <SafeAreaView style={styles.container}>
+          {/* Settings Menu Button */}
+          <TouchableOpacity 
+            style={styles.settingsMenuButton} 
+            onPress={() => setIsMenuVisible(!isMenuVisible)}
+          >
+            <Text style={styles.settingsMenuText}>⋯</Text>
+          </TouchableOpacity>
+          
           {userName && (
             <Text style={styles.welcomeText}>
-              Hello, {userName}
+              {t('home.hello')}, {userName}
             </Text>
           )}
-          <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
-            <Text style={styles.buttonText}>New Conversation</Text>
+        <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
+          <Text style={styles.buttonText}>{t('home.new_conversation')}</Text>
           </TouchableOpacity>
           <FlatList
             data={rooms}
@@ -52,11 +64,17 @@ export default function HomeScreen() {
             disabled={isLoggingOut}
           >
             <Text style={styles.logoutText}>
-              {isLoggingOut ? 'Logging out...' : 'Logout'}
+              {isLoggingOut ? t('home.logging_out') : t('home.logout')}
             </Text>
           </TouchableOpacity>
         </SafeAreaView>
       )}
+      
+      {/* Settings Menu Dropdown */}
+      <SettingsMenu 
+        isVisible={isMenuVisible} 
+        onClose={() => setIsMenuVisible(false)} 
+      />
     </LoadingWrapper>
   );
 

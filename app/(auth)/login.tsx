@@ -1,8 +1,9 @@
 import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { ActivityIndicator, Button, View } from 'react-native';
-import { ThemedText } from '../../src/shared/components';
+import { ActivityIndicator, Button, Text, View } from 'react-native';
+import { LanguageSelector } from '../../src/shared/components';
+import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { useLoadingState } from '../../src/shared/hooks';
 import { useErrorStateCombined } from '../../src/shared/hooks/error';
 import { supabase } from '../../src/shared/lib/supabase';
@@ -14,12 +15,13 @@ export default function LoginScreen() {
   const { setNetworkError, setAuthError, clearError, currentError } = useErrorStateCombined({
     autoClear: true,
     autoClearDelay: 5000,
-    showAlerts: false, // Temporarily disable alerts
+    showAlerts: false,
     logToConsole: true
   });
   const pathname = usePathname();
   const styles = createLoginStyles();
   const navigationAttempted = useRef(false);
+  const { t } = useLanguageContext();
 
   // Session check logic extracted to avoid duplication
   const checkSession = async () => {
@@ -76,8 +78,6 @@ export default function LoginScreen() {
           },
         },
       });
-      // Don't stop signing in here - let the OAuth redirect handle it
-      // The user will be redirected away from this screen
     } catch (error) {
       setAuthError('Failed to start Google login. Please try again.', {
         context: 'google-oauth',
@@ -143,47 +143,50 @@ export default function LoginScreen() {
         backgroundColor: '#FFFFFF'
       }}>
         <ActivityIndicator size="large" color="#000000" />
-        <ThemedText style={{ marginTop: 16 }}>Loading...</ThemedText>
+        <Text style={{ marginTop: 16 }}>{t('common.loading')}...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.center}>
-      <ThemedText type="title" style={styles.title}>Welcome to AidenGPT</ThemedText>
+      <Text style={styles.title}>{t('auth.welcome')}</Text>
       
       <Button 
-        title={signingIn ? 'Redirecting...' : 'Login with Google'} 
+        title={signingIn ? t('auth.redirecting') : t('auth.login_with_google')} 
         onPress={handleGoogleLogin} 
         disabled={signingIn} 
       />
       
       <View style={styles.divider}>
-        <ThemedText style={styles.dividerText}>or</ThemedText>
+        <Text style={styles.dividerText}>{t('auth.or')}</Text>
       </View>
       
       <Button 
-        title="Sign In with Email" 
+        title={t('auth.sign_in_with_email')} 
         onPress={handleEmailSignin}
       />
       
       <Button 
-        title="Create Account" 
+        title={t('auth.create_account')} 
         onPress={handleEmailSignup}
       />
 
       <Button 
-        title="TEST NAVIGATION" 
+        title={t('auth.test_navigation')} 
         onPress={handleTestNavigation}
       />
       
       {/* Show retry button for network errors */}
       {currentError && currentError.type === 'network' && (
         <Button 
-          title="Retry Connection" 
+          title={t('auth.retry_connection')} 
           onPress={retrySessionCheck}
         />
       )}
+
+      {/* Language Selector - Small and at bottom */}
+      <LanguageSelector />
     </View>
   );
 }
