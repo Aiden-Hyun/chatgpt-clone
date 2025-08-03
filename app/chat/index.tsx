@@ -14,12 +14,38 @@ export default function NewChatScreen() {
           return;
         }
 
-        // Create a new chat room
+        // Generate a unique name for the new chat room
+        const generateUniqueName = async (baseName: string): Promise<string> => {
+          let counter = 1;
+          let name = baseName;
+          
+          while (true) {
+            // Check if this name already exists for this user
+            const { data: existingRoom } = await supabase
+              .from('chatrooms')
+              .select('id')
+              .eq('user_id', session.user.id)
+              .eq('name', name)
+              .single();
+            
+            if (!existingRoom) {
+              return name; // Name is unique, use it
+            }
+            
+            // Name exists, try with counter
+            name = `${baseName} ${counter}`;
+            counter++;
+          }
+        };
+
+        const uniqueName = await generateUniqueName('New Chat');
+
+        // Create a new chat room with unique name
         const { data: newRoom, error } = await supabase
           .from('chatrooms')
           .insert({
             user_id: session.user.id,
-            name: 'New Chat',
+            name: uniqueName,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           })
