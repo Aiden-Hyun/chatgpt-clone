@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { useAppTheme } from '../../../../shared/hooks';
 
 /**
@@ -11,6 +11,7 @@ export const createChatHeaderStyles = () => {
   return StyleSheet.create({
     header: {
       padding: theme.spacing.lg,
+      paddingTop: Platform.OS === 'ios' ? theme.spacing.lg + 44 : theme.spacing.lg, // Add extra padding for iOS status bar
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
