@@ -4,11 +4,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useLogout } from '../../../src/features/auth';
-import { ChatHeader, ChatInput, ChatMessageList } from '../../../src/features/chat/components';
-import { useChat } from '../../../src/features/chat/hooks';
-import { LoadingWrapper } from '../../../src/shared/components';
-import { useBackButtonHandler, useInputFocus } from '../../../src/shared/hooks';
+import { useLogout } from '../../src/features/auth';
+import { ChatHeader, ChatInput, ChatMessageList } from '../../src/features/chat/components';
+import { useChat } from '../../src/features/chat/hooks';
+import { LoadingWrapper } from '../../src/shared/components';
+import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
 
 export default function ChatScreen() {
@@ -71,5 +71,4 @@ export default function ChatScreen() {
       </KeyboardAvoidingView>
     </LoadingWrapper>
   );
-
-}
+} 

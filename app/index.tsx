@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, SafeAreaView, Text, TouchableOpacity } from 'react-native';
-import { useLogout, useUserInfo } from '../../../src/features/auth';
-import { RoomListItem } from '../../../src/features/chat/components';
-import { useChatRooms } from '../../../src/features/chat/hooks';
-import { LoadingWrapper, SettingsMenu } from '../../../src/shared/components';
-import { useLanguageContext } from '../../../src/shared/context/LanguageContext';
-import { useRefreshOnFocus } from '../../../src/shared/hooks';
+import { useLogout, useUserInfo } from '../src/features/auth';
+import { RoomListItem } from '../src/features/chat/components';
+import { useChatRooms } from '../src/features/chat/hooks';
+import { LoadingWrapper, SettingsMenu } from '../src/shared/components';
+import { useLanguageContext } from '../src/shared/context/LanguageContext';
+import { useRefreshOnFocus } from '../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
 
 export default function HomeScreen() {
@@ -24,9 +24,9 @@ export default function HomeScreen() {
     <LoadingWrapper loading={loading}>
       {rooms.length === 0 ? (
         <SafeAreaView style={styles.center}>
-                  <Text style={styles.emptyStateText}>{t('home.no_conversations')}</Text>
-        <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
-          <Text style={styles.buttonText}>{t('home.new_conversation')}</Text>
+          <Text style={styles.emptyStateText}>{t('home.no_conversations')}</Text>
+          <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
+            <Text style={styles.buttonText}>{t('home.new_conversation')}</Text>
           </TouchableOpacity>
         </SafeAreaView>
       ) : (
@@ -44,8 +44,8 @@ export default function HomeScreen() {
               {t('home.hello')}, {userName}
             </Text>
           )}
-        <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
-          <Text style={styles.buttonText}>{t('home.new_conversation')}</Text>
+          <TouchableOpacity style={styles.newButton} onPress={startNewChat}>
+            <Text style={styles.buttonText}>{t('home.new_conversation')}</Text>
           </TouchableOpacity>
           <FlatList
             data={rooms}
@@ -53,7 +53,7 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <RoomListItem
                 room={item}
-                onPress={() => router.push({ pathname: '/(tabs)/(chat)/[roomId]', params: { roomId: item.id.toString(), room: item.name } })}
+                onPress={() => router.push({ pathname: '/chat/[roomId]', params: { roomId: item.id.toString(), room: item.name } })}
                 onDelete={() => deleteRoom(item.id)}
               />
             )}
@@ -77,5 +77,4 @@ export default function HomeScreen() {
       />
     </LoadingWrapper>
   );
-
-}
+} 

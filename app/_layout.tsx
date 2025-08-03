@@ -1,10 +1,10 @@
 // app/_layout.tsx
-import { Slot, usePathname, useRouter } from 'expo-router';
+import { Slot, Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/features/auth';
-import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 import { LanguageProvider } from '../src/shared/context';
+import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 
 // Initialize services
 configureServices();
@@ -38,7 +38,13 @@ function ProtectedRoutes() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="chat" />
+    </Stack>
+  );
 }
 
 export default function Layout() {

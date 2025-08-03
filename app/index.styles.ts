@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../src/shared/hooks';
+import { useAppTheme } from '../src/shared/hooks';
 
 // Note: This file now exports a function that returns styles based on the current theme
 // Components should use this function instead of importing styles directly
@@ -67,61 +67,17 @@ export const createIndexStyles = () => {
       backgroundColor: theme.colors.button.primary,
       borderRadius: theme.borderRadius.lg,
       ...theme.shadows.medium
-    }
+    },
+    settingsMenuButton: {
+      position: 'absolute',
+      top: 50,
+      right: 20,
+      zIndex: 1000,
+      padding: 10,
+    },
+    settingsMenuText: {
+      fontSize: 24,
+      color: '#333',
+    },
   });
-};
-
-// Legacy export for backward compatibility (deprecated)
-// Components should use createIndexStyles() instead
-export const styles = StyleSheet.create({
-  container: { 
-    flex: 1,
-    backgroundColor: '#FFFFFF'
-  },
-  center: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 32
-  },
-  emptyStateText: {
-    fontSize: 20,
-    color: '#666666',
-    marginBottom: 32,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    paddingVertical: 16,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#000000',
-    marginVertical: 16,
-    textAlign: 'center',
-  },
-  logoutText: {
-    color: '#FFFFFF', 
-    fontSize: 16, 
-  },
-  newButton: {
-    margin: 16,
-    marginBottom: 8,
-    backgroundColor: '#000000',
-    borderRadius: 18,
-  },
-  logoutButton: {
-    alignSelf: 'center',
-    margin: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: '#000000',
-    borderRadius: 18,
-  }
-});
+}; 

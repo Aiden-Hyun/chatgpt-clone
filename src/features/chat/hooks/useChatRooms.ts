@@ -90,7 +90,7 @@ export const useChatRooms = () => {
   };
 
   const startNewChat = () => {
-    router.push('/(tabs)/(chat)');
+    router.push('/chat');
   };
 
   return {
