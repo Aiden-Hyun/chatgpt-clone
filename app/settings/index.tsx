@@ -26,7 +26,7 @@ export default function SettingsScreen() {
   }, [userName]);
 
   const handleBack = () => {
-    router.back();
+    router.push('/');
   };
 
   const handleLogout = async () => {

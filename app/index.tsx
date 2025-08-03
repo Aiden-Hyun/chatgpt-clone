@@ -68,7 +68,7 @@ export default function HomeScreen() {
         onClose={() => setIsQuickActionsVisible(false)}
         onLogout={logout}
         onSettings={() => {
-          router.push('/(settings)');
+          router.push('/settings');
         }}
       />
     </LoadingWrapper>
