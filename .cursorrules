@@ -1,0 +1,84 @@
+# Cursor Rules for ChatGPT Clone Project
+
+## Git and Version Control Rules
+
+### 🚀 FREQUENT PUSHING REQUIREMENTS
+- **ALWAYS push your changes after completing a feature or fixing a bug**
+- **Push at least once per day** if you're actively working on the project
+- **Never let more than 3 commits accumulate** before pushing
+- **Push immediately after fixing any critical bugs or errors**
+- **Always check git status before starting new work**
+
+### 📝 Commit Guidelines
+- Use descriptive commit messages that explain WHAT and WHY
+- Follow this format: `"Action: Brief description of changes"`
+- Examples:
+  - `"feat: Add user authentication system"`
+  - `"fix: Resolve undefined component import error"`
+  - `"refactor: Improve chat message rendering performance"`
+
+### 🔄 Workflow Rules
+- **Before starting new work**: `git pull origin main`
+- **After completing work**: `git add . && git commit -m "descriptive message" && git push`
+- **If you encounter merge conflicts**: Resolve them immediately, don't let them sit
+- **Use feature branches** for major changes: `git checkout -b feature/name`
+
+### 🚨 PUSHING TRIGGERS
+You MUST push when:
+- ✅ You complete a feature
+- ✅ You fix a bug
+- ✅ You refactor code
+- ✅ You add new components
+- ✅ You update dependencies
+- ✅ You modify configuration files
+- ✅ You've been working for more than 2 hours
+- ✅ You're about to switch to a different task
+
+### 🎯 Code Quality Rules
+- **Test your changes** before pushing
+- **Check for TypeScript errors** before committing
+- **Ensure the app builds successfully** before pushing
+- **Review your changes** with `git diff` before committing
+
+### 📋 Daily Checklist
+Before ending your work session:
+- [ ] All changes are committed
+- [ ] All changes are pushed to remote
+- [ ] No uncommitted work is left behind
+- [ ] The app runs without errors
+- [ ] You're on the main branch (or feature branch is up to date)
+
+### 🚫 What NOT to do
+- ❌ Don't leave work uncommitted overnight
+- ❌ Don't push broken code
+- ❌ Don't ignore merge conflicts
+- ❌ Don't commit without testing
+- ❌ Don't use vague commit messages like "fix" or "update"
+
+### 💡 Pro Tips
+- Use `git status` frequently to check your working directory
+- Use `git log --oneline -5` to see recent commits
+- Set up git aliases for common commands
+- Consider using a git GUI tool if you're not comfortable with CLI
+
+## Project-Specific Rules
+
+### 🏗️ Architecture Guidelines
+- Keep components small and focused
+- Use TypeScript for all new code
+- Follow the existing folder structure
+- Document complex logic with comments
+
+### 🎨 UI/UX Guidelines
+- Maintain consistent styling
+- Test on both iOS and Android
+- Ensure accessibility standards
+- Use the theme system for colors and spacing
+
+### 🔧 Development Guidelines
+- Use the existing hooks and utilities
+- Follow the established patterns
+- Add tests for new features
+- Update documentation when needed
+
+Remember: **Frequent pushing keeps your work safe and makes collaboration easier!** 🚀 
