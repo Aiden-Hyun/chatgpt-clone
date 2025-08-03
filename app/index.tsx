@@ -58,22 +58,19 @@ export default function HomeScreen() {
               />
             )}
           />
-          <TouchableOpacity
-            style={styles.logoutButton}
-            onPress={logout}
-            disabled={isLoggingOut}
-          >
-            <Text style={styles.logoutText}>
-              {isLoggingOut ? t('home.logging_out') : t('home.logout')}
-            </Text>
-          </TouchableOpacity>
+
         </SafeAreaView>
       )}
       
       {/* Quick Actions Menu Dropdown */}
       <QuickActionsMenu 
         isVisible={isQuickActionsVisible} 
-        onClose={() => setIsQuickActionsVisible(false)} 
+        onClose={() => setIsQuickActionsVisible(false)}
+        onLogout={logout}
+        onSettings={() => {
+          // TODO: Navigate to settings page
+          console.log('Settings pressed');
+        }}
       />
     </LoadingWrapper>
   );

@@ -4,9 +4,16 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 interface QuickActionsMenuProps {
   isVisible: boolean;
   onClose: () => void;
+  onLogout: () => void;
+  onSettings: () => void;
 }
 
-export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({ isVisible, onClose }) => {
+export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({ 
+  isVisible, 
+  onClose, 
+  onLogout, 
+  onSettings 
+}) => {
   return (
     <Modal
       visible={isVisible}
@@ -20,14 +27,23 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({ isVisible, o
         onPress={onClose}
       >
         <View style={styles.menuContainer}>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Language</Text>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              onSettings();
+              onClose();
+            }}
+          >
+            <Text style={styles.menuText}>Settings</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Clear All</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>About</Text>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              onLogout();
+              onClose();
+            }}
+          >
+            <Text style={styles.menuText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
