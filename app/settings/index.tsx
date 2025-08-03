@@ -35,39 +35,28 @@ export default function SettingsScreen() {
   };
 
   const handleNameEdit = () => {
-    console.log('✏️ Edit button pressed!');
     setIsEditingName(true);
     setEditedName(userName || '');
   };
 
   const handleNameSave = async () => {
-    console.log('🔘 Save button clicked!');
-    
     if (editedName.trim() === '') {
       Alert.alert('Error', 'Name cannot be empty');
       return;
     }
     
-    console.log('💾 Starting name save with:', editedName.trim());
-    Alert.alert('Debug', `Attempting to save name: ${editedName.trim()}`);
-    
     try {
-      console.log('🔄 Calling updateProfile...');
       const result = await updateProfile({ display_name: editedName.trim() });
-      console.log('✅ UpdateProfile result:', result);
       
       // Small delay to ensure database update is complete
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Refresh user info to get the updated name
-      console.log('🔄 Refreshing user info...');
       await refresh();
-      console.log('✅ User info refreshed');
       
       setIsEditingName(false);
       Alert.alert('Success', 'Name updated successfully');
     } catch (error) {
-      console.error('❌ Profile update error in try-catch:', error);
       Alert.alert('Error', `Failed to update name: ${error.message}`);
     }
   };
@@ -97,41 +86,17 @@ export default function SettingsScreen() {
               <Text style={styles.settingLabel}>Name</Text>
               {isEditingName ? (
                 <View style={styles.editContainer}>
-                  {console.log('🎨 Rendering edit container with save button, isEditingName:', isEditingName, 'editedName:', editedName)}
                   <TextInput
-                    style={[styles.nameInput, { borderColor: 'blue', borderWidth: 2 }]} // Blue border for debugging
+                    style={styles.nameInput}
                     value={editedName}
-                    onChangeText={(text) => {
-                      console.log('📝 TextInput changed to:', text);
-                      setEditedName(text);
-                    }}
-                    onFocus={() => console.log('🎯 TextInput focused')}
-                    onBlur={() => {
-                      console.log('👁️ TextInput blurred');
-                      // Don't cancel on blur - let user press save button
-                    }}
+                    onChangeText={setEditedName}
                     placeholder="Enter your name"
                     placeholderTextColor={theme.colors.text.tertiary}
                     autoFocus
                   />
                   <TouchableOpacity 
-                    onPress={() => {
-                      console.log('🔘 Save button pressed!');
-                      handleNameSave();
-                    }} 
-                    onPressIn={() => console.log('👆 Save button press in')}
-                    onPressOut={() => console.log('👆 Save button press out')}
-                    style={[
-                      styles.saveButton, 
-                      isUpdating && styles.saveButtonDisabled,
-                      { 
-                        backgroundColor: 'red',
-                        minWidth: 80,
-                        minHeight: 40,
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                      } // Temporary red background for debugging
-                    ]}
+                    onPress={handleNameSave}
+                    style={[styles.saveButton, isUpdating && styles.saveButtonDisabled]}
                     disabled={isUpdating}
                   >
                     <Text style={styles.saveButtonText}>
