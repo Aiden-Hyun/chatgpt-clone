@@ -49,6 +49,7 @@ export default function ChatScreen() {
         <ChatHeader
           onLogout={logout}
           onSettings={() => router.push('/settings')}
+          onBack={() => router.push('/')}
           selectedModel={selectedModel}
           onModelChange={updateModel}
         />

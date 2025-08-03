@@ -6,6 +6,7 @@ import { createChatHeaderStyles } from './ChatHeader.styles';
 interface ChatHeaderProps {
   onLogout: () => void;
   onSettings: () => void;
+  onBack: () => void;
   // Model selection props for chat rooms
   selectedModel?: string;
   onModelChange?: (model: string) => void;
@@ -13,11 +14,12 @@ interface ChatHeaderProps {
 
 /**
  * ChatHeader
- * Renders the top bar of the chat screen containing a menu button for quick actions.
+ * Renders the top bar of the chat screen containing a back button, title, and menu button for quick actions.
  */
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   onLogout,
   onSettings,
+  onBack,
   selectedModel,
   onModelChange,
 }) => {
@@ -26,6 +28,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   return (
     <View style={styles.header}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+        <Text style={styles.backButtonText}>‹</Text>
+      </TouchableOpacity>
+
+      {/* Title */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Chat</Text>
       </View>

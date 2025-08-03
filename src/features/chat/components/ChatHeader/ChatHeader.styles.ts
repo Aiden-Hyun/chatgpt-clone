@@ -20,6 +20,19 @@ export const createChatHeaderStyles = () => {
       borderBottomColor: theme.colors.border.light,
       ...theme.shadows.light,
     },
+    backButton: {
+      padding: theme.spacing.sm,
+      borderRadius: theme.borderRadius.md,
+      backgroundColor: theme.colors.background.secondary,
+      marginRight: theme.spacing.sm,
+      ...theme.shadows.light,
+    },
+    backButtonText: {
+      fontSize: theme.fontSizes.xl,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.medium as '500',
+      textAlign: 'center',
+    },
     titleContainer: {
       flex: 1,
     },
