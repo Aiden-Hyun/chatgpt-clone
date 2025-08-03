@@ -206,6 +206,78 @@ export default function DesignShowcaseScreen() {
       color: theme.colors.text.secondary,
       fontWeight: theme.fontWeights.medium as '500',
     },
+    // Sharp Corners Design Styles
+    caption: {
+      fontSize: theme.fontSizes.sm,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.tertiary,
+      marginBottom: theme.spacing.md,
+      fontStyle: 'italic',
+    },
+    sharpButton: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+      borderRadius: 2, // Very slight rounding for professional look
+      marginRight: theme.spacing.sm,
+      marginBottom: theme.spacing.sm,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      minWidth: 120,
+      borderWidth: 1,
+      ...theme.shadows.light,
+    },
+    sharpButtonText: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      fontWeight: theme.fontWeights.medium as '500',
+      textAlign: 'center',
+    },
+    sharpPrimaryButton: {
+      backgroundColor: theme.colors.primary,
+      borderColor: theme.colors.primary,
+    },
+    sharpPrimaryButtonText: {
+      color: theme.colors.text.inverted,
+    },
+    sharpSecondaryButton: {
+      backgroundColor: theme.colors.background.primary,
+      borderColor: theme.colors.border.medium,
+    },
+    sharpSecondaryButtonText: {
+      color: theme.colors.text.primary,
+    },
+    sharpInput: {
+      borderWidth: 1,
+      borderColor: theme.colors.border.medium,
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.md,
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      backgroundColor: theme.colors.background.primary,
+      ...theme.shadows.light,
+    },
+    sharpCard: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.lg,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
+      ...theme.shadows.light,
+    },
+    sharpCardTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.semibold as '600',
+      marginBottom: theme.spacing.sm,
+    },
+    sharpCardText: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.secondary,
+      lineHeight: theme.fontSizes.md * 1.4,
+    },
   };
 
   return (
@@ -391,6 +463,51 @@ export default function DesignShowcaseScreen() {
               >
                 <Text style={[styles.buttonText, styles.errorButtonText]}>Error Alert</Text>
               </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        {/* Sharp Corners Design Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Sharp Corners Design (Option B)</Text>
+          
+          <View style={[styles.card, { borderRadius: 0 }]}>
+            <Text style={styles.label}>Professional Business Buttons</Text>
+            <Text style={styles.caption}>Square or slightly rounded buttons with clean, structured appearance</Text>
+            
+            <View style={styles.row}>
+              <TouchableOpacity style={[styles.sharpButton, styles.sharpPrimaryButton]}>
+                <Text style={[styles.sharpButtonText, styles.sharpPrimaryButtonText]}>Primary Action</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.sharpButton, styles.sharpSecondaryButton]}>
+                <Text style={[styles.sharpButtonText, styles.sharpSecondaryButtonText]}>Secondary</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Input Fields</Text>
+            <TextInput
+              style={[styles.sharpInput, { marginBottom: theme.spacing.sm }]}
+              placeholder="Enter business data..."
+              placeholderTextColor={theme.colors.text.tertiary}
+              value={inputValue}
+              onChangeText={setInputValue}
+            />
+
+            <Text style={styles.label}>Professional Cards</Text>
+            <View style={[styles.sharpCard, { marginBottom: theme.spacing.md }]}>
+              <Text style={styles.sharpCardTitle}>Business Report</Text>
+              <Text style={styles.sharpCardText}>Clean, structured layout with sharp corners for professional appearance.</Text>
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Switches</Text>
+            <View style={styles.row}>
+              <Text style={styles.label}>Enable Feature</Text>
+              <Switch
+                value={switchValue}
+                onValueChange={setSwitchValue}
+                trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
+                thumbColor={switchValue ? theme.colors.button.text : theme.colors.text.secondary}
+              />
             </View>
           </View>
         </View>
