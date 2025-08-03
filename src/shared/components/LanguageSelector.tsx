@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from '../context/LanguageContext';
-import { useToast } from './alert/useToast';
+import { useToast } from './alert';
 
 interface LanguageSelectorProps {
   style?: any;
