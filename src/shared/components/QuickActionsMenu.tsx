@@ -6,6 +6,7 @@ interface QuickActionsMenuProps {
   onClose: () => void;
   onLogout: () => void;
   onSettings: () => void;
+  onDesignShowcase?: () => void;
   // Optional model selection props for chat rooms
   selectedModel?: string;
   onModelChange?: (model: string) => void;
@@ -25,6 +26,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   onClose, 
   onLogout, 
   onSettings,
+  onDesignShowcase,
   selectedModel,
   onModelChange,
   showModelSelection = false,
@@ -75,6 +77,17 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
               >
                 <Text style={styles.menuText}>Settings</Text>
               </TouchableOpacity>
+              {onDesignShowcase && (
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => {
+                    onDesignShowcase();
+                    onClose();
+                  }}
+                >
+                  <Text style={styles.menuText}>Design Showcase</Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity 
                 style={styles.menuItem}
                 onPress={() => {

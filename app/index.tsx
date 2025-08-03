@@ -70,6 +70,9 @@ export default function HomeScreen() {
         onSettings={() => {
           router.push('/settings');
         }}
+        onDesignShowcase={() => {
+          router.push('/design-showcase');
+        }}
       />
     </LoadingWrapper>
   );
