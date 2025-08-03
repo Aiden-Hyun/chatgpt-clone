@@ -68,8 +68,7 @@ export default function HomeScreen() {
         onClose={() => setIsQuickActionsVisible(false)}
         onLogout={logout}
         onSettings={() => {
-          // TODO: Navigate to settings page
-          console.log('Settings pressed');
+          router.push('/(settings)');
         }}
       />
     </LoadingWrapper>
