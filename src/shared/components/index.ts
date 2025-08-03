@@ -5,6 +5,7 @@ export { HapticTab } from './HapticTab';
 export { LanguageSelector } from './LanguageSelector';
 export { QuickActionsMenu } from './QuickActionsMenu';
 export { default as SemanticColorTest } from './SemanticColorTest';
+export { ThemedButton } from './ThemedButton';
 export { ThemedText } from './ThemedText';
 export { ThemedTextInput } from './ThemedTextInput';
 export { ThemedView } from './ThemedView';

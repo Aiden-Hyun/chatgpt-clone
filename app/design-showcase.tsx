@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, TextInput, Switch } from 'react-native';
 import { router } from 'expo-router';
-import { 
-  LanguageSelector, 
-  useCustomAlert, 
-  CustomAlert,
-  useToast 
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    CustomAlert,
+    LanguageSelector,
+    ThemedButton,
+    useCustomAlert,
+    useToast
 } from '../src/shared/components';
 import { useLanguageContext } from '../src/shared/context/LanguageContext';
 import { useAppTheme } from '../src/shared/hooks';
@@ -38,10 +39,16 @@ export default function DesignShowcaseScreen() {
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {
-      padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
       backgroundColor: theme.colors.background.secondary,
+      justifyContent: 'center',
+      alignItems: 'center',
       marginRight: theme.spacing.md,
+      ...theme.shadows.light,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
     },
     backButtonText: {
       fontSize: theme.fontSizes.lg,
@@ -52,20 +59,20 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.fontSizes.xl,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semiBold as '600',
+      fontWeight: theme.fontWeights.semibold as '600',
     },
     content: {
       flex: 1,
       padding: theme.spacing.lg,
     },
     section: {
-      marginBottom: theme.spacing.xl,
+      marginBottom: theme.spacing.xxl,
     },
     sectionTitle: {
       fontSize: theme.fontSizes.lg,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semiBold as '600',
+      fontWeight: theme.fontWeights.semibold as '600',
       marginBottom: theme.spacing.md,
     },
     card: {
@@ -74,11 +81,14 @@ export default function DesignShowcaseScreen() {
       padding: theme.spacing.lg,
       marginBottom: theme.spacing.md,
       ...theme.shadows.light,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
     },
     row: {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
       marginBottom: theme.spacing.md,
+      flexWrap: 'wrap' as const,
     },
     button: {
       paddingHorizontal: theme.spacing.lg,
@@ -89,6 +99,7 @@ export default function DesignShowcaseScreen() {
       alignItems: 'center' as const,
       justifyContent: 'center' as const,
       minWidth: 100,
+      ...theme.shadows.light,
     },
     buttonText: {
       fontSize: theme.fontSizes.md,
@@ -102,7 +113,7 @@ export default function DesignShowcaseScreen() {
       color: theme.colors.text.inverted,
     },
     secondaryButton: {
-      backgroundColor: theme.colors.background.tertiary,
+      backgroundColor: theme.colors.background.primary,
       borderWidth: 1,
       borderColor: theme.colors.border.medium,
     },
@@ -125,7 +136,7 @@ export default function DesignShowcaseScreen() {
       backgroundColor: theme.colors.status.warning.primary,
     },
     warningButtonText: {
-      color: theme.colors.text.inverted,
+      color: theme.colors.text.primary,
     },
     input: {
       borderWidth: 1,
@@ -137,12 +148,14 @@ export default function DesignShowcaseScreen() {
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       marginBottom: theme.spacing.sm,
+      ...theme.shadows.light,
     },
     label: {
       fontSize: theme.fontSizes.sm,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.xs,
+      fontWeight: theme.fontWeights.medium as '500',
     },
     chatInputContainer: {
       borderWidth: 1,
@@ -151,6 +164,7 @@ export default function DesignShowcaseScreen() {
       backgroundColor: theme.colors.background.primary,
       padding: theme.spacing.md,
       marginBottom: theme.spacing.sm,
+      ...theme.shadows.light,
     },
     chatInput: {
       fontSize: theme.fontSizes.md,
@@ -165,6 +179,7 @@ export default function DesignShowcaseScreen() {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.sm,
       alignSelf: 'flex-end' as const,
+      ...theme.shadows.light,
     },
     sendButtonText: {
       color: theme.colors.text.inverted,
@@ -177,6 +192,19 @@ export default function DesignShowcaseScreen() {
     },
     disabledButtonText: {
       color: theme.colors.text.tertiary,
+    },
+    colorSwatch: {
+      width: 60,
+      height: 40,
+      borderRadius: theme.borderRadius.sm,
+      marginRight: theme.spacing.sm,
+      ...theme.shadows.light,
+    },
+    colorLabel: {
+      fontSize: theme.fontSizes.sm,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontWeights.medium as '500',
     },
   };
 
@@ -198,35 +226,55 @@ export default function DesignShowcaseScreen() {
           <View style={styles.card}>
             <Text style={styles.label}>Primary Buttons</Text>
             <View style={styles.row}>
-              <TouchableOpacity style={[styles.button, styles.primaryButton]}>
-                <Text style={[styles.buttonText, styles.primaryButtonText]}>Primary</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.primaryButton, styles.disabledButton]}>
-                <Text style={[styles.buttonText, styles.disabledButtonText]}>Disabled</Text>
-              </TouchableOpacity>
+              <ThemedButton variant="primary" size="medium">
+                Primary
+              </ThemedButton>
+              <ThemedButton variant="primary" size="medium" disabled>
+                Disabled
+              </ThemedButton>
             </View>
 
             <Text style={styles.label}>Secondary Buttons</Text>
             <View style={styles.row}>
-              <TouchableOpacity style={[styles.button, styles.secondaryButton]}>
-                <Text style={[styles.buttonText, styles.secondaryButtonText]}>Secondary</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.secondaryButton, styles.disabledButton]}>
-                <Text style={[styles.buttonText, styles.disabledButtonText]}>Disabled</Text>
-              </TouchableOpacity>
+              <ThemedButton variant="secondary" size="medium">
+                Secondary
+              </ThemedButton>
+              <ThemedButton variant="secondary" size="medium" disabled>
+                Disabled
+              </ThemedButton>
+            </View>
+
+            <Text style={styles.label}>Outline & Ghost Buttons</Text>
+            <View style={styles.row}>
+              <ThemedButton variant="outline" size="medium">
+                Outline
+              </ThemedButton>
+              <ThemedButton variant="ghost" size="medium">
+                Ghost
+              </ThemedButton>
             </View>
 
             <Text style={styles.label}>Status Buttons</Text>
             <View style={styles.row}>
-              <TouchableOpacity style={[styles.button, styles.successButton]}>
-                <Text style={[styles.buttonText, styles.successButtonText]}>Success</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.errorButton]}>
-                <Text style={[styles.buttonText, styles.errorButtonText]}>Error</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.warningButton]}>
-                <Text style={[styles.buttonText, styles.warningButtonText]}>Warning</Text>
-              </TouchableOpacity>
+              <ThemedButton variant="primary" size="medium" style={{ backgroundColor: theme.colors.status.success.primary }}>
+                Success
+              </ThemedButton>
+              <ThemedButton variant="danger" size="medium">
+                Danger
+              </ThemedButton>
+            </View>
+
+            <Text style={styles.label}>Button Sizes</Text>
+            <View style={styles.row}>
+              <ThemedButton variant="primary" size="small">
+                Small
+              </ThemedButton>
+              <ThemedButton variant="primary" size="medium">
+                Medium
+              </ThemedButton>
+              <ThemedButton variant="primary" size="large">
+                Large
+              </ThemedButton>
             </View>
           </View>
         </View>
@@ -354,20 +402,22 @@ export default function DesignShowcaseScreen() {
           <View style={styles.card}>
             <Text style={styles.label}>Theme Colors</Text>
             <View style={styles.row}>
-              <View style={[styles.button, { backgroundColor: theme.colors.primary, width: 60, height: 40 }]} />
-              <Text style={styles.label}>Primary</Text>
-            </View>
-            <View style={styles.row}>
-              <View style={[styles.button, { backgroundColor: theme.colors.status.success.primary, width: 60, height: 40 }]} />
-              <Text style={styles.label}>Success</Text>
-            </View>
-            <View style={styles.row}>
-              <View style={[styles.button, { backgroundColor: theme.colors.status.error.primary, width: 60, height: 40 }]} />
-              <Text style={styles.label}>Error</Text>
-            </View>
-            <View style={styles.row}>
-              <View style={[styles.button, { backgroundColor: theme.colors.status.warning.primary, width: 60, height: 40 }]} />
-              <Text style={styles.label}>Warning</Text>
+              <View style={styles.row}>
+                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.primary }]} />
+                <Text style={styles.colorLabel}>Primary</Text>
+              </View>
+              <View style={styles.row}>
+                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.success.primary }]} />
+                <Text style={styles.colorLabel}>Success</Text>
+              </View>
+              <View style={styles.row}>
+                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.error.primary }]} />
+                <Text style={styles.colorLabel}>Error</Text>
+              </View>
+              <View style={styles.row}>
+                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.warning.primary }]} />
+                <Text style={styles.colorLabel}>Warning</Text>
+              </View>
             </View>
           </View>
         </View>

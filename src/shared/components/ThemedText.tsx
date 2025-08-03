@@ -1,11 +1,12 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
 
-import { useThemeColor } from '../hooks/useThemeColor';
+import { useTheme } from '../lib/theme';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: 'default' | 'title' | 'subtitle' | 'caption' | 'link' | 'button';
+  weight?: 'regular' | 'medium' | 'semibold' | 'bold';
 };
 
 export function ThemedText({
@@ -13,19 +14,29 @@ export function ThemedText({
   lightColor,
   darkColor,
   type = 'default',
+  weight = 'regular',
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const theme = useTheme();
+  
+  // Use provided colors or fall back to theme colors
+  const color = lightColor || darkColor || theme.colors.text.primary;
 
   return (
     <Text
       style={[
-        { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
+        { 
+          color,
+          fontFamily: theme.fontFamily.primary,
+          fontWeight: theme.fontWeights[weight],
+          letterSpacing: theme.letterSpacing.normal,
+        },
+        type === 'default' ? styles.default(theme) : undefined,
+        type === 'title' ? styles.title(theme) : undefined,
+        type === 'subtitle' ? styles.subtitle(theme) : undefined,
+        type === 'caption' ? styles.caption(theme) : undefined,
+        type === 'link' ? styles.link(theme) : undefined,
+        type === 'button' ? styles.button(theme) : undefined,
         style,
       ]}
       {...rest}
@@ -33,28 +44,53 @@ export function ThemedText({
   );
 }
 
-const styles = StyleSheet.create({
-  default: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
-  },
-});
+const styles = {
+  default: (theme: any) => StyleSheet.create({
+    default: {
+      fontSize: theme.fontSizes.md,
+      lineHeight: theme.fontSizes.md * 1.5,
+    },
+  }).default,
+  
+  title: (theme: any) => StyleSheet.create({
+    title: {
+      fontSize: theme.fontSizes.xxl,
+      lineHeight: theme.fontSizes.xxl * 1.2,
+      fontWeight: theme.fontWeights.bold,
+    },
+  }).title,
+  
+  subtitle: (theme: any) => StyleSheet.create({
+    subtitle: {
+      fontSize: theme.fontSizes.xl,
+      lineHeight: theme.fontSizes.xl * 1.3,
+      fontWeight: theme.fontWeights.semibold,
+    },
+  }).subtitle,
+  
+  caption: (theme: any) => StyleSheet.create({
+    caption: {
+      fontSize: theme.fontSizes.sm,
+      lineHeight: theme.fontSizes.sm * 1.4,
+      color: theme.colors.text.tertiary,
+    },
+  }).caption,
+  
+  link: (theme: any) => StyleSheet.create({
+    link: {
+      fontSize: theme.fontSizes.md,
+      lineHeight: theme.fontSizes.md * 1.5,
+      color: theme.colors.status.info.primary,
+      textDecorationLine: 'underline',
+    },
+  }).link,
+  
+  button: (theme: any) => StyleSheet.create({
+    button: {
+      fontSize: theme.fontSizes.md,
+      lineHeight: theme.fontSizes.md * 1.2,
+      fontWeight: theme.fontWeights.medium,
+      textAlign: 'center',
+    },
+  }).button,
+};

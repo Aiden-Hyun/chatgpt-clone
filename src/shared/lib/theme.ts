@@ -1,4 +1,4 @@
-// theme.ts - Centralized styling constants for the entire app with dark mode support
+// theme.ts - Modern Minimalist design system with clean aesthetics
 
 import { useColorScheme } from 'react-native';
 
@@ -38,8 +38,8 @@ export const borderRadius = {
   xs: 4,
   sm: 8,
   md: 12,
-  lg: 18,
-  xl: 24,
+  lg: 16,
+  xl: 20,
   round: 9999, // For circular elements
 };
 
@@ -49,361 +49,335 @@ export const letterSpacing = {
   wide: 0.5,
 };
 
-// Enhanced semantic color definitions
+// Modern Minimalist - Limited color palette with subtle variations
 const lightColors = {
-  // Primary colors
-  primary: '#000000',
-  secondary: '#FFFFFF',
+  // Primary colors - Minimal palette
+  primary: '#2D3748',      // Dark gray-blue
+  secondary: '#4A5568',    // Medium gray
   
-  // Background colors
+  // Background colors - Clean whites and grays
   background: {
-    primary: '#FFFFFF',
-    secondary: '#F5F5F5',
-    tertiary: '#FAFAFA',
-    avatar: '#E1E1E1',
+    primary: '#FFFFFF',    // Pure white
+    secondary: '#F7FAFC',  // Very light gray
+    tertiary: '#EDF2F7',   // Light gray
+    avatar: '#E2E8F0',     // Subtle gray
   },
   
-  // Text colors
+  // Text colors - High contrast for readability
   text: {
-    primary: '#000000',
-    secondary: '#333333',
-    tertiary: '#666666',
-    quaternary: '#999999',
-    inverted: '#FFFFFF',
+    primary: '#1A202C',    // Almost black
+    secondary: '#4A5568',  // Dark gray
+    tertiary: '#718096',   // Medium gray
+    quaternary: '#A0AEC0', // Light gray
+    inverted: '#FFFFFF',   // White
   },
   
-  // Border colors
+  // Border colors - Subtle and minimal
   border: {
-    light: '#E0E0E0',
-    medium: '#CCCCCC',
-    dark: '#999999',
+    light: '#E2E8F0',      // Very light gray
+    medium: '#CBD5E0',     // Light gray
+    dark: '#A0AEC0',       // Medium gray
   },
   
-  // Enhanced Status Colors - Comprehensive semantic system
+  // Status colors - Muted and professional
   status: {
-    // Success states
     success: {
-      primary: '#16A34A',
-      secondary: '#22C55E',
-      tertiary: '#4ADE80',
-      background: '#F0FDF4',
-      border: '#BBF7D0',
+      primary: '#38A169',   // Muted green
+      secondary: '#48BB78',
+      tertiary: '#68D391',
+      background: '#F0FFF4',
+      border: '#C6F6D5',
     },
-    // Error states
     error: {
-      primary: '#DC2626',
-      secondary: '#EF4444',
-      tertiary: '#F87171',
-      background: '#FEF2F2',
-      border: '#FECACA',
+      primary: '#E53E3E',   // Muted red
+      secondary: '#F56565',
+      tertiary: '#FC8181',
+      background: '#FFF5F5',
+      border: '#FED7D7',
     },
-    // Warning states
     warning: {
-      primary: '#D97706',
-      secondary: '#F59E0B',
-      tertiary: '#FBBF24',
+      primary: '#D69E2E',   // Muted yellow
+      secondary: '#ECC94B',
+      tertiary: '#F6E05E',
       background: '#FFFBEB',
-      border: '#FED7AA',
+      border: '#FEEBC8',
     },
-    // Info states
     info: {
-      primary: '#2563EB',
-      secondary: '#3B82F6',
-      tertiary: '#60A5FA',
-      background: '#EFF6FF',
-      border: '#BFDBFE',
+      primary: '#3182CE',   // Muted blue
+      secondary: '#4299E1',
+      tertiary: '#63B3ED',
+      background: '#EBF8FF',
+      border: '#BEE3F8',
     },
-    // Neutral states
     neutral: {
-      primary: '#6B7280',
-      secondary: '#9CA3AF',
-      tertiary: '#D1D5DB',
-      background: '#F9FAFB',
-      border: '#E5E7EB',
+      primary: '#718096',   // Gray
+      secondary: '#A0AEC0',
+      tertiary: '#CBD5E0',
+      background: '#F7FAFC',
+      border: '#E2E8F0',
     },
   },
   
-  // Interactive States - Comprehensive interaction feedback
+  // Interactive States - Subtle feedback
   interactive: {
-    // Hover states
     hover: {
-      primary: 'rgba(0, 0, 0, 0.05)',
-      secondary: 'rgba(0, 0, 0, 0.08)',
-      tertiary: 'rgba(0, 0, 0, 0.12)',
+      primary: 'rgba(45, 55, 72, 0.04)',
+      secondary: 'rgba(45, 55, 72, 0.08)',
+      tertiary: 'rgba(45, 55, 72, 0.12)',
     },
-    // Pressed states
     pressed: {
-      primary: 'rgba(0, 0, 0, 0.1)',
-      secondary: 'rgba(0, 0, 0, 0.15)',
-      tertiary: 'rgba(0, 0, 0, 0.2)',
+      primary: 'rgba(45, 55, 72, 0.08)',
+      secondary: 'rgba(45, 55, 72, 0.12)',
+      tertiary: 'rgba(45, 55, 72, 0.16)',
     },
-    // Focus states
     focus: {
-      primary: 'rgba(37, 99, 235, 0.2)',
-      secondary: 'rgba(37, 99, 235, 0.15)',
-      tertiary: 'rgba(37, 99, 235, 0.1)',
+      primary: 'rgba(49, 130, 206, 0.15)',
+      secondary: 'rgba(49, 130, 206, 0.1)',
+      tertiary: 'rgba(49, 130, 206, 0.05)',
     },
-    // Disabled states
     disabled: {
-      primary: 'rgba(0, 0, 0, 0.3)',
-      secondary: 'rgba(0, 0, 0, 0.2)',
-      tertiary: 'rgba(0, 0, 0, 0.1)',
+      primary: 'rgba(160, 174, 192, 0.4)',
+      secondary: 'rgba(160, 174, 192, 0.3)',
+      tertiary: 'rgba(160, 174, 192, 0.2)',
     },
   },
   
-  // Feedback Colors - User feedback and system states
+  // Feedback Colors - Minimal and clean
   feedback: {
-    // Loading states
     loading: {
-      primary: '#6B7280',
-      secondary: '#9CA3AF',
-      pulse: 'rgba(107, 114, 128, 0.3)',
+      primary: '#A0AEC0',
+      secondary: '#CBD5E0',
+      pulse: 'rgba(160, 174, 192, 0.2)',
     },
-    // Highlight states
     highlight: {
-      primary: '#FEF3C7',
-      secondary: '#FDE68A',
-      tertiary: '#FCD34D',
+      primary: '#FEF5E7',
+      secondary: '#FED7AA',
+      tertiary: '#F6AD55',
     },
-    // Selection states
     selection: {
-      primary: 'rgba(37, 99, 235, 0.1)',
-      secondary: 'rgba(37, 99, 235, 0.05)',
+      primary: 'rgba(49, 130, 206, 0.08)',
+      secondary: 'rgba(49, 130, 206, 0.04)',
     },
-    // Overlay states
     overlay: {
-      light: 'rgba(0, 0, 0, 0.1)',
-      medium: 'rgba(0, 0, 0, 0.3)',
-      dark: 'rgba(0, 0, 0, 0.5)',
+      light: 'rgba(26, 32, 44, 0.08)',
+      medium: 'rgba(26, 32, 44, 0.16)',
+      dark: 'rgba(26, 32, 44, 0.32)',
     },
   },
   
-  // Button colors
+  // Button colors - Clean and minimal
   button: {
-    primary: '#000000',
-    secondary: '#F5F5F5',
-    text: '#FFFFFF',
-    secondaryText: '#000000',
-    disabled: '#CCCCCC',
-    disabledText: '#999999',
+    primary: '#2D3748',     // Dark gray-blue
+    secondary: '#F7FAFC',   // Light gray
+    text: '#FFFFFF',        // White text
+    secondaryText: '#2D3748', // Dark text
+    disabled: '#E2E8F0',    // Light gray
+    disabledText: '#A0AEC0', // Medium gray
   },
   
-  // Message bubbles
+  // Message bubbles - Clean and minimal
   message: {
-    user: '#000000',
-    assistant: '#F5F5F5',
-    userText: '#FFFFFF',
-    assistantText: '#000000',
+    user: '#2D3748',        // Dark gray-blue
+    assistant: '#F7FAFC',   // Light gray
+    userText: '#FFFFFF',    // White text
+    assistantText: '#2D3748', // Dark text
   },
 
-  // Shadow colors
+  // Shadow colors - Very subtle
   shadow: {
-    light: 'rgba(0, 0, 0, 0.1)',
-    medium: 'rgba(0, 0, 0, 0.15)',
-    dark: 'rgba(0, 0, 0, 0.2)',
+    light: 'rgba(26, 32, 44, 0.06)',
+    medium: 'rgba(26, 32, 44, 0.1)',
+    dark: 'rgba(26, 32, 44, 0.16)',
   },
 };
 
 const darkColors = {
-  // Primary colors - Using warmer, more comfortable tones
-  primary: '#F8F9FA',
-  secondary: '#1A1B1E',
+  // Primary colors - Minimal dark palette
+  primary: '#F7FAFC',      // Light gray
+  secondary: '#E2E8F0',    // Medium light gray
   
-  // Background colors - Warmer, less harsh dark tones
+  // Background colors - Clean dark grays
   background: {
-    primary: '#1A1B1E',      // Warm dark background
-    secondary: '#2C2E33',    // Slightly lighter warm dark
-    tertiary: '#3A3D42',     // Even lighter for cards/sections
-    avatar: '#4A4D52',       // Subtle avatar background
+    primary: '#1A202C',    // Dark gray
+    secondary: '#2D3748',  // Medium dark gray
+    tertiary: '#4A5568',   // Medium gray
+    avatar: '#718096',     // Light gray
   },
   
-  // Text colors - Softer, more readable tones
+  // Text colors - High contrast for readability
   text: {
-    primary: '#F8F9FA',      // Soft white for primary text
-    secondary: '#E9ECEF',    // Slightly dimmer for secondary
-    tertiary: '#CED4DA',     // Muted for tertiary text
-    quaternary: '#ADB5BD',   // Very muted for placeholders
-    inverted: '#1A1B1E',     // Dark text for light backgrounds
+    primary: '#F7FAFC',    // Almost white
+    secondary: '#E2E8F0',  // Light gray
+    tertiary: '#CBD5E0',   // Medium light gray
+    quaternary: '#A0AEC0', // Medium gray
+    inverted: '#1A202C',   // Dark text
   },
   
-  // Border colors - Subtle, warm borders
+  // Border colors - Subtle dark borders
   border: {
-    light: '#495057',        // Subtle borders
-    medium: '#6C757D',       // Medium borders
-    dark: '#868E96',         // More visible borders
+    light: '#4A5568',      // Medium gray
+    medium: '#718096',     // Light gray
+    dark: '#A0AEC0',       // Medium light gray
   },
   
-  // Enhanced Status Colors - Dark mode variants
+  // Status colors - Muted dark variants
   status: {
-    // Success states
     success: {
-      primary: '#51CF66',
-      secondary: '#69DB7C',
-      tertiary: '#8CE99A',
+      primary: '#48BB78',
+      secondary: '#68D391',
+      tertiary: '#9AE6B4',
       background: '#0F1419',
       border: '#2F3E2B',
     },
-    // Error states
     error: {
-      primary: '#FF6B6B',
-      secondary: '#FF8787',
-      tertiary: '#FFA5A5',
+      primary: '#F56565',
+      secondary: '#FC8181',
+      tertiary: '#FEB2B2',
       background: '#1A0F0F',
       border: '#3E2B2B',
     },
-    // Warning states
     warning: {
-      primary: '#FFD43B',
-      secondary: '#FFE066',
-      tertiary: '#FFEC99',
+      primary: '#ECC94B',
+      secondary: '#F6E05E',
+      tertiary: '#FAF089',
       background: '#1A150F',
       border: '#3E352B',
     },
-    // Info states
     info: {
-      primary: '#74C0FC',
-      secondary: '#8DD0FF',
-      tertiary: '#A5D8FF',
+      primary: '#4299E1',
+      secondary: '#63B3ED',
+      tertiary: '#90CDF4',
       background: '#0F1419',
       border: '#2B3E3E',
     },
-    // Neutral states
     neutral: {
-      primary: '#ADB5BD',
-      secondary: '#CED4DA',
-      tertiary: '#E9ECEF',
-      background: '#2C2E33',
-      border: '#495057',
+      primary: '#A0AEC0',
+      secondary: '#CBD5E0',
+      tertiary: '#E2E8F0',
+      background: '#2D3748',
+      border: '#4A5568',
     },
   },
   
   // Interactive States - Dark mode variants
   interactive: {
-    // Hover states
     hover: {
-      primary: 'rgba(248, 249, 250, 0.05)',
-      secondary: 'rgba(248, 249, 250, 0.08)',
-      tertiary: 'rgba(248, 249, 250, 0.12)',
+      primary: 'rgba(247, 250, 252, 0.04)',
+      secondary: 'rgba(247, 250, 252, 0.08)',
+      tertiary: 'rgba(247, 250, 252, 0.12)',
     },
-    // Pressed states
     pressed: {
-      primary: 'rgba(248, 249, 250, 0.1)',
-      secondary: 'rgba(248, 249, 250, 0.15)',
-      tertiary: 'rgba(248, 249, 250, 0.2)',
+      primary: 'rgba(247, 250, 252, 0.08)',
+      secondary: 'rgba(247, 250, 252, 0.12)',
+      tertiary: 'rgba(247, 250, 252, 0.16)',
     },
-    // Focus states
     focus: {
-      primary: 'rgba(116, 192, 252, 0.2)',
-      secondary: 'rgba(116, 192, 252, 0.15)',
-      tertiary: 'rgba(116, 192, 252, 0.1)',
+      primary: 'rgba(66, 153, 225, 0.15)',
+      secondary: 'rgba(66, 153, 225, 0.1)',
+      tertiary: 'rgba(66, 153, 225, 0.05)',
     },
-    // Disabled states
     disabled: {
-      primary: 'rgba(255, 255, 255, 0.3)',
-      secondary: 'rgba(255, 255, 255, 0.2)',
-      tertiary: 'rgba(255, 255, 255, 0.1)',
+      primary: 'rgba(160, 174, 192, 0.4)',
+      secondary: 'rgba(160, 174, 192, 0.3)',
+      tertiary: 'rgba(160, 174, 192, 0.2)',
     },
   },
   
   // Feedback Colors - Dark mode variants
   feedback: {
-    // Loading states
     loading: {
-      primary: '#ADB5BD',
-      secondary: '#CED4DA',
-      pulse: 'rgba(173, 181, 189, 0.3)',
+      primary: '#A0AEC0',
+      secondary: '#CBD5E0',
+      pulse: 'rgba(160, 174, 192, 0.2)',
     },
-    // Highlight states
     highlight: {
-      primary: '#92400E',
-      secondary: '#B45309',
-      tertiary: '#D97706',
+      primary: '#744210',
+      secondary: '#975A16',
+      tertiary: '#B7791F',
     },
-    // Selection states
     selection: {
-      primary: 'rgba(116, 192, 252, 0.1)',
-      secondary: 'rgba(116, 192, 252, 0.05)',
+      primary: 'rgba(66, 153, 225, 0.08)',
+      secondary: 'rgba(66, 153, 225, 0.04)',
     },
-    // Overlay states
     overlay: {
-      light: 'rgba(0, 0, 0, 0.2)',
-      medium: 'rgba(0, 0, 0, 0.4)',
-      dark: 'rgba(0, 0, 0, 0.6)',
+      light: 'rgba(26, 32, 44, 0.16)',
+      medium: 'rgba(26, 32, 44, 0.32)',
+      dark: 'rgba(26, 32, 44, 0.48)',
     },
   },
   
-  // Button colors - Comfortable, accessible
+  // Button colors - Clean dark variants
   button: {
-    primary: '#F8F9FA',      // Light button on dark background
-    secondary: '#495057',    // Subtle secondary button
-    text: '#1A1B1E',         // Dark text on light button
-    secondaryText: '#F8F9FA', // Light text on dark button
-    disabled: '#495057',     // Muted disabled state
-    disabledText: '#6C757D', // Muted disabled text
+    primary: '#F7FAFC',    // Light button on dark background
+    secondary: '#4A5568',  // Dark secondary button
+    text: '#1A202C',       // Dark text on light button
+    secondaryText: '#F7FAFC', // Light text on dark button
+    disabled: '#4A5568',   // Muted disabled state
+    disabledText: '#718096', // Muted disabled text
   },
   
-  // Message bubbles - Comfortable chat colors
+  // Message bubbles - Clean dark variants
   message: {
-    user: '#495057',         // Subtle user message background
-    assistant: '#2C2E33',    // Slightly lighter assistant background
-    userText: '#F8F9FA',     // Light text on dark user bubble
-    assistantText: '#F8F9FA', // Light text on dark assistant bubble
+    user: '#4A5568',       // Dark user message background
+    assistant: '#2D3748',  // Darker assistant background
+    userText: '#F7FAFC',   // Light text on dark user bubble
+    assistantText: '#F7FAFC', // Light text on dark assistant bubble
   },
 
-  // Shadow colors - Subtle, warm shadows
+  // Shadow colors - Subtle dark shadows
   shadow: {
-    light: 'rgba(0, 0, 0, 0.2)',
-    medium: 'rgba(0, 0, 0, 0.3)',
-    dark: 'rgba(0, 0, 0, 0.4)',
+    light: 'rgba(0, 0, 0, 0.12)',
+    medium: 'rgba(0, 0, 0, 0.2)',
+    dark: 'rgba(0, 0, 0, 0.32)',
   },
 };
 
-// Shadow configurations
+// Modern Minimalist Shadows - Very subtle and clean
 export const shadows = {
   light: {
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowColor: 'rgba(26, 32, 44, 0.06)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.06,
     shadowRadius: 2,
     elevation: 1,
   },
   medium: {
-    shadowColor: 'rgba(0, 0, 0, 0.15)',
+    shadowColor: 'rgba(26, 32, 44, 0.1)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 2,
   },
   heavy: {
-    shadowColor: 'rgba(0, 0, 0, 0.2)',
+    shadowColor: 'rgba(26, 32, 44, 0.16)',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOpacity: 0.16,
+    shadowRadius: 6,
     elevation: 3,
   },
 };
 
-// Dark mode shadow configurations - More subtle
+// Dark mode shadows - Even more subtle
 export const darkShadows = {
   light: {
-    shadowColor: 'rgba(0, 0, 0, 0.2)',
+    shadowColor: 'rgba(0, 0, 0, 0.12)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.12,
     shadowRadius: 2,
     elevation: 1,
   },
   medium: {
-    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowColor: 'rgba(0, 0, 0, 0.2)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     elevation: 2,
   },
   heavy: {
-    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowColor: 'rgba(0, 0, 0, 0.32)',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
+    shadowOpacity: 0.32,
+    shadowRadius: 6,
     elevation: 3,
   },
 };
