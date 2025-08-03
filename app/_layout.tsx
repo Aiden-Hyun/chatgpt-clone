@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/features/auth';
 import { LanguageProvider } from '../src/shared/context';
+import { ToastProvider, ToastContainer } from '../src/shared/components/alert';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 
 // Initialize services
@@ -39,13 +40,16 @@ function ProtectedRoutes() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="settings" />
-      <Stack.Screen name="chat" />
-      <Stack.Screen name="chat/[roomId]" />
-    </Stack>
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="chat" />
+        <Stack.Screen name="chat/[roomId]" />
+      </Stack>
+      <ToastContainer />
+    </>
   );
 }
 
@@ -53,7 +57,9 @@ export default function Layout() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <ProtectedRoutes />
+        <ToastProvider>
+          <ProtectedRoutes />
+        </ToastProvider>
       </AuthProvider>
     </LanguageProvider>
   );

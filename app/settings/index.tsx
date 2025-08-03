@@ -3,7 +3,7 @@ import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInp
 import { router } from 'expo-router';
 import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
 import { LanguageSelector, useCustomAlert, CustomAlert } from '../../src/shared/components';
-import { Toast, useToast } from '../../src/shared/components/alert';
+import { useToast } from '../../src/shared/components/alert';
 import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { useAppTheme } from '../../src/shared/hooks';
 import { createSettingsStyles } from './settings.styles';
@@ -15,7 +15,7 @@ export default function SettingsScreen() {
   const { logout, isLoggingOut } = useLogout();
   const { updateProfile, isUpdating } = useUpdateProfile();
   const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
-  const { toast, hideToast } = useToast();
+  const { showSuccess } = useToast();
   const styles = createSettingsStyles();
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -241,13 +241,7 @@ export default function SettingsScreen() {
       />
 
       {/* Toast Notification */}
-      <Toast
-        visible={toast.visible}
-        message={toast.message}
-        type={toast.type}
-        duration={toast.duration}
-        onHide={hideToast}
-      />
+      {/* The Toast component is now handled globally, so this section is removed */}
     </SafeAreaView>
   );
 } 
