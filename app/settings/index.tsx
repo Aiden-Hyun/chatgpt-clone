@@ -108,7 +108,7 @@ export default function SettingsScreen() {
                     onFocus={() => console.log('🎯 TextInput focused')}
                     onBlur={() => {
                       console.log('👁️ TextInput blurred');
-                      handleNameCancel();
+                      // Don't cancel on blur - let user press save button
                     }}
                     placeholder="Enter your name"
                     placeholderTextColor={theme.colors.text.tertiary}
