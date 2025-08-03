@@ -37,11 +37,18 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
                           newLanguage === 'es' ? 'toast.language_changed_es' :
                           'toast.language_changed_ko';
     
+    console.log('🌍 Translation key:', translationKey);
+    
     // Replace the placeholder with the actual language name
     const message = t(translationKey).replace('{language}', languageNames[newLanguage as keyof typeof languageNames]);
     
+    console.log('🌍 Toast message:', message);
+    console.log('🌍 About to show toast...');
+    
     // Show success toast
     showSuccess(message, 3000);
+    
+    console.log('🌍 Toast showSuccess called');
   };
 
   return (

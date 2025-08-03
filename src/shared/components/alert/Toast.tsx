@@ -120,7 +120,7 @@ export const Toast: React.FC<ToastProps> = ({
 const createStyles = (theme: any, type: string) => StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 50,
+    top: 120,
     left: 20,
     right: 20,
     zIndex: 1000,
