@@ -79,6 +79,43 @@ export const createSettingsStyles = () => {
     languageSelector: {
       marginVertical: 0,
     },
+    editableValue: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    editIcon: {
+      fontSize: theme.fontSizes.sm,
+    },
+    editContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    nameInput: {
+      borderWidth: 1,
+      borderColor: theme.colors.border.medium,
+      borderRadius: theme.borderRadius.md,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      fontSize: theme.fontSizes.md,
+      color: theme.colors.text.primary,
+      backgroundColor: theme.colors.background.primary,
+      minWidth: 120,
+      fontFamily: theme.fontFamily.primary,
+    },
+    saveButton: {
+      backgroundColor: theme.colors.status.success.primary,
+      borderRadius: theme.borderRadius.md,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+    },
+    saveButtonText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontWeights.medium as '500',
+      fontFamily: theme.fontFamily.primary,
+    },
     logoutButton: {
       backgroundColor: theme.colors.status.error.primary,
       borderRadius: theme.borderRadius.lg,

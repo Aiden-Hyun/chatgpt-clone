@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch } from 'react-native';
+import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useLogout, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector } from '../../src/shared/components';
@@ -16,6 +16,8 @@ export default function SettingsScreen() {
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = React.useState(false);
+  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [editedName, setEditedName] = React.useState(userName || '');
 
   const handleBack = () => {
     router.back();
@@ -24,6 +26,32 @@ export default function SettingsScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace('/login');
+  };
+
+  const handleNameEdit = () => {
+    setIsEditingName(true);
+    setEditedName(userName || '');
+  };
+
+  const handleNameSave = async () => {
+    if (editedName.trim() === '') {
+      Alert.alert('Error', 'Name cannot be empty');
+      return;
+    }
+    
+    try {
+      // TODO: Implement name update functionality
+      // await updateUserName(editedName.trim());
+      setIsEditingName(false);
+      Alert.alert('Success', 'Name updated successfully');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update name');
+    }
+  };
+
+  const handleNameCancel = () => {
+    setIsEditingName(false);
+    setEditedName(userName || '');
   };
 
   return (
@@ -44,7 +72,27 @@ export default function SettingsScreen() {
           <View style={styles.card}>
             <View style={styles.settingItem}>
               <Text style={styles.settingLabel}>Name</Text>
-              <Text style={styles.settingValue}>{userName || 'Not set'}</Text>
+              {isEditingName ? (
+                <View style={styles.editContainer}>
+                  <TextInput
+                    style={styles.nameInput}
+                    value={editedName}
+                    onChangeText={setEditedName}
+                    placeholder="Enter your name"
+                    placeholderTextColor={theme.colors.text.tertiary}
+                    autoFocus
+                    onBlur={handleNameCancel}
+                  />
+                  <TouchableOpacity onPress={handleNameSave} style={styles.saveButton}>
+                    <Text style={styles.saveButtonText}>Save</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity onPress={handleNameEdit} style={styles.editableValue}>
+                  <Text style={styles.settingValue}>{userName || 'Not set'}</Text>
+                  <Text style={styles.editIcon}>✏️</Text>
+                </TouchableOpacity>
+              )}
             </View>
             <View style={styles.settingItem}>
               <Text style={styles.settingLabel}>Email</Text>
