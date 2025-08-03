@@ -10,7 +10,8 @@ export const createIndexStyles = () => {
   return StyleSheet.create({
     container: { 
       flex: 1,
-      backgroundColor: theme.colors.background.primary
+      backgroundColor: theme.colors.background.primary,
+      paddingTop: 100, // Add top padding to avoid status bar and settings button
     },
     center: { 
       flex: 1, 
@@ -41,7 +42,8 @@ export const createIndexStyles = () => {
       fontSize: theme.fontSizes.xxl,
       fontWeight: theme.fontWeights.semibold as '600',
       color: theme.colors.text.primary,
-      marginVertical: theme.spacing.lg,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.lg,
       textAlign: 'center',
       fontFamily: theme.fontFamily.primary,
       letterSpacing: theme.letterSpacing.wide
@@ -53,31 +55,49 @@ export const createIndexStyles = () => {
       letterSpacing: theme.letterSpacing.wide
     },
     newButton: {
-      margin: theme.spacing.lg,
-      marginBottom: theme.spacing.sm,
+      marginHorizontal: theme.spacing.lg,
+      marginTop: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
       backgroundColor: theme.colors.button.primary,
       borderRadius: theme.borderRadius.lg,
       ...theme.shadows.medium
     },
     logoutButton: {
       alignSelf: 'center',
-      margin: theme.spacing.lg,
+      marginHorizontal: theme.spacing.lg,
+      marginTop: theme.spacing.lg,
+      marginBottom: theme.spacing.xl,
       paddingHorizontal: theme.spacing.xl,
-      paddingVertical: theme.spacing.sm,
+      paddingVertical: theme.spacing.md,
       backgroundColor: theme.colors.button.primary,
       borderRadius: theme.borderRadius.lg,
       ...theme.shadows.medium
     },
     settingsMenuButton: {
       position: 'absolute',
-      top: 50,
-      right: 20,
+      top: 60,
+      right: 16,
       zIndex: 1000,
-      padding: 10,
+      padding: 12,
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      borderRadius: 20,
+      minWidth: 44,
+      minHeight: 44,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
     },
     settingsMenuText: {
-      fontSize: 24,
+      fontSize: 20,
       color: '#333',
+      fontWeight: '600',
     },
   });
 }; 
