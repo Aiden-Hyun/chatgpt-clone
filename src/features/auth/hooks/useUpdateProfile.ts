@@ -6,6 +6,11 @@ interface UpdateProfileData {
   avatar_url?: string;
 }
 
+interface UpdateProfileOptions {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}
+
 /**
  * Hook for updating user profile information
  * Handles both Supabase auth metadata and profiles table updates
@@ -13,7 +18,7 @@ interface UpdateProfileData {
 export const useUpdateProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateProfile = useCallback(async (data: UpdateProfileData) => {
+  const updateProfile = useCallback(async (data: UpdateProfileData, options?: UpdateProfileOptions) => {
     try {
       setIsUpdating(true);
       
@@ -48,9 +53,16 @@ export const useUpdateProfile = () => {
         throw authError;
       }
 
+      // Call success callback if provided
+      options?.onSuccess?.();
+
       return { success: true };
     } catch (error) {
       console.error('Error updating profile:', error);
+      
+      // Call error callback if provided
+      options?.onError?.(error);
+      
       throw error;
     } finally {
       setIsUpdating(false);

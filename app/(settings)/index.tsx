@@ -10,7 +10,7 @@ import { createSettingsStyles } from './settings.styles';
 export default function SettingsScreen() {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
-  const { userName, userEmail } = useUserInfo();
+  const { userName, userEmail, refresh } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
   const { updateProfile, isUpdating } = useUpdateProfile();
   const styles = createSettingsStyles();
@@ -19,6 +19,11 @@ export default function SettingsScreen() {
   const [darkModeEnabled, setDarkModeEnabled] = React.useState(false);
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [editedName, setEditedName] = React.useState(userName || '');
+
+  // Update editedName when userName changes
+  React.useEffect(() => {
+    setEditedName(userName || '');
+  }, [userName]);
 
   const handleBack = () => {
     router.back();
@@ -41,9 +46,22 @@ export default function SettingsScreen() {
     }
     
     try {
-      await updateProfile({ display_name: editedName.trim() });
-      setIsEditingName(false);
-      Alert.alert('Success', 'Name updated successfully');
+      await updateProfile(
+        { display_name: editedName.trim() },
+        {
+          onSuccess: async () => {
+            // Small delay to ensure database update is complete
+            await new Promise(resolve => setTimeout(resolve, 100));
+            // Refresh user info to get the updated name
+            await refresh();
+            setIsEditingName(false);
+            Alert.alert('Success', 'Name updated successfully');
+          },
+          onError: (error) => {
+            Alert.alert('Error', 'Failed to update name. Please try again.');
+          }
+        }
+      );
     } catch (error) {
       Alert.alert('Error', 'Failed to update name. Please try again.');
     }
