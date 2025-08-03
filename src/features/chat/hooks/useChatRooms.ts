@@ -16,9 +16,6 @@ export const useChatRooms = () => {
       return;
     }
 
-    // Clean up empty rooms first
-    await cleanupEmptyRooms(session.user.id);
-
     // First, get all chat rooms for the user
     const { data: allRoomRows, error: roomsError } = await supabase
       .from('chatrooms')
