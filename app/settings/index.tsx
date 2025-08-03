@@ -97,6 +97,7 @@ export default function SettingsScreen() {
               <Text style={styles.settingLabel}>Name</Text>
               {isEditingName ? (
                 <View style={styles.editContainer}>
+                  {console.log('🎨 Rendering edit container with save button')}
                   <TextInput
                     style={styles.nameInput}
                     value={editedName}
@@ -114,7 +115,11 @@ export default function SettingsScreen() {
                       console.log('🔘 Save button pressed!');
                       handleNameSave();
                     }} 
-                    style={[styles.saveButton, isUpdating && styles.saveButtonDisabled]}
+                    style={[
+                      styles.saveButton, 
+                      isUpdating && styles.saveButtonDisabled,
+                      { backgroundColor: 'red' } // Temporary red background for debugging
+                    ]}
                     disabled={isUpdating}
                   >
                     <Text style={styles.saveButtonText}>
