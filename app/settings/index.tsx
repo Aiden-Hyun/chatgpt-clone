@@ -138,6 +138,19 @@ export default function SettingsScreen() {
               <Text style={styles.settingLabel}>{t('settings.language')}</Text>
               <LanguageSelector style={styles.languageSelector} />
             </View>
+            
+            {/* Test Toast Button */}
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => {
+                console.log('🧪 Test toast button pressed');
+                showSuccess('Test toast message!', 5000);
+              }}
+            >
+              <Text style={styles.settingLabel}>Test Toast</Text>
+              <Text style={styles.settingValue}>Tap to test</Text>
+            </TouchableOpacity>
+            
             <View style={styles.settingItem}>
               <Text style={styles.settingLabel}>{t('settings.notifications')}</Text>
               <Switch

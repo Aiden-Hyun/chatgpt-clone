@@ -31,8 +31,12 @@ export const Toast: React.FC<ToastProps> = ({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;
 
+  console.log('🍞 Toast component rendered with props:', { visible, message, type, duration });
+
   useEffect(() => {
+    console.log('🍞 Toast useEffect triggered, visible:', visible);
     if (visible) {
+      console.log('🍞 Showing toast with message:', message);
       // Show toast
       Animated.parallel([
         Animated.timing(fadeAnim, {
