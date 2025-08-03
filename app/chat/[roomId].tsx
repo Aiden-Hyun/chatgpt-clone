@@ -13,7 +13,11 @@ import { createChatStyles } from './chat.styles';
 
 export default function ChatScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
-  const numericRoomId = roomId ? parseInt(roomId, 10) : null;
+  
+  // Handle temporary room IDs - if roomId starts with 'temp_', treat it as a new room
+  const isTemporaryRoom = roomId?.startsWith('temp_');
+  const numericRoomId = isTemporaryRoom ? null : (roomId ? parseInt(roomId, 10) : null);
+  
   const { inputRef, maintainFocus } = useInputFocus();
   const { disableBackButton } = useBackButtonHandler({ enabled: true });
   const styles = createChatStyles();
