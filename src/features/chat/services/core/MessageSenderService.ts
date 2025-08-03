@@ -69,27 +69,13 @@ export class MessageSenderService {
       this.uiStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg });
       this.uiStateService.setTyping(true);
 
-      // Step 2: Handle room creation if needed
+      // Step 2: Prepare for room creation (but don't create yet)
       let roomId = numericRoomId;
       let isNewRoom = false;
       
       if (!roomId) {
-        this.loggingService.info(`Creating new room for request ${requestId}`, { model });
+        this.loggingService.info(`Will create new room after successful AI response for request ${requestId}`, { model });
         isNewRoom = true;
-        roomId = await this.retryService.retryOperation(
-          () => this.chatRoomService.createRoom(session.user.id, model),
-          'room creation'
-        );
-        
-        if (!roomId) {
-          const error = 'Failed to create chat room';
-          this.loggingService.error(`Room creation failed for request ${requestId}`, { error });
-          this.uiStateService.addErrorMessage('⚠️ Failed to create chat room.');
-          this.uiStateService.setTyping(false);
-          return { success: false, error, duration: Date.now() - startTime };
-        }
-        
-        this.loggingService.info(`Room created successfully for request ${requestId}`, { roomId });
       }
 
       // Step 3: Prepare messages for AI API
@@ -159,6 +145,22 @@ export class MessageSenderService {
                 );
               }
             } else {
+              // For new messages, create room first if it's a new room
+              if (isNewRoom) {
+                this.loggingService.debug(`Creating new room for request ${requestId}`, { model });
+                const newRoomId = await this.retryService.retryOperation(
+                  () => this.chatRoomService.createRoom(session.user.id, model),
+                  'room creation'
+                );
+                
+                if (!newRoomId) {
+                  throw new Error('Failed to create chat room');
+                }
+                
+                roomId = newRoomId;
+                this.loggingService.info(`Room created successfully for request ${requestId}`, { roomId });
+              }
+
               this.loggingService.debug(`Inserting new messages for request ${requestId}`);
               await this.retryService.retryOperation(
                 () => this.messageService.insertMessages({

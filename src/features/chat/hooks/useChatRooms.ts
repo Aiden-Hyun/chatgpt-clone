@@ -16,28 +16,47 @@ export const useChatRooms = () => {
       return;
     }
 
-    const { data: roomRows, error: roomsError } = await supabase
+    // Clean up empty rooms first
+    await cleanupEmptyRooms(session.user.id);
+
+    // First, get all chat rooms for the user
+    const { data: allRoomRows, error: roomsError } = await supabase
       .from('chatrooms')
       .select('id')
       .eq('user_id', session.user.id);
 
-    if (roomsError || !roomRows) {
+    if (roomsError || !allRoomRows) {
       setLoading(false);
       return;
     }
 
-    const roomIds = roomRows.map(r => r.id);
-    if (roomIds.length === 0) {
+    const allRoomIds = allRoomRows.map(r => r.id);
+    if (allRoomIds.length === 0) {
       setRooms([]);
       setLoading(false);
       return;
     }
 
-    // Fetch latest user messages in ONE query ordered by newest first
+    // Get rooms that have messages
+    const { data: roomsWithMessages } = await supabase
+      .from('messages')
+      .select('room_id')
+      .in('room_id', allRoomIds);
+
+    if (!roomsWithMessages || roomsWithMessages.length === 0) {
+      setRooms([]);
+      setLoading(false);
+      return;
+    }
+
+    // Get unique room IDs that have messages
+    const roomIdsWithMessages = [...new Set(roomsWithMessages.map(m => m.room_id))];
+
+    // Fetch latest user messages for rooms that have messages
     const { data: messageRows } = await supabase
       .from('messages')
       .select('room_id, content, created_at')
-      .in('room_id', roomIds)
+      .in('room_id', roomIdsWithMessages)
       .eq('role', 'user')
       .order('created_at', { ascending: false });
 
@@ -49,9 +68,9 @@ export const useChatRooms = () => {
       }
     });
 
-    const mapped: ChatRoomWithLastMsg[] = roomRows.map(r => ({
-      id: r.id,
-      name: latestByRoom.get(r.id) || 'No message yet',
+    const mapped: ChatRoomWithLastMsg[] = roomIdsWithMessages.map(roomId => ({
+      id: roomId,
+      name: latestByRoom.get(roomId) || 'New Chat',
     }));
 
     setRooms(mapped);
