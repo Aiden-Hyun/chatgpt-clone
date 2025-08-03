@@ -12,6 +12,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
   const languages = [
     { code: 'en', name: 'English' },
     { code: 'es', name: 'Español' },
+    { code: 'ko', name: '한국어' },
   ];
 
   return (
