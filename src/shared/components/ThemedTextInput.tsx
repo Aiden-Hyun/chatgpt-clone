@@ -29,6 +29,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(({
         return {
           backgroundColor: theme.colors.background.secondary,
           borderWidth: 0,
+          borderRadius: theme.borderRadius.md,
           ...theme.shadows.light,
         };
       case 'outlined':
@@ -36,6 +37,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(({
           backgroundColor: 'transparent',
           borderWidth: 1,
           borderColor: theme.colors.border.medium,
+          borderRadius: theme.borderRadius.md,
         };
       case 'minimal':
         return {
@@ -50,6 +52,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(({
           backgroundColor,
           borderWidth: 1,
           borderColor: theme.colors.border.medium,
+          borderRadius: theme.borderRadius.md,
           ...theme.shadows.light,
         };
     }
@@ -103,7 +106,6 @@ ThemedTextInput.displayName = 'ThemedTextInput';
 const styles = StyleSheet.create({
   base: {
     width: '100%',
-    borderRadius: 8,
     marginBottom: 12,
   },
 }); 

@@ -35,12 +35,12 @@ export const spacing = {
 };
 
 export const borderRadius = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  round: 9999, // For circular elements
+  xs: 2,      // Very slight rounding for Sharp Corners design
+  sm: 2,      // Very slight rounding for Sharp Corners design
+  md: 2,      // Very slight rounding for Sharp Corners design
+  lg: 4,      // Slightly more rounding for larger elements
+  xl: 4,      // Slightly more rounding for larger elements
+  round: 9999, // For circular elements (avatars, etc.)
 };
 
 export const letterSpacing = {
@@ -49,7 +49,7 @@ export const letterSpacing = {
   wide: 0.5,
 };
 
-// Modern Minimalist - Limited color palette with subtle variations
+// Sharp Corners Design - Professional, business-like appearance with clean, structured components
 const lightColors = {
   // Primary colors - Minimal palette
   primary: '#2D3748',      // Dark gray-blue
@@ -332,52 +332,52 @@ const darkColors = {
   },
 };
 
-// Modern Minimalist Shadows - Very subtle and clean
+// Sharp Corners Shadows - Professional and subtle
 export const shadows = {
   light: {
-    shadowColor: 'rgba(26, 32, 44, 0.06)',
+    shadowColor: 'rgba(26, 32, 44, 0.08)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 1,
     elevation: 1,
   },
   medium: {
-    shadowColor: 'rgba(26, 32, 44, 0.1)',
+    shadowColor: 'rgba(26, 32, 44, 0.12)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.12,
+    shadowRadius: 2,
     elevation: 2,
   },
   heavy: {
-    shadowColor: 'rgba(26, 32, 44, 0.16)',
+    shadowColor: 'rgba(26, 32, 44, 0.2)',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.16,
-    shadowRadius: 6,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     elevation: 3,
   },
 };
 
-// Dark mode shadows - Even more subtle
+// Dark mode shadows - Professional and subtle
 export const darkShadows = {
   light: {
-    shadowColor: 'rgba(0, 0, 0, 0.12)',
+    shadowColor: 'rgba(0, 0, 0, 0.15)',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 2,
+    shadowOpacity: 0.15,
+    shadowRadius: 1,
     elevation: 1,
   },
   medium: {
-    shadowColor: 'rgba(0, 0, 0, 0.2)',
+    shadowColor: 'rgba(0, 0, 0, 0.25)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOpacity: 0.25,
+    shadowRadius: 2,
     elevation: 2,
   },
   heavy: {
-    shadowColor: 'rgba(0, 0, 0, 0.32)',
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.32,
-    shadowRadius: 6,
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
     elevation: 3,
   },
 };

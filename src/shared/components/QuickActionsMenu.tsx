@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAppTheme } from '../hooks';
 
 interface QuickActionsMenuProps {
   isVisible: boolean;
@@ -31,6 +32,8 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   onModelChange,
   showModelSelection = false,
 }) => {
+  const theme = useAppTheme();
+  const styles = createStyles(theme);
   const [showModelSubmenu, setShowModelSubmenu] = useState(false);
 
   const handleModelSelect = (model: string) => {
@@ -135,7 +138,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -143,63 +146,58 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   menuContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 8,
+    backgroundColor: theme.colors.background.primary,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.sm,
     marginTop: 120,
     marginRight: 16,
     minWidth: 180,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
+    ...theme.shadows.medium,
   },
   menuItem: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.borderRadius.sm,
     marginVertical: 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   selectedMenuItem: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: theme.colors.background.secondary,
   },
   backMenuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.borderRadius.sm,
     marginVertical: 2,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.colors.border.light,
   },
   menuText: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
+    fontSize: theme.fontSizes.md,
+    color: theme.colors.text.primary,
+    fontWeight: theme.fontWeights.medium as '500',
+    fontFamily: theme.fontFamily.primary,
   },
   selectedMenuText: {
-    color: '#007AFF',
-    fontWeight: '600',
+    color: theme.colors.status.info.primary,
+    fontWeight: theme.fontWeights.semibold as '600',
   },
   backMenuText: {
-    fontSize: 16,
-    color: '#666',
-    fontWeight: '500',
+    fontSize: theme.fontSizes.md,
+    color: theme.colors.text.tertiary,
+    fontWeight: theme.fontWeights.medium as '500',
+    fontFamily: theme.fontFamily.primary,
   },
   submenuIndicator: {
-    fontSize: 18,
-    color: '#666',
-    fontWeight: '400',
+    fontSize: theme.fontSizes.lg,
+    color: theme.colors.text.tertiary,
+    fontWeight: theme.fontWeights.regular as '400',
   },
   checkmark: {
-    fontSize: 16,
-    color: '#007AFF',
-    fontWeight: '600',
+    fontSize: theme.fontSizes.md,
+    color: theme.colors.status.info.primary,
+    fontWeight: theme.fontWeights.semibold as '600',
   },
 }); 
