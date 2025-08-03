@@ -40,6 +40,8 @@ export default function SettingsScreen() {
   };
 
   const handleNameSave = async () => {
+    console.log('🔘 Save button clicked!');
+    
     if (editedName.trim() === '') {
       Alert.alert('Error', 'Name cannot be empty');
       return;

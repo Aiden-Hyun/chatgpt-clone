@@ -16,6 +16,7 @@ export const useUpdateProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateProfile = useCallback(async (data: UpdateProfileData) => {
+    console.log('🚀 updateProfile function called!');
     try {
       setIsUpdating(true);
       console.log('🔄 Starting profile update with data:', data);
