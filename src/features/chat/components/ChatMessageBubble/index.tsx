@@ -65,7 +65,7 @@ const ChatMessageBubble = ({ item, isTyping = false, onRegenerate, showAvatar = 
 
       <HoverDetector
         style={[
-          styles.messageBubble,
+          isUserMessage ? styles.messageBubble : styles.assistantMessageBubble,
           isUserMessage ? styles.userBubble : styles.assistantBubble,
           !isLastInGroup && styles.bubbleCompact,
           !showAvatar && !isUserMessage && styles.bubbleNoAvatar

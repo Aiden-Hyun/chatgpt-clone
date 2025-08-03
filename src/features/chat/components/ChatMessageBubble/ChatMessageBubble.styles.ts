@@ -32,6 +32,14 @@ export const createChatMessageBubbleStyles = () => {
       minWidth: 40,
       ...theme.shadows.light,
     },
+    // Base styling for assistant messages (article-like)
+    assistantMessageBubble: {
+      padding: theme.spacing.md,
+      borderRadius: 0, // No border radius for article look
+      maxWidth: '85%', // Wider for article content
+      minWidth: 40,
+      // No shadows for clean article appearance
+    },
     bubbleCompact: {
       borderTopLeftRadius: theme.borderRadius.lg,
       borderTopRightRadius: theme.borderRadius.lg,
@@ -45,9 +53,15 @@ export const createChatMessageBubbleStyles = () => {
       marginLeft: 40,
     },
     assistantBubble: {
-      backgroundColor: theme.colors.message.assistant,
-      borderTopLeftRadius: theme.borderRadius.xs,
+      backgroundColor: 'transparent', // No background for article-like appearance
+      borderTopLeftRadius: 0, // No border radius for clean article look
       marginRight: 40,
+      paddingLeft: 0, // Remove left padding for cleaner look
+      paddingRight: 0, // Remove right padding for cleaner look
+      paddingTop: theme.spacing.sm, // Reduce top padding
+      paddingBottom: theme.spacing.sm, // Reduce bottom padding
+      borderWidth: 0, // No borders
+      // No shadows for clean article appearance
     },
     avatarContainer: {
       width: 28,
@@ -77,7 +91,10 @@ export const createChatMessageBubbleStyles = () => {
       color: theme.colors.message.userText,
     },
     assistantMessageText: {
-      color: theme.colors.message.assistantText,
+      color: theme.colors.text.primary, // Use primary text color for better readability
+      fontSize: theme.fontSizes.md,
+      lineHeight: 24, // Slightly more line height for better readability
+      fontFamily: theme.fontFamily.primary,
     },
     regenerateButton: {
       position: 'absolute',
