@@ -460,6 +460,298 @@ export default function DesignShowcaseScreen() {
       flexDirection: 'row' as const,
       justifyContent: 'space-between' as const,
     },
+    // Floating Action Design Styles (Option C)
+    floatingButton: {
+      paddingHorizontal: theme.spacing.xl,
+      paddingVertical: theme.spacing.lg,
+      borderRadius: 16, // Material design rounded corners
+      marginRight: theme.spacing.sm,
+      marginBottom: theme.spacing.sm,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      minWidth: 140,
+      borderWidth: 0,
+      elevation: 8, // Android elevation
+      shadowColor: 'rgba(0, 0, 0, 0.3)',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+    },
+    floatingButtonText: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      fontWeight: theme.fontWeights.medium as '500',
+      textAlign: 'center' as const,
+    },
+    floatingPrimaryButton: {
+      backgroundColor: '#6366F1', // Modern indigo
+      shadowColor: 'rgba(99, 102, 241, 0.4)',
+    },
+    floatingPrimaryButtonText: {
+      color: '#FFFFFF',
+    },
+    floatingSecondaryButton: {
+      backgroundColor: '#FFFFFF',
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+    },
+    floatingSecondaryButtonText: {
+      color: '#374151',
+    },
+    floatingSuccessButton: {
+      backgroundColor: '#10B981', // Modern emerald
+      shadowColor: 'rgba(16, 185, 129, 0.4)',
+    },
+    floatingSuccessButtonText: {
+      color: '#FFFFFF',
+    },
+    floatingErrorButton: {
+      backgroundColor: '#EF4444', // Modern red
+      shadowColor: 'rgba(239, 68, 68, 0.4)',
+    },
+    floatingErrorButtonText: {
+      color: '#FFFFFF',
+    },
+    floatingInput: {
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      borderRadius: 12, // Material design rounded corners
+      padding: theme.spacing.lg,
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: '#374151',
+      backgroundColor: '#FFFFFF',
+      elevation: 2,
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    floatingCard: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: 16, // Material design rounded corners
+      padding: theme.spacing.xl,
+      borderWidth: 0,
+      elevation: 4,
+      shadowColor: 'rgba(0, 0, 0, 0.15)',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+    },
+    floatingCardTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontFamily: theme.fontFamily.primary,
+      color: '#111827',
+      fontWeight: theme.fontWeights.semibold as '600',
+      marginBottom: theme.spacing.sm,
+    },
+    floatingCardText: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: '#6B7280',
+      lineHeight: theme.fontSizes.md * 1.5,
+    },
+    floatingChatInputContainer: {
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      borderRadius: 20, // Material design rounded corners
+      backgroundColor: '#FFFFFF',
+      padding: theme.spacing.lg,
+      marginBottom: theme.spacing.sm,
+      elevation: 3,
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 6,
+    },
+    floatingChatInput: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: '#374151',
+      minHeight: 40,
+      textAlignVertical: 'top' as const,
+    },
+    floatingSendButton: {
+      backgroundColor: '#6366F1',
+      borderRadius: 20, // Material design rounded corners
+      paddingHorizontal: theme.spacing.xl,
+      paddingVertical: theme.spacing.md,
+      elevation: 4,
+      shadowColor: 'rgba(99, 102, 241, 0.3)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+      minWidth: 80,
+      alignItems: 'center' as const,
+    },
+    floatingSendButtonText: {
+      color: '#FFFFFF',
+      fontSize: theme.fontSizes.md,
+      fontWeight: theme.fontWeights.medium as '500',
+      fontFamily: theme.fontFamily.primary,
+    },
+    floatingToastDemo: {
+      marginBottom: theme.spacing.lg,
+    },
+    floatingToastContainer: {
+      backgroundColor: '#10B981',
+      borderRadius: 12, // Material design rounded corners
+      padding: theme.spacing.lg,
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      elevation: 6,
+      shadowColor: 'rgba(16, 185, 129, 0.3)',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+    },
+    floatingErrorToastContainer: {
+      backgroundColor: '#EF4444',
+      shadowColor: 'rgba(239, 68, 68, 0.3)',
+    },
+    floatingToastIcon: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: theme.spacing.md,
+    },
+    floatingErrorToastIcon: {
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    },
+    floatingToastIconText: {
+      color: '#FFFFFF',
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontWeights.bold as '700',
+    },
+    floatingToastContent: {
+      flex: 1,
+    },
+    floatingToastTitle: {
+      color: '#FFFFFF',
+      fontSize: theme.fontSizes.md,
+      fontWeight: theme.fontWeights.semibold as '600',
+      fontFamily: theme.fontFamily.primary,
+      marginBottom: 2,
+    },
+    floatingToastMessage: {
+      color: 'rgba(255, 255, 255, 0.9)',
+      fontSize: theme.fontSizes.sm,
+      fontFamily: theme.fontFamily.primary,
+    },
+    floatingAlertDialogDemo: {
+      marginBottom: theme.spacing.lg,
+    },
+    floatingAlertOverlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: theme.spacing.lg,
+    },
+    floatingAlertDialog: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: 20, // Material design rounded corners
+      padding: theme.spacing.xl,
+      margin: theme.spacing.lg,
+      maxWidth: '80%' as any,
+      minWidth: 280,
+      elevation: 8,
+      shadowColor: 'rgba(0, 0, 0, 0.2)',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 12,
+    },
+    floatingAlertHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: theme.spacing.md,
+    },
+    floatingAlertIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: '#10B981',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginRight: theme.spacing.md,
+      elevation: 2,
+      shadowColor: 'rgba(16, 185, 129, 0.3)',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+    },
+    floatingSuccessAlertIcon: {
+      backgroundColor: '#10B981',
+      shadowColor: 'rgba(16, 185, 129, 0.3)',
+    },
+    floatingAlertIconText: {
+      color: '#FFFFFF',
+      fontSize: theme.fontSizes.md,
+      fontWeight: theme.fontWeights.bold as '700',
+    },
+    floatingAlertDialogTitle: {
+      fontSize: theme.fontSizes.lg,
+      fontWeight: theme.fontWeights.semibold as '600',
+      color: '#111827',
+      textAlign: 'center' as const,
+      fontFamily: theme.fontFamily.primary,
+    },
+    floatingAlertDialogMessage: {
+      fontSize: theme.fontSizes.md,
+      color: '#6B7280',
+      textAlign: 'center' as const,
+      lineHeight: 20,
+      fontFamily: theme.fontFamily.primary,
+      marginBottom: theme.spacing.lg,
+    },
+    floatingAlertButtons: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: theme.spacing.md,
+    },
+    floatingMessageContainer: {
+      marginBottom: theme.spacing.lg,
+    },
+    floatingUserMessage: {
+      backgroundColor: '#6366F1',
+      borderRadius: 20, // Material design rounded corners
+      padding: theme.spacing.lg,
+      marginBottom: theme.spacing.sm,
+      alignSelf: 'flex-end',
+      maxWidth: '80%' as any,
+      elevation: 3,
+      shadowColor: 'rgba(99, 102, 241, 0.3)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+    },
+    floatingUserMessageText: {
+      color: '#FFFFFF',
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      lineHeight: theme.fontSizes.md * 1.4,
+    },
+    floatingAssistantMessage: {
+      backgroundColor: '#F3F4F6',
+      borderRadius: 20, // Material design rounded corners
+      padding: theme.spacing.lg,
+      marginBottom: theme.spacing.sm,
+      alignSelf: 'flex-start',
+      maxWidth: '80%' as any,
+      elevation: 2,
+      shadowColor: 'rgba(0, 0, 0, 0.1)',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    floatingAssistantMessageText: {
+      color: '#374151',
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      lineHeight: theme.fontSizes.md * 1.4,
+    },
   };
 
   return (
@@ -770,6 +1062,126 @@ export default function DesignShowcaseScreen() {
               </View>
               <View style={styles.sharpAssistantMessage}>
                 <Text style={styles.sharpAssistantMessageText}>Professional assistant response with structured layout</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Floating Action Design Section (Option C) */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Floating Action Design (Option C)</Text>
+          <Text style={styles.caption}>Material design with elevated buttons and modern aesthetics</Text>
+          
+          <View style={styles.card}>
+            <Text style={styles.label}>Floating Action Buttons</Text>
+            <View style={styles.row}>
+              <TouchableOpacity style={[styles.floatingButton, styles.floatingPrimaryButton]}>
+                <Text style={[styles.floatingButtonText, styles.floatingPrimaryButtonText]}>Primary</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.floatingButton, styles.floatingSecondaryButton]}>
+                <Text style={[styles.floatingButtonText, styles.floatingSecondaryButtonText]}>Secondary</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.row}>
+              <TouchableOpacity style={[styles.floatingButton, styles.floatingSuccessButton]}>
+                <Text style={[styles.floatingButtonText, styles.floatingSuccessButtonText]}>Success</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.floatingButton, styles.floatingErrorButton]}>
+                <Text style={[styles.floatingButtonText, styles.floatingErrorButtonText]}>Error</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Floating Action Input Field</Text>
+            <TextInput
+              style={styles.floatingInput}
+              placeholder="Enter text here..."
+              placeholderTextColor="#9CA3AF"
+            />
+
+            <Text style={styles.label}>Floating Action Card</Text>
+            <View style={styles.floatingCard}>
+              <Text style={styles.floatingCardTitle}>Material Design Card</Text>
+              <Text style={styles.floatingCardText}>
+                This card demonstrates the Floating Action design with elevated shadows and modern rounded corners.
+              </Text>
+            </View>
+
+            <Text style={styles.label}>Floating Action Chat Input</Text>
+            <View style={styles.floatingChatInputContainer}>
+              <TextInput
+                style={styles.floatingChatInput}
+                placeholder="Type a message..."
+                placeholderTextColor="#9CA3AF"
+                multiline
+              />
+              <TouchableOpacity style={styles.floatingSendButton}>
+                <Text style={styles.floatingSendButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Floating Action Toast Demo</Text>
+            <Text style={styles.caption}>Visual example of Floating Action toast notifications</Text>
+            
+            {/* Demo Floating Action Toast */}
+            <View style={styles.floatingToastDemo}>
+              <View style={styles.floatingToastContainer}>
+                <View style={styles.floatingToastIcon}>
+                  <Text style={styles.floatingToastIconText}>✓</Text>
+                </View>
+                <View style={styles.floatingToastContent}>
+                  <Text style={styles.floatingToastTitle}>Success</Text>
+                  <Text style={styles.floatingToastMessage}>Modern material design toast with elevated shadows</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.floatingToastDemo}>
+              <View style={[styles.floatingToastContainer, styles.floatingErrorToastContainer]}>
+                <View style={[styles.floatingToastIcon, styles.floatingErrorToastIcon]}>
+                  <Text style={styles.floatingToastIconText}>✕</Text>
+                </View>
+                <View style={styles.floatingToastContent}>
+                  <Text style={styles.floatingToastTitle}>Error</Text>
+                  <Text style={styles.floatingToastMessage}>Modern material design error toast with elevated shadows</Text>
+                </View>
+              </View>
+            </View>
+
+            <Text style={styles.label}>Floating Action Alert Dialog Demo</Text>
+            <Text style={styles.caption}>Visual example of Floating Action alert dialog</Text>
+            
+            {/* Demo Floating Action Alert Dialog */}
+            <View style={styles.floatingAlertDialogDemo}>
+              <View style={styles.floatingAlertOverlay}>
+                <View style={styles.floatingAlertDialog}>
+                  <View style={styles.floatingAlertHeader}>
+                    <View style={[styles.floatingAlertIcon, styles.floatingSuccessAlertIcon]}>
+                      <Text style={styles.floatingAlertIconText}>✓</Text>
+                    </View>
+                    <Text style={styles.floatingAlertDialogTitle}>Success</Text>
+                  </View>
+                  <Text style={styles.floatingAlertDialogMessage}>
+                    This is a modern material design alert dialog with elevated shadows and rounded corners.
+                  </Text>
+                  <View style={styles.floatingAlertButtons}>
+                    <TouchableOpacity style={[styles.floatingButton, styles.floatingSecondaryButton, { flex: 1, marginRight: theme.spacing.sm }]}>
+                      <Text style={[styles.floatingButtonText, styles.floatingSecondaryButtonText]}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.floatingButton, styles.floatingSuccessButton, { flex: 1 }]}>
+                      <Text style={[styles.floatingButtonText, styles.floatingSuccessButtonText]}>Confirm</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <Text style={styles.label}>Floating Action Message Bubbles</Text>
+            <View style={styles.floatingMessageContainer}>
+              <View style={styles.floatingUserMessage}>
+                <Text style={styles.floatingUserMessageText}>Modern user message with material design</Text>
+              </View>
+              <View style={styles.floatingAssistantMessage}>
+                <Text style={styles.floatingAssistantMessageText}>Modern assistant response with elevated design</Text>
               </View>
             </View>
           </View>
