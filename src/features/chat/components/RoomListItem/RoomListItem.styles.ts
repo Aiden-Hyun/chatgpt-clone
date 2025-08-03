@@ -33,18 +33,23 @@ export const createRoomListItemStyles = () => {
       letterSpacing: theme.letterSpacing.normal
     },
     deleteButton: {
-      padding: theme.spacing.md,
-      backgroundColor: theme.colors.status.error.primary,
+      width: 32,
+      height: 32,
+      backgroundColor: theme.colors.background.secondary,
       marginRight: theme.spacing.md,
-      borderRadius: theme.borderRadius.md,
-      ...theme.shadows.medium
+      borderRadius: theme.borderRadius.sm,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: theme.colors.border.medium,
+      ...theme.shadows.light
     },
     deleteText: {
-      fontSize: theme.fontSizes.md,
-      color: theme.colors.text.inverted,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontSize: theme.fontSizes.xl,
+      color: theme.colors.status.error.primary,
+      fontWeight: theme.fontWeights.bold as '700',
       fontFamily: theme.fontFamily.primary,
-      letterSpacing: theme.letterSpacing.wide
+      lineHeight: 20,
     },
   });
 }; 

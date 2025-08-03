@@ -23,7 +23,7 @@ const RoomListItem: React.FC<Props> = ({ room, onDelete, onPress }) => {
         <Text style={styles.roomName}>{room.name}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-        <Text style={styles.deleteText}>🗑️</Text>
+        <Text style={styles.deleteText}>×</Text>
       </TouchableOpacity>
     </View>
   );
