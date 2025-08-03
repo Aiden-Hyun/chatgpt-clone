@@ -35,6 +35,7 @@ export default function SettingsScreen() {
   };
 
   const handleNameEdit = () => {
+    console.log('✏️ Edit button pressed!');
     setIsEditingName(true);
     setEditedName(userName || '');
   };
@@ -99,14 +100,20 @@ export default function SettingsScreen() {
                   <TextInput
                     style={styles.nameInput}
                     value={editedName}
-                    onChangeText={setEditedName}
+                    onChangeText={(text) => {
+                      console.log('📝 TextInput changed to:', text);
+                      setEditedName(text);
+                    }}
                     placeholder="Enter your name"
                     placeholderTextColor={theme.colors.text.tertiary}
                     autoFocus
                     onBlur={handleNameCancel}
                   />
                   <TouchableOpacity 
-                    onPress={handleNameSave} 
+                    onPress={() => {
+                      console.log('🔘 Save button pressed!');
+                      handleNameSave();
+                    }} 
                     style={[styles.saveButton, isUpdating && styles.saveButtonDisabled]}
                     disabled={isUpdating}
                   >
