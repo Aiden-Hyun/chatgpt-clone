@@ -97,28 +97,40 @@ export default function SettingsScreen() {
               <Text style={styles.settingLabel}>Name</Text>
               {isEditingName ? (
                 <View style={styles.editContainer}>
-                  {console.log('🎨 Rendering edit container with save button')}
+                  {console.log('🎨 Rendering edit container with save button, isEditingName:', isEditingName, 'editedName:', editedName)}
                   <TextInput
-                    style={styles.nameInput}
+                    style={[styles.nameInput, { borderColor: 'blue', borderWidth: 2 }]} // Blue border for debugging
                     value={editedName}
                     onChangeText={(text) => {
                       console.log('📝 TextInput changed to:', text);
                       setEditedName(text);
                     }}
+                    onFocus={() => console.log('🎯 TextInput focused')}
+                    onBlur={() => {
+                      console.log('👁️ TextInput blurred');
+                      handleNameCancel();
+                    }}
                     placeholder="Enter your name"
                     placeholderTextColor={theme.colors.text.tertiary}
                     autoFocus
-                    onBlur={handleNameCancel}
                   />
                   <TouchableOpacity 
                     onPress={() => {
                       console.log('🔘 Save button pressed!');
                       handleNameSave();
                     }} 
+                    onPressIn={() => console.log('👆 Save button press in')}
+                    onPressOut={() => console.log('👆 Save button press out')}
                     style={[
                       styles.saveButton, 
                       isUpdating && styles.saveButtonDisabled,
-                      { backgroundColor: 'red' } // Temporary red background for debugging
+                      { 
+                        backgroundColor: 'red',
+                        minWidth: 80,
+                        minHeight: 40,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      } // Temporary red background for debugging
                     ]}
                     disabled={isUpdating}
                   >
