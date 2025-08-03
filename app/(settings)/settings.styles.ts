@@ -110,6 +110,10 @@ export const createSettingsStyles = () => {
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
     },
+    saveButtonDisabled: {
+      backgroundColor: theme.colors.interactive.disabled.primary,
+      opacity: 0.6,
+    },
     saveButtonText: {
       color: theme.colors.text.inverted,
       fontSize: theme.fontSizes.sm,

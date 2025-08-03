@@ -30,8 +30,16 @@ export const useUserInfo = (): UserInfo => {
           // Extract email
           setEmail(session.user.email || null);
           
-          // Resolve display name from metadata or email
-          const name = session.user.user_metadata?.full_name || 
+          // Try to get display name from profiles table first
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('id', session.user.id)
+            .single();
+          
+          // Use profile display_name if available, otherwise fall back to metadata
+          const name = profileData?.display_name || 
+                      session.user.user_metadata?.full_name || 
                       session.user.user_metadata?.name || 
                       session.user.email?.split('@')[0] || 
                       'User';

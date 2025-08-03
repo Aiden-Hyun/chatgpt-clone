@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { useLogout, useUserInfo } from '../../src/features/auth';
+import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
 import { LanguageSelector } from '../../src/shared/components';
 import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { useAppTheme } from '../../src/shared/hooks';
@@ -12,6 +12,7 @@ export default function SettingsScreen() {
   const theme = useAppTheme();
   const { userName, userEmail } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
+  const { updateProfile, isUpdating } = useUpdateProfile();
   const styles = createSettingsStyles();
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -40,12 +41,11 @@ export default function SettingsScreen() {
     }
     
     try {
-      // TODO: Implement name update functionality
-      // await updateUserName(editedName.trim());
+      await updateProfile({ display_name: editedName.trim() });
       setIsEditingName(false);
       Alert.alert('Success', 'Name updated successfully');
     } catch (error) {
-      Alert.alert('Error', 'Failed to update name');
+      Alert.alert('Error', 'Failed to update name. Please try again.');
     }
   };
 
@@ -83,8 +83,14 @@ export default function SettingsScreen() {
                     autoFocus
                     onBlur={handleNameCancel}
                   />
-                  <TouchableOpacity onPress={handleNameSave} style={styles.saveButton}>
-                    <Text style={styles.saveButtonText}>Save</Text>
+                  <TouchableOpacity 
+                    onPress={handleNameSave} 
+                    style={[styles.saveButton, isUpdating && styles.saveButtonDisabled]}
+                    disabled={isUpdating}
+                  >
+                    <Text style={styles.saveButtonText}>
+                      {isUpdating ? 'Saving...' : 'Save'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
