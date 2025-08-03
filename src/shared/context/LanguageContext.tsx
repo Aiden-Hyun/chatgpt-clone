@@ -99,6 +99,7 @@ const translations: Record<string, Record<string, string>> = {
     'chat.regenerate': 'Regenerate',
     'chat.copy': 'Copy',
     'chat.delete': 'Delete',
+    'chat.room_deleted': 'Chat room deleted successfully',
     
     // Explore
     'explore.title': 'Explore',
@@ -193,6 +194,7 @@ const translations: Record<string, Record<string, string>> = {
     'chat.regenerate': 'Regenerar',
     'chat.copy': 'Copiar',
     'chat.delete': 'Eliminar',
+    'chat.room_deleted': 'Sala de chat eliminada exitosamente',
     
     // Explore
     'explore.title': 'Explorar',
@@ -287,6 +289,7 @@ const translations: Record<string, Record<string, string>> = {
     'chat.regenerate': '재생성',
     'chat.copy': '복사',
     'chat.delete': '삭제',
+    'chat.room_deleted': '채팅방이 성공적으로 삭제되었습니다',
     
     // Explore
     'explore.title': '탐색',

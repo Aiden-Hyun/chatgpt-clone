@@ -5,6 +5,7 @@ import { useLogout, useUserInfo } from '../src/features/auth';
 import { RoomListItem } from '../src/features/chat/components';
 import { useChatRooms } from '../src/features/chat/hooks';
 import { LoadingWrapper, QuickActionsMenu } from '../src/shared/components';
+import { useToast } from '../src/shared/components/alert';
 import { useLanguageContext } from '../src/shared/context/LanguageContext';
 import { useRefreshOnFocus } from '../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
@@ -14,11 +15,22 @@ export default function HomeScreen() {
   const { userName } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
   const { t } = useLanguageContext();
+  const { showSuccess } = useToast();
   const styles = createIndexStyles();
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
 
   // Refresh rooms when screen comes into focus
   useRefreshOnFocus(fetchRooms, [fetchRooms]);
+
+  // Handle room deletion with toast notification
+  const handleDeleteRoom = async (roomId: number) => {
+    try {
+      await deleteRoom(roomId);
+      showSuccess(t('chat.room_deleted'), 3000);
+    } catch (error) {
+      console.error('Failed to delete room:', error);
+    }
+  };
 
   return (
     <LoadingWrapper loading={loading}>
@@ -54,7 +66,7 @@ export default function HomeScreen() {
               <RoomListItem
                 room={item}
                 onPress={() => router.push({ pathname: '/chat/[roomId]', params: { roomId: item.id.toString(), room: item.name } })}
-                onDelete={() => deleteRoom(item.id)}
+                onDelete={() => handleDeleteRoom(item.id)}
               />
             )}
           />
