@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/features/auth';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
+import { LanguageProvider } from '../src/shared/context';
 
 // Initialize services
 configureServices();
@@ -42,8 +43,10 @@ function ProtectedRoutes() {
 
 export default function Layout() {
   return (
-    <AuthProvider>
-      <ProtectedRoutes />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <ProtectedRoutes />
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
