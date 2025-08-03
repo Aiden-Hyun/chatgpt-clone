@@ -26,6 +26,8 @@ export default function ChatScreen() {
     isTyping,
     sendMessage: originalSendMessage,
     handleInputChange,
+    selectedModel,
+    updateModel,
     regenerateMessage,
   } = useChat(numericRoomId);
   const { logout } = useLogout();
@@ -47,6 +49,8 @@ export default function ChatScreen() {
         <ChatHeader
           onLogout={logout}
           onSettings={() => router.push('/settings')}
+          selectedModel={selectedModel}
+          onModelChange={updateModel}
         />
 
         {/* Messages */}

@@ -6,6 +6,9 @@ import { createChatHeaderStyles } from './ChatHeader.styles';
 interface ChatHeaderProps {
   onLogout: () => void;
   onSettings: () => void;
+  // Model selection props for chat rooms
+  selectedModel?: string;
+  onModelChange?: (model: string) => void;
 }
 
 /**
@@ -15,6 +18,8 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   onLogout,
   onSettings,
+  selectedModel,
+  onModelChange,
 }) => {
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
   const styles = createChatHeaderStyles();
@@ -39,6 +44,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         onClose={() => setIsQuickActionsVisible(false)}
         onLogout={onLogout}
         onSettings={onSettings}
+        selectedModel={selectedModel}
+        onModelChange={onModelChange}
+        showModelSelection={true}
       />
     </View>
   );
