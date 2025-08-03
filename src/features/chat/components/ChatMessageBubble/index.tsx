@@ -55,50 +55,69 @@ const ChatMessageBubble = ({ item, isTyping = false, onRegenerate, showAvatar = 
       isUserMessage ? styles.userMessageRow : styles.assistantMessageRow,
       !isLastInGroup && styles.messageRowCompact
     ]}>
-      {!isUserMessage && showAvatar && (
-        <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>AI</Text>
-          </View>
+      {isUserMessage ? (
+        // User message layout (unchanged)
+        <HoverDetector
+          style={[
+            styles.messageBubble,
+            styles.userBubble,
+            !isLastInGroup && styles.bubbleCompact,
+          ]}
+          onHoverChange={() => {}}
+        >
+          <Text style={[
+            styles.messageText,
+            styles.userMessageText,
+          ]}>
+            {item.content}
+          </Text>
+        </HoverDetector>
+      ) : (
+        // Assistant message layout with avatar on top
+        <View style={styles.assistantMessageContainer}>
+          {showAvatar && (
+            <View style={styles.avatarContainerTop}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>AI</Text>
+              </View>
+            </View>
+          )}
+          <HoverDetector
+            style={[
+              styles.assistantMessageBubble,
+              styles.assistantBubble,
+              !isLastInGroup && styles.bubbleCompact,
+              !showAvatar && styles.bubbleNoAvatar
+            ]}
+            onHoverChange={(isHovered) => {
+              setShowRegenerateButton(isHovered);
+            }}
+          >
+            {onRegenerate && (
+              <TouchableOpacity 
+                style={[
+                  styles.regenerateButton, 
+                  showRegenerateButton && styles.regenerateButtonVisible,
+                  isTyping && styles.disabledButton
+                ]}
+                onPress={onRegenerate}
+                disabled={isTyping}
+              >
+                <Text style={styles.regenerateIcon}>↻</Text>
+              </TouchableOpacity>
+            )}
+            <Text style={[
+              styles.messageText,
+              styles.assistantMessageText,
+            ]}>
+              {item.content}
+              {isTyping && (
+                <Animated.Text style={[styles.cursor, { opacity }]}>|</Animated.Text>
+              )}
+            </Text>
+          </HoverDetector>
         </View>
       )}
-
-      <HoverDetector
-        style={[
-          isUserMessage ? styles.messageBubble : styles.assistantMessageBubble,
-          isUserMessage ? styles.userBubble : styles.assistantBubble,
-          !isLastInGroup && styles.bubbleCompact,
-          !showAvatar && !isUserMessage && styles.bubbleNoAvatar
-        ]}
-        onHoverChange={(isHovered) => {
-          if (!isUserMessage) {
-            setShowRegenerateButton(isHovered);
-          }
-        }}
-      >
-        {!isUserMessage && onRegenerate && (
-          <TouchableOpacity 
-            style={[
-              styles.regenerateButton, 
-              showRegenerateButton && styles.regenerateButtonVisible,
-              isTyping && styles.disabledButton
-            ]}
-            onPress={onRegenerate}
-            disabled={isTyping}
-          >
-            <Text style={styles.regenerateIcon}>↻</Text>
-          </TouchableOpacity>
-        )}
-        <Text style={[
-          styles.messageText,
-          isUserMessage ? styles.userMessageText : styles.assistantMessageText,
-        ]}>
-          {item.content}
-          {isTyping && !isUserMessage && (
-            <Animated.Text style={[styles.cursor, { opacity }]}>|</Animated.Text>
-          )}
-        </Text>
-      </HoverDetector>
     </View>
   );
 };

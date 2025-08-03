@@ -68,6 +68,18 @@ export const createChatMessageBubbleStyles = () => {
       height: 28,
       marginRight: theme.spacing.sm,
     },
+    // New container for assistant messages with avatar on top
+    assistantMessageContainer: {
+      flex: 1,
+      alignItems: 'flex-start' as const,
+    },
+    // Avatar container positioned at the top
+    avatarContainerTop: {
+      width: 28,
+      height: 28,
+      marginBottom: theme.spacing.sm,
+      alignSelf: 'flex-start' as const,
+    },
     avatar: {
       width: 28,
       height: 28,
