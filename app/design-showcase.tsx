@@ -212,7 +212,7 @@ export default function DesignShowcaseScreen() {
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.tertiary,
       marginBottom: theme.spacing.md,
-      fontStyle: 'italic',
+      fontStyle: 'italic' as const,
     },
     sharpButton: {
       paddingHorizontal: theme.spacing.lg,
@@ -230,7 +230,7 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.fontSizes.md,
       fontFamily: theme.fontFamily.primary,
       fontWeight: theme.fontWeights.medium as '500',
-      textAlign: 'center',
+      textAlign: 'center' as const,
     },
     sharpPrimaryButton: {
       backgroundColor: theme.colors.primary,
@@ -277,6 +277,83 @@ export default function DesignShowcaseScreen() {
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.secondary,
       lineHeight: theme.fontSizes.md * 1.4,
+    },
+    // Additional Sharp Corners Components
+    sharpChatInputContainer: {
+      borderWidth: 1,
+      borderColor: theme.colors.border.medium,
+      borderRadius: 2, // Very slight rounding
+      backgroundColor: theme.colors.background.primary,
+      padding: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+      ...theme.shadows.light,
+    },
+    sharpChatInput: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      minHeight: 40,
+      textAlignVertical: 'top' as const,
+    },
+    sharpSendButton: {
+      backgroundColor: theme.colors.primary,
+      borderRadius: 2, // Very slight rounding
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.sm,
+      alignSelf: 'flex-end' as const,
+      ...theme.shadows.light,
+    },
+    sharpSendButtonText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.sm,
+      fontWeight: theme.fontWeights.medium as '500',
+    },
+    sharpSuccessButton: {
+      backgroundColor: theme.colors.status.success.primary,
+      borderColor: theme.colors.status.success.primary,
+    },
+    sharpSuccessButtonText: {
+      color: theme.colors.text.inverted,
+    },
+    sharpErrorButton: {
+      backgroundColor: theme.colors.status.error.primary,
+      borderColor: theme.colors.status.error.primary,
+    },
+    sharpErrorButtonText: {
+      color: theme.colors.text.inverted,
+    },
+    sharpMessageContainer: {
+      marginTop: theme.spacing.md,
+    },
+    sharpUserMessage: {
+      backgroundColor: theme.colors.primary,
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+      alignSelf: 'flex-end' as const,
+      maxWidth: '80%' as any,
+      ...theme.shadows.light,
+    },
+    sharpUserMessageText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+    },
+    sharpAssistantMessage: {
+      backgroundColor: theme.colors.background.secondary,
+      borderRadius: 2, // Very slight rounding
+      padding: theme.spacing.md,
+      marginBottom: theme.spacing.sm,
+      alignSelf: 'flex-start' as const,
+      maxWidth: '80%' as any,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
+      ...theme.shadows.light,
+    },
+    sharpAssistantMessageText: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
     },
   };
 
@@ -508,6 +585,62 @@ export default function DesignShowcaseScreen() {
                 trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
                 thumbColor={switchValue ? theme.colors.button.text : theme.colors.text.secondary}
               />
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Chat Input</Text>
+            <View style={styles.sharpChatInputContainer}>
+              <TextInput
+                style={styles.sharpChatInput}
+                placeholder="Type a professional message..."
+                placeholderTextColor={theme.colors.text.tertiary}
+                multiline
+                numberOfLines={3}
+              />
+              <TouchableOpacity style={styles.sharpSendButton}>
+                <Text style={styles.sharpSendButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Alert Examples</Text>
+            <View style={styles.row}>
+              <TouchableOpacity 
+                style={[styles.sharpButton, styles.sharpSuccessButton]}
+                onPress={() => showSuccess('Professional success message!', 3000)}
+              >
+                <Text style={[styles.sharpButtonText, styles.sharpSuccessButtonText]}>Success Alert</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.sharpButton, styles.sharpErrorButton]}
+                onPress={() => showError('Professional error message!', 3000)}
+              >
+                <Text style={[styles.sharpButtonText, styles.sharpErrorButtonText]}>Error Alert</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Alert Dialogs</Text>
+            <View style={styles.row}>
+              <TouchableOpacity 
+                style={[styles.sharpButton, styles.sharpPrimaryButton]}
+                onPress={() => showSuccessAlert('Success', 'This is a professional success alert with sharp corners.')}
+              >
+                <Text style={[styles.sharpButtonText, styles.sharpPrimaryButtonText]}>Success Dialog</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.sharpButton, styles.sharpErrorButton]}
+                onPress={() => showErrorAlert('Error', 'This is a professional error alert with sharp corners.')}
+              >
+                <Text style={[styles.sharpButtonText, styles.sharpErrorButtonText]}>Error Dialog</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.label}>Sharp Corner Message Bubbles</Text>
+            <View style={styles.sharpMessageContainer}>
+              <View style={styles.sharpUserMessage}>
+                <Text style={styles.sharpUserMessageText}>Professional user message with sharp corners</Text>
+              </View>
+              <View style={styles.sharpAssistantMessage}>
+                <Text style={styles.sharpAssistantMessageText}>Professional assistant response with structured layout</Text>
+              </View>
             </View>
           </View>
         </View>
