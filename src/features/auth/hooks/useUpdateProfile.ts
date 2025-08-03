@@ -6,10 +6,7 @@ interface UpdateProfileData {
   avatar_url?: string;
 }
 
-interface UpdateProfileOptions {
-  onSuccess?: () => void;
-  onError?: (error: any) => void;
-}
+
 
 /**
  * Hook for updating user profile information
@@ -18,7 +15,7 @@ interface UpdateProfileOptions {
 export const useUpdateProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateProfile = useCallback(async (data: UpdateProfileData, options?: UpdateProfileOptions) => {
+  const updateProfile = useCallback(async (data: UpdateProfileData) => {
     try {
       setIsUpdating(true);
       console.log('🔄 Starting profile update with data:', data);
@@ -29,22 +26,40 @@ export const useUpdateProfile = () => {
       }
       console.log('👤 User session found:', session.user.id);
 
-      // Update the profiles table
-      console.log('📝 Updating profiles table...');
+      // First, check if profile exists
+      console.log('🔍 Checking if profile exists...');
+      const { data: existingProfile, error: checkError } = await supabase
+        .from('profiles')
+        .select('id, display_name')
+        .eq('id', session.user.id)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('❌ Error checking profile:', checkError);
+        throw checkError;
+      }
+
+      console.log('📝 Existing profile:', existingProfile);
+
+      // Update the profiles table (use upsert to handle case where profile doesn't exist)
+      console.log('📝 Upserting profiles table...');
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          id: session.user.id,
+          email: session.user.email,
           display_name: data.display_name,
           avatar_url: data.avatar_url,
           updated_at: new Date().toISOString(),
-        })
-        .eq('id', session.user.id);
+        }, {
+          onConflict: 'id'
+        });
 
       if (profileError) {
-        console.error('❌ Profile update error:', profileError);
+        console.error('❌ Profile upsert error:', profileError);
         throw profileError;
       }
-      console.log('✅ Profiles table updated successfully');
+      console.log('✅ Profiles table upserted successfully');
 
       // Update auth metadata (for backward compatibility)
       console.log('🔐 Updating auth metadata...');
@@ -62,16 +77,9 @@ export const useUpdateProfile = () => {
       console.log('✅ Auth metadata updated successfully');
 
       console.log('🎉 Profile update completed successfully');
-      // Call success callback if provided
-      options?.onSuccess?.();
-
       return { success: true };
     } catch (error) {
       console.error('❌ Error updating profile:', error);
-      
-      // Call error callback if provided
-      options?.onError?.(error);
-      
       throw error;
     } finally {
       setIsUpdating(false);

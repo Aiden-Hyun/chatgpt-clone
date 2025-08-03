@@ -46,30 +46,26 @@ export default function SettingsScreen() {
     }
     
     console.log('💾 Starting name save with:', editedName.trim());
+    Alert.alert('Debug', `Attempting to save name: ${editedName.trim()}`);
     
     try {
-      await updateProfile(
-        { display_name: editedName.trim() },
-        {
-          onSuccess: async () => {
-            console.log('✅ Profile update success, refreshing user info...');
-            // Small delay to ensure database update is complete
-            await new Promise(resolve => setTimeout(resolve, 100));
-            // Refresh user info to get the updated name
-            await refresh();
-            console.log('✅ User info refreshed');
-            setIsEditingName(false);
-            Alert.alert('Success', 'Name updated successfully');
-          },
-          onError: (error) => {
-            console.error('❌ Profile update error in callback:', error);
-            Alert.alert('Error', 'Failed to update name. Please try again.');
-          }
-        }
-      );
+      console.log('🔄 Calling updateProfile...');
+      const result = await updateProfile({ display_name: editedName.trim() });
+      console.log('✅ UpdateProfile result:', result);
+      
+      // Small delay to ensure database update is complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Refresh user info to get the updated name
+      console.log('🔄 Refreshing user info...');
+      await refresh();
+      console.log('✅ User info refreshed');
+      
+      setIsEditingName(false);
+      Alert.alert('Success', 'Name updated successfully');
     } catch (error) {
       console.error('❌ Profile update error in try-catch:', error);
-      Alert.alert('Error', 'Failed to update name. Please try again.');
+      Alert.alert('Error', `Failed to update name: ${error.message}`);
     }
   };
 
