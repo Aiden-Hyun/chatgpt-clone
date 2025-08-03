@@ -4,7 +4,7 @@ export { FormWrapper } from './FormWrapper';
 export { HapticTab } from './HapticTab';
 export { LanguageSelector } from './LanguageSelector';
 export { default as SemanticColorTest } from './SemanticColorTest';
-export { SettingsMenu } from './SettingsMenu';
+export { QuickActionsMenu } from './QuickActionsMenu';
 export { ThemedText } from './ThemedText';
 export { ThemedTextInput } from './ThemedTextInput';
 export { ThemedView } from './ThemedView';

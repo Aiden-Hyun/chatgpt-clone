@@ -4,7 +4,7 @@ import { FlatList, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { useLogout, useUserInfo } from '../src/features/auth';
 import { RoomListItem } from '../src/features/chat/components';
 import { useChatRooms } from '../src/features/chat/hooks';
-import { LoadingWrapper, SettingsMenu } from '../src/shared/components';
+import { LoadingWrapper, QuickActionsMenu } from '../src/shared/components';
 import { useLanguageContext } from '../src/shared/context/LanguageContext';
 import { useRefreshOnFocus } from '../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const { logout, isLoggingOut } = useLogout();
   const { t } = useLanguageContext();
   const styles = createIndexStyles();
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
 
   // Refresh rooms when screen comes into focus
   useRefreshOnFocus(fetchRooms, [fetchRooms]);
@@ -31,10 +31,10 @@ export default function HomeScreen() {
         </SafeAreaView>
       ) : (
         <SafeAreaView style={styles.container}>
-          {/* Settings Menu Button */}
+          {/* Quick Actions Menu Button */}
           <TouchableOpacity 
             style={styles.settingsMenuButton} 
-            onPress={() => setIsMenuVisible(!isMenuVisible)}
+            onPress={() => setIsQuickActionsVisible(!isQuickActionsVisible)}
           >
             <Text style={styles.settingsMenuText}>⋯</Text>
           </TouchableOpacity>
@@ -70,10 +70,10 @@ export default function HomeScreen() {
         </SafeAreaView>
       )}
       
-      {/* Settings Menu Dropdown */}
-      <SettingsMenu 
-        isVisible={isMenuVisible} 
-        onClose={() => setIsMenuVisible(false)} 
+      {/* Quick Actions Menu Dropdown */}
+      <QuickActionsMenu 
+        isVisible={isQuickActionsVisible} 
+        onClose={() => setIsQuickActionsVisible(false)} 
       />
     </LoadingWrapper>
   );

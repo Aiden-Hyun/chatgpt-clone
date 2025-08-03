@@ -1,12 +1,12 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface SettingsMenuProps {
+interface QuickActionsMenuProps {
   isVisible: boolean;
   onClose: () => void;
 }
 
-export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isVisible, onClose }) => {
+export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({ isVisible, onClose }) => {
   return (
     <Modal
       visible={isVisible}
@@ -21,10 +21,10 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({ isVisible, onClose }
       >
         <View style={styles.menuContainer}>
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Settings</Text>
+            <Text style={styles.menuText}>Language</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>Help</Text>
+            <Text style={styles.menuText}>Clear All</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.menuItem}>
             <Text style={styles.menuText}>About</Text>
