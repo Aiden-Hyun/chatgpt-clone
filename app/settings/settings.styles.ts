@@ -95,6 +95,11 @@ export const createSettingsStyles = () => {
       alignItems: 'center',
       gap: theme.spacing.sm,
     },
+    nameContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
     nameInput: {
       borderWidth: 1,
       borderColor: theme.colors.border.medium,
@@ -109,9 +114,9 @@ export const createSettingsStyles = () => {
     },
     saveButton: {
       backgroundColor: theme.colors.status.success.primary,
-      borderRadius: theme.borderRadius.md,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
+      borderRadius: theme.borderRadius.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
     },
     saveButtonDisabled: {
       backgroundColor: theme.colors.interactive.disabled.primary,
@@ -119,7 +124,33 @@ export const createSettingsStyles = () => {
     },
     saveButtonText: {
       color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontWeights.medium as '500',
+      fontFamily: theme.fontFamily.primary,
+    },
+    editButton: {
+      backgroundColor: 'transparent',
+      borderRadius: theme.borderRadius.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+    },
+    editButtonText: {
+      color: theme.colors.primary,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontWeights.medium as '500',
+      fontFamily: theme.fontFamily.primary,
+    },
+    cancelButton: {
+      backgroundColor: theme.colors.status.error.primary,
+      borderRadius: theme.borderRadius.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+    },
+    cancelButtonText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.xs,
       fontWeight: theme.fontWeights.medium as '500',
       fontFamily: theme.fontFamily.primary,
     },
