@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAppTheme } from '../../../shared/hooks';
+import { useAppTheme } from '../../../../shared/hooks';
 
 /**
  * Test component to showcase all enhanced semantic color tokens
