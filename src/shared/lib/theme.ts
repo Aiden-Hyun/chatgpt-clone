@@ -412,6 +412,12 @@ export function useTheme() {
   return theme[colorScheme ?? 'light'];
 }
 
+// Hook to get current theme based on ThemeContext
+export function useAppTheme() {
+  const colorScheme = useColorScheme();
+  return theme[colorScheme ?? 'light'];
+}
+
 // Legacy exports for backward compatibility (deprecated)
 export const colors = lightColors;
 

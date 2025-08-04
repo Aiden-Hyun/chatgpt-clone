@@ -1,16 +1,16 @@
 import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { 
-  ActivityIndicator, 
-  Alert, 
-  Keyboard, 
-  KeyboardAvoidingView, 
-  Platform, 
-  ScrollView, 
-  TextInput, 
-  TouchableOpacity, 
-  View 
+import {
+    ActivityIndicator,
+    Alert,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { useEmailSignin } from '../../src/features/auth/hooks';
 import { FormWrapper, LanguageSelector, ThemedText, ThemedTextInput, ThemedView } from '../../src/shared/components';
@@ -222,7 +222,7 @@ export default function AuthScreen() {
             activeOpacity={0.7}
           >
             <ThemedText style={styles.googleButtonText}>
-              {signingInWithGoogle ? t('auth.redirecting') : t('auth.login_with_google')}
+              {signingInWithGoogle ? t('auth.redirecting') : `🔍 ${t('auth.login_with_google')}`}
             </ThemedText>
           </TouchableOpacity>
           

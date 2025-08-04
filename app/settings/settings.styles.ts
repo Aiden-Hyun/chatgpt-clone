@@ -79,6 +79,9 @@ export const createSettingsStyles = () => {
     languageSelector: {
       marginVertical: 0,
     },
+    themeSelector: {
+      marginVertical: 0,
+    },
     editableValue: {
       flexDirection: 'row',
       alignItems: 'center',

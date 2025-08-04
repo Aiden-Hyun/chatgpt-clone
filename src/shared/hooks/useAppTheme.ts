@@ -1,7 +1,8 @@
-import { useTheme } from '../lib/theme';
+import { useThemeContext } from '../context/ThemeContext';
+import { theme } from '../lib/theme';
 
 /**
- * Hook to get the current theme based on the system color scheme
+ * Hook to get the current theme based on the selected theme mode
  * Provides access to all theme tokens (colors, spacing, typography, etc.)
  * 
  * @returns The current theme object with all design tokens
@@ -26,7 +27,8 @@ import { useTheme } from '../lib/theme';
  * ```
  */
 export function useAppTheme() {
-  return useTheme();
+  const { currentTheme } = useThemeContext();
+  return theme[currentTheme];
 }
 
 export default useAppTheme; 

@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
-import { LanguageSelector, useCustomAlert, CustomAlert } from '../../src/shared/components';
+import { LanguageSelector, ThemeSelector, useCustomAlert, CustomAlert } from '../../src/shared/components';
 import { useToast } from '../../src/shared/components/alert';
 import { useLanguageContext } from '../../src/shared/context/LanguageContext';
 import { useAppTheme } from '../../src/shared/hooks';
@@ -19,7 +19,6 @@ export default function SettingsScreen() {
   const styles = createSettingsStyles();
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = React.useState(false);
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [editedName, setEditedName] = React.useState(userName || '');
 
@@ -139,6 +138,11 @@ export default function SettingsScreen() {
               <LanguageSelector style={styles.languageSelector} />
             </View>
             
+            <View style={styles.settingItem}>
+              <Text style={styles.settingLabel}>{t('settings.theme')}</Text>
+              <ThemeSelector style={styles.themeSelector} />
+            </View>
+            
             {/* Test Toast Button */}
             <TouchableOpacity 
               style={styles.settingItem}
@@ -160,15 +164,7 @@ export default function SettingsScreen() {
                 thumbColor={notificationsEnabled ? theme.colors.button.text : theme.colors.text.secondary}
               />
             </View>
-            <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.dark_mode')}</Text>
-              <Switch
-                value={darkModeEnabled}
-                onValueChange={setDarkModeEnabled}
-                trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
-                thumbColor={darkModeEnabled ? theme.colors.button.text : theme.colors.text.secondary}
-              />
-            </View>
+
           </View>
         </View>
 

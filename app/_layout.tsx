@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../src/features/auth';
 import { LanguageProvider } from '../src/shared/context';
+import { ThemeProvider } from '../src/shared/context/ThemeContext';
 import { ToastProvider, ToastContainer } from '../src/shared/components/alert';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 
@@ -57,11 +58,13 @@ function ProtectedRoutes() {
 export default function Layout() {
   return (
     <LanguageProvider>
-      <AuthProvider>
-        <ToastProvider>
-          <ProtectedRoutes />
-        </ToastProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <ProtectedRoutes />
+          </ToastProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </LanguageProvider>
   );
 }
