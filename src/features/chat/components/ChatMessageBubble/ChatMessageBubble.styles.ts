@@ -32,11 +32,11 @@ export const createChatMessageBubbleStyles = () => {
       minWidth: 40,
       ...theme.shadows.light,
     },
-    // Base styling for assistant messages (article-like)
+    // Clean Article Layout - Full width for AI responses
     assistantMessageBubble: {
-      padding: theme.spacing.md,
+      padding: 0, // No padding for full-width article look
       borderRadius: 0, // No border radius for article look
-      maxWidth: '85%', // Slightly narrower for better balance
+      maxWidth: '100%', // Full width for article-like appearance
       minWidth: 40,
       // No shadows for clean article appearance
     },
@@ -49,17 +49,18 @@ export const createChatMessageBubbleStyles = () => {
     },
     userBubble: {
       backgroundColor: theme.colors.message.user,
-      borderTopRightRadius: theme.borderRadius.xs,
+      borderRadius: theme.borderRadius.lg,
       marginLeft: 40,
+      ...theme.shadows.light,
     },
     assistantBubble: {
       backgroundColor: 'transparent', // No background for article-like appearance
-      borderTopLeftRadius: 0, // No border radius for clean article look
-      marginRight: 0, // Remove right margin for centered appearance
-      paddingLeft: theme.spacing.lg, // More left padding for better spacing
-      paddingRight: theme.spacing.lg, // More right padding for better spacing
-      paddingTop: theme.spacing.md, // Restore top padding
-      paddingBottom: theme.spacing.lg, // Reduce bottom padding
+      borderRadius: 0, // No border radius for clean article look
+      marginRight: 0, // Remove right margin for full-width appearance
+      paddingLeft: 0, // No left padding for full-width
+      paddingRight: 0, // No right padding for full-width
+      paddingTop: 0, // No top padding
+      paddingBottom: theme.spacing.lg, // Space for regenerate button
       borderWidth: 0, // No borders
       // No shadows for clean article appearance
     },
@@ -68,34 +69,35 @@ export const createChatMessageBubbleStyles = () => {
       height: 28,
       marginRight: theme.spacing.sm,
     },
-    // New container for assistant messages with avatar on top
+    // Clean Article Layout - Container for AI responses
     assistantMessageContainer: {
       flex: 1,
-      alignItems: 'flex-start' as const, // Align to start but with padding
-      position: 'relative' as const, // Ensure proper positioning for regenerate button
-      paddingLeft: theme.spacing.xl, // Add left padding for balanced positioning
+      alignItems: 'flex-start' as const,
+      position: 'relative' as const, // For regenerate button positioning
+      marginBottom: theme.spacing.xl,
     },
-    // Avatar container positioned at the top
+    // Clean Article Layout - Small AI avatar in top-left
     avatarContainerTop: {
-      width: 28,
-      height: 28,
-      marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-start' as const,
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      width: 24,
+      height: 24,
+      zIndex: 1,
     },
     avatar: {
-      width: 28,
-      height: 28,
-      borderRadius: 14,
-      backgroundColor: theme.colors.status.info.background,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: theme.colors.status.info.border,
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: theme.colors.status.info.primary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      borderWidth: 0, // No border for clean look
     },
     avatarText: {
+      color: theme.colors.text.inverted,
       fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.status.info.primary,
+      fontWeight: theme.fontWeights.bold as '700',
     },
     messageText: {
       fontSize: theme.fontSizes.md,
@@ -104,38 +106,42 @@ export const createChatMessageBubbleStyles = () => {
     userMessageText: {
       color: theme.colors.message.userText,
     },
+    // Clean Article Layout - AI text styling
     assistantMessageText: {
-      color: theme.colors.text.primary, // Use primary text color for better readability
+      color: theme.colors.text.primary,
       fontSize: theme.fontSizes.md,
-      lineHeight: 24, // Slightly more line height for better readability
       fontFamily: theme.fontFamily.primary,
-      textAlign: 'left' as const, // Natural left-aligned text with ragged right edge
+      lineHeight: 26, // Generous line height for article readability
+      textAlign: 'left' as const, // Natural left-aligned text
+      marginLeft: 32, // Space for avatar
+      paddingTop: theme.spacing.sm,
+      paddingBottom: theme.spacing.lg, // Space for regenerate button
     },
+    // Clean Article Layout - Regenerate button in bottom-right
     regenerateButton: {
-      position: 'absolute',
-      bottom: theme.spacing.xs,
-      left: theme.spacing.xs,
+      position: 'absolute' as const,
+      bottom: 0,
+      right: 0,
       zIndex: 1,
-      width: 18,
-      height: 18,
+      width: 20,
+      height: 20,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
-      backgroundColor: 'transparent', // No background color
-      borderRadius: 9,
+      backgroundColor: 'transparent',
+      borderRadius: 10,
       opacity: 0.6,
-      // No shadows for subtle appearance
     },
     regenerateButtonVisible: {
       opacity: 0.9,
-      backgroundColor: 'transparent', // Keep transparent even when visible
+      backgroundColor: 'transparent',
     },
     disabledButton: {
       opacity: 0.3,
-      backgroundColor: 'transparent', // Keep transparent when disabled
+      backgroundColor: 'transparent',
     },
     regenerateIcon: {
       fontSize: theme.fontSizes.xs,
-      color: theme.colors.text.tertiary, // Use tertiary text color for more visible appearance
+      color: theme.colors.text.tertiary,
       lineHeight: theme.fontSizes.xs,
       fontWeight: theme.fontWeights.medium as '500',
     },
