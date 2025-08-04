@@ -9,7 +9,7 @@ export * from './components/layout';
 export * from './components/navigation';
 
 // Icon components
-export * from './components/icons';
+export { IconSymbol, HoverDetector } from './components/icons';
 
 // Development components
 export * from './components/dev'; 
