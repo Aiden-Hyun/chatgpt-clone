@@ -29,7 +29,14 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
           key={themeOption.value}
           style={[
             styles.themeButton,
-            themeMode === themeOption.value && styles.selectedThemeButton,
+            {
+              borderColor: theme.colors.border.medium,
+              backgroundColor: theme.colors.background.primary,
+            },
+            themeMode === themeOption.value && {
+              backgroundColor: theme.colors.primary,
+              borderColor: theme.colors.primary,
+            },
           ]}
           onPress={() => handleThemeChange(themeOption.value)}
           activeOpacity={0.7}
@@ -37,7 +44,13 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
           <ThemedText
             style={[
               styles.themeButtonText,
-              themeMode === themeOption.value && styles.selectedThemeButtonText,
+              {
+                color: theme.colors.text.secondary,
+              },
+              themeMode === themeOption.value && {
+                color: theme.colors.text.inverted,
+                fontWeight: theme.fontWeights.semibold as '600',
+              },
             ]}
           >
             {themeOption.label}
@@ -58,19 +71,8 @@ const styles = {
     paddingVertical: 6,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#CBD5E0',
-    backgroundColor: 'transparent',
-  },
-  selectedThemeButton: {
-    backgroundColor: '#2D3748',
-    borderColor: '#2D3748',
   },
   themeButtonText: {
     fontSize: 14,
-    color: '#4A5568',
-  },
-  selectedThemeButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600' as const,
   },
 }; 
