@@ -15,6 +15,7 @@ import {
 import { useEmailSignin } from '../../src/features/auth/hooks';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
+import { useToast } from '../../src/features/alert';
 import { useLoadingState } from '../../src/shared/hooks';
 import { useErrorStateCombined } from '../../src/shared/hooks/error';
 import { supabase } from '../../src/shared/lib/supabase';
@@ -35,6 +36,7 @@ export default function AuthScreen() {
     showAlerts: false,
     logToConsole: true
   });
+  const { showSuccess } = useToast();
   
   const pathname = usePathname();
   const styles = createAuthStyles();
@@ -61,6 +63,7 @@ export default function AuthScreen() {
       }
       
       if (session) {
+        showSuccess(t('auth.login_successful') || 'Login successful!');
         router.replace('/');
       } else {
         stopLoading();
@@ -150,6 +153,7 @@ export default function AuthScreen() {
       
       if (result.success) {
         console.log('Signin successful, navigating to home');
+        showSuccess(t('auth.login_successful') || 'Login successful!');
         router.replace('/');
       } else {
         console.error('Signin failed:', result.error);
