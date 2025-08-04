@@ -16,13 +16,13 @@ function ProtectedRoutes() {
   const pathname = usePathname();
 
   // Define auth routes that don't require authentication
-  const authRoutes = ['/login', '/signin', '/signup', '/forgot-password'];
+  const authRoutes = ['/auth', '/signup', '/forgot-password'];
   const isAuthRoute = authRoutes.includes(pathname);
 
   useEffect(() => {
     if (!isLoading && !session && !isAuthRoute) {
-      // Only redirect to login if user is not on an auth route
-      router.replace('/login');
+      // Only redirect to auth if user is not on an auth route
+      router.replace('/auth');
     }
   }, [isLoading, session, pathname, isAuthRoute]);
 
