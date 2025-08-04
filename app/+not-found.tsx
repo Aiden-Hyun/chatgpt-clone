@@ -26,7 +26,7 @@ export default function NotFoundScreen() {
     },
     linkText: {
       fontSize: theme.fontSizes.md,
-      color: theme.colors.status.info,
+      color: theme.colors.status.info.primary,
       textDecorationLine: 'underline',
     },
   });
