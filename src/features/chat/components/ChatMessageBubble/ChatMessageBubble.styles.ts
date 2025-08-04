@@ -36,7 +36,7 @@ export const createChatMessageBubbleStyles = () => {
     assistantMessageBubble: {
       padding: theme.spacing.md,
       borderRadius: 0, // No border radius for article look
-      maxWidth: '85%', // Wider for article content
+      maxWidth: '90%', // Even wider for better response appearance
       minWidth: 40,
       // No shadows for clean article appearance
     },
@@ -55,11 +55,11 @@ export const createChatMessageBubbleStyles = () => {
     assistantBubble: {
       backgroundColor: 'transparent', // No background for article-like appearance
       borderTopLeftRadius: 0, // No border radius for clean article look
-      marginRight: 40,
-      paddingLeft: 0, // Remove left padding for cleaner look
-      paddingRight: 0, // Remove right padding for cleaner look
-      paddingTop: theme.spacing.sm, // Reduce top padding
-      paddingBottom: theme.spacing.sm, // Reduce bottom padding
+      marginRight: 0, // Remove right margin for centered appearance
+      paddingLeft: theme.spacing.lg, // More left padding for better spacing
+      paddingRight: theme.spacing.lg, // More right padding for better spacing
+      paddingTop: theme.spacing.md, // Restore top padding
+      paddingBottom: theme.spacing.lg, // Reduce bottom padding
       borderWidth: 0, // No borders
       // No shadows for clean article appearance
     },
@@ -71,7 +71,8 @@ export const createChatMessageBubbleStyles = () => {
     // New container for assistant messages with avatar on top
     assistantMessageContainer: {
       flex: 1,
-      alignItems: 'flex-start' as const,
+      alignItems: 'center' as const, // Center the content
+      position: 'relative' as const, // Ensure proper positioning for regenerate button
     },
     // Avatar container positioned at the top
     avatarContainerTop: {
@@ -110,31 +111,31 @@ export const createChatMessageBubbleStyles = () => {
     },
     regenerateButton: {
       position: 'absolute',
-      bottom: -10,
-      right: -20,
+      bottom: theme.spacing.xs,
+      left: theme.spacing.xs,
       zIndex: 1,
-      width: 20,
-      height: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: theme.colors.status.info.primary,
-      borderRadius: 10,
-      opacity: 0.7,
-      ...theme.shadows.light,
+      width: 18,
+      height: 18,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      backgroundColor: 'transparent', // No background color
+      borderRadius: 9,
+      opacity: 0.4,
+      // No shadows for subtle appearance
     },
     regenerateButtonVisible: {
-      opacity: 1,
-      backgroundColor: theme.colors.status.info.secondary,
+      opacity: 0.8,
+      backgroundColor: 'transparent', // Keep transparent even when visible
     },
     disabledButton: {
-      opacity: 0.4,
-      backgroundColor: theme.colors.interactive.disabled.primary,
+      opacity: 0.3,
+      backgroundColor: 'transparent', // Keep transparent when disabled
     },
     regenerateIcon: {
       fontSize: theme.fontSizes.xs,
-      color: theme.colors.text.inverted,
+      color: theme.colors.text.quaternary, // Use quaternary text color for very subtle appearance
       lineHeight: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.fontWeights.regular as '400',
     },
     cursor: {
       color: theme.colors.status.info.primary,
