@@ -36,7 +36,7 @@ export const createChatMessageBubbleStyles = () => {
     assistantMessageBubble: {
       padding: theme.spacing.md,
       borderRadius: 0, // No border radius for article look
-      maxWidth: '90%', // Even wider for better response appearance
+      maxWidth: '85%', // Slightly narrower for better balance
       minWidth: 40,
       // No shadows for clean article appearance
     },
@@ -71,8 +71,9 @@ export const createChatMessageBubbleStyles = () => {
     // New container for assistant messages with avatar on top
     assistantMessageContainer: {
       flex: 1,
-      alignItems: 'center' as const, // Center the content
+      alignItems: 'flex-start' as const, // Align to start but with padding
       position: 'relative' as const, // Ensure proper positioning for regenerate button
+      paddingLeft: theme.spacing.xl, // Add left padding for balanced positioning
     },
     // Avatar container positioned at the top
     avatarContainerTop: {
@@ -108,6 +109,7 @@ export const createChatMessageBubbleStyles = () => {
       fontSize: theme.fontSizes.md,
       lineHeight: 24, // Slightly more line height for better readability
       fontFamily: theme.fontFamily.primary,
+      textAlign: 'left' as const, // Natural left-aligned text with ragged right edge
     },
     regenerateButton: {
       position: 'absolute',

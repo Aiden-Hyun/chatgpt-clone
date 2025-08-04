@@ -752,6 +752,78 @@ export default function DesignShowcaseScreen() {
       fontFamily: theme.fontFamily.primary,
       lineHeight: theme.fontSizes.md * 1.4,
     },
+    // Clean Article Layout Styles (Option 1)
+    articleChatContainer: {
+      backgroundColor: theme.colors.background.primary,
+      padding: theme.spacing.lg,
+      marginBottom: theme.spacing.lg,
+    },
+    articleUserMessage: {
+      alignSelf: 'flex-end',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.borderRadius.lg,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
+      maxWidth: '70%',
+      ...theme.shadows.light,
+    },
+    articleUserMessageText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      lineHeight: 22,
+    },
+    articleAIResponseContainer: {
+      marginBottom: theme.spacing.xl,
+      position: 'relative' as const,
+    },
+    articleAIAvatar: {
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: theme.colors.status.info.primary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      zIndex: 1,
+    },
+    articleAIAvatarText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontWeights.bold as '700',
+    },
+    articleAIContent: {
+      marginLeft: 32, // Space for avatar
+      paddingTop: theme.spacing.sm,
+      paddingBottom: theme.spacing.lg, // Space for regenerate button
+    },
+    articleAIText: {
+      color: theme.colors.text.primary,
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      lineHeight: 26,
+      textAlign: 'left' as const,
+    },
+    articleRegenerateButton: {
+      position: 'absolute' as const,
+      bottom: 0,
+      right: 0,
+      width: 20,
+      height: 20,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      backgroundColor: 'transparent',
+      borderRadius: 10,
+      opacity: 0.6,
+    },
+    articleRegenerateIcon: {
+      color: theme.colors.text.tertiary,
+      fontSize: theme.fontSizes.xs,
+      fontWeight: theme.fontWeights.medium as '500',
+    },
   };
 
   return (
@@ -1182,6 +1254,72 @@ export default function DesignShowcaseScreen() {
               </View>
               <View style={styles.floatingAssistantMessage}>
                 <Text style={styles.floatingAssistantMessageText}>Modern assistant response with elevated design</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Clean Article Layout Section (Option 1) */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Clean Article Layout (Option 1)</Text>
+          <Text style={styles.caption}>Full-width text blocks with no borders, like reading an article</Text>
+          
+          <View style={styles.articleChatContainer}>
+            {/* User Message */}
+            <View style={styles.articleUserMessage}>
+              <Text style={styles.articleUserMessageText}>What can you tell me about React Native?</Text>
+            </View>
+
+            {/* AI Response */}
+            <View style={styles.articleAIResponseContainer}>
+              <View style={styles.articleAIAvatar}>
+                <Text style={styles.articleAIAvatarText}>AI</Text>
+              </View>
+              <View style={styles.articleAIContent}>
+                <Text style={styles.articleAIText}>
+                  React Native is a popular open-source framework for building mobile applications using JavaScript and React. It allows developers to create native mobile apps for both iOS and Android platforms using a single codebase.
+                </Text>
+                <Text style={styles.articleAIText}>
+                  Key features include:
+                </Text>
+                <Text style={styles.articleAIText}>
+                  • Cross-platform development with native performance
+                </Text>
+                <Text style={styles.articleAIText}>
+                  • Hot reloading for faster development cycles
+                </Text>
+                <Text style={styles.articleAIText}>
+                  • Large ecosystem of libraries and components
+                </Text>
+                <Text style={styles.articleAIText}>
+                  • Strong community support and regular updates
+                </Text>
+                <TouchableOpacity style={styles.articleRegenerateButton}>
+                  <Text style={styles.articleRegenerateIcon}>↻</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Another User Message */}
+            <View style={styles.articleUserMessage}>
+              <Text style={styles.articleUserMessageText}>How does it compare to Flutter?</Text>
+            </View>
+
+            {/* Another AI Response */}
+            <View style={styles.articleAIResponseContainer}>
+              <View style={styles.articleAIAvatar}>
+                <Text style={styles.articleAIAvatarText}>AI</Text>
+              </View>
+              <View style={styles.articleAIContent}>
+                <Text style={styles.articleAIText}>
+                  React Native and Flutter are both excellent cross-platform frameworks, but they have different approaches and trade-offs.
+                </Text>
+                <Text style={styles.articleAIText}>
+                  React Native uses JavaScript/TypeScript and bridges to native components, while Flutter uses Dart and renders everything through its own engine. React Native has a larger ecosystem and community, while Flutter offers more consistent performance and UI.
+                </Text>
+                <TouchableOpacity style={styles.articleRegenerateButton}>
+                  <Text style={styles.articleRegenerateIcon}>↻</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
