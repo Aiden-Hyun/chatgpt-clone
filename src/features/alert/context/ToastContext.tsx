@@ -36,18 +36,15 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     type: 'success' | 'error' | 'warning' | 'info' = 'info',
     duration: number = 3000
   ) => {
-    console.log('🍞 ToastContext showToast called with:', { message, type, duration });
     setToast({
       visible: true,
       message,
       type,
       duration,
     });
-    console.log('🍞 ToastContext state set to visible');
   }, []);
 
   const hideToast = useCallback(() => {
-    console.log('🍞 ToastContext hideToast called');
     setToast(prev => ({
       ...prev,
       visible: false,
@@ -55,7 +52,6 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   }, []);
 
   const showSuccess = useCallback((message: string, duration?: number) => {
-    console.log('🍞 ToastContext showSuccess called with:', { message, duration });
     showToast(message, 'success', duration);
   }, [showToast]);
 

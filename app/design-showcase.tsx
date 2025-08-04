@@ -59,23 +59,23 @@ export default function DesignShowcaseScreen() {
     },
     content: {
       flex: 1,
-      padding: theme.spacing.lg,
+      padding: theme.spacing.xl,
     },
     section: {
-      marginBottom: theme.spacing.xxl,
+      marginBottom: theme.spacing.xxxl,
     },
     sectionTitle: {
       fontSize: theme.fontSizes.lg,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
       fontWeight: theme.fontWeights.semibold as '600',
-      marginBottom: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
     },
     card: {
       backgroundColor: theme.colors.background.secondary,
       borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.lg,
-      marginBottom: theme.spacing.md,
+      padding: theme.spacing.xl,
+      marginBottom: theme.spacing.lg,
       ...theme.shadows.light,
       borderWidth: 1,
       borderColor: theme.colors.border.light,
@@ -83,8 +83,9 @@ export default function DesignShowcaseScreen() {
     row: {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
-      marginBottom: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
       flexWrap: 'wrap' as const,
+      gap: theme.spacing.sm,
     },
     button: {
       paddingHorizontal: theme.spacing.lg,
