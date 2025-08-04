@@ -4,9 +4,9 @@ import { FlatList, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { useLogout, useUserInfo } from '../src/features/auth';
 import { RoomListItem } from '../src/features/chat/components';
 import { useChatRooms } from '../src/features/chat/hooks';
-import { LoadingWrapper, QuickActionsMenu } from '../src/shared/components';
-import { useToast } from '../src/shared/components/alert';
-import { useLanguageContext } from '../src/shared/context/LanguageContext';
+import { LoadingWrapper, QuickActionsMenu } from '../src/features/ui';
+import { useToast } from '../src/features/alert';
+import { useLanguageContext } from '../src/features/language';
 import { useRefreshOnFocus } from '../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
 

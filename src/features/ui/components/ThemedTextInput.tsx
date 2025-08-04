@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
-import { useTheme } from '../lib/theme';
+import { useTheme } from '../../theme/lib/theme';
 
 export interface ThemedTextInputProps extends TextInputProps {
   lightColor?: string;

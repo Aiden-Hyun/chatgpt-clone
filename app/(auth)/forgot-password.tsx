@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { usePasswordReset } from '../../src/features/auth/hooks';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/shared/components';
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {

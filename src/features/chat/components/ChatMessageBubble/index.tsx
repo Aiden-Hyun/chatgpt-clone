@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
-import { HoverDetector } from '../../../../shared/components/ui';
+import { HoverDetector } from '../../../../features/ui';
 import { createChatMessageBubbleStyles } from './ChatMessageBubble.styles';
 
 type ChatMessageProps = {

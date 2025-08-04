@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { supabase } from '../../src/shared/lib/supabase';
-import { LoadingWrapper } from '../../src/shared/components';
+import { LoadingWrapper } from '../../src/features/ui';
 
 export default function NewChatScreen() {
   useEffect(() => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { QuickActionsMenu } from '../../../../shared/components';
+import { QuickActionsMenu } from '../../../../features/ui';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 interface ChatHeaderProps {

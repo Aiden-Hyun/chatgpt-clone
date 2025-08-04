@@ -1,5 +1,5 @@
-import { useThemeContext } from '../context/ThemeContext';
-import { theme } from '../lib/theme';
+import { useThemeContext } from '../../features/theme/context/ThemeContext';
+import { theme } from '../../features/theme/lib/theme';
 
 /**
  * Hook to get the current theme based on the selected theme mode

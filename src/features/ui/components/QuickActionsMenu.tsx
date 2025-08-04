@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAppTheme } from '../hooks';
+import { useAppTheme } from '../../../shared/hooks';
 
 interface QuickActionsMenuProps {
   isVisible: boolean;

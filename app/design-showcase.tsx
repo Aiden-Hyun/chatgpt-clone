@@ -1,14 +1,10 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import {
-    CustomAlert,
-    LanguageSelector,
-    ThemedButton,
-    useCustomAlert,
-    useToast
-} from '../src/shared/components';
-import { useLanguageContext } from '../src/shared/context/LanguageContext';
+import { ThemedButton } from '../src/features/ui';
+import { LanguageSelector } from '../src/features/language';
+import { CustomAlert, useCustomAlert, useToast } from '../src/features/alert';
+import { useLanguageContext } from '../src/features/language';
 import { useAppTheme } from '../src/shared/hooks';
 
 export default function DesignShowcaseScreen() {

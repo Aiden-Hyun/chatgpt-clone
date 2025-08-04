@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import { useAppTheme } from '../../hooks';
+import { useAppTheme } from '../../../shared/hooks';
 
 interface ToastProps {
   visible: boolean;

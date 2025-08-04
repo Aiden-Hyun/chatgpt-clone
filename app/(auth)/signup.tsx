@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useEmailSignup } from '../../src/features/auth/hooks';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/shared/components';
-import { useLanguageContext } from '../../src/shared/context/LanguageContext';
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
+import { useLanguageContext } from '../../src/features/language';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {

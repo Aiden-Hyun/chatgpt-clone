@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { useAppTheme } from '../../hooks';
+import { useAppTheme } from '../../../shared/hooks';
 
 interface LoadingScreenProps {
   message?: string;

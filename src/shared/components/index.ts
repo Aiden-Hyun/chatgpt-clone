@@ -1,19 +1,3 @@
 // src/shared/components/index.ts
-export { Collapsible } from './Collapsible';
-export { FormWrapper } from './FormWrapper';
-export { HapticTab } from './HapticTab';
-export { LanguageSelector } from './LanguageSelector';
-export { QuickActionsMenu } from './QuickActionsMenu';
-export { default as SemanticColorTest } from './SemanticColorTest';
-export { ThemedButton } from './ThemedButton';
-export { ThemedText } from './ThemedText';
-export { ThemedTextInput } from './ThemedTextInput';
-export { ThemedView } from './ThemedView';
-export { ThemeSelector } from './ThemeSelector';
-
-// Export alert components
-export * from './alert';
-
-// Export UI components
-export * from './ui';
+// Components moved to features - see features/language, features/theme, features/alert, features/ui
 

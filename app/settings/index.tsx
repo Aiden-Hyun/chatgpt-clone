@@ -2,9 +2,9 @@ import React from 'react';
 import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
-import { LanguageSelector, ThemeSelector, useCustomAlert, CustomAlert } from '../../src/shared/components';
-import { useToast } from '../../src/shared/components/alert';
-import { useLanguageContext } from '../../src/shared/context/LanguageContext';
+import { LanguageSelector, useLanguageContext } from '../../src/features/language';
+import { ThemeSelector } from '../../src/features/theme';
+import { useCustomAlert, CustomAlert, useToast } from '../../src/features/alert';
 import { useAppTheme } from '../../src/shared/hooks';
 import { createSettingsStyles } from './settings.styles';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-import SemanticColorTest from '../src/shared/components/SemanticColorTest';
+import SemanticColorTest from '../src/features/ui';
 
 export default function TestColorsScreen() {
   return (

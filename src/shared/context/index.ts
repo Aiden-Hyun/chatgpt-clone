@@ -1,1 +1,1 @@
-export { LanguageProvider, useLanguageContext } from './LanguageContext';
+// Shared context exports - moved to features

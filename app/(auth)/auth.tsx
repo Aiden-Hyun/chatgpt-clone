@@ -13,8 +13,8 @@ import {
     View
 } from 'react-native';
 import { useEmailSignin } from '../../src/features/auth/hooks';
-import { FormWrapper, LanguageSelector, ThemedText, ThemedTextInput, ThemedView } from '../../src/shared/components';
-import { useLanguageContext } from '../../src/shared/context/LanguageContext';
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
+import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { useLoadingState } from '../../src/shared/hooks';
 import { useErrorStateCombined } from '../../src/shared/hooks/error';
 import { supabase } from '../../src/shared/lib/supabase';
