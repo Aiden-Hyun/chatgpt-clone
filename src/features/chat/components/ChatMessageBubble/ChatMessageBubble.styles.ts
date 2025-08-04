@@ -120,11 +120,11 @@ export const createChatMessageBubbleStyles = () => {
       alignItems: 'center' as const,
       backgroundColor: 'transparent', // No background color
       borderRadius: 9,
-      opacity: 0.4,
+      opacity: 0.6,
       // No shadows for subtle appearance
     },
     regenerateButtonVisible: {
-      opacity: 0.8,
+      opacity: 0.9,
       backgroundColor: 'transparent', // Keep transparent even when visible
     },
     disabledButton: {
@@ -133,9 +133,9 @@ export const createChatMessageBubbleStyles = () => {
     },
     regenerateIcon: {
       fontSize: theme.fontSizes.xs,
-      color: theme.colors.text.quaternary, // Use quaternary text color for very subtle appearance
+      color: theme.colors.text.tertiary, // Use tertiary text color for more visible appearance
       lineHeight: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.regular as '400',
+      fontWeight: theme.fontWeights.medium as '500',
     },
     cursor: {
       color: theme.colors.status.info.primary,
