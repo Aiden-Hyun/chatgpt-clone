@@ -6,12 +6,12 @@ export const createLoadingMessageStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: theme.spacing.lg, // Increased horizontal padding to match AI responses
   },
   loadingText: {
-    fontSize: theme.fontSizes.lg,
+    fontSize: theme.fontSizes.md, // Smaller, less prominent font
     fontFamily: theme.fontFamily.primary,
-    color: theme.colors.text.primary,
+    color: theme.colors.text.secondary, // More subtle color
     fontWeight: theme.fontWeights.normal as '400',
     marginBottom: theme.spacing.md,
-    lineHeight: 28,
+    lineHeight: 24, // Tighter line height
   },
   dotsContainer: {
     flexDirection: 'row',

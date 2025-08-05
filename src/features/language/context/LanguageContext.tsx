@@ -103,6 +103,14 @@ const translations: Record<string, Record<string, string>> = {
     'chat.delete': 'Delete',
     'chat.room_deleted': 'Chat room deleted successfully',
     
+    // Loading Messages
+    'loading.thinking': 'Thinking...',
+    'loading.analyzing': 'Analyzing your message...',
+    'loading.generating': 'Generating response...',
+    'loading.processing': 'Processing...',
+    'loading.creating': 'Creating thoughtful reply...',
+    'loading.almost_ready': 'Almost ready...',
+    
     // Explore
     'explore.title': 'Explore',
     'explore.coming_soon': 'Coming soon...',
@@ -200,6 +208,14 @@ const translations: Record<string, Record<string, string>> = {
     'chat.delete': 'Eliminar',
     'chat.room_deleted': 'Sala de chat eliminada exitosamente',
     
+    // Loading Messages
+    'loading.thinking': 'Pensando...',
+    'loading.analyzing': 'Analizando tu mensaje...',
+    'loading.generating': 'Generando respuesta...',
+    'loading.processing': 'Procesando...',
+    'loading.creating': 'Creando respuesta reflexiva...',
+    'loading.almost_ready': 'Casi listo...',
+    
     // Explore
     'explore.title': 'Explorar',
     'explore.coming_soon': 'Próximamente...',
@@ -296,6 +312,14 @@ const translations: Record<string, Record<string, string>> = {
     'chat.copy': '복사',
     'chat.delete': '삭제',
     'chat.room_deleted': '채팅방이 성공적으로 삭제되었습니다',
+    
+    // Loading Messages
+    'loading.thinking': '생각 중...',
+    'loading.analyzing': '메시지를 분석하는 중...',
+    'loading.generating': '답변을 생성하는 중...',
+    'loading.processing': '처리 중...',
+    'loading.creating': '신중한 답변을 만드는 중...',
+    'loading.almost_ready': '거의 완료...',
     
     // Explore
     'explore.title': '탐색',
