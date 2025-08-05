@@ -11,6 +11,7 @@ import { useChatSimplified } from '../../src/features/chat/hooks/useChatSimplifi
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
+import React from 'react';
 
 export default function ChatScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
@@ -23,6 +24,9 @@ export default function ChatScreen() {
   const { disableBackButton } = useBackButtonHandler({ enabled: true });
   const { startNewChat } = useChatRooms();
   const styles = createChatStyles();
+
+  // Track if user has started typing to hide welcome text
+  const [hasUserTyped, setHasUserTyped] = React.useState(false);
 
   const {
     messages,
@@ -40,6 +44,14 @@ export default function ChatScreen() {
   const sendMessage = async () => {
     await originalSendMessage();
     maintainFocus();
+  };
+
+  // Handle input change and track if user has typed
+  const handleInputChangeWithTracking = (text: string) => {
+    if (text.length > 0 && !hasUserTyped) {
+      setHasUserTyped(true);
+    }
+    handleInputChange(text);
   };
 
   const handleNewChat = () => {
@@ -77,12 +89,13 @@ export default function ChatScreen() {
           isNewMessageLoading={isNewMessageLoading}
           regeneratingIndices={regeneratingIndices}
           onRegenerate={regenerateMessage}
+          showWelcomeText={!hasUserTyped}
         />
 
         {/* Input */}
         <ChatInput
           input={input}
-          onChangeText={handleInputChange}
+          onChangeText={handleInputChangeWithTracking}
           onSend={sendMessage}
           sending={isNewMessageLoading}
           isTyping={isNewMessageLoading}

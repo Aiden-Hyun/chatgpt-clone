@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View, Text } from 'react-native';
 import { useAppTheme } from '../../../../shared/hooks';
 import { ChatMessage } from '../../types';
 import { MessageItem } from '../MessageItem';
@@ -9,6 +9,7 @@ interface MessageListProps {
   isNewMessageLoading: boolean;
   regeneratingIndices: Set<number>;
   onRegenerate: (index: number) => void;
+  showWelcomeText: boolean;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
@@ -16,6 +17,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   isNewMessageLoading,
   regeneratingIndices,
   onRegenerate,
+  showWelcomeText,
 }) => {
   const flatListRef = useRef<FlatList>(null);
   const theme = useAppTheme();
@@ -26,7 +28,30 @@ export const MessageList: React.FC<MessageListProps> = ({
       paddingHorizontal: theme.spacing.xs,
       flexGrow: 1,
     },
+    welcomeContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: theme.spacing.xl,
+    },
+    welcomeText: {
+      fontSize: theme.fontSizes.xl,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.secondary,
+      fontWeight: theme.fontWeights.medium as '500',
+      textAlign: 'center',
+      lineHeight: theme.fontSizes.xl * 1.4,
+    },
   });
+
+  // Show welcome text if no messages and welcome text should be shown
+  if (messages.length === 0 && showWelcomeText && !isNewMessageLoading) {
+    return (
+      <View style={styles.welcomeContainer}>
+        <Text style={styles.welcomeText}>What can I help with?</Text>
+      </View>
+    );
+  }
 
   // Add empty assistant message for new message loading
   const messagesWithLoading = isNewMessageLoading
