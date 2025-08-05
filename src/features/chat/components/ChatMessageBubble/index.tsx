@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { HoverDetector } from '../../../../features/ui';
 import { LoadingMessage } from '../LoadingMessage';
+import { MessageInteractionBar } from '../MessageInteractionBar';
 import { createChatMessageBubbleStyles } from './ChatMessageBubble.styles';
 
 type ChatMessageProps = {
@@ -74,42 +75,12 @@ const ChatMessageBubble = ({ item, isTyping = false, onRegenerate, showAvatar = 
           </Text>
         </HoverDetector>
       ) : (
-        // Assistant message layout with avatar on top
+        // Assistant message layout - Clean article style
         <View style={styles.assistantMessageContainer}>
-          {showAvatar && (
-            <View style={styles.avatarContainerTop}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>AI</Text>
-              </View>
-            </View>
-          )}
-          <HoverDetector
-            style={[
-              styles.assistantMessageBubble,
-              styles.assistantBubble,
-              !isLastInGroup && styles.bubbleCompact,
-              !showAvatar && styles.bubbleNoAvatar
-            ]}
-            onHoverChange={(isHovered) => {
-              setShowRegenerateButton(isHovered);
-            }}
-          >
-            {onRegenerate && (
-              <TouchableOpacity 
-                style={[
-                  styles.regenerateButton, 
-                  showRegenerateButton && styles.regenerateButtonVisible,
-                  isTyping && styles.disabledButton
-                ]}
-                onPress={onRegenerate}
-                disabled={isTyping}
-              >
-                <Text style={styles.regenerateIcon}>↻</Text>
-              </TouchableOpacity>
-            )}
-            {isTyping && !item.content ? (
-              <LoadingMessage />
-            ) : (
+          {isTyping && !item.content ? (
+            <LoadingMessage />
+          ) : (
+            <>
               <Text style={[
                 styles.messageText,
                 styles.assistantMessageText,
@@ -119,8 +90,20 @@ const ChatMessageBubble = ({ item, isTyping = false, onRegenerate, showAvatar = 
                   <Animated.Text style={[styles.cursor, { opacity }]}>|</Animated.Text>
                 )}
               </Text>
-            )}
-          </HoverDetector>
+              
+              {/* Interaction bar for AI messages */}
+              {!isTyping && item.content && (
+                <MessageInteractionBar
+                  onRegenerate={onRegenerate}
+                  onLike={() => console.log('Like pressed')}
+                  onDislike={() => console.log('Dislike pressed')}
+                  onShare={() => console.log('Share pressed')}
+                  onCopy={() => console.log('Copy pressed')}
+                  onAudio={() => console.log('Audio pressed')}
+                />
+              )}
+            </>
+          )}
         </View>
       )}
     </View>

@@ -75,29 +75,17 @@ export const createChatMessageBubbleStyles = () => {
       alignItems: 'flex-start' as const,
       position: 'relative' as const, // For regenerate button positioning
       marginBottom: theme.spacing.xl,
+      paddingHorizontal: theme.spacing.md,
     },
-    // Clean Article Layout - Small AI avatar in top-left
+    // Clean Article Layout - No avatar needed
     avatarContainerTop: {
-      position: 'absolute' as const,
-      top: 0,
-      left: 0,
-      width: 24,
-      height: 24,
-      zIndex: 1,
+      display: 'none', // Hide avatar completely
     },
     avatar: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor: theme.colors.status.info.primary,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      borderWidth: 0, // No border for clean look
+      display: 'none', // Hide avatar completely
     },
     avatarText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.bold as '700',
+      display: 'none', // Hide avatar text completely
     },
     messageText: {
       fontSize: theme.fontSizes.md,
@@ -106,16 +94,17 @@ export const createChatMessageBubbleStyles = () => {
     userMessageText: {
       color: theme.colors.message.userText,
     },
-    // Clean Article Layout - AI text styling
+    // Clean Article Layout - AI text styling (like the reference image)
     assistantMessageText: {
       color: theme.colors.text.primary,
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.fontSizes.lg, // Slightly larger for better readability
       fontFamily: theme.fontFamily.primary,
-      lineHeight: 26, // Generous line height for article readability
+      lineHeight: 28, // Generous line height for article readability
       textAlign: 'left' as const, // Natural left-aligned text
-      marginLeft: 32, // Space for avatar
-      paddingTop: theme.spacing.sm,
-      paddingBottom: theme.spacing.lg, // Space for regenerate button
+      marginLeft: 0, // No left margin since no avatar
+      paddingTop: theme.spacing.md,
+      paddingBottom: theme.spacing.xl, // More space for interaction buttons
+      fontWeight: theme.fontWeights.normal as '400', // Clean, readable font weight
     },
     // Clean Article Layout - Regenerate button in bottom-right
     regenerateButton: {

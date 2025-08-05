@@ -110,20 +110,13 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
 
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.messageContainer}>
-        <View style={styles.avatarContainer}>
-          <Text style={styles.avatar}>🤖</Text>
-        </View>
-        <View style={styles.contentContainer}>
-          <Animated.Text style={[styles.loadingText, { opacity: fadeAnim }]}>
-            {loadingTexts[currentTextIndex]}
-          </Animated.Text>
-          <View style={styles.dotsContainer}>
-            <Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
-            <Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
-            <Animated.View style={[styles.dot, { opacity: dot3Anim, marginRight: 0 }]} />
-          </View>
-        </View>
+      <Animated.Text style={[styles.loadingText, { opacity: fadeAnim }]}>
+        {loadingTexts[currentTextIndex]}
+      </Animated.Text>
+      <View style={styles.dotsContainer}>
+        <Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
+        <Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
+        <Animated.View style={[styles.dot, { opacity: dot3Anim, marginRight: 0 }]} />
       </View>
     </View>
   );
