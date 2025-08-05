@@ -33,6 +33,7 @@ export const useChat = (numericRoomId: number | null) => {
     loading,
     sending,
     isTyping,
+    regeneratingIndex,
     selectedModel,
     sendMessage: sendMessageToBackend,
     regenerateMessage: regenerateMessageInBackend,
@@ -89,6 +90,7 @@ export const useChat = (numericRoomId: number | null) => {
     loading,
     sending,
     isTyping,
+    regeneratingIndex,
     
     // Input state
     input,

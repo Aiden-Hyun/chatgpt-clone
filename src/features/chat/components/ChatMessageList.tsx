@@ -8,6 +8,7 @@ import ChatMessageBubble from './ChatMessageBubble';
 interface ChatMessageListProps {
   messages: ChatMessage[];
   isTyping: boolean;
+  regeneratingIndex: number | null;
   regenerateMessage: (index: number) => void;
 }
 
@@ -19,6 +20,7 @@ interface ChatMessageListProps {
 const ChatMessageList: React.FC<ChatMessageListProps> = ({
   messages,
   isTyping,
+  regeneratingIndex,
   regenerateMessage,
 }) => {
   const flatListRef = useRef<FlatList>(null);
@@ -32,8 +34,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
     },
   });
 
-  // Create a temporary assistant message for loading state
-  const messagesWithLoading = isTyping 
+  // Create a temporary assistant message for loading state (only for new messages, not regeneration)
+  const messagesWithLoading = isTyping && regeneratingIndex === null
     ? [...messages, { role: 'assistant', content: '' }]
     : messages;
 
@@ -44,6 +46,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
       renderItem={({ item, index }) => {
         const isCurrentlyTyping =
           isTyping && index === messages.length && item.role === 'assistant';
+        const isRegenerating = regeneratingIndex === index && item.role === 'assistant';
         // Group consecutive messages from the same sender
         const showAvatar =
           index === 0 || (index > 0 && messagesWithLoading[index - 1].role !== item.role);
@@ -54,9 +57,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
         return (
           <ChatMessageBubble
             item={item}
-            isTyping={isCurrentlyTyping}
+            isTyping={isCurrentlyTyping || isRegenerating}
             onRegenerate={
-              item.role === 'assistant' && !isCurrentlyTyping ? () => regenerateMessage(index) : undefined
+              item.role === 'assistant' && !isCurrentlyTyping && !isRegenerating ? () => regenerateMessage(index) : undefined
             }
             showAvatar={showAvatar}
             isLastInGroup={isLastInGroup}

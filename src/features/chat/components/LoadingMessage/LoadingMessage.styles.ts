@@ -17,12 +17,13 @@ export const createLoadingMessageStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    marginTop: theme.spacing.sm,
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: theme.colors.text.secondary,
-    marginRight: theme.spacing.xs,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: theme.colors.text.tertiary,
+    marginRight: theme.spacing.sm,
   },
 }); 

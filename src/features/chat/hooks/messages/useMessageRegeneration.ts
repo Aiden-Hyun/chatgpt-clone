@@ -9,7 +9,7 @@ export const useMessageRegeneration = (
   numericRoomId: number | null,
   messageState: ReturnType<typeof import('./useMessageState').useMessageState>
 ) => {
-  const { messages, setMessages, setIsTyping } = messageState;
+  const { messages, setMessages, setIsTyping, setRegeneratingIndex } = messageState;
   const { selectedModel } = useModelSelection(numericRoomId);
 
   /**
@@ -24,6 +24,9 @@ export const useMessageRegeneration = (
     
     const targetMessage = messages[index];
     if (targetMessage.role !== 'assistant') return;
+    
+    // Set regenerating index to show loading at the specific message position
+    setRegeneratingIndex(index);
     
     // Find the corresponding user message that came before this assistant message
     const userMessage = messages[index - 1];
@@ -47,6 +50,9 @@ export const useMessageRegeneration = (
       regenerateIndex: index,
       originalAssistantContent: targetMessage.content,
     });
+    
+    // Clear regenerating index when done
+    setRegeneratingIndex(null);
   };
 
   return {

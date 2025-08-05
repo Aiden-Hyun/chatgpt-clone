@@ -11,6 +11,7 @@ export const useMessageState = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
 
   return {
     // State
@@ -18,11 +19,13 @@ export const useMessageState = () => {
     loading,
     sending,
     isTyping,
+    regeneratingIndex,
     
     // State setters
     setMessages,
     setLoading,
     setSending,
     setIsTyping,
+    setRegeneratingIndex,
   };
 }; 

@@ -31,6 +31,7 @@ export const useMessagesCombined = (numericRoomId: number | null) => {
     loading,
     sending,
     isTyping: messageState.isTyping,
+    regeneratingIndex: messageState.regeneratingIndex,
     selectedModel,
     
     // State setters (needed for coordination)

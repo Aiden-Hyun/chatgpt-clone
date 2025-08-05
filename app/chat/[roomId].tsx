@@ -28,6 +28,7 @@ export default function ChatScreen() {
     loading,
     sending,
     isTyping,
+    regeneratingIndex,
     sendMessage: originalSendMessage,
     handleInputChange,
     selectedModel,
@@ -62,6 +63,7 @@ export default function ChatScreen() {
         <ChatMessageList
           messages={messages}
           isTyping={isTyping}
+          regeneratingIndex={regeneratingIndex}
           regenerateMessage={regenerateMessage}
         />
 
