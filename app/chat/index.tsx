@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
 import { router } from 'expo-router';
-import { supabase } from '../../src/shared/lib/supabase';
+import { useEffect } from 'react';
 import { LoadingWrapper } from '../../src/features/ui';
+import { supabase } from '../../src/shared/lib/supabase';
 
 export default function NewChatScreen() {
   useEffect(() => {
@@ -10,7 +10,7 @@ export default function NewChatScreen() {
         // Get current session
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-          router.replace('/login');
+          router.replace('/auth');
           return;
         }
 

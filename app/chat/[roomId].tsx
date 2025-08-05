@@ -1,11 +1,12 @@
 // Moved Picker inside ChatHeader component
-import { useLocalSearchParams, router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import {
-  KeyboardAvoidingView,
-  Platform,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
 import { useLogout } from '../../src/features/auth';
 import { ChatHeader, ChatInput, MessageList } from '../../src/features/chat/components';
+import { useChatRooms } from '../../src/features/chat/hooks';
 import { useChatSimplified } from '../../src/features/chat/hooks/useChatSimplified';
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
@@ -20,6 +21,7 @@ export default function ChatScreen() {
   
   const { inputRef, maintainFocus } = useInputFocus();
   const { disableBackButton } = useBackButtonHandler({ enabled: true });
+  const { startNewChat } = useChatRooms();
   const styles = createChatStyles();
 
   const {
@@ -40,6 +42,18 @@ export default function ChatScreen() {
     maintainFocus();
   };
 
+  const handleNewChat = () => {
+    startNewChat();
+  };
+
+  const handleChatSelect = (selectedRoomId: string) => {
+    router.push({ pathname: '/chat/[roomId]', params: { roomId: selectedRoomId } });
+  };
+
+  const handleBack = () => {
+    router.push('/');
+  };
+
   // Back button is automatically disabled by useBackButtonHandler hook
 
   return (
@@ -51,7 +65,10 @@ export default function ChatScreen() {
         <ChatHeader
           onLogout={logout}
           onSettings={() => router.push('/settings')}
-          onBack={() => router.push('/')}
+          onBack={handleBack}
+          onNewChat={handleNewChat}
+          onChatSelect={handleChatSelect}
+          selectedChatId={roomId}
         />
 
         {/* Messages */}

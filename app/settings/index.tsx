@@ -1,11 +1,11 @@
-import React from 'react';
-import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
+import React from 'react';
+import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert';
+import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { ThemeSelector } from '../../src/features/theme';
-import { useCustomAlert, CustomAlert, useToast } from '../../src/features/alert';
 import { useAppTheme } from '../../src/shared/hooks';
 import { createSettingsStyles } from './settings.styles';
 

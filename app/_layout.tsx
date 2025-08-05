@@ -1,12 +1,12 @@
 // app/_layout.tsx
-import { Slot, Stack, usePathname, useRouter } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { ToastContainer, ToastProvider } from '../src/features/alert';
 import { AuthProvider, useAuth } from '../src/features/auth';
+import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 import { LanguageProvider } from '../src/features/language';
 import { ThemeProvider } from '../src/features/theme';
-import { ToastProvider, ToastContainer } from '../src/features/alert';
-import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 
 // Initialize services
 configureServices();
@@ -26,6 +26,14 @@ function ProtectedRoutes() {
       router.replace('/auth');
     }
   }, [isLoading, session, pathname, isAuthRoute]);
+
+  // Redirect to /chat by default for authenticated users
+  useEffect(() => {
+    if (!isLoading && session && pathname === '/') {
+      // Redirect to fresh new chat instead of home screen
+      router.replace('/chat');
+    }
+  }, [isLoading, session, pathname]);
 
   if (isLoading) {
     return (
