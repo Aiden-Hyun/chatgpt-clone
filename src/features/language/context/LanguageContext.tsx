@@ -103,6 +103,18 @@ const translations: Record<string, Record<string, string>> = {
     'chat.delete': 'Delete',
     'chat.room_deleted': 'Chat room deleted successfully',
     
+    // Welcome Messages
+    'welcome.how_are_you': 'How are you doing today? 😊',
+    'welcome.whats_on_mind': 'What\'s on your mind? 🤔',
+    'welcome.how_can_help': 'How can I assist you today? ✨',
+    'welcome.what_to_chat': 'What would you like to chat about? 💬',
+    'welcome.ready_to_help': 'Ready to help you with anything! 🚀',
+    'welcome.shall_we_explore': 'What shall we explore today? 🌟',
+    'welcome.create_amazing': 'Let\'s create something amazing together! ✨',
+    'welcome.next_big_idea': 'What\'s your next big idea? 💡',
+    'welcome.ready_adventure': 'Ready for an adventure? 🎯',
+    'welcome.help_discover': 'What can I help you discover? 🔍',
+    
     // Loading Messages
     'loading.thinking': 'Thinking...',
     'loading.analyzing': 'Analyzing your message...',
@@ -208,6 +220,18 @@ const translations: Record<string, Record<string, string>> = {
     'chat.delete': 'Eliminar',
     'chat.room_deleted': 'Sala de chat eliminada exitosamente',
     
+    // Welcome Messages
+    'welcome.how_are_you': '¿Cómo estás hoy? 😊',
+    'welcome.whats_on_mind': '¿Qué tienes en la cabeza? 🤔',
+    'welcome.how_can_help': '¿Cómo puedo ayudarte hoy? ✨',
+    'welcome.what_to_chat': '¿Qué te gustaría charlar? 💬',
+    'welcome.ready_to_help': '¡Listo para ayudarte con cualquier cosa! 🚀',
+    'welcome.shall_we_explore': '¿Qué vamos a explorar hoy? 🌟',
+    'welcome.create_amazing': '¡Vamos a crear algo increíble juntos! ✨',
+    'welcome.next_big_idea': '¿Cuál es tu siguiente gran idea? 💡',
+    'welcome.ready_adventure': '¿Listo para una aventura? 🎯',
+    'welcome.help_discover': '¿Qué puedo ayudarte a descubrir? 🔍',
+    
     // Loading Messages
     'loading.thinking': 'Pensando...',
     'loading.analyzing': 'Analizando tu mensaje...',
@@ -312,6 +336,18 @@ const translations: Record<string, Record<string, string>> = {
     'chat.copy': '복사',
     'chat.delete': '삭제',
     'chat.room_deleted': '채팅방이 성공적으로 삭제되었습니다',
+    
+    // Welcome Messages
+    'welcome.how_are_you': '어떻게 지내세요? 😊',
+    'welcome.whats_on_mind': '무슨 생각이 드시나요? 🤔',
+    'welcome.how_can_help': '어떻게 도와드릴까요? ✨',
+    'welcome.what_to_chat': '어떤 주제로 대화를 나누고 싶으세요? 💬',
+    'welcome.ready_to_help': '무엇이든 도와드릴 준비가 되었습니다! 🚀',
+    'welcome.shall_we_explore': '오늘 무엇을 탐색해볼까요? 🌟',
+    'welcome.create_amazing': '함께 멋진 것을 만들어보아요! ✨',
+    'welcome.next_big_idea': '다음 큰 아이디어는 무엇인가요? 💡',
+    'welcome.ready_adventure': '모험을 준비하시나요? 🎯',
+    'welcome.help_discover': '무엇을 도와드릴 수 있을까요? 🔍',
     
     // Loading Messages
     'loading.thinking': '생각 중...',

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, FlatList, StyleSheet, Text, View } from 'react-native';
+import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../../shared/hooks';
 import { ChatMessage } from '../../types';
 import { MessageItem } from '../MessageItem';
@@ -21,12 +22,27 @@ export const MessageList: React.FC<MessageListProps> = ({
 }) => {
   const flatListRef = useRef<FlatList>(null);
   const theme = useAppTheme();
+  const { t } = useLanguageContext();
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedWelcomeKey, setSelectedWelcomeKey] = useState('');
   const cursorOpacity = useRef(new Animated.Value(1)).current;
 
-  const welcomeMessage = "What can I help with? 😊";
-  const typingSpeed = 30; // milliseconds per character - made even faster
+  // Array of welcome message keys
+  const welcomeMessageKeys = [
+    'welcome.how_are_you',
+    'welcome.whats_on_mind', 
+    'welcome.how_can_help',
+    'welcome.what_to_chat',
+    'welcome.ready_to_help',
+    'welcome.shall_we_explore',
+    'welcome.create_amazing',
+    'welcome.next_big_idea',
+    'welcome.ready_adventure',
+    'welcome.help_discover'
+  ];
+
+  const typingSpeed = 30; // milliseconds per character
 
   const styles = StyleSheet.create({
     container: {
@@ -55,9 +71,19 @@ export const MessageList: React.FC<MessageListProps> = ({
     },
   });
 
-  // Typewriter animation effect
+  // Select random welcome message when component mounts or welcome text should be shown
   useEffect(() => {
     if (messages.length === 0 && showWelcomeText && !isNewMessageLoading) {
+      const randomKey = welcomeMessageKeys[Math.floor(Math.random() * welcomeMessageKeys.length)];
+      setSelectedWelcomeKey(randomKey);
+    }
+  }, [messages.length, showWelcomeText, isNewMessageLoading]);
+
+  // Typewriter animation effect
+  useEffect(() => {
+    if (messages.length === 0 && showWelcomeText && !isNewMessageLoading && selectedWelcomeKey) {
+      const welcomeMessage = t(selectedWelcomeKey);
+      
       // Reset animation when welcome text should be shown
       setDisplayedText('');
       setCurrentIndex(0);
@@ -75,7 +101,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       const interval = setInterval(typeNextChar, typingSpeed);
       return () => clearInterval(interval);
     }
-  }, [messages.length, showWelcomeText, isNewMessageLoading, welcomeMessage, typingSpeed]);
+  }, [messages.length, showWelcomeText, isNewMessageLoading, selectedWelcomeKey, t, typingSpeed]);
 
   // Blinking cursor animation
   useEffect(() => {
