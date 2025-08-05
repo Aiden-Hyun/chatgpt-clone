@@ -143,7 +143,7 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   // Add empty assistant message for new message loading
   const messagesWithLoading = isNewMessageLoading
-    ? [...messages, { role: 'assistant', content: '' }]
+    ? [...messages, { role: 'assistant' as const, content: '' }]
     : messages;
 
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {

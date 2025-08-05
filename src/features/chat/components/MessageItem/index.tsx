@@ -1,9 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
 import { ChatMessage } from '../../types';
-import { UserMessage } from './UserMessage';
-import { AssistantMessage } from './AssistantMessage';
 import { LoadingMessage } from '../LoadingMessage';
+import { AssistantMessage } from './AssistantMessage';
+import { UserMessage } from './UserMessage';
 
 interface MessageItemProps {
   message: ChatMessage;
@@ -23,11 +22,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onRegenerate,
   showAvatar = true,
   isLastInGroup = true,
-}) => {
-  // Show loading message for new messages at the bottom
-  if (isNewMessageLoading && index === 0 && message.role === 'assistant' && !message.content) {
-    return <LoadingMessage />;
-  }
+  }) => {
+    // Show loading message for new messages at the bottom
+    if (isNewMessageLoading && message.role === 'assistant' && !message.content) {
+      return <LoadingMessage />;
+    }
 
   // Show loading message for regenerating messages
   if (isRegenerating && message.role === 'assistant') {

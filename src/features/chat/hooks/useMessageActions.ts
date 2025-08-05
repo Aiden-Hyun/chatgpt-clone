@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { sendMessageHandler } from '../services/sendMessage';
-import { useModelSelection } from './useModelSelection';
 import { ChatMessage } from '../types';
+import { useModelSelection } from './useModelSelection';
 
 interface UseMessageActionsProps {
   roomId: number | null;
@@ -33,13 +33,28 @@ export const useMessageActions = ({
 
     startNewMessageLoading();
 
+    // Create a custom setMessages function that stops loading when content appears
+    const customSetMessages = (newMessages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => {
+      const updatedMessages = typeof newMessages === 'function' ? newMessages(messages) : newMessages;
+      
+      // Check if the last message (assistant message) now has content
+      const lastMessage = updatedMessages[updatedMessages.length - 1];
+      if (lastMessage && lastMessage.role === 'assistant' && lastMessage.content.length > 0) {
+        stopNewMessageLoading();
+      }
+      
+      setMessages(newMessages);
+    };
+
     try {
       await sendMessageHandler({
         userContent: userContent.trim(),
         numericRoomId: roomId,
         messages,
-        setMessages,
-        setIsTyping: stopNewMessageLoading, // We'll handle this differently
+        setMessages: customSetMessages,
+        setIsTyping: (isTyping: boolean) => {
+          // Don't stop loading state here - let it persist until content appears
+        },
         setDrafts,
         model: selectedModel,
       });
