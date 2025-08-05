@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { HoverDetector } from '../../../../features/ui';
+import { LoadingMessage } from '../LoadingMessage';
 import { createChatMessageBubbleStyles } from './ChatMessageBubble.styles';
 
 type ChatMessageProps = {
@@ -106,15 +107,19 @@ const ChatMessageBubble = ({ item, isTyping = false, onRegenerate, showAvatar = 
                 <Text style={styles.regenerateIcon}>↻</Text>
               </TouchableOpacity>
             )}
-            <Text style={[
-              styles.messageText,
-              styles.assistantMessageText,
-            ]}>
-              {item.content}
-              {isTyping && (
-                <Animated.Text style={[styles.cursor, { opacity }]}>|</Animated.Text>
-              )}
-            </Text>
+            {isTyping && !item.content ? (
+              <LoadingMessage />
+            ) : (
+              <Text style={[
+                styles.messageText,
+                styles.assistantMessageText,
+              ]}>
+                {item.content}
+                {isTyping && (
+                  <Animated.Text style={[styles.cursor, { opacity }]}>|</Animated.Text>
+                )}
+              </Text>
+            )}
           </HoverDetector>
         </View>
       )}

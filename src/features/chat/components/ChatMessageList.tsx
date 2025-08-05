@@ -32,26 +32,31 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
     },
   });
 
+  // Create a temporary assistant message for loading state
+  const messagesWithLoading = isTyping 
+    ? [...messages, { role: 'assistant', content: '' }]
+    : messages;
+
   return (
     <FlatList
-      data={messages}
+      data={messagesWithLoading}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item, index }) => {
         const isCurrentlyTyping =
-          isTyping && index === messages.length - 1 && item.role === 'assistant';
+          isTyping && index === messages.length && item.role === 'assistant';
         // Group consecutive messages from the same sender
         const showAvatar =
-          index === 0 || (index > 0 && messages[index - 1].role !== item.role);
+          index === 0 || (index > 0 && messagesWithLoading[index - 1].role !== item.role);
         const isLastInGroup =
-          index === messages.length - 1 ||
-          (index < messages.length - 1 && messages[index + 1].role !== item.role);
+          index === messagesWithLoading.length - 1 ||
+          (index < messagesWithLoading.length - 1 && messagesWithLoading[index + 1].role !== item.role);
 
         return (
           <ChatMessageBubble
             item={item}
             isTyping={isCurrentlyTyping}
             onRegenerate={
-              item.role === 'assistant' ? () => regenerateMessage(index) : undefined
+              item.role === 'assistant' && !isCurrentlyTyping ? () => regenerateMessage(index) : undefined
             }
             showAvatar={showAvatar}
             isLastInGroup={isLastInGroup}
