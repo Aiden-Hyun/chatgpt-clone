@@ -49,6 +49,7 @@ function ProtectedRoutes() {
         <Stack.Screen name="chat" />
         <Stack.Screen name="chat/[roomId]" />
         <Stack.Screen name="design-showcase" />
+        <Stack.Screen name="chatgpt-demo" />
       </Stack>
       <ToastContainer />
     </>

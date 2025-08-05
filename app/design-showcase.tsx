@@ -55,6 +55,10 @@ export default function DesignShowcaseScreen() {
     router.push('/');
   };
 
+  const handleOpenChatGPTDemo = () => {
+    router.push('/chatgpt-demo');
+  };
+
   const styles = {
     container: {
       flex: 1,
@@ -865,6 +869,12 @@ export default function DesignShowcaseScreen() {
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Design Showcase</Text>
+        <TouchableOpacity 
+          style={[styles.backButton, { marginLeft: 'auto', marginRight: 0 }]} 
+          onPress={handleOpenChatGPTDemo}
+        >
+          <Text style={styles.backButtonText}>🤖</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
