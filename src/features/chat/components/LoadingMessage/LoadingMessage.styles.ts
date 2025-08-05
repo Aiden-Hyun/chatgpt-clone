@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export const createLoadingMessageStyles = (theme: any) => StyleSheet.create({
   container: {
     marginVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg, // Increased horizontal padding to match AI responses
   },
   loadingText: {
     fontSize: theme.fontSizes.lg,

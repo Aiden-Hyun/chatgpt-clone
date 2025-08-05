@@ -75,7 +75,7 @@ export const createChatMessageBubbleStyles = () => {
       alignItems: 'flex-start' as const,
       position: 'relative' as const, // For regenerate button positioning
       marginBottom: theme.spacing.xl,
-      paddingHorizontal: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg, // Increased horizontal padding for more margin
     },
     // Clean Article Layout - No avatar needed
     avatarContainerTop: {
