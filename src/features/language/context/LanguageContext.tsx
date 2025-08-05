@@ -102,6 +102,20 @@ const translations: Record<string, Record<string, string>> = {
     'chat.copy': 'Copy',
     'chat.delete': 'Delete',
     'chat.room_deleted': 'Chat room deleted successfully',
+    'chat.placeholder': 'Type a message...',
+    'chat.sending': '...',
+    
+    // Sidebar
+    'sidebar.new_chat': 'New Chat',
+    'sidebar.no_messages': 'No messages yet',
+    'sidebar.user': 'User',
+    
+    // Menu
+    'menu.settings': 'Settings',
+    'menu.design_showcase': 'Design Showcase',
+    'menu.ai_model': 'AI Model',
+    'menu.back': 'Back',
+    'menu.logout': 'Logout',
     
     // Welcome Messages
     'welcome.how_are_you': 'How are you doing today? 😊',
@@ -219,6 +233,20 @@ const translations: Record<string, Record<string, string>> = {
     'chat.copy': 'Copiar',
     'chat.delete': 'Eliminar',
     'chat.room_deleted': 'Sala de chat eliminada exitosamente',
+    'chat.placeholder': 'Escribe un mensaje...',
+    'chat.sending': '...',
+    
+    // Sidebar
+    'sidebar.new_chat': 'Nueva Conversación',
+    'sidebar.no_messages': 'Aún no hay mensajes',
+    'sidebar.user': 'Usuario',
+    
+    // Menu
+    'menu.settings': 'Configuración',
+    'menu.design_showcase': 'Mostrar Diseño',
+    'menu.ai_model': 'Modelo AI',
+    'menu.back': 'Atrás',
+    'menu.logout': 'Cerrar Sesión',
     
     // Welcome Messages
     'welcome.how_are_you': '¿Cómo estás hoy? 😊',
@@ -336,6 +364,20 @@ const translations: Record<string, Record<string, string>> = {
     'chat.copy': '복사',
     'chat.delete': '삭제',
     'chat.room_deleted': '채팅방이 성공적으로 삭제되었습니다',
+    'chat.placeholder': '메시지를 입력하세요...',
+    'chat.sending': '...',
+    
+    // Sidebar
+    'sidebar.new_chat': '새 대화',
+    'sidebar.no_messages': '아직 메시지가 없습니다',
+    'sidebar.user': '사용자',
+    
+    // Menu
+    'menu.settings': '설정',
+    'menu.design_showcase': '디자인 쇼케이스',
+    'menu.ai_model': 'AI 모델',
+    'menu.back': '뒤로',
+    'menu.logout': '로그아웃',
     
     // Welcome Messages
     'welcome.how_are_you': '어떻게 지내세요? 😊',

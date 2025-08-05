@@ -1,6 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../../shared/hooks';
 
 // AI Models for selection
@@ -34,6 +35,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
 }) => {
   const [showModelMenu, setShowModelMenu] = useState(false);
   const theme = useAppTheme();
+  const { t } = useLanguageContext();
   const styles = createStyles(theme);
 
   const handleModelSelect = (model: string) => {
@@ -62,7 +64,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 style={styles.menuItem}
                 onPress={onSettings}
               >
-                <Text style={styles.menuText}>Settings</Text>
+                <Text style={styles.menuText}>{t('menu.settings')}</Text>
               </TouchableOpacity>
               
               {onDesignShowcase && (
@@ -70,7 +72,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                   style={styles.menuItem}
                   onPress={onDesignShowcase}
                 >
-                  <Text style={styles.menuText}>Design Showcase</Text>
+                  <Text style={styles.menuText}>{t('menu.design_showcase')}</Text>
                 </TouchableOpacity>
               )}
               
@@ -79,7 +81,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                   style={styles.menuItem}
                   onPress={() => setShowModelMenu(true)}
                 >
-                  <Text style={styles.menuText}>AI Model</Text>
+                  <Text style={styles.menuText}>{t('menu.ai_model')}</Text>
                   <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
                 </TouchableOpacity>
               )}
@@ -88,7 +90,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 style={styles.menuItem}
                 onPress={onLogout}
               >
-                <Text style={styles.menuText}>Logout</Text>
+                <Text style={styles.menuText}>{t('menu.logout')}</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -99,7 +101,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 onPress={handleBackToMainMenu}
               >
                 <MaterialIcons name="arrow-back" size={20} color={theme.colors.text.tertiary} />
-                <Text style={styles.backMenuText}> Back</Text>
+                <Text style={styles.backMenuText}> {t('menu.back')}</Text>
               </TouchableOpacity>
               {AI_MODELS.map((model) => (
                 <TouchableOpacity 

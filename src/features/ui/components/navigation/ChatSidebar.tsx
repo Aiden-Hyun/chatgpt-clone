@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../../shared/hooks';
 import { useUserInfo } from '../../../auth';
 import { useChatRooms } from '../../../chat/hooks';
@@ -26,6 +27,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   selectedChatId,
 }) => {
   const theme = useAppTheme();
+  const { t } = useLanguageContext();
   const { userName } = useUserInfo();
   const { rooms } = useChatRooms();
   const styles = createChatSidebarStyles(theme);
@@ -94,7 +96,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
           <View style={styles.sidebarHeader}>
             <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
               <MaterialIcons name="add" size={20} color={theme.colors.text.primary} />
-              <Text style={styles.newChatText}>New Chat</Text>
+              <Text style={styles.newChatText}>{t('sidebar.new_chat')}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onClose}>
               <MaterialIcons name="close" size={24} color={theme.colors.text.secondary} />
@@ -125,7 +127,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                     {room.name}
                   </Text>
                   <Text style={styles.chatItemSubtitle}>
-                    {room.last_message || 'No messages yet'}
+                    {room.last_message || t('sidebar.no_messages')}
                   </Text>
                 </View>
                 <Text style={styles.chatItemTime}>
@@ -139,7 +141,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
           <View style={styles.userProfile}>
             <View style={styles.userInfo}>
               <MaterialIcons name="account-circle" size={32} color={theme.colors.text.secondary} />
-              <Text style={styles.userName}>{userName || 'User'}</Text>
+              <Text style={styles.userName}>{userName || t('sidebar.user')}</Text>
             </View>
             <TouchableOpacity style={styles.settingsButton} onPress={handleSettings}>
               <MaterialIcons name="settings" size={20} color={theme.colors.text.secondary} />

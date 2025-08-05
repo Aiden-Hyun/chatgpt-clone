@@ -6,6 +6,7 @@ import {
     View
 } from 'react-native';
 
+import { useLanguageContext } from '../../../../features/language';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {
@@ -30,6 +31,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   inputRef,
 }) => {
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const { t } = useLanguageContext();
   
   // Get styles from dedicated style file
   const { styles, placeholderTextColor } = createChatInputStyles(isInputFocused);
@@ -62,7 +64,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         style={getInputStyle()}
         value={input}
         onChangeText={onChangeText}
-        placeholder="Type a message..."
+        placeholder={t('chat.placeholder')}
         placeholderTextColor={placeholderTextColor}
         onFocus={() => setIsInputFocused(true)}
         onBlur={() => setIsInputFocused(false)}
@@ -81,7 +83,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         activeOpacity={0.8}
       >
         <Text style={getSendButtonTextStyle()}>
-          {sending ? '...' : 'Send'}
+          {sending ? t('chat.sending') : t('chat.send')}
         </Text>
       </TouchableOpacity>
     </View>
