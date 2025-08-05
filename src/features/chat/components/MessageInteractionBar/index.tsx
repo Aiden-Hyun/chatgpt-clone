@@ -1,5 +1,6 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../../../shared/hooks';
 import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
 
@@ -27,36 +28,28 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
     <View style={styles.container}>
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.iconButton} onPress={onRegenerate}>
-          <Text style={styles.iconText}>💬</Text>
+          <MaterialIcons name="refresh" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.iconButton} onPress={onLike}>
-          <Text style={styles.iconText}>👍</Text>
+          <MaterialIcons name="thumb-up" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.iconButton} onPress={onDislike}>
-          <Text style={styles.iconText}>👎</Text>
+          <MaterialIcons name="thumb-down" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.iconButton} onPress={onAudio}>
-          <Text style={styles.iconText}>🔊</Text>
+          <MaterialIcons name="volume-up" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.iconButton} onPress={onCopy}>
-          <Text style={styles.iconText}>✏️</Text>
+          <MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.iconButton} onPress={onShare}>
-          <Text style={styles.iconText}>📤</Text>
+          <MaterialIcons name="share" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.iconButton}>
-          <Text style={styles.iconText}>⌄</Text>
-        </TouchableOpacity>
-      </View>
-      
-      <View style={styles.scrollIndicator}>
-        <Text style={styles.scrollIcon}>⌄</Text>
       </View>
     </View>
   );

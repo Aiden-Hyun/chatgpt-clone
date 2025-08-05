@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { createRoomListItemStyles } from './RoomListItem.styles';
 
 interface ChatRoom {
@@ -23,7 +24,7 @@ const RoomListItem: React.FC<Props> = ({ room, onDelete, onPress }) => {
         <Text style={styles.roomName}>{room.name}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-        <Text style={styles.deleteText}>×</Text>
+        <MaterialIcons name="delete" size={20} color={styles.deleteText.color} />
       </TouchableOpacity>
     </View>
   );

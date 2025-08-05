@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { QuickActionsMenu } from '../../../../features/ui';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
@@ -30,7 +31,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     <View style={styles.header}>
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={onBack}>
-        <Text style={styles.backButtonText}>‹</Text>
+        <MaterialIcons name="arrow-back" size={24} color={styles.backButtonText.color} />
       </TouchableOpacity>
 
       {/* Title */}
@@ -43,7 +44,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         style={styles.menuButton} 
         onPress={() => setIsQuickActionsVisible(!isQuickActionsVisible)}
       >
-        <Text style={styles.menuButtonText}>⋯</Text>
+        <MaterialIcons name="more-vert" size={24} color={styles.menuButtonText.color} />
       </TouchableOpacity>
 
       {/* Quick Actions Menu Dropdown */}

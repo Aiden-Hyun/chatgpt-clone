@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, SafeAreaView, Text, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useLogout, useUserInfo } from '../src/features/auth';
 import { RoomListItem } from '../src/features/chat/components';
 import { useChatRooms } from '../src/features/chat/hooks';
@@ -48,7 +49,7 @@ export default function HomeScreen() {
             style={styles.settingsMenuButton} 
             onPress={() => setIsQuickActionsVisible(!isQuickActionsVisible)}
           >
-            <Text style={styles.settingsMenuText}>⋯</Text>
+            <MaterialIcons name="more-vert" size={24} color={styles.settingsMenuText.color} />
           </TouchableOpacity>
           
           {userName && (

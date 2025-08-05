@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, SafeAreaView, Text, TouchableOpacity, View, Switch, TextInput } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useLogout, useUserInfo, useUpdateProfile } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
@@ -73,7 +74,7 @@ export default function SettingsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>←</Text>
+          <MaterialIcons name="arrow-back" size={24} color={styles.backButtonText.color} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={styles.headerSpacer} />
@@ -174,15 +175,15 @@ export default function SettingsScreen() {
           <View style={styles.card}>
             <TouchableOpacity style={styles.settingItem}>
               <Text style={styles.settingLabel}>{t('settings.export_data')}</Text>
-              <Text style={styles.settingValue}>→</Text>
+              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
               <Text style={styles.settingLabel}>{t('settings.clear_conversations')}</Text>
-              <Text style={styles.settingValue}>→</Text>
+              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
               <Text style={styles.settingLabel}>{t('settings.privacy_policy')}</Text>
-              <Text style={styles.settingValue}>→</Text>
+              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -197,11 +198,11 @@ export default function SettingsScreen() {
             </View>
             <TouchableOpacity style={styles.settingItem}>
               <Text style={styles.settingLabel}>{t('settings.terms_of_service')}</Text>
-              <Text style={styles.settingValue}>→</Text>
+              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.settingItem}>
               <Text style={styles.settingLabel}>{t('settings.support')}</Text>
-              <Text style={styles.settingValue}>→</Text>
+              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
             </TouchableOpacity>
           </View>
         </View>

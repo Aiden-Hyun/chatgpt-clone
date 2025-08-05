@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAppTheme } from '../../../../shared/hooks';
+
+// AI Models for selection
+const AI_MODELS = [
+  { label: 'GPT-4', value: 'gpt-4' },
+  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
+  { label: 'Claude 3', value: 'claude-3' },
+];
 
 interface QuickActionsMenuProps {
   isVisible: boolean;
@@ -14,14 +22,6 @@ interface QuickActionsMenuProps {
   showModelSelection?: boolean;
 }
 
-const AI_MODELS = [
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
-  { label: 'GPT-3.5 Turbo-16k', value: 'gpt-3.5-turbo-16k' },
-  { label: 'GPT-4', value: 'gpt-4' },
-  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
-  { label: 'GPT-4o', value: 'gpt-4o' },
-];
-
 export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({ 
   isVisible, 
   onClose, 
@@ -32,71 +32,61 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   onModelChange,
   showModelSelection = false,
 }) => {
+  const [showModelMenu, setShowModelMenu] = useState(false);
   const theme = useAppTheme();
   const styles = createStyles(theme);
-  const [showModelSubmenu, setShowModelSubmenu] = useState(false);
 
   const handleModelSelect = (model: string) => {
     onModelChange?.(model);
-    setShowModelSubmenu(false);
+    setShowModelMenu(false);
     onClose();
   };
 
   const handleBackToMainMenu = () => {
-    setShowModelSubmenu(false);
+    setShowModelMenu(false);
   };
 
   return (
     <Modal
       visible={isVisible}
-      transparent={true}
+      transparent
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableOpacity 
-        style={styles.overlay} 
-        activeOpacity={1} 
-        onPress={onClose}
-      >
+      <TouchableOpacity style={styles.overlay} onPress={onClose} activeOpacity={1}>
         <View style={styles.menuContainer}>
-          {!showModelSubmenu ? (
+          {!showModelMenu ? (
             // Main menu
             <>
-              {showModelSelection && (
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={() => setShowModelSubmenu(true)}
-                >
-                  <Text style={styles.menuText}>Model: {selectedModel || 'GPT-3.5 Turbo'}</Text>
-                  <Text style={styles.submenuIndicator}>›</Text>
-                </TouchableOpacity>
-              )}
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => {
-                  onSettings();
-                  onClose();
-                }}
+                onPress={onSettings}
               >
                 <Text style={styles.menuText}>Settings</Text>
               </TouchableOpacity>
+              
               {onDesignShowcase && (
                 <TouchableOpacity 
                   style={styles.menuItem}
-                  onPress={() => {
-                    onDesignShowcase();
-                    onClose();
-                  }}
+                  onPress={onDesignShowcase}
                 >
                   <Text style={styles.menuText}>Design Showcase</Text>
                 </TouchableOpacity>
               )}
+              
+              {showModelSelection && (
+                <TouchableOpacity 
+                  style={styles.menuItem}
+                  onPress={() => setShowModelMenu(true)}
+                >
+                  <Text style={styles.menuText}>AI Model</Text>
+                  <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
+                </TouchableOpacity>
+              )}
+              
               <TouchableOpacity 
                 style={styles.menuItem}
-                onPress={() => {
-                  onLogout();
-                  onClose();
-                }}
+                onPress={onLogout}
               >
                 <Text style={styles.menuText}>Logout</Text>
               </TouchableOpacity>
@@ -108,7 +98,8 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 style={styles.backMenuItem}
                 onPress={handleBackToMainMenu}
               >
-                <Text style={styles.backMenuText}>‹ Back</Text>
+                <MaterialIcons name="arrow-back" size={20} color={theme.colors.text.tertiary} />
+                <Text style={styles.backMenuText}> Back</Text>
               </TouchableOpacity>
               {AI_MODELS.map((model) => (
                 <TouchableOpacity 
@@ -126,7 +117,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                     {model.label}
                   </Text>
                   {selectedModel === model.value && (
-                    <Text style={styles.checkmark}>✓</Text>
+                    <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
                   )}
                 </TouchableOpacity>
               ))}
@@ -173,6 +164,8 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginVertical: 2,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border.light,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   menuText: {
     fontSize: theme.fontSizes.md,
