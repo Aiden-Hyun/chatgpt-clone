@@ -64,6 +64,15 @@ const translations: Record<string, Record<string, string>> = {
     'auth.passwords_must_match': 'Passwords must match',
     'auth.password_too_short': 'Password must be at least 6 characters',
     
+    // Auth Button States
+    'auth.signing_in': 'Signing In...',
+    'auth.signing_up': 'Signing Up...',
+    
+    // Auth Links
+    'auth.forgot_password_link': 'Forgot Password?',
+    'auth.no_account_link': 'Don\'t have an account? Sign Up',
+    'auth.have_account_link': 'Already have an account? Sign In',
+    
     // Home
     'home.hello': 'Hello',
     'home.no_conversations': 'No conversations yet',
@@ -116,6 +125,61 @@ const translations: Record<string, Record<string, string>> = {
     'menu.ai_model': 'AI Model',
     'menu.back': 'Back',
     'menu.logout': 'Logout',
+    
+    // Design Showcase
+    'showcase.title': 'Design Showcase',
+    'showcase.buttons': 'Buttons',
+    'showcase.primary_buttons': 'Primary Buttons',
+    'showcase.secondary_buttons': 'Secondary Buttons',
+    'showcase.outline_ghost_buttons': 'Outline & Ghost Buttons',
+    'showcase.status_buttons': 'Status Buttons',
+    'showcase.button_sizes': 'Button Sizes',
+    'showcase.input_fields': 'Input Fields',
+    'showcase.text_input': 'Text Input',
+    'showcase.chat_input': 'Chat Input (Multi-line)',
+    'showcase.switches': 'Switches',
+    'showcase.toggle_switch': 'Toggle Switch',
+    'showcase.language_selector': 'Language Selector',
+    'showcase.toast_notifications': 'Toast Notifications',
+    'showcase.alert_dialogs': 'Alert Dialogs',
+    'showcase.test_toast_types': 'Test different toast types',
+    'showcase.test_alert_types': 'Test different alert types',
+    
+    // Button Labels
+    'button.primary': 'Primary',
+    'button.secondary': 'Secondary',
+    'button.outline': 'Outline',
+    'button.ghost': 'Ghost',
+    'button.success': 'Success',
+    'button.danger': 'Danger',
+    'button.disabled': 'Disabled',
+    'button.small': 'Small',
+    'button.medium': 'Medium',
+    'button.large': 'Large',
+    'button.send': 'Send',
+    
+    // Status Labels
+    'status.success': 'Success',
+    'status.error': 'Error',
+    'status.warning': 'Warning',
+    'status.info': 'Info',
+    
+    // Placeholders
+    'placeholder.enter_text': 'Enter text here...',
+    'placeholder.type_message': 'Type a message...',
+    
+    // Messages
+    'message.success_toast': 'Success toast message!',
+    'message.error_toast': 'Error toast message!',
+    'message.warning_toast': 'Warning toast message!',
+    'message.info_toast': 'Info toast message!',
+    'message.success_alert': 'This is a success alert message!',
+    'message.error_alert': 'This is an error alert message!',
+    
+    // Auth Placeholders
+    'auth.placeholder.email': 'Email',
+    'auth.placeholder.password': 'Password',
+    'auth.placeholder.confirm_password': 'Confirm Password',
     
     // Welcome Messages
     'welcome.how_are_you': 'How are you doing today? 😊',
@@ -195,6 +259,15 @@ const translations: Record<string, Record<string, string>> = {
     'auth.passwords_must_match': 'Las contraseñas deben coincidir',
     'auth.password_too_short': 'La contraseña debe tener al menos 6 caracteres',
     
+    // Auth Button States
+    'auth.signing_in': 'Iniciando Sesión...',
+    'auth.signing_up': 'Registrando...',
+    
+    // Auth Links
+    'auth.forgot_password_link': '¿Olvidaste tu contraseña?',
+    'auth.no_account_link': '¿No tienes una cuenta? Regístrate',
+    'auth.have_account_link': '¿Ya tienes una cuenta? Inicia Sesión',
+    
     // Home
     'home.hello': 'Hola',
     'home.no_conversations': 'Aún no hay conversaciones',
@@ -247,6 +320,61 @@ const translations: Record<string, Record<string, string>> = {
     'menu.ai_model': 'Modelo AI',
     'menu.back': 'Atrás',
     'menu.logout': 'Cerrar Sesión',
+    
+    // Design Showcase
+    'showcase.title': 'Mostrar Diseño',
+    'showcase.buttons': 'Botones',
+    'showcase.primary_buttons': 'Botones Primarios',
+    'showcase.secondary_buttons': 'Botones Secundarios',
+    'showcase.outline_ghost_buttons': 'Botones de Contorno y Fantasma',
+    'showcase.status_buttons': 'Botones de Estado',
+    'showcase.button_sizes': 'Tamaños de Botones',
+    'showcase.input_fields': 'Campos de Entrada',
+    'showcase.text_input': 'Campo de Texto',
+    'showcase.chat_input': 'Campo de Chat (Multilínea)',
+    'showcase.switches': 'Interruptores',
+    'showcase.toggle_switch': 'Interruptor de Encendido/Apagado',
+    'showcase.language_selector': 'Selector de Idioma',
+    'showcase.toast_notifications': 'Notificaciones de Toast',
+    'showcase.alert_dialogs': 'Diálogos de Alerta',
+    'showcase.test_toast_types': 'Probar diferentes tipos de notificaciones de toast',
+    'showcase.test_alert_types': 'Probar diferentes tipos de alertas',
+    
+    // Button Labels
+    'button.primary': 'Primario',
+    'button.secondary': 'Secundario',
+    'button.outline': 'Contorno',
+    'button.ghost': 'Fantasma',
+    'button.success': 'Éxito',
+    'button.danger': 'Peligro',
+    'button.disabled': 'Deshabilitado',
+    'button.small': 'Pequeño',
+    'button.medium': 'Medio',
+    'button.large': 'Grande',
+    'button.send': 'Enviar',
+    
+    // Status Labels
+    'status.success': 'Éxito',
+    'status.error': 'Error',
+    'status.warning': 'Advertencia',
+    'status.info': 'Información',
+    
+    // Placeholders
+    'placeholder.enter_text': 'Escribe el texto aquí...',
+    'placeholder.type_message': 'Escribe un mensaje...',
+    
+    // Messages
+    'message.success_toast': '¡Mensaje de notificación de éxito!',
+    'message.error_toast': '¡Mensaje de notificación de error!',
+    'message.warning_toast': '¡Mensaje de notificación de advertencia!',
+    'message.info_toast': '¡Mensaje de notificación de información!',
+    'message.success_alert': '¡Este es un mensaje de alerta de éxito!',
+    'message.error_alert': '¡Este es un mensaje de alerta de error!',
+    
+    // Auth Placeholders
+    'auth.placeholder.email': 'Email',
+    'auth.placeholder.password': 'Password',
+    'auth.placeholder.confirm_password': 'Confirm Password',
     
     // Welcome Messages
     'welcome.how_are_you': '¿Cómo estás hoy? 😊',
@@ -326,6 +454,15 @@ const translations: Record<string, Record<string, string>> = {
     'auth.passwords_must_match': '비밀번호가 일치해야 합니다',
     'auth.password_too_short': '비밀번호는 최소 6자 이상이어야 합니다',
     
+    // Auth Button States
+    'auth.signing_in': '로그인 중...',
+    'auth.signing_up': '회원가입 중...',
+    
+    // Auth Links
+    'auth.forgot_password_link': '비밀번호를 잊으셨나요?',
+    'auth.no_account_link': '계정이 없으신가요? 회원가입',
+    'auth.have_account_link': '이미 계정이 있으신가요? 로그인',
+    
     // Home
     'home.hello': '안녕하세요',
     'home.no_conversations': '아직 대화가 없습니다',
@@ -378,6 +515,61 @@ const translations: Record<string, Record<string, string>> = {
     'menu.ai_model': 'AI 모델',
     'menu.back': '뒤로',
     'menu.logout': '로그아웃',
+    
+    // Design Showcase
+    'showcase.title': '디자인 쇼케이스',
+    'showcase.buttons': '버튼',
+    'showcase.primary_buttons': '주요 버튼',
+    'showcase.secondary_buttons': '보조 버튼',
+    'showcase.outline_ghost_buttons': '아웃라인 및 환호 버튼',
+    'showcase.status_buttons': '상태 버튼',
+    'showcase.button_sizes': '버튼 크기',
+    'showcase.input_fields': '입력 필드',
+    'showcase.text_input': '텍스트 입력',
+    'showcase.chat_input': '채팅 입력 (여러 줄)',
+    'showcase.switches': '스위치',
+    'showcase.toggle_switch': '토글 스위치',
+    'showcase.language_selector': '언어 선택기',
+    'showcase.toast_notifications': '토스트 알림',
+    'showcase.alert_dialogs': '경고 대화 상자',
+    'showcase.test_toast_types': '다른 토스트 유형 테스트',
+    'showcase.test_alert_types': '다른 경고 유형 테스트',
+    
+    // Button Labels
+    'button.primary': '주요',
+    'button.secondary': '보조',
+    'button.outline': '아웃라인',
+    'button.ghost': '환호',
+    'button.success': '성공',
+    'button.danger': '위험',
+    'button.disabled': '비활성화',
+    'button.small': '작은',
+    'button.medium': '중간',
+    'button.large': '큰',
+    'button.send': '보내기',
+    
+    // Status Labels
+    'status.success': '성공',
+    'status.error': '오류',
+    'status.warning': '경고',
+    'status.info': '정보',
+    
+    // Placeholders
+    'placeholder.enter_text': '여기에 텍스트를 입력하세요...',
+    'placeholder.type_message': '메시지를 입력하세요...',
+    
+    // Messages
+    'message.success_toast': '성공적인 토스트 메시지!',
+    'message.error_toast': '오류 토스트 메시지!',
+    'message.warning_toast': '경고 토스트 메시지!',
+    'message.info_toast': '정보 토스트 메시지!',
+    'message.success_alert': '이것은 성공적인 경고 메시지입니다!',
+    'message.error_alert': '이것은 오류 경고 메시지입니다!',
+    
+    // Auth Placeholders
+    'auth.placeholder.email': 'Email',
+    'auth.placeholder.password': 'Password',
+    'auth.placeholder.confirm_password': 'Confirm Password',
     
     // Welcome Messages
     'welcome.how_are_you': '어떻게 지내세요? 😊',

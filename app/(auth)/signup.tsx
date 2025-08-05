@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useEmailSignup } from '../../src/features/auth/hooks';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { useLanguageContext } from '../../src/features/language';
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
@@ -217,7 +217,7 @@ export default function SignupScreen() {
             activeOpacity={0.7}
           >
             <ThemedText style={styles.buttonText}>
-              {isLoading ? t('common.loading') : t('auth.sign_up')}
+              {isLoading ? t('auth.signing_up') : t('auth.sign_up')}
             </ThemedText>
           </TouchableOpacity>
           
@@ -227,7 +227,7 @@ export default function SignupScreen() {
             disabled={isLoading}
             activeOpacity={0.7}
           >
-            <ThemedText type="link" style={styles.linkText}>Already have an account? {t('auth.sign_in')}</ThemedText>
+            <ThemedText type="link" style={styles.linkText}>{t('auth.have_account_link')}</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>

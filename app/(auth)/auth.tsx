@@ -12,10 +12,10 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { useEmailSignin } from '../../src/features/auth/hooks';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
-import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { useToast } from '../../src/features/alert';
+import { useEmailSignin } from '../../src/features/auth/hooks';
+import { LanguageSelector, useLanguageContext } from '../../src/features/language';
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { useLoadingState } from '../../src/shared/hooks';
 import { useErrorStateCombined } from '../../src/shared/hooks/error';
 import { supabase } from '../../src/shared/lib/supabase';
@@ -239,7 +239,7 @@ export default function AuthScreen() {
           <FormWrapper onSubmit={handleEmailSignin} style={{ width: '100%' }}>
             <ThemedTextInput
               ref={emailRef}
-              placeholder="Email"
+              placeholder={t('auth.email')}
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
@@ -264,7 +264,7 @@ export default function AuthScreen() {
             
             <ThemedTextInput
               ref={passwordRef}
-              placeholder="Password"
+              placeholder={t('auth.password')}
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
@@ -294,7 +294,7 @@ export default function AuthScreen() {
             activeOpacity={0.7}
           >
             <ThemedText style={styles.buttonText}>
-              {isSigningIn ? 'Signing In...' : t('auth.sign_in_with_email')}
+              {isSigningIn ? t('auth.signing_in') : t('auth.sign_in_with_email')}
             </ThemedText>
           </TouchableOpacity>
           
@@ -305,7 +305,7 @@ export default function AuthScreen() {
             disabled={isSigningIn}
             activeOpacity={0.7}
           >
-            <ThemedText type="link" style={styles.linkText}>Forgot Password?</ThemedText>
+            <ThemedText type="link" style={styles.linkText}>{t('auth.forgot_password')}</ThemedText>
           </TouchableOpacity>
           
           <TouchableOpacity 
@@ -314,7 +314,7 @@ export default function AuthScreen() {
             disabled={isSigningIn}
             activeOpacity={0.7}
           >
-            <ThemedText type="link" style={styles.linkText}>Don&apos;t have an account? Sign Up</ThemedText>
+            <ThemedText type="link" style={styles.linkText}>{t('auth.no_account_link')}</ThemedText>
           </TouchableOpacity>
           
           {/* Show retry button for network errors */}

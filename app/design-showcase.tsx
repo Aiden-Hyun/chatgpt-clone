@@ -868,7 +868,7 @@ export default function DesignShowcaseScreen() {
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Design Showcase</Text>
+        <Text style={styles.headerTitle}>{t('showcase.title')}</Text>
         <TouchableOpacity 
           style={[styles.backButton, { marginLeft: 'auto', marginRight: 0 }]} 
           onPress={handleOpenChatGPTDemo}
@@ -880,16 +880,16 @@ export default function DesignShowcaseScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Buttons Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Buttons</Text>
+          <Text style={styles.sectionTitle}>{t('showcase.buttons')}</Text>
           
           <View style={styles.card}>
-            <Text style={styles.label}>Primary Buttons</Text>
+            <Text style={styles.label}>{t('showcase.primary_buttons')}</Text>
             <View style={styles.row}>
               <ThemedButton variant="primary" size="medium">
-                Primary
+                {t('button.primary')}
               </ThemedButton>
               <ThemedButton variant="primary" size="medium" disabled>
-                Disabled
+                {t('button.disabled')}
               </ThemedButton>
             </View>
 
@@ -944,13 +944,13 @@ export default function DesignShowcaseScreen() {
           
           <View style={styles.card}>
             <Text style={styles.label}>Text Input</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter text here..."
-              placeholderTextColor={theme.colors.text.tertiary}
-              value={inputValue}
-              onChangeText={setInputValue}
-            />
+                          <TextInput
+                style={styles.input}
+                placeholder={t('placeholder.enter_text')}
+                placeholderTextColor={theme.colors.text.tertiary}
+                value={inputValue}
+                onChangeText={setInputValue}
+              />
 
             <Text style={styles.label}>Chat Input (Multi-line)</Text>
             <View style={styles.chatInputContainer}>
