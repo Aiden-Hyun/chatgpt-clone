@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../../shared/hooks';
 
-export const createMessageInteractionBarStyles = () => {
-  const theme = useAppTheme();
+export const createMessageInteractionBarStyles = (theme: any) => {
   
   return StyleSheet.create({
     container: {
@@ -36,7 +34,7 @@ export const createMessageInteractionBarStyles = () => {
     scrollIcon: {
       fontSize: theme.fontSizes.xl,
       color: theme.colors.text.tertiary,
-      fontWeight: theme.fontWeights.light as '300',
+      fontWeight: theme.fontWeights.regular as '400',
     },
   });
 }; 

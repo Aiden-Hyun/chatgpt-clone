@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
+import { useAppTheme } from '../../../../shared/hooks';
 import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
 
 interface MessageInteractionBarProps {
@@ -19,7 +20,8 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
   onCopy,
   onAudio,
 }) => {
-  const styles = createMessageInteractionBarStyles();
+  const theme = useAppTheme();
+  const styles = createMessageInteractionBarStyles(theme);
 
   return (
     <View style={styles.container}>

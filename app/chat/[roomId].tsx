@@ -5,8 +5,8 @@ import {
   Platform,
 } from 'react-native';
 import { useLogout } from '../../src/features/auth';
-import { ChatHeader, ChatInput, ChatMessageList } from '../../src/features/chat/components';
-import { useChat } from '../../src/features/chat/hooks';
+import { ChatHeader, ChatInput, MessageList } from '../../src/features/chat/components';
+import { useChatSimplified } from '../../src/features/chat/hooks/useChatSimplified';
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
@@ -24,17 +24,14 @@ export default function ChatScreen() {
 
   const {
     messages,
-    input,
     loading,
-    sending,
-    isTyping,
-    regeneratingIndex,
+    input,
+    isNewMessageLoading,
+    regeneratingIndices,
     sendMessage: originalSendMessage,
     handleInputChange,
-    selectedModel,
-    updateModel,
     regenerateMessage,
-  } = useChat(numericRoomId);
+  } = useChatSimplified(numericRoomId);
   const { logout } = useLogout();
   
   // Wrap sendMessage to maintain focus after sending
@@ -55,16 +52,14 @@ export default function ChatScreen() {
           onLogout={logout}
           onSettings={() => router.push('/settings')}
           onBack={() => router.push('/')}
-          selectedModel={selectedModel}
-          onModelChange={updateModel}
         />
 
         {/* Messages */}
-        <ChatMessageList
+        <MessageList
           messages={messages}
-          isTyping={isTyping}
-          regeneratingIndex={regeneratingIndex}
-          regenerateMessage={regenerateMessage}
+          isNewMessageLoading={isNewMessageLoading}
+          regeneratingIndices={regeneratingIndices}
+          onRegenerate={regenerateMessage}
         />
 
         {/* Input */}
@@ -72,8 +67,8 @@ export default function ChatScreen() {
           input={input}
           onChangeText={handleInputChange}
           onSend={sendMessage}
-          sending={sending}
-          isTyping={isTyping}
+          sending={isNewMessageLoading}
+          isTyping={isNewMessageLoading}
           inputRef={inputRef}
         />
       </KeyboardAvoidingView>

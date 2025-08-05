@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Animated, View, Text } from 'react-native';
-import { useAppTheme } from '../../../../shared/hooks';
+import { Animated, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
+import { useAppTheme } from '../../../../shared/hooks';
 import { createLoadingMessageStyles } from './LoadingMessage.styles';
 
 interface LoadingMessageProps {
