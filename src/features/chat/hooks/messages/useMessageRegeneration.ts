@@ -27,6 +27,8 @@ export const useMessageRegeneration = (
     
     // Set regenerating index to show loading at the specific message position
     setRegeneratingIndex(index);
+    // Ensure isTyping is false during regeneration to avoid duplicate loading
+    setIsTyping(false);
     
     // Find the corresponding user message that came before this assistant message
     const userMessage = messages[index - 1];

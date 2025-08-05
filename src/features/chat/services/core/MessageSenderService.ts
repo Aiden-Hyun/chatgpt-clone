@@ -67,7 +67,10 @@ export class MessageSenderService {
       // Step 1: Update UI state for new messages or regeneration
       this.loggingService.debug(`Updating UI state for request ${requestId}`, { regenerateIndex });
       this.uiStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg });
-      this.uiStateService.setTyping(true);
+      // Only set typing for new messages, not for regeneration
+      if (regenerateIndex === undefined) {
+        this.uiStateService.setTyping(true);
+      }
 
       // Step 2: Prepare for room creation (but don't create yet)
       let roomId = numericRoomId;

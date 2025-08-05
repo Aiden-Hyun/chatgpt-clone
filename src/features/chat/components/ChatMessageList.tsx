@@ -44,9 +44,12 @@ const ChatMessageList: React.FC<ChatMessageListProps> = ({
       data={messagesWithLoading}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item, index }) => {
+        // Only show typing for new messages at the bottom
         const isCurrentlyTyping =
-          isTyping && index === messages.length && item.role === 'assistant';
+          isTyping && regeneratingIndex === null && index === messages.length && item.role === 'assistant';
+        // Show regenerating for specific message index
         const isRegenerating = regeneratingIndex === index && item.role === 'assistant';
+        
         // Group consecutive messages from the same sender
         const showAvatar =
           index === 0 || (index > 0 && messagesWithLoading[index - 1].role !== item.role);
