@@ -104,6 +104,7 @@ export const useMessageActions = ({
         model: selectedModel,
         messageId, // ✅ Phase 2: Pass message ID to handler
       });
+      logger.debug('Message handler completed', { messageId });
       logger.info('Message sent successfully', { messageId });
     } catch (error) {
       logger.error('Failed to send message', { messageId, error: error as Error });

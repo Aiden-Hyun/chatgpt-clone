@@ -132,9 +132,16 @@ export class MessageSenderService {
       });
 
       // Step 5: Animate the response and handle database operations after completion
+      this.loggingService.debug(`Starting animation for request ${requestId}`, { 
+        messageId, 
+        regenerateIndex,
+        contentLength: fullContent.length 
+      });
+      
       this.uiStateService.animateResponse({
         fullContent,
         regenerateIndex,
+        messageId, // ✅ Phase 3: Pass messageId to animation
         onComplete: async () => {
           try {
             this.loggingService.debug(`Starting post-animation operations for request ${requestId}`);

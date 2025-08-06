@@ -26,6 +26,17 @@ export const handleMessageState = ({
     });
   } else {
     // Normal flow: add new user and assistant messages
-    setMessages((prev) => [...prev, userMsg, assistantMsg]);
+    setMessages((prev) => {
+      // ✅ Phase 3: Add messageId to assistant message for concurrent message tracking
+      const enhancedAssistantMsg = messageId 
+        ? { ...assistantMsg, _loadingId: messageId }
+        : assistantMsg;
+      
+      // ✅ Phase 3: Add debug logging to track message creation
+      console.log(`3️⃣ [MESSAGE-CREATION] Creating assistant message with _loadingId: ${messageId}`);
+      console.log(`3️⃣ [MESSAGE-CREATION] Current messages count: ${prev.length}, new messages will be at indices: ${prev.length}, ${prev.length + 1}`);
+      
+      return [...prev, userMsg, enhancedAssistantMsg];
+    });
   }
 };
