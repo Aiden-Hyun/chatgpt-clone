@@ -891,25 +891,25 @@ Since we are implementing everything from scratch, we should NOT use mocks in ou
 25. ✅ **useConcurrentChat.test.ts** (Main Hook) - CREATED
 26. ✅ **useMessageCommands.test.ts** (Command Hook) - CREATED
 27. ✅ **usePluginSystem.test.ts** (Plugin Hook) - CREATED
-28. **useModelSelection.test.ts** (Model Selection Hook)
+28. ✅ **useModelSelection.test.ts** (Model Selection Hook) - CREATED
 
 ### Feature Plugins (10 files):
-29. **AnimationService.test.ts** (Animation Service)
-30. **useMessageAnimation.test.ts** (Animation Hook)
-31. **RegenerationService.test.ts** (Regeneration Service)
-32. **useMessageRegeneration.test.ts** (Regeneration Hook)
-33. **EditingService.test.ts** (Editing Service)
-34. **useMessageEditing.test.ts** (Editing Hook)
-35. **StreamingService.test.ts** (Streaming Service)
-36. **useMessageStreaming.test.ts** (Streaming Hook)
-37. **ModelSelectionService.test.ts** (Model Selection Service)
-38. **useModelSelection.test.ts** (Model Selection Hook)
+29. ✅ **AnimationService.test.ts** (Animation Service) - CREATED
+30. ✅ **useMessageAnimation.test.ts** (Animation Hook) - CREATED
+31. ✅ **RegenerationService.test.ts** (Regeneration Service) - CREATED
+32. ✅ **useMessageRegeneration.test.ts** (Regeneration Hook) - CREATED
+33. ✅ **EditingService.test.ts** (Editing Service) - CREATED
+34. ✅ **useMessageEditing.test.ts** (Editing Hook) - CREATED
+35. ✅ **StreamingService.test.ts** (Streaming Service) - CREATED
+36. ✅ **useMessageStreaming.test.ts** (Streaming Hook) - CREATED
+37. ✅ **ModelSelectionService.test.ts** (Model Selection Service) - CREATED
+38. ✅ **useModelSelection.test.ts** (Model Selection Hook) - CREATED
 
 ### UI Components (4 files):
-39. **MessageItem.test.tsx** (Component)
-40. **MessageInput.test.tsx** (Component)
-41. **MessageList.test.tsx** (Component)
-42. **ConcurrentChat.test.tsx** (Container)
+39. ✅ **MessageItem.test.tsx** (Component) - CREATED
+40. ✅ **MessageInput.test.tsx** (Component) - CREATED
+41. ✅ **MessageList.test.tsx** (Component) - CREATED
+42. ✅ **ConcurrentChat.test.tsx** (Container) - CREATED
 
 ### Feature Components (5 files):
 43. **AnimatedMessage.test.tsx** (Animation Component)
