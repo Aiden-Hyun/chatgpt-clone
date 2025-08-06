@@ -128,7 +128,8 @@ describe('SendMessageCommand', () => {
     it('should implement undo method', async () => {
       expect(typeof command.undo).toBe('function');
       
-      // Should not throw when called
+      // Execute the command first, then undo should not throw
+      await command.execute();
       await expect(command.undo()).resolves.not.toThrow();
     });
 
@@ -145,10 +146,16 @@ describe('SendMessageCommand', () => {
     });
 
     it('should handle undo errors gracefully', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new SendMessageCommand(mockMessageProcessor, 'Test message', 123);
+      
+      // Execute first (this should succeed)
+      await freshCommand.execute();
+      
+      // Now set up the mock to fail for the undo call
       mockMessageProcessor.process.mockRejectedValueOnce(new Error('Undo failed'));
       
-      await command.execute();
-      await expect(command.undo()).rejects.toThrow('Undo failed');
+      await expect(freshCommand.undo()).rejects.toThrow('Undo failed');
     });
   });
 
@@ -204,16 +211,22 @@ describe('SendMessageCommand', () => {
     });
 
     it('should prevent double execution', async () => {
-      await command.execute();
+      // Create a fresh command for this test
+      const freshCommand = new SendMessageCommand(mockMessageProcessor, 'Test message', 123);
+      
+      await freshCommand.execute();
       
       // Second execution should not call processor again
-      await command.execute();
+      await freshCommand.execute();
       
       expect(mockMessageProcessor.process).toHaveBeenCalledTimes(1);
     });
 
     it('should prevent undo before execution', async () => {
-      await expect(command.undo()).rejects.toThrow('Cannot undo command that has not been executed');
+      // Create a fresh command for this test
+      const freshCommand = new SendMessageCommand(mockMessageProcessor, 'Test message', 123);
+      
+      await expect(freshCommand.undo()).rejects.toThrow('Cannot undo command that has not been executed');
     });
   });
 
@@ -285,7 +298,9 @@ describe('SendMessageCommand', () => {
     it('should handle processor returning null', async () => {
       mockMessageProcessor.process.mockResolvedValue(null as any);
       
-      const result = await command.execute();
+      // Create a fresh command for this test
+      const freshCommand = new SendMessageCommand(mockMessageProcessor, 'Test message', 123);
+      const result = await freshCommand.execute();
       
       expect(result).toBeNull();
     });
