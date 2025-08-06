@@ -14,6 +14,8 @@ export type SendMessageArgs = {
   model: string;
   regenerateIndex?: number;
   originalAssistantContent?: string;
+  // ✅ Phase 2: Add message ID support
+  messageId?: string;
 };
 
 /**
@@ -30,7 +32,8 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     setDrafts,
     model,
     regenerateIndex,
-    originalAssistantContent
+    originalAssistantContent,
+    messageId
   } = args;
 
   // Get session
@@ -51,6 +54,7 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     regenerateIndex,
     originalAssistantContent,
     session,
+    messageId, // ✅ Phase 2: Pass message ID to service
   };
 
   // Send the message using the SOLID architecture

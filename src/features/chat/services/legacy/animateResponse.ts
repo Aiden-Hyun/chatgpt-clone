@@ -7,6 +7,7 @@ type AnimateResponseArgs = {
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   setIsTyping: React.Dispatch<React.SetStateAction<boolean>>;
   regenerateIndex?: number;
+  messageId?: string; // ✅ Phase 2: Add message ID support
   onComplete: () => void;
 };
 
@@ -18,6 +19,7 @@ export const animateResponse = ({
   setMessages,
   setIsTyping,
   regenerateIndex,
+  messageId, // ✅ Phase 2: Add message ID support
   onComplete,
 }: AnimateResponseArgs): void => {
   let tempContent = '';

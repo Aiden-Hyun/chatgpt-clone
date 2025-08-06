@@ -9,6 +9,7 @@ export interface IUIStateService {
     regenerateIndex?: number;
     userMsg: ChatMessage;
     assistantMsg: ChatMessage;
+    messageId?: string; // ✅ Phase 2: Add message ID support
   }): void;
   
   /**
@@ -35,6 +36,7 @@ export interface IUIStateService {
   animateResponse(args: {
     fullContent: string;
     regenerateIndex?: number;
+    messageId?: string; // ✅ Phase 2: Add message ID support
     onComplete: () => void;
   }): void;
 } 

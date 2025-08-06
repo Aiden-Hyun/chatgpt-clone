@@ -1,5 +1,6 @@
 // Moved Picker inside ChatHeader component
 import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
 import {
     KeyboardAvoidingView,
     Platform,
@@ -11,7 +12,6 @@ import { useChatSimplified } from '../../src/features/chat/hooks/useChatSimplifi
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
-import React from 'react';
 
 export default function ChatScreen() {
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
@@ -32,8 +32,11 @@ export default function ChatScreen() {
     messages,
     loading,
     input,
-    isNewMessageLoading,
+    // ❌ Remove legacy state
+    // isNewMessageLoading,
     regeneratingIndices,
+    processingMessages,
+    messageQueue,
     sendMessage: originalSendMessage,
     handleInputChange,
     regenerateMessage,
@@ -86,7 +89,7 @@ export default function ChatScreen() {
         {/* Messages */}
         <MessageList
           messages={messages}
-          isNewMessageLoading={isNewMessageLoading}
+          isNewMessageLoading={processingMessages.size > 0}
           regeneratingIndices={regeneratingIndices}
           onRegenerate={regenerateMessage}
           showWelcomeText={!hasUserTyped}
@@ -97,8 +100,6 @@ export default function ChatScreen() {
           input={input}
           onChangeText={handleInputChangeWithTracking}
           onSend={sendMessage}
-          sending={isNewMessageLoading}
-          isTyping={isNewMessageLoading}
           inputRef={inputRef}
         />
       </KeyboardAvoidingView>

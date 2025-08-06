@@ -9,11 +9,13 @@ export const handleMessageState = ({
   setMessages,
   userMsg,
   assistantMsg,
+  messageId, // ✅ Phase 2: Add message ID support
 }: {
   regenerateIndex?: number;
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
   userMsg: ChatMessage;
   assistantMsg: ChatMessage;
+  messageId?: string; // ✅ Phase 2: Add message ID parameter
 }): void => {
   if (regenerateIndex !== undefined) {
     setMessages((prev) => {

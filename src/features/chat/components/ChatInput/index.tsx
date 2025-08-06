@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from 'react';
+import React, { RefObject, useRef, useState } from 'react';
 import {
     Text,
     TextInput,
@@ -13,8 +13,8 @@ interface ChatInputProps {
   input: string;
   onChangeText: (text: string) => void;
   onSend: () => void;
-  sending: boolean;
-  isTyping: boolean;
+  sending?: boolean; // ✅ Phase 2: Made optional - no longer used for blocking
+  isTyping?: boolean; // ✅ Phase 2: Made optional - no longer used for blocking
   inputRef: RefObject<TextInput | null>;
 }
 
@@ -30,6 +30,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isTyping,
   inputRef,
 }) => {
+  // Add render counting for performance monitoring
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+  
+  // Log render count every 5 renders
+  if (renderCount.current % 5 === 0) {
+    console.log(`[RENDER-COUNT] ChatInput: ${renderCount.current} renders`);
+  }
+
   const [isInputFocused, setIsInputFocused] = useState(false);
   const { t } = useLanguageContext();
   
@@ -37,14 +46,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const { styles, placeholderTextColor } = createChatInputStyles(isInputFocused);
 
   const getSendButtonStyle = () => {
-    if (sending || isTyping || !input.trim()) {
+    if (!input.trim()) {
       return [styles.sendButton, styles.disabledButton];
     }
     return styles.sendButton;
   };
 
   const getSendButtonTextStyle = () => {
-    if (sending || isTyping || !input.trim()) {
+    if (!input.trim()) {
       return [styles.sendButtonText, styles.disabledButtonText];
     }
     return styles.sendButtonText;
@@ -69,21 +78,21 @@ const ChatInput: React.FC<ChatInputProps> = ({
         onFocus={() => setIsInputFocused(true)}
         onBlur={() => setIsInputFocused(false)}
         onKeyPress={({ nativeEvent }) => {
-          if (nativeEvent.key === 'Enter' && !sending && input.trim()) {
+          if (nativeEvent.key === 'Enter' && input.trim()) {
             onSend();
           }
         }}
         autoFocus
-        editable={!sending && !isTyping}
+        editable={true}
       />
       <TouchableOpacity
         style={getSendButtonStyle()}
         onPress={onSend}
-        disabled={sending || isTyping || !input.trim()}
+        disabled={!input.trim()}
         activeOpacity={0.8}
       >
         <Text style={getSendButtonTextStyle()}>
-          {sending ? t('chat.sending') : t('chat.send')}
+          {t('chat.send')}
         </Text>
       </TouchableOpacity>
     </View>

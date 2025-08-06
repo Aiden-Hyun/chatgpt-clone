@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { supabase } from '../../../shared/lib/supabase';
 import { ServiceFactory } from '../services/core';
@@ -16,13 +16,27 @@ export const useChatSimplified = (numericRoomId: number | null) => {
   const {
     messages,
     loading,
-    isNewMessageLoading,
+    // ❌ Remove legacy state
+    // isNewMessageLoading,
     regeneratingIndices,
+    processingMessages,
+    messageQueue,
     isRegenerating,
     setMessages,
     setLoading,
-    startNewMessageLoading,
-    stopNewMessageLoading,
+    // NEW: Message-specific loading actions
+    startMessageProcessing,
+    stopMessageProcessing,
+    isMessageProcessing,
+    getProcessingMessageIds,
+    // NEW: Message queue actions
+    addMessageToQueue,
+    updateMessageStatus,
+    removeMessageFromQueue,
+    cleanupMessageProcessing,
+    setupMessageProcessing,
+    handleMessageError,
+    // ✅ Phase 2: Legacy functions removed
     startRegenerating,
     stopRegenerating,
   } = chatState;
@@ -97,8 +111,18 @@ export const useChatSimplified = (numericRoomId: number | null) => {
     roomId: numericRoomId,
     messages,
     setMessages,
-    startNewMessageLoading,
-    stopNewMessageLoading,
+    // NEW: Use message-specific functions
+    startMessageProcessing,
+    stopMessageProcessing,
+    isMessageProcessing,
+    getProcessingMessageIds,
+    addMessageToQueue,
+    updateMessageStatus,
+    removeMessageFromQueue,
+    cleanupMessageProcessing,
+    setupMessageProcessing,
+    handleMessageError,
+    // ✅ Phase 2: Legacy functions removed
     startRegenerating,
     stopRegenerating,
     drafts,
@@ -131,8 +155,11 @@ export const useChatSimplified = (numericRoomId: number | null) => {
     // Message state
     messages,
     loading,
-    isNewMessageLoading,
+    // ❌ Remove legacy state
+    // isNewMessageLoading,
     regeneratingIndices,
+    processingMessages,
+    messageQueue,
     isRegenerating,
     
     // Input state

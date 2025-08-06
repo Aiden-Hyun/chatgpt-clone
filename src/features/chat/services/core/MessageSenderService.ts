@@ -19,6 +19,8 @@ export interface SendMessageRequest {
   regenerateIndex?: number;
   originalAssistantContent?: string;
   session: Session;
+  // ✅ Phase 2: Add message ID tracking
+  messageId?: string;
 }
 
 export interface SendMessageResult {
@@ -52,21 +54,25 @@ export class MessageSenderService {
     try {
       this.loggingService.info(`Starting message send request ${requestId}`, {
         requestId,
+        messageId: request.messageId, // ✅ Phase 2: Log message ID
         roomId: request.numericRoomId,
         model: request.model,
         regenerateIndex: request.regenerateIndex,
         messageCount: request.messages.length
       });
 
-      const { userContent, numericRoomId, messages, model, regenerateIndex, originalAssistantContent, session } = request;
+      const { userContent, numericRoomId, messages, model, regenerateIndex, originalAssistantContent, session, messageId } = request;
 
       // Create user and assistant message objects
       const userMsg: ChatMessage = { role: 'user', content: userContent };
       const assistantMsg: ChatMessage = { role: 'assistant', content: '' };
 
       // Step 1: Update UI state for new messages or regeneration
-      this.loggingService.debug(`Updating UI state for request ${requestId}`, { regenerateIndex });
-      this.uiStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg });
+      this.loggingService.debug(`Updating UI state for request ${requestId}`, { 
+        regenerateIndex, 
+        messageId // ✅ Phase 2: Include message ID in logging
+      });
+      this.uiStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg, messageId });
       // Only set typing for new messages, not for regeneration
       if (regenerateIndex === undefined) {
         this.uiStateService.setTyping(true);

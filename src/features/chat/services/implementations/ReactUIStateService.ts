@@ -26,12 +26,14 @@ export class ReactUIStateService implements
     regenerateIndex?: number;
     userMsg: ChatMessage;
     assistantMsg: ChatMessage;
+    messageId?: string; // ✅ Phase 2: Add message ID support
   }): void {
     handleMessageState({
       regenerateIndex: args.regenerateIndex,
       setMessages: this.setMessages,
       userMsg: args.userMsg,
       assistantMsg: args.assistantMsg,
+      messageId: args.messageId, // ✅ Phase 2: Pass message ID to handler
     });
   }
 
@@ -60,6 +62,7 @@ export class ReactUIStateService implements
   animateResponse(args: {
     fullContent: string;
     regenerateIndex?: number;
+    messageId?: string; // ✅ Phase 2: Add message ID support
     onComplete: () => void;
   }): void {
     animateResponse({
@@ -67,6 +70,7 @@ export class ReactUIStateService implements
       setMessages: this.setMessages,
       setIsTyping: this.setIsTyping,
       regenerateIndex: args.regenerateIndex,
+      messageId: args.messageId, // ✅ Phase 2: Pass message ID to animation
       onComplete: args.onComplete,
     });
   }
