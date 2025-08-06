@@ -1,19 +1,18 @@
-import { IMessageProcessor } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IMessageProcessor';
+import { IMessageProcessor, createMessageProcessor } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IMessageProcessor';
 
 describe('IMessageProcessor', () => {
   describe('interface contract validation', () => {
     it('should define a process method signature', () => {
-      // This test validates that the interface defines the correct method signature
-      // We're testing the interface contract, not implementation
-      const interfaceType: IMessageProcessor = {} as IMessageProcessor;
+      // Test with a concrete implementation
+      const processor = createMessageProcessor();
       
-      // TypeScript will catch if the interface doesn't have the required method
-      expect(typeof interfaceType.process).toBe('function');
+      // Should have the required method
+      expect(typeof processor.process).toBe('function');
     });
 
     it('should accept any message type as parameter', () => {
       // Test that the interface allows flexible message types
-      const interfaceType: IMessageProcessor = {} as IMessageProcessor;
+      const processor = createMessageProcessor();
       
       // These should be valid according to the interface
       const stringMessage = 'test message';
@@ -21,20 +20,20 @@ describe('IMessageProcessor', () => {
       const nullMessage = null;
       const undefinedMessage = undefined;
 
-      // TypeScript compilation test - if these don't compile, the interface is too restrictive
+      // Should not throw when called with different message types
       expect(() => {
-        interfaceType.process(stringMessage);
-        interfaceType.process(objectMessage);
-        interfaceType.process(nullMessage);
-        interfaceType.process(undefinedMessage);
+        processor.process(stringMessage);
+        processor.process(objectMessage);
+        processor.process(nullMessage);
+        processor.process(undefinedMessage);
       }).not.toThrow();
     });
 
     it('should return a Promise from process method', () => {
-      const interfaceType: IMessageProcessor = {} as IMessageProcessor;
+      const processor = createMessageProcessor();
       const message = { id: 'test', content: 'test' };
       
-      const result = interfaceType.process(message);
+      const result = processor.process(message);
       expect(result).toBeInstanceOf(Promise);
     });
   });
@@ -42,10 +41,10 @@ describe('IMessageProcessor', () => {
   describe('SOLID principle compliance', () => {
     it('should follow Single Responsibility Principle', () => {
       // The interface should have a single responsibility - message processing
-      const interfaceType: IMessageProcessor = {} as IMessageProcessor;
+      const processor = createMessageProcessor();
       
       // Should only have methods related to message processing
-      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(interfaceType));
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(processor));
       const processingMethods = methods.filter(method => 
         method.includes('process') || method.includes('message')
       );
@@ -56,10 +55,10 @@ describe('IMessageProcessor', () => {
 
     it('should follow Interface Segregation Principle', () => {
       // The interface should be small and focused
-      const interfaceType: IMessageProcessor = {} as IMessageProcessor;
+      const processor = createMessageProcessor();
       
       // Should not have too many methods (indicating it's doing too much)
-      const methodCount = Object.getOwnPropertyNames(Object.getPrototypeOf(interfaceType)).length;
+      const methodCount = Object.getOwnPropertyNames(Object.getPrototypeOf(processor)).length;
       expect(methodCount).toBeLessThan(10); // Reasonable limit for a focused interface
     });
 

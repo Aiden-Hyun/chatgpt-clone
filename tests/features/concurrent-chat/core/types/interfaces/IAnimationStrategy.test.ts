@@ -1,72 +1,76 @@
-import { IAnimationStrategy } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IAnimationStrategy';
+import { IAnimationStrategy, createAnimationStrategy } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IAnimationStrategy';
 
 describe('IAnimationStrategy', () => {
   describe('interface contract validation', () => {
     it('should define animate method signature', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(typeof interfaceType.animate).toBe('function');
+      const strategy = createAnimationStrategy();
+      expect(typeof strategy.animate).toBe('function');
     });
 
     it('should define stop method signature', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(typeof interfaceType.stop).toBe('function');
+      const strategy = createAnimationStrategy();
+      expect(typeof strategy.stop).toBe('function');
     });
 
     it('should define isAnimating method signature', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(typeof interfaceType.isAnimating).toBe('function');
+      const strategy = createAnimationStrategy();
+      expect(typeof strategy.isAnimating).toBe('function');
     });
 
     it('should define getProgress method signature', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(typeof interfaceType.getProgress).toBe('function');
+      const strategy = createAnimationStrategy();
+      expect(typeof strategy.getProgress).toBe('function');
     });
 
     it('should define setSpeed method signature', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(typeof interfaceType.setSpeed).toBe('function');
+      const strategy = createAnimationStrategy();
+      expect(typeof strategy.setSpeed).toBe('function');
     });
 
     it('should return Promise from animate method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      // This is a type check - the method should return a Promise
-      expect(interfaceType.animate).toBeDefined();
+      const strategy = createAnimationStrategy();
+      const result = strategy.animate('test', document.createElement('div'));
+      expect(result).toBeInstanceOf(Promise);
     });
 
     it('should return void from stop method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(interfaceType.stop).toBeDefined();
+      const strategy = createAnimationStrategy();
+      const result = strategy.stop();
+      expect(result).toBeUndefined();
     });
 
     it('should return boolean from isAnimating method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(interfaceType.isAnimating).toBeDefined();
+      const strategy = createAnimationStrategy();
+      const result = strategy.isAnimating();
+      expect(typeof result).toBe('boolean');
     });
 
     it('should return number from getProgress method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(interfaceType.getProgress).toBeDefined();
+      const strategy = createAnimationStrategy();
+      const result = strategy.getProgress();
+      expect(typeof result).toBe('number');
     });
 
     it('should return void from setSpeed method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
-      expect(interfaceType.setSpeed).toBeDefined();
+      const strategy = createAnimationStrategy();
+      const result = strategy.setSpeed(1.5);
+      expect(result).toBeUndefined();
     });
   });
 
   describe('SOLID principle compliance', () => {
     it('should follow Single Responsibility Principle', () => {
       // Interface should only be responsible for animation behavior
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
       
       // Should not have methods unrelated to animation
-      const methods = Object.getOwnPropertyNames(interfaceType);
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(strategy));
       const animationMethods = methods.filter(method => 
         method.includes('animate') || method.includes('stop') || 
         method.includes('isAnimating') || method.includes('getProgress') || 
@@ -78,244 +82,249 @@ describe('IAnimationStrategy', () => {
 
     it('should follow Open/Closed Principle', () => {
       // Should be open for extension (new animation strategies) but closed for modification
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should not modify existing behavior when extended
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should follow Liskov Substitution Principle', () => {
       // Any implementation should be substitutable for the interface
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // All methods should be available on any implementation
-      expect(typeof interfaceType.animate).toBe('function');
-      expect(typeof interfaceType.stop).toBe('function');
-      expect(typeof interfaceType.isAnimating).toBe('function');
-      expect(typeof interfaceType.getProgress).toBe('function');
-      expect(typeof interfaceType.setSpeed).toBe('function');
+      expect(typeof strategy.animate).toBe('function');
+      expect(typeof strategy.stop).toBe('function');
+      expect(typeof strategy.isAnimating).toBe('function');
+      expect(typeof strategy.getProgress).toBe('function');
+      expect(typeof strategy.setSpeed).toBe('function');
     });
 
     it('should follow Interface Segregation Principle', () => {
       // Should not force clients to depend on methods they don't use
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Client should only need to know about animation methods
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should follow Dependency Inversion Principle', () => {
       // High-level modules should depend on abstractions, not concretions
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should depend on the interface abstraction, not specific implementations
-      expect(interfaceType).toBeDefined();
-      expect(typeof interfaceType.animate).toBe('function');
+      expect(strategy).toBeDefined();
+      expect(typeof strategy.animate).toBe('function');
     });
   });
 
   describe('type safety', () => {
     it('should enforce correct method signatures', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Method signatures should be correctly typed
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should allow flexible animation parameters', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should accept various animation parameters
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support different animation types', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support different animation strategies
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
     });
 
     it('should support progress tracking', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support progress monitoring
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
     });
   });
 
   describe('animation strategy validation', () => {
     it('should support animation lifecycle', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support complete animation lifecycle
-      expect(interfaceType.animate).toBeDefined(); // Start
-      expect(interfaceType.stop).toBeDefined(); // Stop
-      expect(interfaceType.isAnimating).toBeDefined(); // Check status
-      expect(interfaceType.getProgress).toBeDefined(); // Monitor progress
+      expect(strategy.animate).toBeDefined(); // Start
+      expect(strategy.stop).toBeDefined(); // Stop
+      expect(strategy.isAnimating).toBeDefined(); // Check status
+      expect(strategy.getProgress).toBeDefined(); // Monitor progress
     });
 
     it('should support speed control', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support speed adjustment
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support animation state management', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support state management
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
     });
   });
 
   describe('interface extensibility', () => {
     it('should be open for extension', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should allow new animation strategies to be added
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support strategy pattern implementation', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support the strategy pattern
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should allow different animation implementations', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should allow different implementations (typewriter, fade, etc.)
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
   });
 
   describe('method parameter validation', () => {
     it('should support animate method parameters', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should accept animation parameters
-      expect(interfaceType.animate).toBeDefined();
+      expect(strategy.animate).toBeDefined();
     });
 
     it('should support setSpeed method parameters', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should accept speed parameters
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support flexible parameter types', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support various parameter types
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
   });
 
   describe('return type validation', () => {
     it('should return Promise from animate method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should return Promise for async animation
-      expect(interfaceType.animate).toBeDefined();
+      const result = strategy.animate('test', document.createElement('div'));
+      expect(result).toBeInstanceOf(Promise);
     });
 
     it('should return void from stop method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should return void for synchronous stop
-      expect(interfaceType.stop).toBeDefined();
+      const result = strategy.stop();
+      expect(result).toBeUndefined();
     });
 
     it('should return boolean from isAnimating method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should return boolean for status check
-      expect(interfaceType.isAnimating).toBeDefined();
+      const result = strategy.isAnimating();
+      expect(typeof result).toBe('boolean');
     });
 
     it('should return number from getProgress method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should return number for progress (0-1)
-      expect(interfaceType.getProgress).toBeDefined();
+      const result = strategy.getProgress();
+      expect(typeof result).toBe('number');
     });
 
     it('should return void from setSpeed method', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should return void for synchronous speed setting
-      expect(interfaceType.setSpeed).toBeDefined();
+      const result = strategy.setSpeed(1.5);
+      expect(result).toBeUndefined();
     });
   });
 
   describe('animation strategy patterns', () => {
     it('should support typewriter animation', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support typewriter-style animation
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support fade animation', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support fade-in/fade-out animation
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support slide animation', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support slide animation
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
 
     it('should support custom animation types', () => {
-      const interfaceType: IAnimationStrategy = {} as IAnimationStrategy;
+      const strategy = createAnimationStrategy();
       
       // Should support custom animation implementations
-      expect(interfaceType.animate).toBeDefined();
-      expect(interfaceType.stop).toBeDefined();
-      expect(interfaceType.isAnimating).toBeDefined();
-      expect(interfaceType.getProgress).toBeDefined();
-      expect(interfaceType.setSpeed).toBeDefined();
+      expect(strategy.animate).toBeDefined();
+      expect(strategy.stop).toBeDefined();
+      expect(strategy.isAnimating).toBeDefined();
+      expect(strategy.getProgress).toBeDefined();
+      expect(strategy.setSpeed).toBeDefined();
     });
   });
 }); 

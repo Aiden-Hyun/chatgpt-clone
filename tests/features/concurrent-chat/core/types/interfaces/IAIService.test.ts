@@ -1,33 +1,33 @@
-import { IAIService } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IAIService';
+import { IAIService, createAIService } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IAIService';
 
 describe('IAIService', () => {
   describe('interface contract validation', () => {
     it('should define sendMessage method signature', () => {
-      const interfaceType: IAIService = {} as IAIService;
-      expect(typeof interfaceType.sendMessage).toBe('function');
+      const service = createAIService();
+      expect(typeof service.sendMessage).toBe('function');
     });
 
     it('should define sendMessageWithStreaming method signature', () => {
-      const interfaceType: IAIService = {} as IAIService;
-      expect(typeof interfaceType.sendMessageWithStreaming).toBe('function');
+      const service = createAIService();
+      expect(typeof service.sendMessageWithStreaming).toBe('function');
     });
 
     it('should return Promise from sendMessage method', () => {
-      const interfaceType: IAIService = {} as IAIService;
+      const service = createAIService();
       const request = { roomId: 1, messages: [], model: 'gpt-3.5-turbo' };
       const session = { access_token: 'test-token' } as any;
       
-      const result = interfaceType.sendMessage(request, session);
+      const result = service.sendMessage(request, session);
       expect(result).toBeInstanceOf(Promise);
     });
 
     it('should return Promise from sendMessageWithStreaming method', () => {
-      const interfaceType: IAIService = {} as IAIService;
+      const service = createAIService();
       const request = { roomId: 1, messages: [], model: 'gpt-3.5-turbo' };
       const session = { access_token: 'test-token' } as any;
       const onChunk = (chunk: string) => {};
       
-      const result = interfaceType.sendMessageWithStreaming(request, session, onChunk);
+      const result = service.sendMessageWithStreaming(request, session, onChunk);
       expect(result).toBeInstanceOf(Promise);
     });
   });
@@ -35,10 +35,10 @@ describe('IAIService', () => {
   describe('SOLID principle compliance', () => {
     it('should follow Single Responsibility Principle', () => {
       // The interface should have a single responsibility - AI service communication
-      const interfaceType: IAIService = {} as IAIService;
+      const service = createAIService();
       
       // Should only have methods related to AI service communication
-      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(interfaceType));
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(service));
       const aiMethods = methods.filter(method => 
         method.includes('send') || method.includes('message') || method.includes('streaming')
       );
@@ -49,10 +49,10 @@ describe('IAIService', () => {
 
     it('should follow Interface Segregation Principle', () => {
       // The interface should be small and focused
-      const interfaceType: IAIService = {} as IAIService;
+      const service = createAIService();
       
       // Should not have too many methods (indicating it's doing too much)
-      const methodCount = Object.getOwnPropertyNames(Object.getPrototypeOf(interfaceType)).length;
+      const methodCount = Object.getOwnPropertyNames(Object.getPrototypeOf(service)).length;
       expect(methodCount).toBeLessThan(10); // Reasonable limit for a focused interface
     });
 

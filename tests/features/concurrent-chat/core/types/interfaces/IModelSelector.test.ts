@@ -1,48 +1,48 @@
-import { IModelSelector } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IModelSelector';
+import { IModelSelector, createModelSelector } from '../../../../../../src/features/concurrent-chat/core/types/interfaces/IModelSelector';
 
 describe('IModelSelector', () => {
   describe('interface contract validation', () => {
     it('should define getAvailableModels method signature', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      expect(typeof interfaceType.getAvailableModels).toBe('function');
+      const selector = createModelSelector();
+      expect(typeof selector.getAvailableModels).toBe('function');
     });
 
     it('should define getCurrentModel method signature', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      expect(typeof interfaceType.getCurrentModel).toBe('function');
+      const selector = createModelSelector();
+      expect(typeof selector.getCurrentModel).toBe('function');
     });
 
     it('should define setModel method signature', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      expect(typeof interfaceType.setModel).toBe('function');
+      const selector = createModelSelector();
+      expect(typeof selector.setModel).toBe('function');
     });
 
     it('should define getModelForRoom method signature', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      expect(typeof interfaceType.getModelForRoom).toBe('function');
+      const selector = createModelSelector();
+      expect(typeof selector.getModelForRoom).toBe('function');
     });
 
     it('should return array from getAvailableModels method', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      const result = interfaceType.getAvailableModels();
+      const selector = createModelSelector();
+      const result = selector.getAvailableModels();
       expect(Array.isArray(result)).toBe(true);
     });
 
     it('should return string from getCurrentModel method', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      const result = interfaceType.getCurrentModel();
+      const selector = createModelSelector();
+      const result = selector.getCurrentModel();
       expect(typeof result).toBe('string');
     });
 
     it('should return Promise from setModel method', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      const result = interfaceType.setModel('gpt-4');
+      const selector = createModelSelector();
+      const result = selector.setModel('gpt-4');
       expect(result).toBeInstanceOf(Promise);
     });
 
     it('should return Promise from getModelForRoom method', () => {
-      const interfaceType: IModelSelector = {} as IModelSelector;
-      const result = interfaceType.getModelForRoom(1);
+      const selector = createModelSelector();
+      const result = selector.getModelForRoom(1);
       expect(result).toBeInstanceOf(Promise);
     });
   });
@@ -50,10 +50,10 @@ describe('IModelSelector', () => {
   describe('SOLID principle compliance', () => {
     it('should follow Single Responsibility Principle', () => {
       // The interface should have a single responsibility - model selection
-      const interfaceType: IModelSelector = {} as IModelSelector;
+      const selector = createModelSelector();
       
       // Should only have methods related to model selection
-      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(interfaceType));
+      const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(selector));
       const modelMethods = methods.filter(method => 
         method.includes('model') || method.includes('Model') || method.includes('available')
       );
@@ -64,10 +64,10 @@ describe('IModelSelector', () => {
 
     it('should follow Interface Segregation Principle', () => {
       // The interface should be small and focused
-      const interfaceType: IModelSelector = {} as IModelSelector;
+      const selector = createModelSelector();
       
       // Should not have too many methods (indicating it's doing too much)
-      const methodCount = Object.getOwnPropertyNames(Object.getPrototypeOf(interfaceType)).length;
+      const methodCount = Object.getOwnPropertyNames(Object.getPrototypeOf(selector)).length;
       expect(methodCount).toBeLessThan(10); // Reasonable limit for a focused interface
     });
 
