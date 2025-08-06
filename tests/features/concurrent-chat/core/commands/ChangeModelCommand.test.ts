@@ -143,6 +143,8 @@ describe('ChangeModelCommand', () => {
     it('should implement undo method', async () => {
       expect(typeof command.undo).toBe('function');
       
+      // Execute the command first, then undo should not throw
+      await command.execute();
       await expect(command.undo()).resolves.not.toThrow();
     });
 
@@ -158,10 +160,16 @@ describe('ChangeModelCommand', () => {
     });
 
     it('should handle undo errors gracefully', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new ChangeModelCommand(mockModelSelector, 'gpt-4', 123);
+      
+      // Execute first (this should succeed)
+      await freshCommand.execute();
+      
+      // Now set up the mock to fail for the undo call
       mockModelSelector.setModel.mockRejectedValueOnce(new Error('Undo failed'));
       
-      await command.execute();
-      await expect(command.undo()).rejects.toThrow('Undo failed');
+      await expect(freshCommand.undo()).rejects.toThrow('Undo failed');
     });
 
     it('should prevent undo before execution', async () => {
@@ -221,9 +229,12 @@ describe('ChangeModelCommand', () => {
     });
 
     it('should prevent double execution', async () => {
-      await command.execute();
+      // Create a fresh command for this test
+      const freshCommand = new ChangeModelCommand(mockModelSelector, 'gpt-4', 123);
       
-      await command.execute();
+      await freshCommand.execute();
+      
+      await freshCommand.execute();
       
       expect(mockModelSelector.setModel).toHaveBeenCalledTimes(1);
     });
@@ -344,17 +355,23 @@ describe('ChangeModelCommand', () => {
     });
 
     it('should handle model selector returning null', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new ChangeModelCommand(mockModelSelector, 'gpt-4', 123);
+      
       mockModelSelector.setModel.mockResolvedValue(null as any);
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result).toBeDefined();
     });
 
     it('should handle model selector returning undefined', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new ChangeModelCommand(mockModelSelector, 'gpt-4', 123);
+      
       mockModelSelector.setModel.mockResolvedValue(undefined as any);
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result).toBeDefined();
     });

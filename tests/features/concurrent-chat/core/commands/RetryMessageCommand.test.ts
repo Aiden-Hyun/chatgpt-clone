@@ -133,6 +133,8 @@ describe('RetryMessageCommand', () => {
     it('should implement undo method', async () => {
       expect(typeof command.undo).toBe('function');
       
+      // Execute the command first, then undo should not throw
+      await command.execute();
       await expect(command.undo()).resolves.not.toThrow();
     });
 
@@ -156,10 +158,16 @@ describe('RetryMessageCommand', () => {
     });
 
     it('should handle undo errors gracefully', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
+      // Execute first (this should succeed)
+      await freshCommand.execute();
+      
+      // Now set up the mock to fail for the undo call
       mockMessageProcessor.process.mockRejectedValueOnce(new Error('Undo failed'));
       
-      await command.execute();
-      await expect(command.undo()).rejects.toThrow('Undo failed');
+      await expect(freshCommand.undo()).rejects.toThrow('Undo failed');
     });
 
     it('should prevent undo before execution', async () => {
@@ -211,11 +219,14 @@ describe('RetryMessageCommand', () => {
 
   describe('command state management', () => {
     it('should track execution state', async () => {
-      expect(command.isExecuted()).toBe(false);
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
       
-      await command.execute();
+      expect(freshCommand.isExecuted()).toBe(false);
       
-      expect(command.isExecuted()).toBe(true);
+      await freshCommand.execute();
+      
+      expect(freshCommand.isExecuted()).toBe(true);
     });
 
     it('should track undo state', async () => {
@@ -228,21 +239,27 @@ describe('RetryMessageCommand', () => {
     });
 
     it('should prevent double execution', async () => {
-      await command.execute();
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
       
-      await command.execute();
+      await freshCommand.execute();
+      
+      await freshCommand.execute();
       
       expect(mockMessageProcessor.process).toHaveBeenCalledTimes(1);
     });
 
     it('should track retry count correctly', async () => {
-      expect((command as any).retryCount).toBe(0);
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
       
-      await command.execute();
-      expect((command as any).retryCount).toBe(1);
+      expect((freshCommand as any).retryCount).toBe(0);
       
-      await command.undo();
-      expect((command as any).retryCount).toBe(0);
+      await freshCommand.execute();
+      expect((freshCommand as any).retryCount).toBe(1);
+      
+      await freshCommand.undo();
+      expect((freshCommand as any).retryCount).toBe(0);
     });
   });
 
@@ -261,37 +278,46 @@ describe('RetryMessageCommand', () => {
     });
 
     it('should handle retry of non-existent messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: false, 
         error: 'Message not found' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(false);
       expect(result.error).toBe('Message not found');
     });
 
     it('should handle retry of successful messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: true, 
         retried: true,
         messageId: 'msg-123'
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(true);
       expect(result.retried).toBe(true);
     });
 
     it('should handle retry of failed messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: false, 
         error: 'Retry failed again' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(false);
       expect(result.error).toBe('Retry failed again');
@@ -393,9 +419,12 @@ describe('RetryMessageCommand', () => {
     });
 
     it('should handle processor returning null', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue(null as any);
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result).toBeNull();
     });
@@ -438,13 +467,16 @@ describe('RetryMessageCommand', () => {
 
   describe('retry scenarios', () => {
     it('should handle retry of processing messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: true, 
         retried: true, 
         status: 'processing' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(true);
       expect(result.retried).toBe(true);
@@ -452,13 +484,16 @@ describe('RetryMessageCommand', () => {
     });
 
     it('should handle retry of failed messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: true, 
         retried: true, 
         status: 'retried' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(true);
       expect(result.retried).toBe(true);
@@ -466,13 +501,16 @@ describe('RetryMessageCommand', () => {
     });
 
     it('should handle retry of cancelled messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new RetryMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: true, 
         retried: true, 
         status: 'retried' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(true);
       expect(result.retried).toBe(true);

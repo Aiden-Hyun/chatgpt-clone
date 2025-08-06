@@ -707,9 +707,9 @@ function useModelSelection(roomId?: number) {
 
 #### Command Implementations (5 files):
 9. ✅ **SendMessageCommand.ts** - CREATED
-10. ❌ **CancelMessageCommand.ts** - PENDING
-11. ❌ **ChangeModelCommand.ts** - PENDING
-12. ❌ **RetryMessageCommand.ts** - PENDING
+10. ✅ **CancelMessageCommand.ts** - CREATED
+11. ✅ **ChangeModelCommand.ts** - CREATED
+12. ✅ **RetryMessageCommand.ts** - CREATED
 13. ❌ **ClearMessagesCommand.ts** - PENDING
 
 ### Phase 3: Strategy Pattern - PENDING ⏳
@@ -776,8 +776,8 @@ function useModelSelection(roomId?: number) {
 48. ❌ **ModelSelector.tsx** - PENDING
 
 **Progress Summary:**
-- ✅ **Completed**: 10 out of 48 files (20.8%)
-- ⏳ **Pending**: 38 files
+- ✅ **Completed**: 13 out of 48 files (27.1%)
+- ⏳ **Pending**: 35 files
 - 🎯 **Current Phase**: Phase 2 (Command Pattern) - IN PROGRESS
 - 🚀 **Next Phase**: Phase 3 (Strategy Pattern)
 

@@ -117,6 +117,8 @@ describe('CancelMessageCommand', () => {
     it('should implement undo method', async () => {
       expect(typeof command.undo).toBe('function');
       
+      // Execute the command first, then undo should not throw
+      await command.execute();
       await expect(command.undo()).resolves.not.toThrow();
     });
 
@@ -132,10 +134,16 @@ describe('CancelMessageCommand', () => {
     });
 
     it('should handle undo errors gracefully', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
+      // Execute first (this should succeed)
+      await freshCommand.execute();
+      
+      // Now set up the mock to fail for the undo call
       mockMessageProcessor.process.mockRejectedValueOnce(new Error('Resume failed'));
       
-      await command.execute();
-      await expect(command.undo()).rejects.toThrow('Resume failed');
+      await expect(freshCommand.undo()).rejects.toThrow('Resume failed');
     });
   });
 
@@ -190,15 +198,21 @@ describe('CancelMessageCommand', () => {
     });
 
     it('should prevent double execution', async () => {
-      await command.execute();
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
       
-      await command.execute();
+      await freshCommand.execute();
+      
+      await freshCommand.execute();
       
       expect(mockMessageProcessor.process).toHaveBeenCalledTimes(1);
     });
 
     it('should prevent undo before execution', async () => {
-      await expect(command.undo()).rejects.toThrow('Cannot undo command that has not been executed');
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
+      await expect(freshCommand.undo()).rejects.toThrow('Cannot undo command that has not been executed');
     });
   });
 
@@ -218,24 +232,30 @@ describe('CancelMessageCommand', () => {
     });
 
     it('should handle cancellation of non-existent messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: false, 
         error: 'Message not found' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(false);
       expect(result.error).toBe('Message not found');
     });
 
     it('should handle cancellation of already cancelled messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: false, 
         error: 'Message already cancelled' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(false);
       expect(result.error).toBe('Message already cancelled');
@@ -300,9 +320,12 @@ describe('CancelMessageCommand', () => {
     });
 
     it('should handle processor returning null', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue(null as any);
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result).toBeNull();
     });
@@ -345,13 +368,16 @@ describe('CancelMessageCommand', () => {
 
   describe('cancellation scenarios', () => {
     it('should handle cancellation of processing messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: true, 
         cancelled: true, 
         status: 'cancelled' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(true);
       expect(result.cancelled).toBe(true);
@@ -359,25 +385,31 @@ describe('CancelMessageCommand', () => {
     });
 
     it('should handle cancellation of pending messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: true, 
         cancelled: true, 
         status: 'cancelled' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(true);
       expect(result.cancelled).toBe(true);
     });
 
     it('should handle cancellation of completed messages', async () => {
+      // Create a fresh command for this test
+      const freshCommand = new CancelMessageCommand(mockMessageProcessor, 'msg-123');
+      
       mockMessageProcessor.process.mockResolvedValue({ 
         success: false, 
         error: 'Cannot cancel completed message' 
       });
       
-      const result = await command.execute();
+      const result = await freshCommand.execute();
       
       expect(result.success).toBe(false);
       expect(result.error).toBe('Cannot cancel completed message');
