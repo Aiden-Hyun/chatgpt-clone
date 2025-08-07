@@ -8,8 +8,12 @@ describe('MessageService', () => {
   let mockEventBus: jest.Mocked<EventBus>;
 
   beforeEach(() => {
+    let messageIdCounter = 0;
     mockMessageProcessor = {
-      process: jest.fn().mockResolvedValue({ success: true, messageId: 'test-id' })
+      process: jest.fn().mockImplementation(() => {
+        messageIdCounter++;
+        return Promise.resolve({ success: true, messageId: `test-id-${messageIdCounter}` });
+      })
     };
     mockEventBus = {
       subscribe: jest.fn(),
@@ -73,7 +77,7 @@ describe('MessageService', () => {
       expect(mockEventBus.publish).toHaveBeenCalledWith('message.sent', {
         content,
         roomId,
-        messageId: 'test-id'
+        messageId: 'test-id-1'
       });
     });
 
