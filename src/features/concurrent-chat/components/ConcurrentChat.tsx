@@ -5,7 +5,6 @@ import { useInputFocus } from '../../../shared/hooks';
 import { supabase } from '../../../shared/lib/supabase';
 import { ChatInput, MessageList } from '../../chat/components';
 import {
-    hasProcessingMessages,
     toChatMessages
 } from '../adapters/messageAdapter';
 import { ChangeModelCommand } from '../core/commands/ChangeModelCommand';
@@ -21,7 +20,7 @@ import { ConcurrentMessageProcessor } from '../core/services/ConcurrentMessagePr
 import { ModelSelectionService } from '../core/services/ModelSelectionService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../core/types/interfaces/IModelSelector';
-import { AnimationService } from '../features/animation/AnimationService';
+
 import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
 import { RegenerationService } from '../features/regeneration/RegenerationService';
@@ -119,12 +118,10 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         }
 
         // Register feature services
-        const animationService = new AnimationService(eventBus, serviceContainer);
         const regenerationService = new RegenerationService(eventBus, serviceContainer);
         const editingService = new EditingService(eventBus, serviceContainer);
         const streamingService = new StreamingService(eventBus, serviceContainer);
 
-        serviceContainer.register('animationService', animationService);
         serviceContainer.register('regenerationService', regenerationService);
         serviceContainer.register('editingService', editingService);
         serviceContainer.register('streamingService', streamingService);
@@ -239,8 +236,25 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
   // Convert concurrent state to chat component props
   const chatMessages = toChatMessages(messages);
-  const regeneratingIndices = new Set<number>(); // TODO: Map from concurrent regenerating state
-  const isNewMessageLoading = hasProcessingMessages(messages);
+  
+  // Map concurrent message states to existing UI animation states
+  // isNewMessageLoading: false because we handle processing messages in our own state
+  const isNewMessageLoading = false;
+  
+  // regeneratingIndices: set of indices for messages being regenerated
+  const regeneratingIndices = new Set<number>();
+  messages.forEach((msg, index) => {
+    if (msg.role === 'assistant' && msg.status === 'processing') {
+      regeneratingIndices.add(index);
+    }
+  });
+  
+  console.log('🎬 [Animation] States:', {
+    isNewMessageLoading,
+    regeneratingIndices: Array.from(regeneratingIndices),
+    messagesCount: messages.length,
+    processingMessages: messages.filter(m => m.status === 'processing').map(m => ({ id: m.id, role: m.role }))
+  });
 
   return (
     <KeyboardAvoidingView

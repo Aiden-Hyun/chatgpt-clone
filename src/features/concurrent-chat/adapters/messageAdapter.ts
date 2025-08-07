@@ -9,7 +9,7 @@ import { ConcurrentMessage } from '../core/types/interfaces/IMessageProcessor';
 
 export const toChatMessage = (msg: ConcurrentMessage, index: number): ChatMessage => ({
   role: msg.role,
-  content: msg.content || '',
+  content: msg.status === 'processing' ? '' : (msg.content || ''), // Empty content for processing messages
   // Add index for regeneration tracking
   index,
 });

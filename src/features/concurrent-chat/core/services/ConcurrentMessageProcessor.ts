@@ -34,7 +34,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
     }
 
     try {
-      // Publish message sent event
+      // Publish message sent event (user message completed)
       console.log('📤 [MessageProcessor] Publishing MESSAGE_SENT event');
       this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_SENT, {
         type: MESSAGE_EVENT_TYPES.MESSAGE_SENT,
@@ -75,26 +75,44 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
         
         const assistantContent = aiResponse.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
 
-        // Create assistant message
+        // Create assistant message (start with processing status for animation)
         const assistantMessage: ConcurrentMessage = {
           id: `assistant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          content: assistantContent,
+          content: '', // Start empty for animation
           role: 'assistant',
-          status: 'completed',
+          status: 'processing', // Start as processing for animation
           timestamp: Date.now(),
           roomId: message.roomId,
           model: message.model,
+        };
+
+        // Publish assistant message started event (for animation)
+        this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_SENT, {
+          type: MESSAGE_EVENT_TYPES.MESSAGE_SENT,
+          timestamp: Date.now(),
+          messageId: assistantMessage.id,
+          message: assistantMessage,
+        });
+
+        // Simulate typing delay for animation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Update assistant message with content and completed status
+        const completedAssistantMessage: ConcurrentMessage = {
+          ...assistantMessage,
+          content: assistantContent,
+          status: 'completed',
         };
 
         // Publish assistant message completed event
         this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED, {
           type: MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED,
           timestamp: Date.now(),
-          messageId: assistantMessage.id,
-          message: assistantMessage,
+          messageId: completedAssistantMessage.id,
+          message: completedAssistantMessage,
         });
 
-        return assistantMessage;
+        return completedAssistantMessage;
       }
 
       // For non-user messages, just return as completed
