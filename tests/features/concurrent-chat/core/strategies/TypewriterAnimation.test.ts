@@ -49,7 +49,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Hello World';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       // Fast-forward through the animation
       for (let i = 0; i <= text.length; i++) {
@@ -67,7 +67,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Test';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       // Check first character
       jest.advanceTimersByTime(50);
@@ -90,7 +90,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Quick';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       jest.advanceTimersByTime(250); // 5 characters * 50ms
       await Promise.resolve();
@@ -101,7 +101,7 @@ describe('TypewriterAnimation', () => {
     it('should handle empty text', async () => {
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate('', onUpdate);
+      const animatePromise = animation.animateWithCallback('', onUpdate);
       
       jest.advanceTimersByTime(50);
       await Promise.resolve();
@@ -114,7 +114,7 @@ describe('TypewriterAnimation', () => {
     it('should handle single character', async () => {
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate('A', onUpdate);
+      const animatePromise = animation.animateWithCallback('A', onUpdate);
       
       jest.advanceTimersByTime(50);
       await Promise.resolve();
@@ -140,7 +140,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Long text that will be stopped';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       // Let animation start
       jest.advanceTimersByTime(100);
@@ -166,7 +166,7 @@ describe('TypewriterAnimation', () => {
       
       expect(animation.isAnimating()).toBe(false);
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       expect(animation.isAnimating()).toBe(true);
       
@@ -184,7 +184,7 @@ describe('TypewriterAnimation', () => {
       
       expect(animation.getProgress()).toBe(0);
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       // After first character
       jest.advanceTimersByTime(50);
@@ -218,7 +218,7 @@ describe('TypewriterAnimation', () => {
       
       animation.setSpeed(100); // 100ms per character
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       // Should take longer with new speed
       jest.advanceTimersByTime(50);
@@ -258,7 +258,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Test';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       expect(animation.isAnimating()).toBe(true);
       
@@ -279,7 +279,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Test';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       expect(animation.isAnimating()).toBe(true);
       
@@ -300,21 +300,21 @@ describe('TypewriterAnimation', () => {
     it('should handle null text', async () => {
       const onUpdate = jest.fn();
       
-      await expect(animation.animate(null as any, onUpdate)).rejects.toThrow();
+      await expect(animation.animateWithCallback(null as any, onUpdate)).rejects.toThrow();
     });
 
     it('should handle undefined text', async () => {
       const onUpdate = jest.fn();
       
-      await expect(animation.animate(undefined as any, onUpdate)).rejects.toThrow();
+      await expect(animation.animateWithCallback(undefined as any, onUpdate)).rejects.toThrow();
     });
 
     it('should handle null onUpdate callback', async () => {
-      await expect(animation.animate('Test', null as any)).rejects.toThrow();
+      await expect(animation.animateWithCallback('Test', null as any)).rejects.toThrow();
     });
 
     it('should handle undefined onUpdate callback', async () => {
-      await expect(animation.animate('Test', undefined as any)).rejects.toThrow();
+      await expect(animation.animateWithCallback('Test', undefined as any)).rejects.toThrow();
     });
 
     it('should handle onUpdate callback throwing error', async () => {
@@ -324,7 +324,7 @@ describe('TypewriterAnimation', () => {
         throw new Error('Update error');
       });
       
-      const animatePromise = animation.animate('Test', onUpdate);
+      const animatePromise = animation.animateWithCallback('Test', onUpdate);
       
       jest.advanceTimersByTime(50);
       await Promise.resolve();
@@ -343,7 +343,7 @@ describe('TypewriterAnimation', () => {
       const onUpdate = jest.fn();
       
       const startTime = Date.now();
-      const animatePromise = animation.animate(longText, onUpdate);
+      const animatePromise = animation.animateWithCallback(longText, onUpdate);
       
       jest.advanceTimersByTime(50000); // 1000 characters * 50ms
       await Promise.resolve();
@@ -364,7 +364,7 @@ describe('TypewriterAnimation', () => {
       const onUpdate = jest.fn();
       
       // Start animation
-      const animatePromise1 = animation.animate(text, onUpdate);
+      const animatePromise1 = animation.animateWithCallback(text, onUpdate);
       
       jest.advanceTimersByTime(50);
       await Promise.resolve();
@@ -373,7 +373,7 @@ describe('TypewriterAnimation', () => {
       animation.stop();
       await animatePromise1;
       
-      const animatePromise2 = animation.animate(text, onUpdate);
+      const animatePromise2 = animation.animateWithCallback(text, onUpdate);
       
       jest.advanceTimersByTime(200);
       await Promise.resolve();
@@ -438,7 +438,7 @@ describe('TypewriterAnimation', () => {
       const text = 'ABC';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       // First character
       jest.advanceTimersByTime(50);
@@ -466,7 +466,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Hello\nWorld!';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       jest.advanceTimersByTime(600); // 12 characters * 50ms
       await Promise.resolve();
@@ -484,7 +484,7 @@ describe('TypewriterAnimation', () => {
       const text = 'Hello 🌍 World';
       const onUpdate = jest.fn();
       
-      const animatePromise = animation.animate(text, onUpdate);
+      const animatePromise = animation.animateWithCallback(text, onUpdate);
       
       jest.advanceTimersByTime(650); // 13 characters * 50ms
       await Promise.resolve();
