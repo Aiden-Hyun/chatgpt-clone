@@ -107,16 +107,22 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
 
   // Determine display content based on status
   const getDisplayContent = () => {
+    // User messages always show their content immediately
+    if (role === 'user') {
+      return content;
+    }
+    
+    // Assistant messages use different display logic based on status
     switch (status) {
       case 'pending':
         return '⏳ Preparing...';
       case 'processing':
-        return role === 'assistant' ? '🤖 Thinking...' : '📤 Sending...';
+        return '🤖 Thinking...';
       case 'failed':
         return '❌ Failed to send message';
       case 'completed':
-        // Use animated content if available, otherwise fall back to full content
-        return displayedContent || content;
+        // For assistant messages, only show animated content to prevent flash
+        return displayedContent;
       default:
         return content;
     }
@@ -167,15 +173,7 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
         </View>
       )}
       
-      {/* Debug info (only in development) */}
-      {__DEV__ && (
-        <View style={styles.debugContainer}>
-          <Text style={styles.debugText}>
-            ID: {messageId} | Role: {role} | Status: {status} | 
-            Strategies: {availableStrategies.length} | Default: {defaultStrategy}
-          </Text>
-        </View>
-      )}
+      {/* Debug info disabled for cleaner UI */}
     </View>
   );
 };
@@ -205,6 +203,8 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     lineHeight: 22,
+    flexWrap: 'wrap',
+    flexShrink: 1,
   },
   userText: {
     color: '#FFFFFF',

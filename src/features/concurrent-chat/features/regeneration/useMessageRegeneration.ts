@@ -72,26 +72,41 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
    */
   const regenerateMessage = useCallback(async (
     messageId: string,
-    originalContent: string
+    originalContent: string,
+    conversationHistory?: ConcurrentMessage[]
   ): Promise<ConcurrentMessage> => {
     if (!isInitialized) {
       throw new Error('Regeneration service not initialized');
     }
 
+    console.log('🔄 [HOOK] Starting regeneration for messageId:', messageId);
+    console.log('🔄 [HOOK] Original content:', originalContent);
+    console.log('🔄 [HOOK] Conversation history received:', conversationHistory);
+
     try {
       setError(null);
-      // Create a context with the original content for regeneration
-      const context: ConcurrentMessage[] = [{
-        id: messageId,
-        content: originalContent,
-        role: 'assistant',
-        timestamp: new Date(),
-        status: 'completed'
-      }];
+      
+      // Use provided conversation history or create a fallback context
+      const context: ConcurrentMessage[] = conversationHistory && conversationHistory.length > 0 
+        ? conversationHistory
+        : [{
+            id: messageId,
+            content: originalContent,
+            role: 'assistant',
+            timestamp: new Date(),
+            status: 'completed'
+          }];
+      
+      console.log('🔄 [HOOK] Final context being passed to regeneration service:', context);
+      console.log('🔄 [HOOK] Context length:', context.length);
+      
       const regeneratedMessage = await regenerationService.regenerateMessage(messageId, context);
+      
+      console.log('🔄 [HOOK] Regenerated message received:', regeneratedMessage);
       return regeneratedMessage;
     } catch (err) {
       const errorMessage = `Failed to regenerate message: ${err instanceof Error ? err.message : 'Unknown error'}`;
+      console.log('🔄 [HOOK] Regeneration failed:', errorMessage);
       setError(errorMessage);
       throw new Error(errorMessage);
     }

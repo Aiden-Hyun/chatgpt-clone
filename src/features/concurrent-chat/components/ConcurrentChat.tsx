@@ -493,16 +493,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
                 status={message.status as 'pending' | 'processing' | 'completed' | 'failed'}
                 eventBus={eventBus}
                 serviceContainer={serviceContainer}
-                style={{
-                  padding: 16,
-                  backgroundColor: isUserMessage ? '#007AFF' : '#F2F2F7',
-                  borderRadius: 20,
-                  shadowColor: 'rgba(0, 0, 0, 0.1)',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                  elevation: 2,
-                }}
               />
               
               {/* Action buttons for assistant messages */}
@@ -517,7 +507,16 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
                   <RegenerateButton
                     messageId={message.id}
                     originalContent={message.content}
-                    conversationHistory={messages.slice(0, index)}
+                    conversationHistory={(() => {
+                      const history = messages.slice(0, index);
+                      console.log('🔄 [CONCURRENT_CHAT] Conversation history for regeneration:', {
+                        messageIndex: index,
+                        totalMessages: messages.length,
+                        historyLength: history.length,
+                        history: history.map(m => ({ id: m.id, role: m.role, content: m.content?.substring(0, 50) + '...' }))
+                      });
+                      return history;
+                    })()}
                     eventBus={eventBus}
                     serviceContainer={serviceContainer}
                     size="small"

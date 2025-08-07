@@ -165,16 +165,7 @@ export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
         </View>
       )}
 
-      {/* Debug info (only in development) */}
-      {__DEV__ && (
-        <View style={styles.debugContainer}>
-          <Text style={styles.debugText}>
-            ID: {messageId} | Can Regenerate: {canRegenerate(messageId).toString()} | 
-            History: {getRegenerationHistory(messageId).length} | 
-            Initialized: {isInitialized.toString()}
-          </Text>
-        </View>
-      )}
+      {/* Debug info disabled for cleaner UI */}
     </View>
   );
 };

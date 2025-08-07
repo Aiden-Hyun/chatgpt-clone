@@ -217,8 +217,22 @@ export class RegenerationService extends BasePlugin {
           max_tokens: 1000,
         };
 
+        // Get session from container
+        let session = null;
+        try {
+          session = this.container.get('session');
+          if (!session || !session.access_token) {
+            throw new Error('No valid session found');
+          }
+          console.log('🔄 [REGENERATION] Session found for user: ${session.user?.email || \'unknown\'}');
+        } catch (error) {
+          throw new Error('No active session found. Please ensure you are logged in before regenerating messages.');
+        }
+
         // Send regeneration request
-        const response = await aiService.sendMessage(request, {} as any);
+        console.log('🔄 [REGENERATION] Calling AI service with request...');
+        const response = await aiService.sendMessage(request, session);
+        console.log('🔄 [REGENERATION] AI service response:', response);
 
         // Create regenerated message
         const regeneratedMessage: ConcurrentMessage = {
