@@ -612,7 +612,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   // Debug when currentLanguage changes
   React.useEffect(() => {
-    console.log('🌍 Language changed to:', currentLanguage);
+    // Language changed
   }, [currentLanguage]);
 
   const t: TranslationFunction = (key: string) => {
@@ -621,13 +621,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   const setLanguage = (language: string) => {
-    console.log('🌍 setLanguage called with:', language);
-    console.log('🌍 Available languages:', Object.keys(translations));
     if (translations[language]) {
-      console.log('🌍 Setting language to:', language);
       setCurrentLanguage(language);
-    } else {
-      console.log('🌍 Language not found:', language);
     }
   };
 

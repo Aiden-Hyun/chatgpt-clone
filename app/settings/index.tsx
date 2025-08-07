@@ -97,7 +97,6 @@ export default function SettingsScreen() {
                     placeholderTextColor={theme.colors.text.tertiary}
                     autoFocus
                     onBlur={() => {
-                      console.log('👁️ TextInput blurred');
                       // Don't cancel on blur - let user press save button
                     }}
                   />
@@ -148,7 +147,6 @@ export default function SettingsScreen() {
             <TouchableOpacity 
               style={styles.settingItem}
               onPress={() => {
-                console.log('🧪 Test toast button pressed');
                 showSuccess('Test toast message!', 5000);
               }}
             >

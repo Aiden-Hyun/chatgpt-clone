@@ -27,15 +27,12 @@ serve(async (req) => {
     roomId = parsed.roomId;
     const rawModel = parsed.model;
     model = typeof rawModel === 'string' && rawModel.trim().length > 0 ? rawModel.trim() : 'gpt-3.5-turbo';
-    console.log('📩 incoming model:', rawModel, '➡️ using model:', model);
   } catch {
     return new Response("Invalid JSON body", {
       status: 400,
       headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
     });
   }
-
-  console.log("📩 Received model:", model);
 
   const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
   if (!OPENAI_API_KEY) {
@@ -54,7 +51,7 @@ serve(async (req) => {
       const payload = JSON.parse(atob(token.split(".")[1]));
       userId = payload.sub;
     } catch (e) {
-      console.log("JWT parse error:", e);
+      // JWT parse error
     }
   }
 
@@ -68,7 +65,6 @@ serve(async (req) => {
 
   let data;
   try {
-    console.log('📤 Sending to OpenAI with model:', model);
     // Prepend system message indicating the model being used
     const systemMessage = {
       role: 'system',
@@ -88,9 +84,7 @@ serve(async (req) => {
     });
 
     data = await response.json();
-    console.log('📥 OpenAI response model:', data?.model || 'unknown');
     if (!response.ok) {
-      console.error("OpenAI API error:", data);
       return new Response(JSON.stringify({ error: data }), {
         status: response.status,
         headers: {
@@ -100,7 +94,6 @@ serve(async (req) => {
       });
     }
   } catch (err) {
-    console.error("Request or JSON parse error:", err);
     return new Response(JSON.stringify({ error: "Failed to reach OpenAI" }), {
       status: 500,
       headers: {
@@ -131,7 +124,7 @@ serve(async (req) => {
         },
       ]);
     } catch (dbError) {
-      console.log("Database insert error:", dbError);
+      // Database insert error
     }
   }
 

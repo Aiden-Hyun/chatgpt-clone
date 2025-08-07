@@ -86,7 +86,6 @@ export default function AuthScreen() {
   // Monitor pathname changes to detect navigation
   useEffect(() => {
     if (navigationAttempted.current) {
-      console.log('Pathname changed to:', pathname);
       navigationAttempted.current = false;
     }
   }, [pathname]);
@@ -145,22 +144,16 @@ export default function AuthScreen() {
       return;
     }
 
-    console.log('Form validation passed, attempting signin...');
-
     try {
       const result = await signIn(email, password);
-      console.log('Signin result:', result);
       
       if (result.success) {
-        console.log('Signin successful, navigating to home');
         showSuccess(t('auth.login_successful') || 'Login successful!');
         router.replace('/');
       } else {
-        console.error('Signin failed:', result.error);
         Alert.alert('Sign In Failed', result.error || 'Failed to sign in. Please check your credentials and try again.');
       }
     } catch (error) {
-      console.error('Signin error:', error);
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     }
   };
@@ -177,7 +170,7 @@ export default function AuthScreen() {
     try {
       router.push('/forgot-password');
     } catch (error) {
-      console.error('Navigation error:', error);
+      // Navigation error
     }
   };
 
@@ -185,7 +178,7 @@ export default function AuthScreen() {
     try {
       router.push('/signup');
     } catch (error) {
-      console.error('Navigation error:', error);
+      // Navigation error
     }
   };
 
@@ -193,7 +186,7 @@ export default function AuthScreen() {
     clearError(currentError?.id || '');
     startLoading();
     checkSession().catch(error => {
-      console.error('Session check error:', error);
+      // Session check error
     });
   };
 

@@ -20,18 +20,15 @@ export const useToast = () => {
     type: 'success' | 'error' | 'warning' | 'info' = 'info',
     duration: number = 3000
   ) => {
-    console.log('🍞 showToast called with:', { message, type, duration });
     setToast({
       visible: true,
       message,
       type,
       duration,
     });
-    console.log('🍞 Toast state set to visible');
   }, []);
 
   const hideToast = useCallback(() => {
-    console.log('🍞 hideToast called');
     setToast(prev => ({
       ...prev,
       visible: false,
@@ -39,7 +36,6 @@ export const useToast = () => {
   }, []);
 
   const showSuccess = useCallback((message: string, duration?: number) => {
-    console.log('🍞 showSuccess called with:', { message, duration });
     showToast(message, 'success', duration);
   }, [showToast]);
 

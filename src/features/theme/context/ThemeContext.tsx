@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           setThemeModeState(savedThemeMode as ThemeMode);
         }
       } catch (error) {
-        console.error('Failed to load theme mode:', error);
+        // Failed to load theme mode
       }
     };
 
@@ -40,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
       setThemeModeState(mode);
     } catch (error) {
-      console.error('Failed to save theme mode:', error);
+      // Failed to save theme mode
     }
   };
 
