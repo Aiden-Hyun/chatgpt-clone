@@ -53,7 +53,7 @@ export class ServiceContainer {
    * @returns The service instance
    * @throws Error if service is not found
    */
-  get(key: string): any {
+  get<T = any>(key: string): T {
     if (!key) {
       throw new Error(`Service ${key} not found`);
     }

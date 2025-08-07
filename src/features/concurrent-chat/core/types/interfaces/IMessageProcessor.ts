@@ -5,6 +5,22 @@
  * This interface defines the contract for any message processor implementation,
  * allowing for flexible message types and async processing.
  */
+
+/**
+ * Represents a message in the concurrent chat system
+ */
+export interface ConcurrentMessage {
+  id: string;
+  content: string;
+  role: 'user' | 'assistant' | 'system';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  timestamp: number;
+  roomId?: number;
+  model?: string;
+  error?: string;
+  metadata?: Record<string, any>;
+}
+
 export interface IMessageProcessor {
   /**
    * Process a message asynchronously.

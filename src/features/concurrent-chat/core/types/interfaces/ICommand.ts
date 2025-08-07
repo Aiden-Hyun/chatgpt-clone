@@ -29,6 +29,36 @@ export interface ICommand {
 }
 
 /**
+ * Interface for plugins in the concurrent chat system
+ */
+export interface IPlugin {
+  /**
+   * Unique identifier for the plugin
+   */
+  readonly id: string;
+
+  /**
+   * Human-readable name for the plugin
+   */
+  readonly name: string;
+
+  /**
+   * Version string for the plugin
+   */
+  readonly version: string;
+
+  /**
+   * Initialize the plugin
+   */
+  init(): Promise<void>;
+
+  /**
+   * Clean up the plugin
+   */
+  destroy(): Promise<void>;
+}
+
+/**
  * Default implementation of ICommand for testing purposes.
  * This provides a concrete implementation that satisfies the interface contract.
  */
