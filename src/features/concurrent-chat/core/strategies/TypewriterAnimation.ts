@@ -7,6 +7,7 @@ export class TypewriterAnimation implements IAnimationStrategy {
   private animationId: number | null = null;
   private currentText = '';
   private currentIndex = 0;
+  private resolvePromise: (() => void) | null = null;
 
   async animate(content: string, element: HTMLElement): Promise<void> {
     // Validation
@@ -25,6 +26,8 @@ export class TypewriterAnimation implements IAnimationStrategy {
     element.textContent = '';
 
     return new Promise<void>((resolve, reject) => {
+      this.resolvePromise = resolve;
+      
       const animateNextCharacter = () => {
         if (!this.animating) {
           resolve();
@@ -84,6 +87,8 @@ export class TypewriterAnimation implements IAnimationStrategy {
     this.currentIndex = 0;
 
     return new Promise<void>((resolve, reject) => {
+      this.resolvePromise = resolve;
+      
       const animateNextCharacter = () => {
         if (!this.animating) {
           resolve();
@@ -99,6 +104,7 @@ export class TypewriterAnimation implements IAnimationStrategy {
             
             onUpdate(this.currentText);
             
+            // Use the current speed value for this timeout
             this.animationId = window.setTimeout(animateNextCharacter, this.speed);
           } else {
             // Animation complete - call onUpdate one more time with final result
@@ -122,7 +128,7 @@ export class TypewriterAnimation implements IAnimationStrategy {
         return;
       }
 
-      // Start animation
+      // Start animation immediately (no initial delay)
       animateNextCharacter();
     });
   }
@@ -132,6 +138,11 @@ export class TypewriterAnimation implements IAnimationStrategy {
     if (this.animationId) {
       window.clearTimeout(this.animationId);
       this.animationId = null;
+    }
+    // Resolve the promise immediately if it exists
+    if (this.resolvePromise) {
+      this.resolvePromise();
+      this.resolvePromise = null;
     }
   }
 
