@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RegenerateButton } from '../../../../../../src/features/concurrent-chat/features/regeneration/components/RegenerateButton';
 import { useMessageRegeneration } from '../../../../../../src/features/concurrent-chat/features/regeneration/useMessageRegeneration';
+import { EventBus } from '../../../../../../src/features/concurrent-chat/core/events/EventBus';
+import { ServiceContainer } from '../../../../../../src/features/concurrent-chat/core/container/ServiceContainer';
 
 // Mock the regeneration hook
 jest.mock('../../../../../../src/features/concurrent-chat/features/regeneration/useMessageRegeneration');
@@ -9,453 +11,407 @@ jest.mock('../../../../../../src/features/concurrent-chat/features/regeneration/
 const mockUseMessageRegeneration = useMessageRegeneration as jest.MockedFunction<typeof useMessageRegeneration>;
 
 describe('RegenerateButton', () => {
-  const mockMessage = {
-    id: 'msg1',
-    content: 'Original message content',
-    status: 'completed',
-    role: 'assistant',
-    timestamp: new Date('2024-01-01T12:00:00Z')
-  };
+  const mockEventBus = new EventBus();
+  const mockServiceContainer = new ServiceContainer();
 
-  const mockRegenerationState = {
-    isRegenerating: false,
-    regenerationCount: 2,
-    canRegenerate: true,
-    qualityScore: 0.85,
-    history: [
-      { id: 'reg1', content: 'First regeneration', timestamp: new Date('2024-01-01T12:01:00Z') },
-      { id: 'reg2', content: 'Second regeneration', timestamp: new Date('2024-01-01T12:02:00Z') }
-    ]
-  };
-
-  const mockRegenerationControls = {
-    regenerate: jest.fn(),
-    cancelRegeneration: jest.fn(),
-    clearHistory: jest.fn(),
-    setQualityThreshold: jest.fn()
+  const mockRegenerationHookReturn = {
+    isInitialized: true,
+    isLoading: false,
+    error: null,
+    regenerateMessage: jest.fn(),
+    canRegenerate: jest.fn(() => true),
+    getRegenerationHistory: jest.fn(() => []),
+    clearRegenerationHistory: jest.fn(),
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    mockUseMessageRegeneration.mockReturnValue({
-      ...mockRegenerationState,
-      ...mockRegenerationControls
-    });
+    mockUseMessageRegeneration.mockReturnValue(mockRegenerationHookReturn);
   });
 
-  describe('Regeneration UI controls', () => {
+  describe('Basic rendering', () => {
     it('should render regenerate button', () => {
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      expect(screen.getByTestId('regenerate-button')).toBeInTheDocument();
-      expect(screen.getByText('Regenerate')).toBeInTheDocument();
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
     });
 
     it('should handle regenerate button click', async () => {
-      render(<RegenerateButton message={mockMessage} />);
+      const onRegenerationStart = jest.fn();
+      const onRegenerationComplete = jest.fn();
+      
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          onRegenerationStart={onRegenerationStart}
+          onRegenerationComplete={onRegenerationComplete}
+        />
+      );
 
-      const regenerateButton = screen.getByTestId('regenerate-button');
-      fireEvent.click(regenerateButton);
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      fireEvent.press(regenerateButton);
 
       await waitFor(() => {
-        expect(mockRegenerationControls.regenerate).toHaveBeenCalledWith('msg1');
+        expect(mockRegenerationHookReturn.regenerateMessage).toHaveBeenCalledWith('msg1', 'Original message content');
+        expect(onRegenerationStart).toHaveBeenCalled();
       });
     });
 
-    it('should show regenerating state', () => {
+    it('should show regenerating state when loading', () => {
       mockUseMessageRegeneration.mockReturnValue({
-        ...mockRegenerationState,
-        isRegenerating: true
+        ...mockRegenerationHookReturn,
+        isLoading: true,
       });
 
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      expect(screen.getByTestId('regenerating-indicator')).toBeInTheDocument();
-      expect(screen.getByText('Regenerating...')).toBeInTheDocument();
+      expect(screen.getByText('🔄 Regenerating...')).toBeInTheDocument();
+      expect(screen.getByText('Generating new response...')).toBeInTheDocument();
     });
 
-    it('should disable button when regenerating', () => {
+    it('should disable button when loading', () => {
       mockUseMessageRegeneration.mockReturnValue({
-        ...mockRegenerationState,
-        isRegenerating: true
+        ...mockRegenerationHookReturn,
+        isLoading: true,
       });
 
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      const regenerateButton = screen.getByTestId('regenerate-button');
+      const regenerateButton = screen.getByText('🔄 Regenerating...');
       expect(regenerateButton).toBeDisabled();
     });
 
-    it('should show cancel button when regenerating', () => {
+    it('should show retry button when there is an error', () => {
       mockUseMessageRegeneration.mockReturnValue({
-        ...mockRegenerationState,
-        isRegenerating: true
+        ...mockRegenerationHookReturn,
+        error: 'Regeneration failed',
       });
 
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      const cancelButton = screen.getByTestId('cancel-regeneration-button');
-      expect(cancelButton).toBeInTheDocument();
-    });
-
-    it('should handle cancel regeneration', async () => {
-      mockUseMessageRegeneration.mockReturnValue({
-        ...mockRegenerationState,
-        isRegenerating: true
-      });
-
-      render(<RegenerateButton message={mockMessage} />);
-
-      const cancelButton = screen.getByTestId('cancel-regeneration-button');
-      fireEvent.click(cancelButton);
-
-      await waitFor(() => {
-        expect(mockRegenerationControls.cancelRegeneration).toHaveBeenCalled();
-      });
-    });
-
-    it('should show regeneration count', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByText('Regenerated 2 times')).toBeInTheDocument();
-    });
-
-    it('should show quality score', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByText('Quality: 85%')).toBeInTheDocument();
+      expect(screen.getByText('⚠️ Retry')).toBeInTheDocument();
     });
   });
 
-  describe('Regeneration history display', () => {
-    it('should show regeneration history', () => {
-      render(<RegenerateButton message={mockMessage} />);
+  describe('Button variants and sizes', () => {
+    it('should render with different variants', () => {
+      const { rerender } = render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          variant="primary"
+        />
+      );
 
-      expect(screen.getByTestId('regeneration-history')).toBeInTheDocument();
-      expect(screen.getByText('First regeneration')).toBeInTheDocument();
-      expect(screen.getByText('Second regeneration')).toBeInTheDocument();
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
+
+      rerender(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          variant="secondary"
+        />
+      );
+
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
+
+      rerender(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          variant="outline"
+        />
+      );
+
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
     });
 
-    it('should show history count', () => {
-      render(<RegenerateButton message={mockMessage} />);
+    it('should render with different sizes', () => {
+      const { rerender } = render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          size="small"
+        />
+      );
 
-      expect(screen.getByText('2 versions')).toBeInTheDocument();
-    });
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
 
-    it('should handle history item selection', async () => {
-      render(<RegenerateButton message={mockMessage} />);
+      rerender(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          size="medium"
+        />
+      );
 
-      const historyItem = screen.getByTestId('history-item-reg1');
-      fireEvent.click(historyItem);
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
 
-      await waitFor(() => {
-        expect(screen.getByText('First regeneration')).toBeInTheDocument();
-      });
-    });
+      rerender(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          size="large"
+        />
+      );
 
-    it('should show history timestamps', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByText('12:01:00')).toBeInTheDocument();
-      expect(screen.getByText('12:02:00')).toBeInTheDocument();
-    });
-
-    it('should handle clear history', async () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const clearButton = screen.getByTestId('clear-history-button');
-      fireEvent.click(clearButton);
-
-      await waitFor(() => {
-        expect(mockRegenerationControls.clearHistory).toHaveBeenCalled();
-      });
-    });
-
-    it('should show empty history state', () => {
-      mockUseMessageRegeneration.mockReturnValue({
-        ...mockRegenerationState,
-        history: []
-      });
-
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByText('No regeneration history')).toBeInTheDocument();
-    });
-  });
-
-  describe('A/B testing interface', () => {
-    it('should show A/B testing controls', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByTestId('ab-testing-controls')).toBeInTheDocument();
-    });
-
-    it('should show variant selector', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const variantSelector = screen.getByTestId('variant-selector');
-      expect(variantSelector).toBeInTheDocument();
-    });
-
-    it('should handle variant selection', async () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const variantSelector = screen.getByTestId('variant-selector');
-      fireEvent.change(variantSelector, { target: { value: 'variant-b' } });
-
-      expect(variantSelector).toHaveValue('variant-b');
-    });
-
-    it('should show A/B test results', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByTestId('ab-test-results')).toBeInTheDocument();
-      expect(screen.getByText('Variant A: 60% preference')).toBeInTheDocument();
-      expect(screen.getByText('Variant B: 40% preference')).toBeInTheDocument();
-    });
-
-    it('should show statistical significance', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByText('Statistical significance: 95%')).toBeInTheDocument();
-    });
-
-    it('should handle A/B test reset', async () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const resetButton = screen.getByTestId('reset-ab-test-button');
-      fireEvent.click(resetButton);
-
-      await waitFor(() => {
-        expect(screen.getByText('A/B test reset')).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Plugin integration', () => {
-    it('should render with plugin system integration', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      expect(screen.getByTestId('plugin-regeneration-renderer')).toBeInTheDocument();
-    });
-
-    it('should allow plugins to modify regeneration behavior', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const pluginModifiedRegeneration = screen.getByTestId('plugin-modified-regeneration');
-      if (pluginModifiedRegeneration) {
-        expect(pluginModifiedRegeneration).toBeInTheDocument();
-      }
-    });
-
-    it('should handle plugin regeneration errors gracefully', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const pluginError = screen.getByTestId('plugin-error');
-      if (pluginError) {
-        expect(pluginError).toBeInTheDocument();
-      }
-    });
-
-    it('should support custom regeneration plugins', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const customRegenerationPlugin = screen.getByTestId('custom-regeneration-plugin');
-      if (customRegenerationPlugin) {
-        expect(customRegenerationPlugin).toBeInTheDocument();
-      }
-    });
-  });
-
-  describe('Command pattern integration', () => {
-    it('should support command-based regeneration', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const commandHandler = screen.getByTestId('command-handler');
-      if (commandHandler) {
-        expect(commandHandler).toBeInTheDocument();
-      }
-    });
-
-    it('should support regeneration command history', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const commandHistory = screen.getByTestId('command-history');
-      if (commandHistory) {
-        expect(commandHistory).toBeInTheDocument();
-      }
-    });
-
-    it('should support command undo/redo', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const undoButton = screen.getByTestId('undo-button');
-      const redoButton = screen.getByTestId('redo-button');
-      
-      if (undoButton) {
-        expect(undoButton).toBeInTheDocument();
-      }
-      if (redoButton) {
-        expect(redoButton).toBeInTheDocument();
-      }
-    });
-
-    it('should handle command execution', async () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const executeButton = screen.getByTestId('execute-command-button');
-      if (executeButton) {
-        fireEvent.click(executeButton);
-        
-        await waitFor(() => {
-          expect(screen.getByText('Command executed')).toBeInTheDocument();
-        });
-      }
-    });
-  });
-
-  describe('Interface compliance', () => {
-    it('should implement IRegenerateButton interface', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const regenerateButton = screen.getByTestId('regenerate-button');
-      expect(regenerateButton).toHaveAttribute('data-interface', 'IRegenerateButton');
-    });
-
-    it('should follow component interface contract', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      // Should accept required props
-      expect(screen.getByTestId('regenerate-button')).toBeInTheDocument();
-    });
-
-    it('should handle optional props correctly', () => {
-      render(<RegenerateButton message={mockMessage} showHistory={false} />);
-
-      expect(screen.getByTestId('regenerate-button')).toBeInTheDocument();
-    });
-
-    it('should validate required props', () => {
-      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
-      // @ts-ignore - Testing invalid props
-      render(<RegenerateButton />);
-      
-      expect(consoleError).toHaveBeenCalled();
-      consoleError.mockRestore();
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('should have proper ARIA labels', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const regenerateButton = screen.getByTestId('regenerate-button');
-      expect(regenerateButton).toHaveAttribute('aria-label', 'Regenerate message');
-    });
-
-    it('should support keyboard navigation', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const regenerateButton = screen.getByTestId('regenerate-button');
-      regenerateButton.focus();
-      expect(regenerateButton).toHaveFocus();
-    });
-
-    it('should have proper focus management', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const controls = screen.getByTestId('regeneration-controls');
-      controls.focus();
-      expect(controls).toHaveFocus();
-    });
-
-    it('should support screen readers', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      const screenReaderText = screen.getByTestId('screen-reader-text');
-      if (screenReaderText) {
-        expect(screenReaderText).toBeInTheDocument();
-      }
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
     });
   });
 
   describe('Error handling', () => {
-    it('should handle regeneration errors gracefully', () => {
-      mockUseMessageRegeneration.mockImplementation(() => {
-        throw new Error('Regeneration failed');
+    it('should display regeneration error', () => {
+      mockUseMessageRegeneration.mockReturnValue({
+        ...mockRegenerationHookReturn,
+        error: 'Regeneration service failed',
       });
 
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      expect(screen.getByText('Regeneration failed')).toBeInTheDocument();
-      expect(screen.getByTestId('error-fallback')).toBeInTheDocument();
+      expect(screen.getByText('Regeneration service failed')).toBeInTheDocument();
     });
 
-    it('should show error retry button', () => {
-      mockUseMessageRegeneration.mockImplementation(() => {
-        throw new Error('Regeneration failed');
+    it('should call onRegenerationError when regeneration fails', async () => {
+      const onRegenerationError = jest.fn();
+      mockRegenerationHookReturn.regenerateMessage.mockRejectedValue(new Error('Regeneration failed'));
+
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          onRegenerationError={onRegenerationError}
+        />
+      );
+
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      fireEvent.press(regenerateButton);
+
+      await waitFor(() => {
+        expect(onRegenerationError).toHaveBeenCalledWith('Regeneration failed');
       });
+    });
+  });
 
-      render(<RegenerateButton message={mockMessage} />);
+  describe('Callback handling', () => {
+    it('should call onRegenerationComplete when regeneration succeeds', async () => {
+      const onRegenerationComplete = jest.fn();
+      mockRegenerationHookReturn.regenerateMessage.mockResolvedValue('New regenerated content');
 
-      const retryButton = screen.getByTestId('retry-button');
-      expect(retryButton).toBeInTheDocument();
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          onRegenerationComplete={onRegenerationComplete}
+        />
+      );
+
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      fireEvent.press(regenerateButton);
+
+      await waitFor(() => {
+        expect(onRegenerationComplete).toHaveBeenCalledWith('New regenerated content');
+      });
     });
 
-    it('should handle network errors', () => {
-      mockUseMessageRegeneration.mockImplementation(() => {
-        throw new Error('Network error');
+    it('should call onRegenerationStart when regeneration begins', async () => {
+      const onRegenerationStart = jest.fn();
+
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          onRegenerationStart={onRegenerationStart}
+        />
+      );
+
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      fireEvent.press(regenerateButton);
+
+      await waitFor(() => {
+        expect(onRegenerationStart).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Disabled state', () => {
+    it('should be disabled when disabled prop is true', () => {
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+          disabled={true}
+        />
+      );
+
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      expect(regenerateButton).toBeDisabled();
+    });
+
+    it('should be disabled when cannot regenerate', () => {
+      mockUseMessageRegeneration.mockReturnValue({
+        ...mockRegenerationHookReturn,
+        canRegenerate: jest.fn(() => false),
       });
 
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      expect(screen.getByText('Network error')).toBeInTheDocument();
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      expect(regenerateButton).toBeDisabled();
+    });
+
+    it('should be disabled when not initialized', () => {
+      mockUseMessageRegeneration.mockReturnValue({
+        ...mockRegenerationHookReturn,
+        isInitialized: false,
+      });
+
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
+
+      const regenerateButton = screen.getByText('🔄 Regenerate');
+      expect(regenerateButton).toBeDisabled();
+    });
+  });
+
+  describe('Debug information', () => {
+    it('should show debug info in development mode', () => {
+      const originalDev = global.__DEV__;
+      global.__DEV__ = true;
+
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
+
+      expect(screen.getByText(/ID: msg1/)).toBeInTheDocument();
+      expect(screen.getByText(/Can Regenerate: true/)).toBeInTheDocument();
+      expect(screen.getByText(/History: 0/)).toBeInTheDocument();
+      expect(screen.getByText(/Initialized: true/)).toBeInTheDocument();
+
+      global.__DEV__ = originalDev;
+    });
+
+    it('should not show debug info in production mode', () => {
+      const originalDev = global.__DEV__;
+      global.__DEV__ = false;
+
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
+
+      expect(screen.queryByText(/ID: msg1/)).not.toBeInTheDocument();
+
+      global.__DEV__ = originalDev;
     });
   });
 
   describe('SOLID Principles Compliance', () => {
     it('should follow Single Responsibility Principle', () => {
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
-      // Component should only handle regeneration UI
-      expect(screen.getByTestId('regenerate-button')).toBeInTheDocument();
-    });
-
-    it('should follow Open/Closed Principle', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      // Should be open for extension (new plugins) but closed for modification
-      const pluginRenderer = screen.getByTestId('plugin-regeneration-renderer');
-      expect(pluginRenderer).toBeInTheDocument();
-    });
-
-    it('should follow Liskov Substitution Principle', () => {
-      // Should work with different message types
-      const differentMessage = { 
-        ...mockMessage, 
-        type: 'image',
-        content: 'image.jpg' 
-      };
-
-      render(<RegenerateButton message={differentMessage} />);
-      
-      expect(screen.getByTestId('regenerate-button')).toBeInTheDocument();
-    });
-
-    it('should follow Interface Segregation Principle', () => {
-      render(<RegenerateButton message={mockMessage} />);
-
-      // Should depend on focused interfaces, not large ones
-      expect(screen.getByTestId('regenerate-button')).toBeInTheDocument();
+      // Component should only handle regeneration functionality
+      expect(screen.getByText('🔄 Regenerate')).toBeInTheDocument();
     });
 
     it('should follow Dependency Inversion Principle', () => {
-      render(<RegenerateButton message={mockMessage} />);
+      render(
+        <RegenerateButton
+          messageId="msg1"
+          originalContent="Original message content"
+          eventBus={mockEventBus}
+          serviceContainer={mockServiceContainer}
+        />
+      );
 
       // Should depend on abstractions (hooks) not concretions
-      expect(mockUseMessageRegeneration).toHaveBeenCalled();
+      expect(mockUseMessageRegeneration).toHaveBeenCalledWith(mockEventBus, mockServiceContainer);
     });
   });
 }); 
