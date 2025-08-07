@@ -703,14 +703,14 @@ function useModelSelection(roomId?: number) {
 #### Event System (1 file):
 8. ✅ **EventBus.ts** - CREATED
 
-### Phase 2: Command Pattern - PENDING ⏳
+### Phase 2: Command Pattern - COMPLETED ✅
 
 #### Command Implementations (5 files):
 9. ✅ **SendMessageCommand.ts** - CREATED
 10. ✅ **CancelMessageCommand.ts** - CREATED
 11. ✅ **ChangeModelCommand.ts** - CREATED
 12. ✅ **RetryMessageCommand.ts** - CREATED
-13. ❌ **ClearMessagesCommand.ts** - PENDING
+13. ✅ **ClearMessagesCommand.ts** - CREATED
 
 ### Phase 3: Strategy Pattern - PENDING ⏳
 
@@ -776,9 +776,9 @@ function useModelSelection(roomId?: number) {
 48. ❌ **ModelSelector.tsx** - PENDING
 
 **Progress Summary:**
-- ✅ **Completed**: 13 out of 48 files (27.1%)
-- ⏳ **Pending**: 35 files
-- 🎯 **Current Phase**: Phase 2 (Command Pattern) - IN PROGRESS
+- ✅ **Completed**: 14 out of 48 files (29.2%)
+- ⏳ **Pending**: 34 files
+- 🎯 **Current Phase**: Phase 2 (Command Pattern) - COMPLETED ✅
 - 🚀 **Next Phase**: Phase 3 (Strategy Pattern)
 
 ## Success Criteria
