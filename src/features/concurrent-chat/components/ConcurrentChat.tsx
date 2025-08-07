@@ -1,9 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
-import { supabase } from '../../../shared/lib/supabase';
-import { useInputFocus } from '../../../shared/hooks';
-import { ChatInput, MessageList } from '../../chat/components';
 import { createChatStyles } from '../../../../app/chat/chat.styles';
+import { useInputFocus } from '../../../shared/hooks';
+import { supabase } from '../../../shared/lib/supabase';
+import { ChatInput, MessageList } from '../../chat/components';
+import {
+    hasProcessingMessages,
+    toChatMessages
+} from '../adapters/messageAdapter';
 import { ChangeModelCommand } from '../core/commands/ChangeModelCommand';
 import { SendMessageCommand } from '../core/commands/SendMessageCommand';
 import { ServiceContainer } from '../core/container/ServiceContainer';
@@ -13,6 +17,8 @@ import { useMessageCommands } from '../core/hooks/useMessageCommands';
 import { useModelSelection } from '../core/hooks/useModelSelection';
 import { usePluginSystem } from '../core/hooks/usePluginSystem';
 import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
+import { ConcurrentMessageProcessor } from '../core/services/ConcurrentMessageProcessor';
+import { ModelSelectionService } from '../core/services/ModelSelectionService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../core/types/interfaces/IModelSelector';
 import { AnimationService } from '../features/animation/AnimationService';
@@ -20,10 +26,6 @@ import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
 import { RegenerationService } from '../features/regeneration/RegenerationService';
 import { StreamingService } from '../features/streaming/StreamingService';
-import { 
-  toChatMessages, 
-  hasProcessingMessages 
-} from '../adapters/messageAdapter';
 
 interface ConcurrentChatProps {
   roomId?: number;
@@ -56,9 +58,23 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   initialModel = 'gpt-3.5-turbo',
   className,
 }) => {
-  // Dependency injection container and event bus
-  const [serviceContainer] = useState(() => new ServiceContainer());
+  // Dependency injection container and event bus - initialize services immediately
   const [eventBus] = useState(() => new EventBus());
+  const [serviceContainer] = useState(() => {
+    const container = new ServiceContainer();
+    
+    // Register core services synchronously before hooks run
+    const aiService = new ConcurrentAIService();
+    const messageProcessor = new ConcurrentMessageProcessor(eventBus, container);
+    const modelSelector = new ModelSelectionService(supabase);
+    
+    container.register('aiService', aiService);
+    container.register('messageProcessor', messageProcessor);
+    container.register('modelSelector', modelSelector);
+    
+    console.log('✅ Core services registered synchronously');
+    return container;
+  });
   
   // UI state
   const [inputValue, setInputValue] = useState('');
@@ -92,13 +108,15 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     availableModels,
   } = useModelSelection(eventBus, serviceContainer, roomId);
 
-  // Initialize services
+  // Initialize additional services (session and feature services)
   useEffect(() => {
-    const initializeServices = async () => {
+    const initializeAdditionalServices = async () => {
       try {
-        // Register core services
-        const aiService = new ConcurrentAIService();
-        serviceContainer.register('aiService', aiService);
+        // Register session from Supabase (needed by AI service)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          serviceContainer.register('session', session);
+        }
 
         // Register feature services
         const animationService = new AnimationService(eventBus, serviceContainer);
@@ -111,29 +129,32 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         serviceContainer.register('editingService', editingService);
         serviceContainer.register('streamingService', streamingService);
 
-        // Register session from Supabase
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          serviceContainer.register('session', session);
-        }
+        console.log('✅ Additional services initialized successfully');
       } catch (error) {
-        console.error('Failed to initialize services:', error);
+        console.error('❌ Failed to initialize additional services:', error);
       }
     };
 
-    initializeServices();
+    initializeAdditionalServices();
   }, [serviceContainer, eventBus]);
 
   // Command handlers using Command Pattern
   const handleSendMessage = useCallback(async () => {
-    if (!inputValue.trim() || isSending) return;
+    console.log('🚀 [ConcurrentChat] handleSendMessage called with:', { inputValue: inputValue.trim(), isSending });
+    
+    if (!inputValue.trim() || isSending) {
+      console.log('❌ [ConcurrentChat] Message send blocked - empty input or already sending');
+      return;
+    }
 
     try {
       setIsSending(true);
       if (!hasUserTyped) setHasUserTyped(true);
 
+      console.log('📤 [ConcurrentChat] Getting message processor from service container');
       // Get message processor from service container
       const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
+      console.log('✅ [ConcurrentChat] Message processor retrieved:', !!messageProcessor);
       
       // Create and execute SendMessageCommand (correct signature: processor, content, roomId)
       const sendCommand = new SendMessageCommand(
@@ -142,12 +163,15 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         roomId || null
       );
       
+      console.log('⚡ [ConcurrentChat] Executing SendMessageCommand');
       await executeCommand(sendCommand);
+      console.log('✅ [ConcurrentChat] SendMessageCommand executed successfully');
       
       // Clear input after successful send
       setInputValue('');
       maintainFocus();
     } catch (err) {
+      console.error('❌ [ConcurrentChat] Error sending message:', err);
       Alert.alert(
         'Error',
         `Failed to send message: ${err instanceof Error ? err.message : 'Unknown error'}`,

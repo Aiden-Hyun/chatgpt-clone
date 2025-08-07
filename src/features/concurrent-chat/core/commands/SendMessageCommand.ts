@@ -1,5 +1,5 @@
 import { ICommand } from '../types/interfaces/ICommand';
-import { IMessageProcessor } from '../types/interfaces/IMessageProcessor';
+import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { generateRequestId } from '../utils/messageIdGenerator';
 
 export class SendMessageCommand implements ICommand {
@@ -32,12 +32,16 @@ export class SendMessageCommand implements ICommand {
     }
 
     try {
-      const result = await this.messageProcessor.process({
-        id: this.id, // Add the missing ID field
+      const message: ConcurrentMessage = {
+        id: this.id,
         content: this.messageContent,
+        role: 'user',
+        status: 'pending',
+        timestamp: Date.now(),
         roomId: this.roomId,
-        type: 'send'
-      });
+      };
+
+      const result = await this.messageProcessor.process(message);
 
       this.executed = true;
       this.undone = false;

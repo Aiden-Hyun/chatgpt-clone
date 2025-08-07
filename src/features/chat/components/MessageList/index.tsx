@@ -24,10 +24,10 @@ export const MessageList: React.FC<MessageListProps> = ({
   const renderCount = useRef(0);
   renderCount.current += 1;
   
-  // Log render count every 5 renders
-  if (renderCount.current % 5 === 0) {
-    console.log(`[RENDER-COUNT] MessageList: ${renderCount.current} renders`);
-  }
+  // Log render count every 5 renders (disabled for performance)
+  // if (renderCount.current % 5 === 0) {
+  //   console.log(`[RENDER-COUNT] MessageList: ${renderCount.current} renders`);
+  // }
   const flatListRef = useRef<FlatList>(null);
   const theme = useAppTheme();
   const { t } = useLanguageContext();

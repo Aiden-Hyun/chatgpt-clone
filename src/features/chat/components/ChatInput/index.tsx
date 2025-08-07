@@ -34,10 +34,10 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const renderCount = useRef(0);
   renderCount.current += 1;
   
-  // Log render count every 5 renders
-  if (renderCount.current % 5 === 0) {
-    console.log(`[RENDER-COUNT] ChatInput: ${renderCount.current} renders`);
-  }
+  // Log render count every 5 renders (disabled for performance)
+  // if (renderCount.current % 5 === 0) {
+  //   console.log(`[RENDER-COUNT] ChatInput: ${renderCount.current} renders`);
+  // }
 
   const [isInputFocused, setIsInputFocused] = useState(false);
   const { t } = useLanguageContext();
