@@ -386,16 +386,25 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   }, [undoLastCommand]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       {/* Header with model selector and controls */}
       <View style={{ 
         flexDirection: 'row', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        padding: 16,
-        backgroundColor: '#ffffff',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0'
+        borderBottomColor: '#E9ECEF',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 2,
+        elevation: 2,
       }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>
           Concurrent Chat
@@ -445,8 +454,12 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       {/* Messages list */}
       <ScrollView
         ref={scrollViewRef}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 8 }}
+        style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+        contentContainerStyle={{ 
+          paddingTop: 16,
+          paddingBottom: 16,
+          minHeight: '100%' 
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Message count and clear button */}
@@ -454,10 +467,14 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           flexDirection: 'row', 
           justifyContent: 'space-between', 
           alignItems: 'center',
-          marginBottom: 8,
-          paddingHorizontal: 8
+          marginBottom: 20,
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+          backgroundColor: '#F8F9FA',
+          borderRadius: 12,
+          marginHorizontal: 16
         }}>
-          <Text style={{ fontSize: 14, color: '#666' }}>
+          <Text style={{ fontSize: 14, color: '#6C757D', fontWeight: '500' }}>
             {messages.length} message{messages.length !== 1 ? 's' : ''}
           </Text>
           {messages.length > 0 && (
@@ -465,7 +482,9 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
               style={{ 
                 color: '#007AFF', 
                 fontSize: 14,
-                padding: 4
+                fontWeight: '600',
+                paddingVertical: 4,
+                paddingHorizontal: 8
               }}
               onPress={handleClearMessages}
             >
@@ -474,18 +493,11 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           )}
         </View>
 
-                {/* Messages */}
+        {/* Messages */}
         {messages.map((message, index) => {
           const isUserMessage = message.role === 'user';
           return (
-            <View
-              key={message.id || index}
-              style={{
-                marginBottom: 12,
-                maxWidth: '80%',
-                alignSelf: isUserMessage ? 'flex-end' : 'flex-start',
-              }}
-            >
+            <View key={message.id || index}>
               <AnimatedMessage
                 messageId={message.id}
                 content={message.content || 'No content'}
@@ -499,9 +511,11 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
               {!isUserMessage && message.status === 'completed' && (
                 <View style={{ 
                   flexDirection: 'row', 
-                  justifyContent: 'space-between', 
+                  justifyContent: 'flex-start', 
                   marginTop: 8,
-                  paddingHorizontal: 8,
+                  marginBottom: 4,
+                  paddingHorizontal: 16,
+                  gap: 12,
                 }}>
                   {/* Regenerate Button */}
                   <RegenerateButton

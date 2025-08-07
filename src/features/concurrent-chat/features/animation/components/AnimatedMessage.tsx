@@ -131,10 +131,8 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
   // Determine container style based on role and status
   const getContainerStyle = () => {
     const baseStyle = [
-      styles.container,
       role === 'user' ? styles.userMessage : styles.assistantMessage,
       status === 'failed' && styles.failedMessage,
-      style,
     ];
 
     return baseStyle;
@@ -143,7 +141,6 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
   // Determine text style based on role and status
   const getTextStyle = () => {
     const baseStyle = [
-      styles.text,
       role === 'user' ? styles.userText : styles.assistantText,
       status === 'failed' && styles.failedText,
     ];
@@ -152,66 +149,91 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
   };
 
   return (
-    <View ref={containerRef} style={getContainerStyle()}>
-      <Text ref={textRef} style={getTextStyle()}>
-        {getDisplayContent()}
-      </Text>
-      
-      {/* Animation status indicator disabled for cleaner UI */}
-      
-      {/* Animation error display */}
-      {animationError && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>
-            Animation Error: {animationError}
-          </Text>
-        </View>
-      )}
-      
-      {/* Debug info disabled for cleaner UI */}
+    <View style={styles.container}>
+      <View ref={containerRef} style={[styles.messageBubble, getContainerStyle()]}>
+        <Text ref={textRef} style={[styles.text, getTextStyle()]}>
+          {getDisplayContent()}
+        </Text>
+        
+        {/* Animation error display */}
+        {animationError && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>
+              Animation Error: {animationError}
+            </Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  // Main message container with full width for proper alignment
   container: {
-    marginVertical: 4,
-    padding: 12,
-    borderRadius: 12,
-    maxWidth: '85%',
-    minWidth: 60,
-    flex: 0,
+    width: '100%',
+    marginVertical: 8,
+    paddingHorizontal: 16,
   },
+  
+  // Message bubble container
+  messageBubble: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    maxWidth: '75%',
+    minWidth: 80,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  
+  // User message styling (right aligned, blue)
   userMessage: {
-    alignSelf: 'flex-end',
     backgroundColor: '#007AFF',
-    marginLeft: '15%',
+    alignSelf: 'flex-end',
+    borderBottomRightRadius: 4,
   },
+  
+  // Assistant message styling (left aligned, gray)
   assistantMessage: {
+    backgroundColor: '#F8F9FA',
     alignSelf: 'flex-start',
-    backgroundColor: '#F2F2F7',
-    marginRight: '15%',
-  },
-  failedMessage: {
-    backgroundColor: '#FFE5E5',
+    borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#FF6B6B',
+    borderColor: '#E9ECEF',
   },
+  
+  // Failed message styling
+  failedMessage: {
+    backgroundColor: '#FFE6E6',
+    borderWidth: 1,
+    borderColor: '#FF4444',
+    alignSelf: 'flex-start',
+  },
+  
+  // Text styling
   text: {
     fontSize: 16,
     lineHeight: 22,
-    flexWrap: 'wrap',
-    flexShrink: 1,
-    width: '100%',
+    fontWeight: '400',
   },
+  
   userText: {
     color: '#FFFFFF',
   },
+  
   assistantText: {
-    color: '#000000',
+    color: '#1A1A1A',
   },
+  
   failedText: {
-    color: '#D32F2F',
+    color: '#CC0000',
   },
   loadingIndicator: {
     marginTop: 4,
