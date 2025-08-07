@@ -35,6 +35,7 @@ export interface MessageCompletedEvent extends BaseMessageEvent {
   type: 'MESSAGE_COMPLETED';
   message: ConcurrentMessage;
   response: string;
+  originalMessageId?: string; // ID of the original user message that triggered this response
 }
 
 /**
@@ -134,6 +135,24 @@ export interface AnimationCompletedEvent extends BaseMessageEvent {
 export interface RegenerationRequestedEvent extends BaseMessageEvent {
   type: 'REGENERATION_REQUESTED';
   message: ConcurrentMessage;
+  context?: ConcurrentMessage[];
+}
+
+export interface RegenerationFailedEvent extends BaseMessageEvent {
+  type: 'REGENERATION_FAILED';
+  message: ConcurrentMessage;
+  error: string;
+}
+
+export interface RegenerationCancelledEvent extends BaseMessageEvent {
+  type: 'REGENERATION_CANCELLED';
+  message: ConcurrentMessage;
+}
+
+export interface RegenerationCompletedEvent extends BaseMessageEvent {
+  type: 'REGENERATION_COMPLETED';
+  message: ConcurrentMessage;
+  regeneratedMessage: ConcurrentMessage;
 }
 
 /**
@@ -179,6 +198,9 @@ export type MessageEvent =
   | AnimationStartedEvent
   | AnimationCompletedEvent
   | RegenerationRequestedEvent
+  | RegenerationFailedEvent
+  | RegenerationCancelledEvent
+  | RegenerationCompletedEvent
   | EditingStartedEvent
   | EditingSavedEvent
   | EditingCancelledEvent;
@@ -201,6 +223,9 @@ export const MESSAGE_EVENT_TYPES = {
   ANIMATION_STARTED: 'ANIMATION_STARTED',
   ANIMATION_COMPLETED: 'ANIMATION_COMPLETED',
   REGENERATION_REQUESTED: 'REGENERATION_REQUESTED',
+  REGENERATION_FAILED: 'REGENERATION_FAILED',
+  REGENERATION_CANCELLED: 'REGENERATION_CANCELLED',
+  REGENERATION_COMPLETED: 'REGENERATION_COMPLETED',
   EDITING_STARTED: 'EDITING_STARTED',
   EDITING_SAVED: 'EDITING_SAVED',
   EDITING_CANCELLED: 'EDITING_CANCELLED',

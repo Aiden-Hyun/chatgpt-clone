@@ -5,132 +5,22 @@ export class TypewriterAnimation implements IAnimationStrategy {
   private progress = 0;
   private speed = 50; // Default 50ms per character
   private animationId: number | null = null;
-  private currentText = '';
-  private currentIndex = 0;
-  private resolvePromise: (() => void) | null = null;
 
   async animate(content: string, element: HTMLElement): Promise<void> {
-    // Validation
-    if (content === null || content === undefined) {
-      throw new Error('Content is required');
-    }
-    if (element === null || element === undefined) {
-      throw new Error('Element is required');
-    }
-
-    // Reset state
     this.animating = true;
     this.progress = 0;
-    this.currentText = '';
-    this.currentIndex = 0;
     element.textContent = '';
-
-    return new Promise<void>((resolve, reject) => {
-      this.resolvePromise = resolve;
+    
+    for (let i = 0; i < content.length; i++) {
+      if (!this.animating) break;
       
-      const animateNextCharacter = () => {
-        if (!this.animating) {
-          resolve();
-          return;
-        }
-
-        try {
-          if (this.currentIndex < content.length) {
-            this.currentText += content[this.currentIndex];
-            this.currentIndex++;
-            // Progress should be based on characters completed (currentIndex - 1) / total
-            this.progress = (this.currentIndex - 1) / content.length;
-            
-            element.textContent = this.currentText;
-            
-            this.animationId = window.setTimeout(animateNextCharacter, this.speed);
-          } else {
-            // Animation complete
-            this.animating = false;
-            this.progress = 1;
-            resolve();
-          }
-        } catch (error) {
-          this.animating = false;
-          reject(error);
-        }
-      };
-
-      // Handle empty content case
-      if (content.length === 0) {
-        element.textContent = '';
-        this.animating = false;
-        this.progress = 1;
-        resolve();
-        return;
-      }
-
-      // Start animation
-      animateNextCharacter();
-    });
-  }
-
-  // Additional method for callback-based animation (for testing)
-  async animateWithCallback(content: string, onUpdate: (text: string) => void): Promise<void> {
-    // Validation
-    if (content === null || content === undefined) {
-      throw new Error('Content is required');
+      element.textContent += content[i];
+      this.progress = (i + 1) / content.length;
+      await this.delay(this.speed);
     }
-    if (onUpdate === null || onUpdate === undefined) {
-      throw new Error('Update callback is required');
-    }
-
-    // Reset state
-    this.animating = true;
-    this.progress = 0;
-    this.currentText = '';
-    this.currentIndex = 0;
-
-    return new Promise<void>((resolve, reject) => {
-      this.resolvePromise = resolve;
-      
-      const animateNextCharacter = () => {
-        if (!this.animating) {
-          resolve();
-          return;
-        }
-
-        try {
-          if (this.currentIndex < content.length) {
-            this.currentText += content[this.currentIndex];
-            this.currentIndex++;
-            // Progress should be based on characters completed (currentIndex - 1) / total
-            this.progress = (this.currentIndex - 1) / content.length;
-            
-            onUpdate(this.currentText);
-            
-            // Use the current speed value for this timeout
-            this.animationId = window.setTimeout(animateNextCharacter, this.speed);
-          } else {
-            // Animation complete - call onUpdate one more time with final result
-            this.animating = false;
-            this.progress = 1;
-            onUpdate(this.currentText);
-            resolve();
-          }
-        } catch (error) {
-          this.animating = false;
-          reject(error);
-        }
-      };
-
-      // Handle empty content case
-      if (content.length === 0) {
-        onUpdate('');
-        this.animating = false;
-        this.progress = 1;
-        resolve();
-        return;
-      }
-
-      // Start animation immediately (no initial delay)
-      animateNextCharacter();
-    });
+    
+    this.animating = false;
+    this.progress = 1;
   }
 
   stop(): void {
@@ -138,11 +28,6 @@ export class TypewriterAnimation implements IAnimationStrategy {
     if (this.animationId) {
       window.clearTimeout(this.animationId);
       this.animationId = null;
-    }
-    // Resolve the promise immediately if it exists
-    if (this.resolvePromise) {
-      this.resolvePromise();
-      this.resolvePromise = null;
     }
   }
 
@@ -155,11 +40,10 @@ export class TypewriterAnimation implements IAnimationStrategy {
   }
 
   setSpeed(speed: number): void {
-    this.speed = speed;
+    this.speed = Math.max(0.1, Math.min(10, speed)); // Clamp between 0.1 and 10
   }
 
-  // Additional method for getting current speed
-  getSpeed(): number {
-    return this.speed;
+  private async delay(ms: number): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, ms));
   }
 } 

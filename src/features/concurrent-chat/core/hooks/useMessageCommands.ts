@@ -188,8 +188,11 @@ export function useMessageCommands(eventBus: EventBus, serviceContainer: Service
    * @returns True if undo is available
    */
   const canUndo = useCallback(() => {
+    if (commandHistory.length === 0) {
+      return false;
+    }
     const lastCommand = commandHistory[commandHistory.length - 1];
-    return lastCommand && lastCommand.canUndo();
+    return lastCommand ? lastCommand.canUndo() : false;
   }, [commandHistory]);
 
   /**

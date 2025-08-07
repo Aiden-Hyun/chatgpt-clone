@@ -1,40 +1,66 @@
-import { ServiceContainer } from '../../../../src/features/concurrent-chat/core/container/ServiceContainer';
-import { EventBus } from '../../../../src/features/concurrent-chat/core/events/EventBus';
-import { FadeInAnimation } from '../../../../src/features/concurrent-chat/core/strategies/FadeInAnimation';
-import { IAnimationStrategy } from '../../../../src/features/concurrent-chat/core/strategies/IAnimationStrategy';
-import { TypewriterAnimation } from '../../../../src/features/concurrent-chat/core/strategies/TypewriterAnimation';
-import { AnimationService } from '../../../../src/features/concurrent-chat/features/animation/AnimationService';
+import { ServiceContainer } from '../../../../../src/features/concurrent-chat/core/container/ServiceContainer';
+import { EventBus } from '../../../../../src/features/concurrent-chat/core/events/EventBus';
+import { FadeInAnimation } from '../../../../../src/features/concurrent-chat/core/strategies/FadeInAnimation';
+import { IAnimationStrategy } from '../../../../../src/features/concurrent-chat/core/strategies/IAnimationStrategy';
+import { TypewriterAnimation } from '../../../../../src/features/concurrent-chat/core/strategies/TypewriterAnimation';
+import { AnimationService } from '../../../../../src/features/concurrent-chat/features/animation/AnimationService';
 
 // Mock strategies for testing
 class MockAnimationStrategy implements IAnimationStrategy {
-  name = 'mock';
-  isExecuting = false;
+  private animating = false;
+  private progress = 0;
+  private speed = 50;
   
-  async execute(element: HTMLElement, content: string, options?: any): Promise<void> {
-    this.isExecuting = true;
+  async animate(content: string, element: HTMLElement): Promise<void> {
+    this.animating = true;
     element.textContent = content;
     await new Promise(resolve => setTimeout(resolve, 10));
-    this.isExecuting = false;
+    this.animating = false;
   }
   
-  async delay(ms: number): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, ms));
+  stop(): void {
+    this.animating = false;
+  }
+  
+  isAnimating(): boolean {
+    return this.animating;
+  }
+  
+  getProgress(): number {
+    return this.progress;
+  }
+  
+  setSpeed(speed: number): void {
+    this.speed = speed;
   }
 }
 
 class SlowAnimationStrategy implements IAnimationStrategy {
-  name = 'slow';
-  isExecuting = false;
+  private animating = false;
+  private progress = 0;
+  private speed = 100;
   
-  async execute(element: HTMLElement, content: string, options?: any): Promise<void> {
-    this.isExecuting = true;
+  async animate(content: string, element: HTMLElement): Promise<void> {
+    this.animating = true;
     element.textContent = content;
     await new Promise(resolve => setTimeout(resolve, 100));
-    this.isExecuting = false;
+    this.animating = false;
   }
   
-  async delay(ms: number): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, ms));
+  stop(): void {
+    this.animating = false;
+  }
+  
+  isAnimating(): boolean {
+    return this.animating;
+  }
+  
+  getProgress(): number {
+    return this.progress;
+  }
+  
+  setSpeed(speed: number): void {
+    this.speed = speed;
   }
 }
 
@@ -116,26 +142,26 @@ describe('AnimationService', () => {
   describe('Animation Execution', () => {
     it('should execute animation with selected strategy', async () => {
       const mockStrategy = new MockAnimationStrategy();
-      const executeSpy = jest.spyOn(mockStrategy, 'execute');
+      const animateSpy = jest.spyOn(mockStrategy, 'animate');
       
       animationService.registerStrategy('mock', mockStrategy);
       
       await animationService.animate(mockElement, 'Test content', 'mock');
       
-      expect(executeSpy).toHaveBeenCalledWith(mockElement, 'Test content', undefined);
+      expect(animateSpy).toHaveBeenCalledWith('Test content', mockElement);
       expect(mockElement.textContent).toBe('Test content');
     });
 
     it('should execute with custom options', async () => {
       const mockStrategy = new MockAnimationStrategy();
-      const executeSpy = jest.spyOn(mockStrategy, 'execute');
+      const animateSpy = jest.spyOn(mockStrategy, 'animate');
       const options = { speed: 'fast', delay: 100 };
       
       animationService.registerStrategy('mock', mockStrategy);
       
       await animationService.animate(mockElement, 'Test content', 'mock', options);
       
-      expect(executeSpy).toHaveBeenCalledWith(mockElement, 'Test content', options);
+      expect(animateSpy).toHaveBeenCalledWith('Test content', mockElement);
     });
 
     it('should publish animation events', async () => {
@@ -161,12 +187,13 @@ describe('AnimationService', () => {
 
     it('should handle animation errors', async () => {
       const errorStrategy = {
-        name: 'error',
-        isExecuting: false,
-        async execute() {
+        async animate() {
           throw new Error('Animation failed');
         },
-        async delay() {}
+        stop() {},
+        isAnimating() { return false; },
+        getProgress() { return 0; },
+        setSpeed() {}
       };
       
       const publishSpy = jest.spyOn(eventBus, 'publish');
@@ -214,7 +241,7 @@ describe('AnimationService', () => {
 
     it('should optimize for repeated animations', async () => {
       const mockStrategy = new MockAnimationStrategy();
-      const executeSpy = jest.spyOn(mockStrategy, 'execute');
+      const animateSpy = jest.spyOn(mockStrategy, 'animate');
       
       animationService.registerStrategy('mock', mockStrategy);
       
@@ -224,7 +251,7 @@ describe('AnimationService', () => {
       // Second animation with same strategy
       await animationService.animate(mockElement, 'Content 2', 'mock');
       
-      expect(executeSpy).toHaveBeenCalledTimes(2);
+      expect(animateSpy).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -405,18 +432,18 @@ describe('AnimationService', () => {
       ];
       
       strategies.forEach(strategy => {
-        expect(strategy).toHaveProperty('execute');
-        expect(strategy).toHaveProperty('delay');
-        expect(typeof strategy.execute).toBe('function');
+        expect(strategy).toHaveProperty('animate');
+        expect(strategy).toHaveProperty('stop');
+        expect(typeof strategy.animate).toBe('function');
       });
     });
 
     it('should follow Interface Segregation Principle', () => {
       // Should depend on focused interfaces, not large ones
       const mockStrategy = new MockAnimationStrategy();
-      expect(mockStrategy).toHaveProperty('execute');
-      expect(mockStrategy).toHaveProperty('delay');
-      expect(mockStrategy).toHaveProperty('name');
+      expect(mockStrategy).toHaveProperty('animate');
+      expect(mockStrategy).toHaveProperty('stop');
+      expect(mockStrategy).toHaveProperty('isAnimating');
     });
 
     it('should follow Dependency Inversion Principle', () => {
@@ -426,7 +453,7 @@ describe('AnimationService', () => {
       
       const retrievedStrategy = animationService.getStrategy('mock');
       expect(retrievedStrategy).toBeInstanceOf(Object);
-      expect(typeof retrievedStrategy.execute).toBe('function');
+      expect(typeof retrievedStrategy.animate).toBe('function');
     });
   });
 }); 

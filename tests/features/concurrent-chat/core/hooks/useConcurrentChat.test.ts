@@ -1,9 +1,9 @@
-import { renderHook, act } from '@testing-library/react';
-import { EventBus } from '../../../../../src/features/concurrent-chat/core/events/EventBus';
+import { act, renderHook } from '@testing-library/react';
 import { ServiceContainer } from '../../../../../src/features/concurrent-chat/core/container/ServiceContainer';
+import { EventBus } from '../../../../../src/features/concurrent-chat/core/events/EventBus';
 import { useConcurrentChat } from '../../../../../src/features/concurrent-chat/core/hooks/useConcurrentChat';
-import { IMessageProcessor } from '../../../../../src/features/concurrent-chat/core/types/interfaces/IMessageProcessor';
 import { IAIService } from '../../../../../src/features/concurrent-chat/core/types/interfaces/IAIService';
+import { IMessageProcessor } from '../../../../../src/features/concurrent-chat/core/types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../../../../../src/features/concurrent-chat/core/types/interfaces/IModelSelector';
 
 describe('useConcurrentChat', () => {
@@ -37,7 +37,7 @@ describe('useConcurrentChat', () => {
       getModelForRoom: jest.fn().mockResolvedValue('gpt-3.5-turbo'),
     } as any;
 
-    // Register services in the container
+    // Register services in the container BEFORE the hook initializes
     mockServiceContainer.register('messageProcessor', mockMessageProcessor);
     mockServiceContainer.register('aiService', mockAIService);
     mockServiceContainer.register('modelSelector', mockModelSelector);
@@ -49,7 +49,7 @@ describe('useConcurrentChat', () => {
 
   describe('initialization', () => {
     it('should initialize with default state', () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       expect(result.current.messages).toEqual([]);
       expect(result.current.isLoading).toBe(false);
@@ -58,7 +58,7 @@ describe('useConcurrentChat', () => {
     });
 
     it('should initialize with roomId', () => {
-      const { result } = renderHook(() => useConcurrentChat(123));
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer, 123));
 
       expect(result.current.messages).toEqual([]);
       expect(result.current.isLoading).toBe(false);
@@ -69,7 +69,7 @@ describe('useConcurrentChat', () => {
 
   describe('message operations', () => {
     it('should send a message successfully', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       await act(async () => {
         await result.current.sendMessage('Hello, world!');
@@ -81,7 +81,7 @@ describe('useConcurrentChat', () => {
     });
 
     it('should not send empty messages', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       await act(async () => {
         await result.current.sendMessage('');
@@ -91,7 +91,7 @@ describe('useConcurrentChat', () => {
     });
 
     it('should cancel a message', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       // First send a message
       await act(async () => {
@@ -110,7 +110,7 @@ describe('useConcurrentChat', () => {
     });
 
     it('should retry a message', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       // First send a message
       await act(async () => {
@@ -124,12 +124,12 @@ describe('useConcurrentChat', () => {
         await result.current.retryMessage(messageId);
       });
 
-      // Should handle retry gracefully
-      expect(result.current.messages).toHaveLength(1);
+      // Should handle retry gracefully - retry creates a new message
+      expect(result.current.messages).toHaveLength(2);
     });
 
     it('should clear all messages', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       // First send some messages
       await act(async () => {
@@ -150,7 +150,7 @@ describe('useConcurrentChat', () => {
 
   describe('model operations', () => {
     it('should change model successfully', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       await act(async () => {
         await result.current.changeModel('gpt-4');
@@ -160,7 +160,7 @@ describe('useConcurrentChat', () => {
     });
 
     it('should get available models', () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       const models = result.current.getAvailableModels();
 
@@ -171,7 +171,7 @@ describe('useConcurrentChat', () => {
     });
 
     it('should get plugin statistics', () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       const stats = result.current.getPluginStats();
 
@@ -182,7 +182,7 @@ describe('useConcurrentChat', () => {
 
   describe('error handling', () => {
     it('should handle message processing errors gracefully', async () => {
-      const { result } = renderHook(() => useConcurrentChat());
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
 
       await act(async () => {
         await result.current.sendMessage('Test message');

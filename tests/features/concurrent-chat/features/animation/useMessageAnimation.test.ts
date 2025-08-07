@@ -1,8 +1,8 @@
-import { renderHook, act } from '@testing-library/react';
-import { EventBus } from '../../../../src/features/concurrent-chat/core/events/EventBus';
-import { ServiceContainer } from '../../../../src/features/concurrent-chat/core/container/ServiceContainer';
-import { AnimationService } from '../../../../src/features/concurrent-chat/features/animation/AnimationService';
-import { useMessageAnimation } from '../../../../src/features/concurrent-chat/features/animation/useMessageAnimation';
+import { act, renderHook } from '@testing-library/react';
+import { ServiceContainer } from '../../../../../src/features/concurrent-chat/core/container/ServiceContainer';
+import { EventBus } from '../../../../../src/features/concurrent-chat/core/events/EventBus';
+import { AnimationService } from '../../../../../src/features/concurrent-chat/features/animation/AnimationService';
+import { useMessageAnimation } from '../../../../../src/features/concurrent-chat/features/animation/useMessageAnimation';
 
 // Mock DOM element
 const createMockElement = () => {

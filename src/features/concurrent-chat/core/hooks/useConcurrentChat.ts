@@ -11,10 +11,12 @@ import { IModelSelector } from '../types/interfaces/IModelSelector';
  * Main hook for concurrent chat functionality
  * Manages state, message processing, and plugin coordination
  */
-export function useConcurrentChat(roomId?: number) {
+export function useConcurrentChat(
+  eventBus: EventBus,
+  serviceContainer: ServiceContainer,
+  roomId?: number
+) {
   // Core services
-  const [eventBus] = useState(() => new EventBus());
-  const [serviceContainer] = useState(() => new ServiceContainer());
   const [pluginManager] = useState(() => new PluginManager(eventBus, serviceContainer));
   
   // State
@@ -62,7 +64,7 @@ export function useConcurrentChat(roomId?: number) {
       cleanupEventSubscriptions();
       pluginManager.destroyPlugins();
     };
-  }, [roomId, serviceContainer, pluginManager]);
+  }, [roomId, serviceContainer, pluginManager, eventBus]);
 
   // Set up event subscriptions
   const setupEventSubscriptions = useCallback(() => {
@@ -72,7 +74,23 @@ export function useConcurrentChat(roomId?: number) {
     subscriptions.push(
       eventBus.subscribe(MESSAGE_EVENT_TYPES.MESSAGE_SENT, (event: MessageEvent) => {
         if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_SENT) {
-          setMessages(prev => [...prev, event.message]);
+          setMessages(prev => {
+            // Check if this message already exists
+            const existingMessageIndex = prev.findIndex(msg => msg.id === event.message.id);
+            
+            if (existingMessageIndex >= 0) {
+              // Update existing message status
+              const updatedMessages = [...prev];
+              updatedMessages[existingMessageIndex] = { 
+                ...updatedMessages[existingMessageIndex], 
+                status: 'processing' 
+              };
+              return updatedMessages;
+            } else {
+              // Add new message (for assistant messages)
+              return [...prev, event.message];
+            }
+          });
         }
       })
     );
@@ -80,13 +98,20 @@ export function useConcurrentChat(roomId?: number) {
     subscriptions.push(
       eventBus.subscribe(MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED, (event: MessageEvent) => {
         if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED) {
-          setMessages(prev => 
-            prev.map(msg => 
-              msg.id === event.message.id 
-                ? { ...msg, status: 'completed', content: event.response }
-                : msg
-            )
-          );
+          setMessages(prev => {
+            // Check if this message already exists
+            const existingMessageIndex = prev.findIndex(msg => msg.id === event.message.id);
+            
+            if (existingMessageIndex >= 0) {
+              // Update existing message
+              const updatedMessages = [...prev];
+              updatedMessages[existingMessageIndex] = { ...event.message };
+              return updatedMessages;
+            } else {
+              // Add new message (for assistant messages)
+              return [...prev, event.message];
+            }
+          });
         }
       })
     );
