@@ -33,6 +33,7 @@ export class SendMessageCommand implements ICommand {
 
     try {
       const result = await this.messageProcessor.process({
+        id: this.id, // Add the missing ID field
         content: this.messageContent,
         roomId: this.roomId,
         type: 'send'

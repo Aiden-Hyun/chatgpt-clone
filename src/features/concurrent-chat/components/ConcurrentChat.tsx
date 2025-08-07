@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, TextInput, View } from 'react-native';
 import { supabase } from '../../../shared/lib/supabase';
 import { ServiceContainer } from '../core/container/ServiceContainer';
 import { EventBus } from '../core/events/EventBus';
@@ -11,9 +11,12 @@ import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
 import { IAIService } from '../core/types/interfaces/IAIService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../core/types/interfaces/IModelSelector';
+import { SendMessageCommand } from '../core/commands/SendMessageCommand';
+import { CancelMessageCommand } from '../core/commands/CancelMessageCommand';
+import { RetryMessageCommand } from '../core/commands/RetryMessageCommand';
+import { ChangeModelCommand } from '../core/commands/ChangeModelCommand';
+import { ClearMessagesCommand } from '../core/commands/ClearMessagesCommand';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
-import { MessageInput } from './MessageInput';
-import { MessageList } from './MessageList';
 
 interface ConcurrentChatProps {
   roomId?: number;
@@ -57,17 +60,26 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     const mockMessageProcessor: IMessageProcessor = {
       process: async (message: any) => {
         // Mock message processor for demo
-        console.log('Processing message:', message);
+        console.log('🔍 Processing message:', message.id, message.content);
         
         try {
-          // 1. Update user message to processing (API call starting)
-          eventBus.publish('MESSAGE_SENT', {
-            type: 'MESSAGE_SENT',
+          // 1. Ensure message has correct role and update to processing (API call starting)
+          const userMessageWithRole = {
+            ...message,
+            role: 'user' as const,
+            status: 'processing' as const
+          };
+          
+          console.log('🔍 Publishing MESSAGE_COMPLETED for user message:', message.id);
+          
+          // Don't publish MESSAGE_SENT for user message since it's already added by the hook
+          // Just update the existing message to processing status
+          eventBus.publish('MESSAGE_COMPLETED', {
+            type: 'MESSAGE_COMPLETED',
             timestamp: Date.now(),
             messageId: message.id,
-            message: { ...message, status: 'processing' },
-            content: message.content,
-            model: message.model || 'gpt-3.5-turbo'
+            message: userMessageWithRole,
+            response: message.content
           });
 
           // Get current session for authentication
@@ -76,18 +88,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
             throw new Error('No active session found. Please log in.');
           }
 
-          // 2. Mark user message as completed (API call started successfully)
-          const completedUserMessage = {
-            ...message,
-            status: 'completed' as const
-          };
-          eventBus.publish('MESSAGE_COMPLETED', {
-            type: 'MESSAGE_COMPLETED',
-            timestamp: Date.now(),
-            messageId: message.id,
-            message: completedUserMessage,
-            response: message.content
-          });
+          // 2. User message is already marked as completed above
 
           // 3. Create assistant message with processing status (skip pending)
           const assistantMessage = {
@@ -101,6 +102,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           };
 
           // 4. Add assistant message to the list (processing state)
+          console.log('🔍 Publishing MESSAGE_SENT for assistant message:', assistantMessage.id);
           eventBus.publish('MESSAGE_SENT', {
             type: 'MESSAGE_SENT',
             timestamp: Date.now(),
@@ -112,8 +114,14 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
           // 5. Get AI response (assistant message is processing)
           const aiService = container.get<IAIService>('aiService');
+          // Format message for OpenAI API
+          const formattedMessage = {
+            role: message.role || 'user', // Default to 'user' if role is missing
+            content: message.content
+          };
+          
           const response = await aiService.sendMessage({
-            messages: [message],
+            messages: [formattedMessage],
             model: message.model || 'gpt-3.5-turbo',
             roomId: message.roomId
           }, session);
@@ -126,6 +134,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           };
 
           // 7. Publish MESSAGE_COMPLETED event for assistant message
+          console.log('🔍 Publishing MESSAGE_COMPLETED for assistant message:', completedAssistantMessage.id);
           eventBus.publish('MESSAGE_COMPLETED', {
             type: 'MESSAGE_COMPLETED',
             timestamp: Date.now(),
@@ -221,13 +230,20 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     }
   }, [messages]);
 
-  // Handle send message
+  // Handle send message using Command Pattern
   const handleSendMessage = useCallback(async () => {
     if (!inputValue.trim() || isSending) return;
 
     try {
       setIsSending(true);
-      await sendMessage(inputValue.trim());
+      
+      // Get message processor from service container
+      const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
+      
+      // Create and execute SendMessageCommand
+      const sendCommand = new SendMessageCommand(messageProcessor, inputValue.trim(), roomId || null);
+      await executeCommand(sendCommand);
+      
       setInputValue('');
     } catch (err) {
       Alert.alert(
@@ -238,12 +254,17 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     } finally {
       setIsSending(false);
     }
-  }, [inputValue, isSending, sendMessage]);
+  }, [inputValue, isSending, executeCommand, serviceContainer, roomId]);
 
-  // Handle message actions
+  // Handle message actions using Command Pattern
   const handleCancelMessage = useCallback(async (messageId: string) => {
     try {
-      await cancelMessage(messageId);
+      // Get message processor from service container
+      const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
+      
+      // Create and execute CancelMessageCommand
+      const cancelCommand = new CancelMessageCommand(messageProcessor, messageId);
+      await executeCommand(cancelCommand);
     } catch (err) {
       Alert.alert(
         'Error',
@@ -251,11 +272,16 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         [{ text: 'OK' }]
       );
     }
-  }, [cancelMessage]);
+  }, [executeCommand, serviceContainer]);
 
   const handleRetryMessage = useCallback(async (messageId: string) => {
     try {
-      await retryMessage(messageId);
+      // Get message processor from service container
+      const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
+      
+      // Create and execute RetryMessageCommand
+      const retryCommand = new RetryMessageCommand(messageProcessor, messageId);
+      await executeCommand(retryCommand);
     } catch (err) {
       Alert.alert(
         'Error',
@@ -263,7 +289,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         [{ text: 'OK' }]
       );
     }
-  }, [retryMessage]);
+  }, [executeCommand, serviceContainer]);
 
   const handleClearMessages = useCallback(async () => {
     Alert.alert(
@@ -276,7 +302,12 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           style: 'destructive',
           onPress: async () => {
             try {
-              await clearMessages();
+              // Get message processor from service container
+              const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
+              
+              // Create and execute ClearMessagesCommand
+              const clearCommand = new ClearMessagesCommand(messageProcessor, roomId || 1);
+              await executeCommand(clearCommand);
             } catch (err) {
               Alert.alert(
                 'Error',
@@ -288,11 +319,16 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         },
       ]
     );
-  }, [clearMessages]);
+  }, [executeCommand, serviceContainer, roomId]);
 
   const handleModelChange = useCallback(async (newModel: string) => {
     try {
-      await changeModel(newModel);
+      // Get model selector from service container
+      const modelSelector = serviceContainer.get<IModelSelector>('modelSelector');
+      
+      // Create and execute ChangeModelCommand
+      const changeModelCommand = new ChangeModelCommand(modelSelector, newModel, roomId || null);
+      await executeCommand(changeModelCommand);
     } catch (err) {
       Alert.alert(
         'Error',
@@ -300,7 +336,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         [{ text: 'OK' }]
       );
     }
-  }, [changeModel]);
+  }, [executeCommand, serviceContainer, roomId]);
 
   // Handle undo last command
   const handleUndo = useCallback(async () => {
@@ -379,23 +415,169 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         contentContainerStyle={{ padding: 8 }}
         showsVerticalScrollIndicator={false}
       >
-        <MessageList
-          messages={messages}
-          onCancelMessage={handleCancelMessage}
-          onRetryMessage={handleRetryMessage}
-          onClearMessages={handleClearMessages}
-        />
+        {/* Message count and clear button */}
+        <View style={{ 
+          flexDirection: 'row', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: 8,
+          paddingHorizontal: 8
+        }}>
+          <Text style={{ fontSize: 14, color: '#666' }}>
+            {messages.length} message{messages.length !== 1 ? 's' : ''}
+          </Text>
+          {messages.length > 0 && (
+            <Text 
+              style={{ 
+                color: '#007AFF', 
+                fontSize: 14,
+                padding: 4
+              }}
+              onPress={handleClearMessages}
+            >
+              Clear All
+            </Text>
+          )}
+        </View>
+
+        {/* Messages */}
+        {(() => { 
+          console.log('🔍 Messages State:', messages.length, 'messages');
+          messages.forEach((m, i) => console.log(`  ${i}: ${m.role} - "${m.content.substring(0, 30)}..." (ID: ${m.id})`));
+          return null; 
+        })()}
+        {messages.map((message, index) => (
+          <View 
+            key={message.id || index}
+            style={{
+              marginBottom: 12,
+              padding: 12,
+              backgroundColor: message.role === 'user' ? '#007AFF' : '#f0f0f0',
+              borderRadius: 12,
+              maxWidth: '80%',
+              alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <Text style={{
+              color: message.role === 'user' ? 'white' : '#333',
+              fontSize: 16,
+            }}>
+              {message.content || 'No content'}
+            </Text>
+            
+            <View style={{ 
+              flexDirection: 'row', 
+              justifyContent: 'space-between', 
+              marginTop: 8 
+            }}>
+              <Text style={{
+                color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#666',
+                fontSize: 12,
+              }}>
+                {message.status.toUpperCase()}
+                {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : 'Invalid Date'}
+              </Text>
+              
+                             {message.role === 'assistant' as any && (
+                <Text style={{
+                  color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#666',
+                  fontSize: 12,
+                }}>
+                  Model: {message.model}
+                </Text>
+              )}
+            </View>
+            
+                         {message.role === 'assistant' as any && message.status === 'processing' && (
+              <Text 
+                style={{ 
+                  color: '#f44336', 
+                  fontSize: 12, 
+                  marginTop: 4,
+                  textAlign: 'center'
+                }}
+                onPress={() => handleCancelMessage(message.id)}
+              >
+                Cancel
+              </Text>
+            )}
+            
+            {message.status === 'failed' && (
+              <Text 
+                style={{ 
+                  color: '#007AFF', 
+                  fontSize: 12, 
+                  marginTop: 4,
+                  textAlign: 'center'
+                }}
+                onPress={() => handleRetryMessage(message.id)}
+              >
+                Retry
+              </Text>
+            )}
+            
+            <Text style={{
+              color: message.role === 'user' ? 'rgba(255,255,255,0.5)' : '#999',
+              fontSize: 10,
+              marginTop: 4,
+            }}>
+              ID: {message.id}
+            </Text>
+          </View>
+        ))}
       </ScrollView>
 
       {/* Input area */}
-      <MessageInput
-        value={inputValue}
-        onChangeText={setInputValue}
-        onSend={handleSendMessage}
-        isSending={isSending}
-        disabled={isLoading}
-        placeholder="Type your message..."
-      />
+      <View style={{
+        padding: 16,
+        backgroundColor: '#ffffff',
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+      }}>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+          <TextInput
+            style={{
+              flex: 1,
+              borderWidth: 1,
+              borderColor: '#e0e0e0',
+              borderRadius: 20,
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              marginRight: 8,
+              fontSize: 16,
+            }}
+            value={inputValue}
+            onChangeText={setInputValue}
+            placeholder="Type your message..."
+            multiline
+            maxLength={2000}
+          />
+          <Text 
+            style={{
+              backgroundColor: isSending ? '#ccc' : '#007AFF',
+              color: 'white',
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 20,
+              fontSize: 16,
+            }}
+            onPress={isSending ? undefined : handleSendMessage}
+          >
+            {isSending ? 'Sending...' : 'Send'}
+          </Text>
+        </View>
+        <Text style={{ 
+          fontSize: 12, 
+          color: '#666', 
+          textAlign: 'right',
+          marginTop: 4 
+        }}>
+          {inputValue.length}/2000
+        </Text>
+      </View>
 
       {/* Debug info (only in development) */}
       {__DEV__ && (

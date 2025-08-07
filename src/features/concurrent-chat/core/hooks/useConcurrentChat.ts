@@ -74,11 +74,13 @@ export function useConcurrentChat(
     subscriptions.push(
       eventBus.subscribe(MESSAGE_EVENT_TYPES.MESSAGE_SENT, (event: MessageEvent) => {
         if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_SENT) {
+          console.log('🔍 MESSAGE_SENT event received:', event.message.id, event.message.role);
           setMessages(prev => {
             // Check if this message already exists
             const existingMessageIndex = prev.findIndex(msg => msg.id === event.message.id);
             
             if (existingMessageIndex >= 0) {
+              console.log('🔍 Updating existing message:', event.message.id);
               // Update existing message status
               const updatedMessages = [...prev];
               updatedMessages[existingMessageIndex] = { 
@@ -87,6 +89,7 @@ export function useConcurrentChat(
               };
               return updatedMessages;
             } else {
+              console.log('🔍 Adding new message:', event.message.id);
               // Add new message (for assistant messages)
               return [...prev, event.message];
             }
@@ -98,16 +101,19 @@ export function useConcurrentChat(
     subscriptions.push(
       eventBus.subscribe(MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED, (event: MessageEvent) => {
         if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED) {
+          console.log('🔍 MESSAGE_COMPLETED event received:', event.message.id, event.message.role);
           setMessages(prev => {
             // Check if this message already exists
             const existingMessageIndex = prev.findIndex(msg => msg.id === event.message.id);
             
             if (existingMessageIndex >= 0) {
+              console.log('🔍 Updating existing message (completed):', event.message.id);
               // Update existing message
               const updatedMessages = [...prev];
               updatedMessages[existingMessageIndex] = { ...event.message };
               return updatedMessages;
             } else {
+              console.log('🔍 Adding new message (completed):', event.message.id);
               // Add new message (for assistant messages)
               return [...prev, event.message];
             }

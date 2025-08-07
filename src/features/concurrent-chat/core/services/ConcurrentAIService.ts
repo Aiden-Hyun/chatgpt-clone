@@ -52,6 +52,8 @@ export class ConcurrentAIService implements IAIService {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.log('🔍 API Error:', errorText);
         throw new Error(`AI API error: ${response.status} - ${response.statusText || 'Internal Server Error'}`);
       }
 
