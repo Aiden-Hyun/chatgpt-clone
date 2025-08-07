@@ -16,7 +16,15 @@ import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
 import { IAIService } from '../core/types/interfaces/IAIService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../core/types/interfaces/IModelSelector';
+import { AnimationService } from '../features/animation/AnimationService';
+import { AnimatedMessage } from '../features/animation/components/AnimatedMessage';
+import { EditableMessage } from '../features/editing/components/EditableMessage';
+import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
+import { RegenerateButton } from '../features/regeneration/components/RegenerateButton';
+import { RegenerationService } from '../features/regeneration/RegenerationService';
+import { StreamingIndicator } from '../features/streaming/components/StreamingIndicator';
+import { StreamingService } from '../features/streaming/StreamingService';
 
 interface ConcurrentChatProps {
   roomId?: number;
@@ -56,6 +64,17 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     // Register core services
     const realAIService = new ConcurrentAIService();
     container.register('aiService', realAIService);
+    
+    // Register feature services
+    const animationService = new AnimationService(eventBus, container);
+    const regenerationService = new RegenerationService(eventBus, container);
+    const editingService = new EditingService(eventBus, container);
+    const streamingService = new StreamingService(eventBus, container);
+    
+    container.register('animationService', animationService);
+    container.register('regenerationService', regenerationService);
+    container.register('editingService', editingService);
+    container.register('streamingService', streamingService);
 
     const mockMessageProcessor: IMessageProcessor = {
       process: async (message: any) => {
@@ -202,6 +221,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     cancelMessage,
     retryMessage,
     clearMessages,
+    updateMessage,
     changeModel,
     getAvailableModels,
     getPluginStats,
@@ -224,6 +244,25 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       }, 100);
     }
   }, [messages]);
+
+  // Register session on component mount
+  useEffect(() => {
+    const registerSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          serviceContainer.register('session', session);
+          console.log('Session registered in service container');
+        } else {
+          console.warn('No session found - some features may not work');
+        }
+      } catch (error) {
+        console.error('Failed to register session:', error);
+      }
+    };
+
+    registerSession();
+  }, [serviceContainer]);
 
   // Handle send message using Command Pattern
   const handleSendMessage = useCallback(async () => {
@@ -438,95 +477,123 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
                 {/* Messages */}
         {messages.map((message, index) => {
           const isUserMessage = message.role === 'user';
-          const statusInfo = (() => {
-            switch (message.status) {
-              case 'completed':
-                return { color: '#4CAF50', text: 'COMPLETED' };
-              case 'processing':
-                return { color: '#FF9800', text: 'PROCESSING' };
-              case 'failed':
-                return { color: '#F44336', text: 'FAILED' };
-              case 'cancelled':
-                return { color: '#9E9E9E', text: 'CANCELLED' };
-              default:
-                return { color: '#666', text: message.status.toUpperCase() };
-            }
-          })();
-
           return (
-            <View 
+            <View
               key={message.id || index}
               style={{
                 marginBottom: 12,
-                padding: 16,
-                backgroundColor: isUserMessage ? '#007AFF' : '#F2F2F7',
-                borderRadius: 20,
                 maxWidth: '80%',
                 alignSelf: isUserMessage ? 'flex-end' : 'flex-start',
-                shadowColor: 'rgba(0, 0, 0, 0.1)',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 2,
               }}
             >
-              <Text style={{
-                color: isUserMessage ? '#FFFFFF' : '#000000',
-                fontSize: 16,
-                lineHeight: 22,
-              }}>
-                {message.content || 'No content'}
-              </Text>
+              <AnimatedMessage
+                messageId={message.id}
+                content={message.content || 'No content'}
+                role={message.role as 'user' | 'assistant'}
+                status={message.status as 'pending' | 'processing' | 'completed' | 'failed'}
+                eventBus={eventBus}
+                serviceContainer={serviceContainer}
+                style={{
+                  padding: 16,
+                  backgroundColor: isUserMessage ? '#007AFF' : '#F2F2F7',
+                  borderRadius: 20,
+                  shadowColor: 'rgba(0, 0, 0, 0.1)',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 2,
+                }}
+              />
               
-              <View style={{ 
-                flexDirection: 'row', 
-                justifyContent: 'space-between', 
-                marginTop: 8 
-              }}>
-                <Text style={{
-                  color: isUserMessage ? 'rgba(255,255,255,0.7)' : '#666',
-                  fontSize: 12,
+              {/* Action buttons for assistant messages */}
+              {!isUserMessage && message.status === 'completed' && (
+                <View style={{ 
+                  flexDirection: 'row', 
+                  justifyContent: 'space-between', 
+                  marginTop: 8,
+                  paddingHorizontal: 8,
                 }}>
-                  {statusInfo.text}
-                  {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : 'Invalid Date'}
-                </Text>
-                
-                {!isUserMessage && (
-                  <Text style={{
-                    color: isUserMessage ? 'rgba(255,255,255,0.7)' : '#666',
-                    fontSize: 12,
-                  }}>
-                    Model: {message.model}
-                  </Text>
-                )}
-              </View>
+                  {/* Regenerate Button */}
+                  <RegenerateButton
+                    messageId={message.id}
+                    originalContent={message.content}
+                    conversationHistory={messages.slice(0, index)}
+                    eventBus={eventBus}
+                    serviceContainer={serviceContainer}
+                    size="small"
+                    variant="outline"
+                    onRegenerationComplete={(newContent) => {
+                      console.log('🎯 onRegenerationComplete callback triggered!');
+                      console.log('📝 newContent received:', newContent);
+                      console.log('🔍 Current message.id:', message.id);
+                      
+                      // Update the message content in the UI
+                      console.log('🔄 Calling updateMessage for messageId:', message.id);
+                      updateMessage(message.id, { 
+                        content: newContent 
+                      });
+                      console.log('✅ updateMessage called successfully');
+                    }}
+                  />
+                  
+                  {/* Edit Button */}
+                  <EditableMessage
+                    messageId={message.id}
+                    originalContent={message.content}
+                    role={message.role as 'user' | 'assistant'}
+                    eventBus={eventBus}
+                    serviceContainer={serviceContainer}
+                    maxLength={2000}
+                    onEditComplete={(newContent) => {
+                      console.log('Message edited:', newContent);
+                    }}
+                  />
+                </View>
+              )}
               
               {!isUserMessage && message.status === 'processing' && (
-                <Text 
-                  style={{ 
-                    color: '#f44336', 
-                    fontSize: 12, 
-                    marginTop: 4,
-                    textAlign: 'center'
-                  }}
-                  onPress={() => handleCancelMessage(message.id)}
-                >
-                  Cancel
-                </Text>
+                <View style={{ 
+                  flexDirection: 'row', 
+                  justifyContent: 'space-between', 
+                  marginTop: 8,
+                  paddingHorizontal: 8,
+                }}>
+                  <StreamingIndicator
+                    messageId={message.id}
+                    eventBus={eventBus}
+                    serviceContainer={serviceContainer}
+                    variant="dots"
+                    size="small"
+                    color="#007AFF"
+                  />
+                  <Text 
+                    style={{ 
+                      color: '#f44336', 
+                      fontSize: 12, 
+                      marginTop: 4
+                    }}
+                    onPress={() => handleCancelMessage(message.id)}
+                  >
+                    Cancel
+                  </Text>
+                </View>
               )}
               
               {message.status === 'failed' && (
-                <Text 
-                  style={{ 
-                    color: '#007AFF', 
-                    fontSize: 12, 
-                    marginTop: 4,
-                    textAlign: 'center'
-                  }}
-                  onPress={() => handleRetryMessage(message.id)}
-                >
-                  Retry
-                </Text>
+                <View style={{ 
+                  marginTop: 8,
+                  alignItems: 'center',
+                }}>
+                  <Text 
+                    style={{ 
+                      color: '#007AFF', 
+                      fontSize: 12
+                    }}
+                    onPress={() => handleRetryMessage(message.id)}
+                  >
+                    Retry
+                  </Text>
+                </View>
               )}
             </View>
           );

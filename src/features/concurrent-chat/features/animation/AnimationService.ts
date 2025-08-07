@@ -74,6 +74,49 @@ export class AnimationService extends BasePlugin {
   }
 
   /**
+   * Animate a message with the specified strategy
+   */
+  async animateMessage(
+    messageId: string,
+    content: string,
+    element: HTMLElement,
+    strategyName?: string
+  ): Promise<void> {
+    try {
+      this.log(`Starting animation for message: ${messageId} with strategy: ${strategyName || this.defaultStrategy}`);
+      
+      // Publish animation start event
+      this.eventBus.publish('animation:start', {
+        messageId,
+        content,
+        strategy: strategyName || this.defaultStrategy,
+      });
+
+      // For React Native, we'll use a simplified animation approach
+      // since we can't directly animate HTMLElement
+      if (strategyName === 'typewriter' || !strategyName) {
+        // Simulate typewriter effect
+        await this.simulateTypewriterAnimation(messageId, content);
+      } else if (strategyName === 'fadeIn') {
+        // Simulate fade-in effect
+        await this.simulateFadeInAnimation(messageId, content);
+      }
+
+      // Publish animation complete event
+      this.eventBus.publish('animation:complete', {
+        messageId,
+        content,
+        strategy: strategyName || this.defaultStrategy,
+      });
+
+      this.log(`Animation completed for message: ${messageId}`);
+    } catch (error) {
+      this.log(`Animation failed for message ${messageId}: ${error}`, 'error');
+      throw error;
+    }
+  }
+
+  /**
    * Animate content with the specified strategy
    */
   async animate(
@@ -224,6 +267,80 @@ export class AnimationService extends BasePlugin {
    */
   getDefaultStrategy(): string {
     return this.defaultStrategy;
+  }
+
+  /**
+   * Get the number of active animations
+   */
+  getActiveAnimationCount(): number {
+    // For now, return 1 if there's a current animation, 0 otherwise
+    return this.currentAnimation ? 1 : 0;
+  }
+
+  /**
+   * Get animation statistics
+   */
+  getAnimationStats(): any {
+    return {
+      activeCount: this.getActiveAnimationCount(),
+      defaultStrategy: this.defaultStrategy,
+      availableStrategies: this.getAvailableStrategies(),
+      speed: this.speed,
+      paused: this.paused
+    };
+  }
+
+  /**
+   * Simulate typewriter animation for React Native
+   */
+  private async simulateTypewriterAnimation(messageId: string, content: string): Promise<void> {
+    // For React Native, we'll just simulate the animation with a delay
+    // In a real implementation, you'd use React Native's Animated API
+    const delay = 50; // 50ms per character
+    const totalDelay = content.length * delay;
+    
+    this.log(`Simulating typewriter animation for message: ${messageId} (${content.length} chars, ${totalDelay}ms)`);
+    
+    // Simulate animation duration
+    await new Promise(resolve => setTimeout(resolve, totalDelay));
+  }
+
+  /**
+   * Simulate fade-in animation for React Native
+   */
+  private async simulateFadeInAnimation(messageId: string, content: string): Promise<void> {
+    // For React Native, we'll just simulate the animation with a delay
+    // In a real implementation, you'd use React Native's Animated API
+    const delay = 500; // 500ms fade-in
+    
+    this.log(`Simulating fade-in animation for message: ${messageId} (${delay}ms)`);
+    
+    // Simulate animation duration
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+
+  /**
+   * Cancel animation for a specific message
+   */
+  async cancelAnimation(messageId: string): Promise<void> {
+    this.log(`Cancelling animation for message: ${messageId}`);
+    // For now, just log the cancellation
+  }
+
+  /**
+   * Cancel all active animations
+   */
+  async cancelAllAnimations(): Promise<void> {
+    this.log('Cancelling all active animations');
+    // For now, just log the cancellation
+  }
+
+  /**
+   * Check if a message is currently being animated
+   */
+  isAnimating(messageId: string): boolean {
+    // For now, return false since we don't track active animations
+    return false;
   }
 
   private setupEventSubscriptions(): void {

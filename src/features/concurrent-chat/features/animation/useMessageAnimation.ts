@@ -215,7 +215,7 @@ export function useMessageAnimation(eventBus: EventBus, serviceContainer: Servic
     cancelAnimation,
     cancelAllAnimations,
     registerStrategy,
-    setDefaultAnimationStrategy,
+    setDefaultAnimationStrategy: updateDefaultAnimationStrategy,
     
     // Queries
     isAnimating,

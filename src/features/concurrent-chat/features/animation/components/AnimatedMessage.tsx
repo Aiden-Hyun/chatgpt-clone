@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
@@ -40,6 +40,8 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
 }) => {
   const textRef = useRef<Text>(null);
   const containerRef = useRef<View>(null);
+  const [displayedContent, setDisplayedContent] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false);
   
   const {
     isInitialized,
@@ -67,27 +69,41 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
 
   // Handle animation when content changes or status becomes completed
   useEffect(() => {
-    if (!isInitialized || !textRef.current || status !== 'completed') {
+    if (!isInitialized || status !== 'completed') {
       return;
     }
 
     const startAnimation = async () => {
       try {
+        setIsAnimating(true);
         onAnimationStart?.();
         
         // Determine animation strategy based on role
         const strategy = role === 'assistant' ? 'typewriter' : 'fadeIn';
         
-        await animateMessage(messageId, content, strategy);
+        if (strategy === 'typewriter') {
+          // Implement typewriter effect
+          setDisplayedContent('');
+          for (let i = 0; i <= content.length; i++) {
+            await new Promise(resolve => setTimeout(resolve, 50)); // 50ms per character
+            setDisplayedContent(content.substring(0, i));
+          }
+        } else {
+          // For fade-in, just show the content immediately
+          setDisplayedContent(content);
+        }
         
+        setIsAnimating(false);
         onAnimationComplete?.();
       } catch (error) {
         console.error('Animation failed:', error);
+        setIsAnimating(false);
+        setDisplayedContent(content); // Fallback to showing full content
       }
     };
 
     startAnimation();
-  }, [messageId, content, role, status, isInitialized, animateMessage, onAnimationStart, onAnimationComplete]);
+  }, [messageId, content, role, status, isInitialized, onAnimationStart, onAnimationComplete]);
 
   // Determine display content based on status
   const getDisplayContent = () => {
@@ -99,7 +115,8 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
       case 'failed':
         return '❌ Failed to send message';
       case 'completed':
-        return content;
+        // Use animated content if available, otherwise fall back to full content
+        return displayedContent || content;
       default:
         return content;
     }
@@ -135,7 +152,7 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
       </Text>
       
       {/* Animation status indicator */}
-      {isLoading && (
+      {(isLoading || isAnimating) && (
         <View style={styles.loadingIndicator}>
           <Text style={styles.loadingText}>Animating...</Text>
         </View>

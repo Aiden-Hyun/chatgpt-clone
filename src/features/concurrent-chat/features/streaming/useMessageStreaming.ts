@@ -190,6 +190,63 @@ export function useMessageStreaming(eventBus: EventBus, serviceContainer: Servic
     return streamingService.getActiveStreamCount();
   }, [streamingService]);
 
+  /**
+   * Get streaming progress for a message
+   */
+  const getStreamingProgress = useCallback((messageId: string): number => {
+    return streamingService.getStreamingProgress(messageId);
+  }, [streamingService]);
+
+  /**
+   * Get streaming text for a message
+   */
+  const getStreamingText = useCallback((messageId: string): string => {
+    return streamingService.getStreamingText(messageId);
+  }, [streamingService]);
+
+  /**
+   * Pause streaming for a message
+   */
+  const pauseStreaming = useCallback(async (messageId: string): Promise<void> => {
+    if (!isInitialized) {
+      throw new Error('Streaming service not initialized');
+    }
+
+    try {
+      setError(null);
+      await streamingService.pauseStreaming(messageId);
+    } catch (err) {
+      const errorMessage = `Failed to pause streaming: ${err instanceof Error ? err.message : 'Unknown error'}`;
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }, [isInitialized, streamingService]);
+
+  /**
+   * Resume streaming for a message
+   */
+  const resumeStreaming = useCallback(async (messageId: string): Promise<void> => {
+    if (!isInitialized) {
+      throw new Error('Streaming service not initialized');
+    }
+
+    try {
+      setError(null);
+      await streamingService.resumeStreaming(messageId);
+    } catch (err) {
+      const errorMessage = `Failed to resume streaming: ${err instanceof Error ? err.message : 'Unknown error'}`;
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }, [isInitialized, streamingService]);
+
+  /**
+   * Get the number of active streaming sessions
+   */
+  const getActiveStreamingCount = useCallback((): number => {
+    return streamingService.getActiveStreamingCount();
+  }, [streamingService]);
+
   return {
     // State
     isInitialized,
@@ -202,17 +259,22 @@ export function useMessageStreaming(eventBus: EventBus, serviceContainer: Servic
     // Actions
     startStreaming,
     stopStreaming,
+    pauseStreaming,
+    resumeStreaming,
     stopAllStreams,
     setChunkBufferSize,
     setChunkDelay,
     
     // Queries
     isStreaming,
+    getStreamingProgress,
+    getStreamingText,
     getStreamStats,
     getStreamingStats,
     getChunkBufferSize,
     getChunkDelay,
     getActiveStreamCount,
+    getActiveStreamingCount,
     
     // Service reference
     streamingService,

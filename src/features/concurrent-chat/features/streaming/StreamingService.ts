@@ -232,6 +232,58 @@ export class StreamingService extends BasePlugin {
     };
   }
 
+  /**
+   * Get streaming progress for a message
+   */
+  getStreamingProgress(messageId: string): number {
+    const stream = this.activeStreams.get(messageId);
+    if (!stream) return 0;
+    
+    // Calculate progress based on content length (simplified)
+    return Math.min(stream.content.length / 100, 1); // Assume 100 chars is full progress
+  }
+
+  /**
+   * Get streaming text for a message
+   */
+  getStreamingText(messageId: string): string {
+    const stream = this.activeStreams.get(messageId);
+    return stream ? stream.content : '';
+  }
+
+  /**
+   * Pause streaming for a message
+   */
+  async pauseStreaming(messageId: string): Promise<void> {
+    const stream = this.activeStreams.get(messageId);
+    if (!stream) {
+      throw new Error(`No active stream found for message: ${messageId}`);
+    }
+    
+    // For now, just log the pause action
+    this.log(`Pausing streaming for message: ${messageId}`);
+  }
+
+  /**
+   * Resume streaming for a message
+   */
+  async resumeStreaming(messageId: string): Promise<void> {
+    const stream = this.activeStreams.get(messageId);
+    if (!stream) {
+      throw new Error(`No active stream found for message: ${messageId}`);
+    }
+    
+    // For now, just log the resume action
+    this.log(`Resuming streaming for message: ${messageId}`);
+  }
+
+  /**
+   * Get the number of active streaming sessions
+   */
+  getActiveStreamingCount(): number {
+    return this.activeStreams.size;
+  }
+
   private async performStreaming(
     messageId: string,
     request: any,

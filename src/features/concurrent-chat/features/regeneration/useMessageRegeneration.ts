@@ -72,8 +72,7 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
    */
   const regenerateMessage = useCallback(async (
     messageId: string,
-    context: ConcurrentMessage[],
-    model?: string
+    originalContent: string
   ): Promise<ConcurrentMessage> => {
     if (!isInitialized) {
       throw new Error('Regeneration service not initialized');
@@ -81,7 +80,15 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
 
     try {
       setError(null);
-      const regeneratedMessage = await regenerationService.regenerateMessage(messageId, context, model);
+      // Create a context with the original content for regeneration
+      const context: ConcurrentMessage[] = [{
+        id: messageId,
+        content: originalContent,
+        role: 'assistant',
+        timestamp: new Date(),
+        status: 'completed'
+      }];
+      const regeneratedMessage = await regenerationService.regenerateMessage(messageId, context);
       return regeneratedMessage;
     } catch (err) {
       const errorMessage = `Failed to regenerate message: ${err instanceof Error ? err.message : 'Unknown error'}`;
@@ -183,6 +190,47 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
     return regenerationService.getPendingRegenerationCount();
   }, [regenerationService]);
 
+  /**
+   * Check if a message can be regenerated
+   */
+  const canRegenerate = useCallback((messageId: string): boolean => {
+    if (!isInitialized) return false;
+    
+    // Check if message is not currently being regenerated
+    if (isRegenerating(messageId)) return false;
+    
+    // Check if we haven't exceeded max retries
+    const stats = getRegenerationStats();
+    // Handle case where stats or messageStats might be undefined
+    if (stats && stats.messageStats && stats.messageStats.get) {
+      const messageStats = stats.messageStats.get(messageId);
+      if (messageStats && messageStats.attempts >= maxRetries) return false;
+    }
+    
+    return true;
+  }, [isInitialized, isRegenerating, getRegenerationStats, maxRetries]);
+
+  /**
+   * Get regeneration history for a message
+   */
+  const getRegenerationHistory = useCallback((messageId: string): any[] => {
+    if (!isInitialized) return [];
+    
+    // This would typically come from the service
+    // For now, return empty array
+    return [];
+  }, [isInitialized]);
+
+  /**
+   * Clear regeneration history for a message
+   */
+  const clearRegenerationHistory = useCallback((messageId: string): void => {
+    if (!isInitialized) return;
+    
+    // This would typically clear history in the service
+    // For now, do nothing
+  }, [isInitialized]);
+
   return {
     // State
     isInitialized,
@@ -201,6 +249,9 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
     
     // Queries
     isRegenerating,
+    canRegenerate,
+    getRegenerationHistory,
+    clearRegenerationHistory,
     getRegenerationStats,
     getMaxRetries,
     getRetryDelay,

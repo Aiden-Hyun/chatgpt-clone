@@ -266,6 +266,15 @@ export function useConcurrentChat(
     }
   }, [eventBus, messages.length, roomId]);
 
+  // Update a specific message
+  const updateMessage = useCallback((messageId: string, updates: Partial<ConcurrentMessage>) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId 
+        ? { ...msg, ...updates }
+        : msg
+    ));
+  }, []);
+
   // Change model
   const changeModel = useCallback(async (newModel: string) => {
     try {
@@ -303,6 +312,7 @@ export function useConcurrentChat(
     cancelMessage,
     retryMessage,
     clearMessages,
+    updateMessage,
     changeModel,
     
     // Utilities

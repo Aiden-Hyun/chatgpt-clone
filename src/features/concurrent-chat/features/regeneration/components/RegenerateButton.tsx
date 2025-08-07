@@ -2,11 +2,13 @@ import React, { useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
+import { ConcurrentMessage } from '../../core/types/interfaces/IMessageProcessor';
 import { useMessageRegeneration } from '../useMessageRegeneration';
 
 interface RegenerateButtonProps {
   messageId: string;
   originalContent: string;
+  conversationHistory?: ConcurrentMessage[]; // Add conversation history prop
   eventBus: EventBus;
   serviceContainer: ServiceContainer;
   onRegenerationStart?: () => void;
@@ -32,6 +34,7 @@ interface RegenerateButtonProps {
 export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
   messageId,
   originalContent,
+  conversationHistory = [], // Default to empty array
   eventBus,
   serviceContainer,
   onRegenerationStart,
@@ -61,16 +64,27 @@ export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
     try {
       onRegenerationStart?.();
       
-      const newContent = await regenerateMessage(messageId, originalContent);
+      console.log('🚀 RegenerateButton: Starting regeneration for messageId:', messageId);
+      console.log('🚀 RegenerateButton: Conversation history length:', conversationHistory?.length || 0);
+      const newContent = await regenerateMessage(messageId, originalContent, conversationHistory);
+      console.log('✅ RegenerateButton: Regeneration completed, newContent:', newContent);
+      console.log('🔍 RegenerateButton: newContent type:', typeof newContent);
+      console.log('🔍 RegenerateButton: newContent keys:', Object.keys(newContent || {}));
       
-      onRegenerationComplete?.(newContent);
+      // Extract content string from ConcurrentMessage object
+      const contentString = typeof newContent === 'string' ? newContent : (newContent?.content || 'Regeneration completed');
+      console.log('📞 RegenerateButton: Calling onRegenerationComplete with content:', contentString);
+      onRegenerationComplete?.(contentString);
+      console.log('✅ RegenerateButton: onRegenerationComplete callback called');
     } catch (error) {
+      console.error('❌ RegenerateButton: Error during regeneration:', error);
       const errorMessage = error instanceof Error ? error.message : 'Regeneration failed';
       onRegenerationError?.(errorMessage);
     }
   }, [
     messageId,
     originalContent,
+    conversationHistory,
     isInitialized,
     isLoading,
     disabled,
