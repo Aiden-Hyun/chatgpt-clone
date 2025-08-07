@@ -226,7 +226,7 @@ export class EventBus {
       try {
         handler(event.data);
       } catch (error) {
-        console.error('Error replaying event:', error);
+        // Error replaying event
       }
     }
   }

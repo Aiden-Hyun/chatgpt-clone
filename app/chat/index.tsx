@@ -22,7 +22,6 @@ export default function NewChatScreen() {
         // The actual database room will be created when the first message is sent
         router.replace(`/chat/${tempRoomId}`);
       } catch (error) {
-        console.error('Error in createNewChat:', error);
         router.replace('/');
       }
     };

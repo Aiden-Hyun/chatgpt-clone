@@ -37,14 +37,12 @@ export default function ForgotPasswordScreen() {
             try {
               router.replace('/signin');
             } catch (error) {
-              console.error('Navigation error:', error);
               setHasError(true);
             }
           }}]
         );
       }
     } catch (error) {
-      console.error('Reset password error:', error);
       setHasError(true);
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
     }
@@ -54,12 +52,10 @@ export default function ForgotPasswordScreen() {
     try {
       router.back();
     } catch (error) {
-      console.error('Navigation error:', error);
       // Fallback to signin if back navigation fails
       try {
         router.replace('/signin');
       } catch (fallbackError) {
-        console.error('Fallback navigation error:', fallbackError);
         setHasError(true);
       }
     }
@@ -98,8 +94,6 @@ export default function ForgotPasswordScreen() {
           autoCorrect={false}
           editable={!isLoading}
           variant="filled"
-          onFocus={() => console.log('Email input focused on forgot-password')}
-          onBlur={() => console.log('Email input blurred on forgot-password')}
         />
       </FormWrapper>
       

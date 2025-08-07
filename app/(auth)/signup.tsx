@@ -61,15 +61,10 @@ export default function SignupScreen() {
       return;
     }
 
-    console.log('Form validation passed, attempting signup...');
-
     try {
       const result = await signUp(email, password);
-      console.log('Signup result:', result);
       
       if (result.success) {
-        console.log('Signup successful, showing success alert');
-        
         // Use direct Alert.alert to bypass the error system
         Alert.alert(
           t('auth.account_created'), 
@@ -78,23 +73,20 @@ export default function SignupScreen() {
             { 
               text: 'OK', 
               onPress: () => {
-                console.log('Success alert OK pressed, navigating to signin');
                 try {
                   router.replace('/signin');
                 } catch (error) {
-                  console.error('Navigation error:', error);
+                  // Navigation error
                 }
               }
             }
           ]
         );
       } else {
-        console.error('Signup failed:', result.error);
         // Use direct Alert.alert for error too
         Alert.alert(t('auth.signup_failed'), result.error || t('auth.unexpected_error'));
       }
     } catch (error) {
-      console.error('Signup error:', error);
       Alert.alert(t('common.error'), t('auth.unexpected_error'));
     }
   };
@@ -115,7 +107,7 @@ export default function SignupScreen() {
     try {
       router.replace('/signin');
     } catch (error) {
-      console.error('Navigation error:', error);
+      // Navigation error
     }
   };
 
@@ -150,8 +142,6 @@ export default function SignupScreen() {
               returnKeyType="next"
               onSubmitEditing={handleEmailSubmit}
               blurOnSubmit={false}
-              onFocus={() => console.log('Email input focused on signup')}
-              onBlur={() => console.log('Email input blurred on signup')}
             />
             {errors.email && (
               <ThemedText style={{ color: 'red', fontSize: 12, marginTop: -8, marginBottom: 8 }}>
@@ -209,10 +199,7 @@ export default function SignupScreen() {
           
           <TouchableOpacity 
             style={[styles.button, isLoading && styles.buttonDisabled]}
-            onPress={() => {
-              console.log('Signup button pressed');
-              handleSignup();
-            }}
+            onPress={handleSignup}
             disabled={isLoading}
             activeOpacity={0.7}
           >

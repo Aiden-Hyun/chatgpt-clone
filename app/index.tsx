@@ -29,7 +29,7 @@ export default function HomeScreen() {
       await deleteRoom(roomId);
       showSuccess(t('chat.room_deleted'), 3000);
     } catch (error) {
-      console.error('Failed to delete room:', error);
+      // Failed to delete room
     }
   };
 
