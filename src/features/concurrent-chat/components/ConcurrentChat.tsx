@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, TextInput, View } from 'react-native';
 import { supabase } from '../../../shared/lib/supabase';
+import { CancelMessageCommand } from '../core/commands/CancelMessageCommand';
+import { ChangeModelCommand } from '../core/commands/ChangeModelCommand';
+import { ClearMessagesCommand } from '../core/commands/ClearMessagesCommand';
+import { RetryMessageCommand } from '../core/commands/RetryMessageCommand';
+import { SendMessageCommand } from '../core/commands/SendMessageCommand';
 import { ServiceContainer } from '../core/container/ServiceContainer';
 import { EventBus } from '../core/events/EventBus';
 import { useConcurrentChat } from '../core/hooks/useConcurrentChat';
@@ -11,11 +16,6 @@ import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
 import { IAIService } from '../core/types/interfaces/IAIService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../core/types/interfaces/IModelSelector';
-import { SendMessageCommand } from '../core/commands/SendMessageCommand';
-import { CancelMessageCommand } from '../core/commands/CancelMessageCommand';
-import { RetryMessageCommand } from '../core/commands/RetryMessageCommand';
-import { ChangeModelCommand } from '../core/commands/ChangeModelCommand';
-import { ClearMessagesCommand } from '../core/commands/ClearMessagesCommand';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
 
 interface ConcurrentChatProps {
@@ -60,7 +60,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     const mockMessageProcessor: IMessageProcessor = {
       process: async (message: any) => {
         // Mock message processor for demo
-        console.log('🔍 Processing message:', message.id, message.content);
         
         try {
           // 1. Ensure message has correct role and update to processing (API call starting)
@@ -69,8 +68,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
             role: 'user' as const,
             status: 'processing' as const
           };
-          
-          console.log('🔍 Publishing MESSAGE_COMPLETED for user message:', message.id);
           
           // Don't publish MESSAGE_SENT for user message since it's already added by the hook
           // Just update the existing message to processing status
@@ -102,7 +99,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           };
 
           // 4. Add assistant message to the list (processing state)
-          console.log('🔍 Publishing MESSAGE_SENT for assistant message:', assistantMessage.id);
           eventBus.publish('MESSAGE_SENT', {
             type: 'MESSAGE_SENT',
             timestamp: Date.now(),
@@ -134,7 +130,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           };
 
           // 7. Publish MESSAGE_COMPLETED event for assistant message
-          console.log('🔍 Publishing MESSAGE_COMPLETED for assistant message:', completedAssistantMessage.id);
           eventBus.publish('MESSAGE_COMPLETED', {
             type: 'MESSAGE_COMPLETED',
             timestamp: Date.now(),
@@ -440,91 +435,102 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           )}
         </View>
 
-        {/* Messages */}
-        {(() => { 
-          console.log('🔍 Messages State:', messages.length, 'messages');
-          messages.forEach((m, i) => console.log(`  ${i}: ${m.role} - "${m.content.substring(0, 30)}..." (ID: ${m.id})`));
-          return null; 
-        })()}
-        {messages.map((message, index) => (
-          <View 
-            key={message.id || index}
-            style={{
-              marginBottom: 12,
-              padding: 12,
-              backgroundColor: message.role === 'user' ? '#007AFF' : '#f0f0f0',
-              borderRadius: 12,
-              maxWidth: '80%',
-              alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-            }}
-          >
-            <Text style={{
-              color: message.role === 'user' ? 'white' : '#333',
-              fontSize: 16,
-            }}>
-              {message.content || 'No content'}
-            </Text>
-            
-            <View style={{ 
-              flexDirection: 'row', 
-              justifyContent: 'space-between', 
-              marginTop: 8 
-            }}>
+                {/* Messages */}
+        {messages.map((message, index) => {
+          const isUserMessage = message.role === 'user';
+          const statusInfo = (() => {
+            switch (message.status) {
+              case 'completed':
+                return { color: '#4CAF50', text: 'COMPLETED' };
+              case 'processing':
+                return { color: '#FF9800', text: 'PROCESSING' };
+              case 'failed':
+                return { color: '#F44336', text: 'FAILED' };
+              case 'cancelled':
+                return { color: '#9E9E9E', text: 'CANCELLED' };
+              default:
+                return { color: '#666', text: message.status.toUpperCase() };
+            }
+          })();
+
+          return (
+            <View 
+              key={message.id || index}
+              style={{
+                marginBottom: 12,
+                padding: 16,
+                backgroundColor: isUserMessage ? '#007AFF' : '#F2F2F7',
+                borderRadius: 20,
+                maxWidth: '80%',
+                alignSelf: isUserMessage ? 'flex-end' : 'flex-start',
+                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
+            >
               <Text style={{
-                color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#666',
-                fontSize: 12,
+                color: isUserMessage ? '#FFFFFF' : '#000000',
+                fontSize: 16,
+                lineHeight: 22,
               }}>
-                {message.status.toUpperCase()}
-                {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : 'Invalid Date'}
+                {message.content || 'No content'}
               </Text>
               
-                             {message.role === 'assistant' as any && (
+              <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'space-between', 
+                marginTop: 8 
+              }}>
                 <Text style={{
-                  color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#666',
+                  color: isUserMessage ? 'rgba(255,255,255,0.7)' : '#666',
                   fontSize: 12,
                 }}>
-                  Model: {message.model}
+                  {statusInfo.text}
+                  {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : 'Invalid Date'}
+                </Text>
+                
+                {!isUserMessage && (
+                  <Text style={{
+                    color: isUserMessage ? 'rgba(255,255,255,0.7)' : '#666',
+                    fontSize: 12,
+                  }}>
+                    Model: {message.model}
+                  </Text>
+                )}
+              </View>
+              
+              {!isUserMessage && message.status === 'processing' && (
+                <Text 
+                  style={{ 
+                    color: '#f44336', 
+                    fontSize: 12, 
+                    marginTop: 4,
+                    textAlign: 'center'
+                  }}
+                  onPress={() => handleCancelMessage(message.id)}
+                >
+                  Cancel
+                </Text>
+              )}
+              
+              {message.status === 'failed' && (
+                <Text 
+                  style={{ 
+                    color: '#007AFF', 
+                    fontSize: 12, 
+                    marginTop: 4,
+                    textAlign: 'center'
+                  }}
+                  onPress={() => handleRetryMessage(message.id)}
+                >
+                  Retry
                 </Text>
               )}
             </View>
-            
-                         {message.role === 'assistant' as any && message.status === 'processing' && (
-              <Text 
-                style={{ 
-                  color: '#f44336', 
-                  fontSize: 12, 
-                  marginTop: 4,
-                  textAlign: 'center'
-                }}
-                onPress={() => handleCancelMessage(message.id)}
-              >
-                Cancel
-              </Text>
-            )}
-            
-            {message.status === 'failed' && (
-              <Text 
-                style={{ 
-                  color: '#007AFF', 
-                  fontSize: 12, 
-                  marginTop: 4,
-                  textAlign: 'center'
-                }}
-                onPress={() => handleRetryMessage(message.id)}
-              >
-                Retry
-              </Text>
-            )}
-            
-            <Text style={{
-              color: message.role === 'user' ? 'rgba(255,255,255,0.5)' : '#999',
-              fontSize: 10,
-              marginTop: 4,
-            }}>
-              ID: {message.id}
-            </Text>
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
 
       {/* Input area */}
@@ -536,7 +542,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       }}>
         <View style={{
           flexDirection: 'row',
-          alignItems: 'center',
+          alignItems: 'flex-end',
         }}>
           <TextInput
             style={{
@@ -545,9 +551,11 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
               borderColor: '#e0e0e0',
               borderRadius: 20,
               paddingHorizontal: 16,
-              paddingVertical: 8,
+              paddingVertical: 12,
               marginRight: 8,
               fontSize: 16,
+              maxHeight: 100,
+              textAlignVertical: 'top',
             }}
             value={inputValue}
             onChangeText={setInputValue}
@@ -559,10 +567,11 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
             style={{
               backgroundColor: isSending ? '#ccc' : '#007AFF',
               color: 'white',
-              paddingHorizontal: 16,
-              paddingVertical: 8,
+              paddingHorizontal: 20,
+              paddingVertical: 12,
               borderRadius: 20,
               fontSize: 16,
+              fontWeight: '600',
             }}
             onPress={isSending ? undefined : handleSendMessage}
           >
