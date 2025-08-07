@@ -234,9 +234,9 @@ export class RegenerationService extends BasePlugin {
         const response = await aiService.sendMessage(request, session);
         console.log('🔄 [REGENERATION] AI service response:', response);
 
-        // Create regenerated message
+        // Create regenerated message with same ID to replace original
         const regeneratedMessage: ConcurrentMessage = {
-          id: `${messageId}_regenerated_${Date.now()}`,
+          id: messageId, // Keep the same ID to replace the original message
           content: response.choices?.[0]?.message?.content || 'Regeneration failed',
           role: 'assistant',
           status: 'completed',

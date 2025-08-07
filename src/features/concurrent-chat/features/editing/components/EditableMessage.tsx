@@ -239,16 +239,7 @@ export const EditableMessage: React.FC<EditableMessageProps> = ({
         )}
       </View>
 
-      {/* Debug info (only in development) */}
-      {__DEV__ && (
-        <View style={styles.debugContainer}>
-          <Text style={styles.debugText}>
-            ID: {messageId} | Can Edit: {canEdit(messageId).toString()} | 
-            History: {getEditHistory(messageId).length} | 
-            Initialized: {isInitialized.toString()}
-          </Text>
-        </View>
-      )}
+      {/* Debug info disabled for cleaner UI */}
     </View>
   );
 };

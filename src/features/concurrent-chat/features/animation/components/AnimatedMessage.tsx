@@ -157,12 +157,7 @@ export const AnimatedMessage: React.FC<AnimatedMessageProps> = ({
         {getDisplayContent()}
       </Text>
       
-      {/* Animation status indicator */}
-      {(isLoading || isAnimating) && (
-        <View style={styles.loadingIndicator}>
-          <Text style={styles.loadingText}>Animating...</Text>
-        </View>
-      )}
+      {/* Animation status indicator disabled for cleaner UI */}
       
       {/* Animation error display */}
       {animationError && (
@@ -184,6 +179,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     maxWidth: '85%',
+    minWidth: 60,
+    flex: 0,
   },
   userMessage: {
     alignSelf: 'flex-end',
@@ -205,6 +202,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     flexWrap: 'wrap',
     flexShrink: 1,
+    width: '100%',
   },
   userText: {
     color: '#FFFFFF',
