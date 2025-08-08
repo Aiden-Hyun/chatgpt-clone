@@ -2,8 +2,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../../../shared/hooks';
-import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
 import { useToast } from '../../../alert';
+import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
 
 interface MessageInteractionBarProps {
   onRegenerate?: () => void;
@@ -58,7 +58,15 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
           <MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.iconButton} onPress={onShare}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={async () => {
+            try {
+              await onShare?.();
+              showSuccess('Shared');
+            } catch {}
+          }}
+        >
           <MaterialIcons name="share" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
       </View>

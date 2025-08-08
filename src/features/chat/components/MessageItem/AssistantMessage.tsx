@@ -152,7 +152,23 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
           onRegenerate={onRegenerate}
           onLike={() => console.log('Like pressed')}
           onDislike={() => console.log('Dislike pressed')}
-          onShare={() => console.log('Share pressed')}
+          onShare={async () => {
+            try {
+              const text = message.content || '';
+              if (!text) return;
+              // Web: navigator.share if available
+              if (typeof navigator !== 'undefined' && (navigator as any).share) {
+                await (navigator as any).share({ title: 'Chat', text });
+                return;
+              }
+              // Native: React Native Share
+              const RN = require('react-native');
+              if (RN && RN.Share && RN.Share.share) {
+                await RN.Share.share({ message: text });
+                return;
+              }
+            } catch {}
+          }}
           onCopy={() => {
             try {
               if (typeof navigator !== 'undefined' && navigator.clipboard && message.content) {
