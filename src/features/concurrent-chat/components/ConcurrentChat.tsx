@@ -63,6 +63,10 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     const container = new ServiceContainer();
     
     // Register core services synchronously before hooks run
+    console.log('🔍 [ConcurrentChat] Creating services with supabase:', supabase);
+    console.log('🔍 [ConcurrentChat] Supabase type:', typeof supabase);
+    console.log('🔍 [ConcurrentChat] Supabase keys:', Object.keys(supabase || {}));
+    
     const aiService = new ConcurrentAIService();
     const messageProcessor = new ConcurrentMessageProcessor(eventBus, container);
     const modelSelector = new ModelSelectionService(supabase);

@@ -23,6 +23,10 @@ export class ModelSelectionService implements IModelSelector {
   private roomModels = new Map<number, string>();
 
   constructor(private supabase: any) {
+    console.log('🔍 [ModelSelectionService] Constructor called with supabase:', supabase);
+    console.log('🔍 [ModelSelectionService] Supabase type:', typeof supabase);
+    console.log('🔍 [ModelSelectionService] Supabase keys:', Object.keys(supabase || {}));
+    
     if (!supabase) {
       throw new Error('Supabase client is required');
     }
@@ -33,7 +37,7 @@ export class ModelSelectionService implements IModelSelector {
    * 
    * @returns Array of model options with label and value properties
    */
-  getAvailableModels(): Array<{ label: string; value: string }> {
+  getAvailableModels(): { label: string; value: string }[] {
     // Return a copy to prevent external modification
     return [...this.DEFAULT_MODELS];
   }
@@ -107,21 +111,34 @@ export class ModelSelectionService implements IModelSelector {
 
       // Try to get from Supabase
       if (this.supabase) {
-        const { data, error } = await this.supabase
-          .from('chatrooms')
-          .select('model')
-          .eq('id', roomId)
-          .single();
+        console.log('🔍 [ModelSelectionService] Attempting to fetch model for room:', roomId);
+        console.log('🔍 [ModelSelectionService] Supabase client:', this.supabase);
+        console.log('🔍 [ModelSelectionService] Supabase client type:', typeof this.supabase);
+        console.log('🔍 [ModelSelectionService] Supabase client keys:', Object.keys(this.supabase || {}));
+        
+        try {
+          const { data, error } = await this.supabase
+            .from('chatrooms')
+            .select('model')
+            .eq('id', roomId)
+            .maybeSingle();
 
-        if (error) {
-          // If room doesn't exist or other error, return current model
+          console.log('🔍 [ModelSelectionService] Supabase response:', { data, error });
+
+          if (error) {
+            console.error('🔍 [ModelSelectionService] Supabase error:', error);
+            // If room doesn't exist or other error, return current model
+            return this.currentModel;
+          }
+
+          if (data && data.model) {
+            // Cache the room model
+            this.roomModels.set(roomId, data.model);
+            return data.model;
+          }
+        } catch (supabaseError) {
+          console.error('🔍 [ModelSelectionService] Supabase request failed:', supabaseError);
           return this.currentModel;
-        }
-
-        if (data && data.model) {
-          // Cache the room model
-          this.roomModels.set(roomId, data.model);
-          return data.model;
         }
       }
 
