@@ -69,19 +69,10 @@ export class ModelSelectionService implements IModelSelector {
     }
 
     try {
-      // Update current model
+      console.log('[MODEL] Service.setModel →', model);
+      // Update current in-memory default model (no global DB write)
+      // Room-scoped persistence is handled by setModelForRoom → chatrooms.model
       this.currentModel = model;
-
-      // Persist to Supabase if available
-      if (this.supabase) {
-        await this.supabase
-          .from('user_preferences')
-          .upsert({
-            key: 'current_model',
-            value: model,
-            updated_at: new Date().toISOString()
-          });
-      }
     } catch (error) {
       // Revert on error
       this.currentModel = 'gpt-3.5-turbo';
@@ -112,6 +103,7 @@ export class ModelSelectionService implements IModelSelector {
         
         
         try {
+          console.log('[MODEL] Service.getModelForRoom → query room', roomId);
           const { data, error } = await this.supabase
             .from('chatrooms')
             .select('model')
@@ -120,23 +112,28 @@ export class ModelSelectionService implements IModelSelector {
 
           if (error) {
             // If room doesn't exist or other error, return current model
+            console.warn('[MODEL] Service.getModelForRoom error', error);
             return this.currentModel;
           }
 
           if (data && data.model) {
             // Cache the room model
             this.roomModels.set(roomId, data.model);
+            console.log('[MODEL] Service.getModelForRoom → found', data.model);
             return data.model;
           }
         } catch {
+          console.warn('[MODEL] Service.getModelForRoom → request failed');
           return this.currentModel;
         }
       }
 
       // Return current model as fallback
+      console.log('[MODEL] Service.getModelForRoom → fallback', this.currentModel);
       return this.currentModel;
     } catch (error) {
       // Return current model on error
+      console.warn('[MODEL] Service.getModelForRoom → outer error', error);
       return this.currentModel;
     }
   }
@@ -170,6 +167,7 @@ export class ModelSelectionService implements IModelSelector {
 
       // Persist to Supabase if available
       if (this.supabase) {
+        console.log('[MODEL] Service.setModelForRoom → persist', { roomId, model });
         await this.supabase
           .from('chatrooms')
           .update({ model })
@@ -188,22 +186,7 @@ export class ModelSelectionService implements IModelSelector {
    * @returns Promise that resolves when preferences are loaded
    */
   async loadPreferences(): Promise<void> {
-    try {
-      if (this.supabase) {
-        const { data, error } = await this.supabase
-          .from('user_preferences')
-          .select('key, value')
-          .eq('key', 'current_model')
-          .single();
-
-        if (!error && data && data.value) {
-          this.currentModel = data.value;
-        }
-      }
-    } catch (error) {
-      // Ignore errors when loading preferences
-      console.warn('Failed to load user preferences:', error);
-    }
+    // No-op: global user preference storage removed. We rely on room-scoped model in chatrooms.model.
   }
 
   /**

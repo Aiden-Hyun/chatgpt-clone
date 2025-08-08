@@ -182,6 +182,7 @@ export function useConcurrentChat(
         timestamp: Date.now(),
         roomId,
         model: currentModel,
+        metadata: { context: messages },
       };
 
       // Add message to state immediately

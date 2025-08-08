@@ -59,10 +59,32 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
 
         
 
+        // Resolve current model from selector if not carried on message
+        let modelToUse = message.model;
+        try {
+          const selector = this.serviceContainer.get<any>('modelSelector');
+          if (!modelToUse) {
+            modelToUse = message.roomId ? await selector.getModelForRoom(message.roomId) : selector.getCurrentModel();
+          }
+          console.log('[MODEL] Processor → resolved model', { modelToUse, roomId: message.roomId });
+        } catch {}
+
+        // Build conversation history from metadata.context or fallback to minimal
+        const history: Array<{ role: string; content: string }> = [];
+        const contextFromMetadata = (message as any).metadata?.context as ConcurrentMessage[] | undefined;
+        if (Array.isArray(contextFromMetadata)) {
+          for (const m of contextFromMetadata) {
+            history.push({ role: m.role, content: m.content });
+          }
+        }
+        // Always include the current user turn last
+        history.push({ role: message.role, content: message.content });
+        console.log('[AI] Processor → request context size', history.length);
+
         // Create AI request
         const request = {
-          messages: [{ role: message.role, content: message.content }],
-          model: message.model || 'gpt-3.5-turbo',
+          messages: history,
+          model: modelToUse || 'gpt-3.5-turbo',
           temperature: 0.7,
           max_tokens: 1000,
         };
@@ -77,7 +99,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           status: 'processing', // Processing status for animation
           timestamp: Date.now(),
           roomId: message.roomId,
-          model: message.model,
+          model: modelToUse,
         };
 
         // Publish assistant message started event (for animation)

@@ -42,6 +42,7 @@ export class ConcurrentAIService implements IAIService {
     }
 
     try {
+      console.log('[AI] POST', `${this.EDGE_FUNCTION_BASE_URL}/openai-chat`, { model: request.model });
       const response = await fetch(`${this.EDGE_FUNCTION_BASE_URL}/openai-chat`, {
         method: 'POST',
         headers: {
@@ -52,7 +53,8 @@ export class ConcurrentAIService implements IAIService {
       });
 
       if (!response.ok) {
-        await response.text();
+        const text = await response.text();
+        console.warn('[AI] error response', response.status, text);
         throw new Error(`AI API error: ${response.status} - ${response.statusText || 'Internal Server Error'}`);
       }
 

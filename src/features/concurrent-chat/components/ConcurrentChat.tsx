@@ -7,7 +7,6 @@ import { ChatInput, MessageList } from '../../chat/components';
 import {
     toChatMessages
 } from '../adapters/messageAdapter';
-import { ChangeModelCommand } from '../core/commands/ChangeModelCommand';
 import { SendMessageCommand } from '../core/commands/SendMessageCommand';
 import { ServiceContainer } from '../core/container/ServiceContainer';
 import { EventBus } from '../core/events/EventBus';
@@ -18,7 +17,6 @@ import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
 import { ConcurrentMessageProcessor } from '../core/services/ConcurrentMessageProcessor';
 import { ModelSelectionService } from '../core/services/ModelSelectionService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
-import { IModelSelector } from '../core/types/interfaces/IModelSelector';
 
 import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
@@ -99,6 +97,8 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const {
     currentModel,
     availableModels,
+    changeModel,
+    setModelForRoom,
   } = useModelSelection(eventBus, serviceContainer, roomId);
 
   // Initialize additional services (session and feature services)
@@ -141,11 +141,12 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       // Get message processor from service container
       const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
       
-      // Create and execute SendMessageCommand (correct signature: processor, content, roomId)
+      // Create and execute SendMessageCommand (processor, content, roomId, context)
       const sendCommand = new SendMessageCommand(
         messageProcessor,
         inputValue.trim(),
-        roomId || null
+        roomId || null,
+        messages
       );
       
       await executeCommand(sendCommand);
@@ -167,9 +168,13 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
   const handleModelChange = useCallback(async (newModel: string) => {
     try {
-      const modelSelector = serviceContainer.get<IModelSelector>('modelSelector');
-      const changeModelCommand = new ChangeModelCommand(modelSelector, newModel, roomId || null);
-      await executeCommand(changeModelCommand);
+      console.log('[MODEL] UI → change requested', { newModel, currentModel, roomId });
+      if (roomId) {
+        await setModelForRoom(roomId, newModel);
+      } else {
+        await changeModel(newModel);
+      }
+      console.log('[MODEL] UI → change completed', { newModel });
     } catch (err) {
       Alert.alert(
         'Error',
@@ -177,7 +182,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         [{ text: 'OK' }]
       );
     }
-  }, [executeCommand, serviceContainer, roomId]);
+  }, [changeModel, setModelForRoom, currentModel, roomId]);
 
   // Handle regeneration using existing services
   const handleRegenerate = useCallback(async (index: number) => {
@@ -195,9 +200,11 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       const conversationHistory = messages.slice(0, index);
       
       // Regenerate the message
+      console.log('[MODEL] Regenerate → using model', currentModel);
       const regeneratedMessage = await regenerationService.regenerateMessage(
-        message.id, 
-        conversationHistory
+        message.id,
+        conversationHistory,
+        currentModel
       );
       
       // Update the message in state
@@ -215,7 +222,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       // Restore to previous state if needed
       updateMessage(message.id, { status: 'completed' });
     }
-  }, [messages, serviceContainer, updateMessage]);
+  }, [messages, serviceContainer, updateMessage, currentModel]);
 
   // Handle input change and track typing
   const handleInputChange = useCallback((text: string) => {
@@ -284,6 +291,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
             currentModel={currentModel}
             availableModels={availableModels}
             onModelChange={handleModelChange}
+            currentRoomModel={currentModel}
           />
           
           {/* Undo button */}

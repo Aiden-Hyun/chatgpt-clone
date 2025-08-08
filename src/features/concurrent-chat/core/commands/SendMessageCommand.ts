@@ -11,7 +11,8 @@ export class SendMessageCommand implements ICommand {
   constructor(
     private readonly messageProcessor: IMessageProcessor,
     private readonly messageContent: string,
-    private readonly roomId: number | null
+    private readonly roomId: number | null,
+    private readonly contextMessages?: ConcurrentMessage[]
   ) {
     // Validation
     if (!messageProcessor) {
@@ -39,7 +40,13 @@ export class SendMessageCommand implements ICommand {
         status: 'pending',
         timestamp: Date.now(),
         roomId: this.roomId,
+        metadata: this.contextMessages ? { context: this.contextMessages } : undefined,
       };
+      console.log('[MODEL] Command.SendMessage → constructing user message', {
+        roomId: this.roomId,
+        model: (message as any).model || '(none)',
+        contextCount: this.contextMessages ? this.contextMessages.length : 0,
+      });
 
       const result = await this.messageProcessor.process(message);
 

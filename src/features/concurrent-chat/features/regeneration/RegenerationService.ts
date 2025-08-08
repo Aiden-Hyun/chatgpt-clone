@@ -21,6 +21,20 @@ export class RegenerationService {
     this.container = container;
   }
 
+  private async resolveModelFromRoom(context: ConcurrentMessage[]): Promise<string | null> {
+    try {
+      const modelSelector = this.container.get<any>('modelSelector');
+      const roomId = context[context.length - 1]?.roomId;
+      if (modelSelector && roomId) {
+        const model = await modelSelector.getModelForRoom(roomId);
+        return model || null;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
   async init(): Promise<void> {
     try {
       this.log('Initializing Regeneration Service');
@@ -217,10 +231,11 @@ export class RegenerationService {
             role: msg.role,
             content: msg.content,
           })),
-          model: model || 'gpt-3.5-turbo',
+          model: model || (await this.resolveModelFromRoom(context)) || 'gpt-3.5-turbo',
           temperature: 0.7,
           max_tokens: 1000,
         };
+        this.log(`Regeneration using model: ${request.model}`);
 
         // Get session from container
         let session = null;
@@ -245,7 +260,7 @@ export class RegenerationService {
           role: 'assistant',
           status: 'completed',
           timestamp: Date.now(),
-          model: model || 'gpt-3.5-turbo',
+          model: request.model,
         };
 
         // Publish regeneration completed event

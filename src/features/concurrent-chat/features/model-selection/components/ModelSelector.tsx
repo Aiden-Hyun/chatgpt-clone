@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
 
 interface ModelOption {
   label: string;
@@ -11,6 +11,7 @@ interface ModelSelectorProps {
   currentModel: string;
   availableModels: ModelOption[];
   onModelChange: (model: string) => void;
+  currentRoomModel?: string;
 }
 
 /**
@@ -27,6 +28,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   currentModel,
   availableModels,
   onModelChange,
+  currentRoomModel,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -110,7 +112,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           fontWeight: '500',
           marginRight: 8,
         }}>
-          {currentModelInfo.label}
+           {currentRoomModel ? `${currentModelInfo.label}` : currentModelInfo.label}
         </Text>
         
         <Text style={{

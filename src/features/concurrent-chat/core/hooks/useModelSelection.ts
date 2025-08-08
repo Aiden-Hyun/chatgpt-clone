@@ -26,18 +26,22 @@ export function useModelSelection(eventBus: EventBus, serviceContainer: ServiceC
         
         // Get model selector from service container
         const selector = serviceContainer.get<IModelSelector>('modelSelector');
+        console.log('[MODEL] Hook init → selector acquired');
         setModelSelector(selector);
         
         // Load available models
         const models = selector.getAvailableModels();
+        console.log('[MODEL] Hook init → available models', models);
         setAvailableModels(models);
         
         // Load current model for room
         if (roomId) {
+          console.log('[MODEL] Hook init → get model for room', roomId);
           const model = await selector.getModelForRoom(roomId);
           setCurrentModel(model);
         } else {
           const defaultModel = selector.getCurrentModel();
+          console.log('[MODEL] Hook init → default model', defaultModel);
           setCurrentModel(defaultModel);
         }
         
@@ -70,6 +74,7 @@ export function useModelSelection(eventBus: EventBus, serviceContainer: ServiceC
    */
   const changeModel = useCallback(async (newModel: string) => {
     if (!modelSelector) {
+      console.warn('[MODEL] changeModel called before selector ready');
       throw new Error('Model selector not initialized');
     }
 
@@ -78,19 +83,24 @@ export function useModelSelection(eventBus: EventBus, serviceContainer: ServiceC
       setError(null);
       
       const oldModel = currentModel;
+      console.log('[MODEL] changeModel → start', { oldModel, newModel, roomId });
       
       // Change the model
       await modelSelector.setModel(newModel);
       setCurrentModel(newModel);
+      console.log('[MODEL] changeModel → set and local state updated');
       
-      // Publish model changed event
-      eventBus.publish(MESSAGE_EVENT_TYPES.MODEL_CHANGED, {
-        type: MESSAGE_EVENT_TYPES.MODEL_CHANGED,
-        timestamp: Date.now(),
-        oldModel,
-        newModel,
-        roomId,
-      });
+      // Publish model changed event synchronously after local state update
+      setTimeout(() => {
+        eventBus.publish(MESSAGE_EVENT_TYPES.MODEL_CHANGED, {
+          type: MESSAGE_EVENT_TYPES.MODEL_CHANGED,
+          timestamp: Date.now(),
+          oldModel,
+          newModel,
+          roomId,
+        });
+      }, 0);
+      console.log('[MODEL] changeModel → event published');
       
     } catch (err) {
       setError(`Failed to change model: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -156,10 +166,23 @@ export function useModelSelection(eventBus: EventBus, serviceContainer: ServiceC
     try {
       setIsLoading(true);
       setError(null);
-      
-      // Set model for room (this would be implemented in the model selector)
-      // For now, we'll just change the current model
-      await changeModel(model);
+      console.log('[MODEL] setModelForRoom → start', { roomId, model });
+      // Update local state immediately so subsequent actions use the new value
+      const oldModel = currentModel;
+      setCurrentModel(model);
+      // Persist model for this room via service
+      await modelSelector.setModelForRoom(roomId, model);
+      // Publish event after persistence
+      setTimeout(() => {
+        eventBus.publish(MESSAGE_EVENT_TYPES.MODEL_CHANGED, {
+          type: MESSAGE_EVENT_TYPES.MODEL_CHANGED,
+          timestamp: Date.now(),
+          oldModel,
+          newModel: model,
+          roomId,
+        });
+      }, 0);
+      console.log('[MODEL] setModelForRoom → completed');
       
     } catch (err) {
       setError(`Failed to set model for room: ${err instanceof Error ? err.message : 'Unknown error'}`);
