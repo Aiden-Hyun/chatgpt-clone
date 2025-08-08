@@ -6,9 +6,9 @@ import {
     Platform,
 } from 'react-native';
 import { useLogout } from '../../src/features/auth';
-import { ChatHeader, ChatInput, MessageList } from '../../src/features/chat/components';
+import { ChatHeader } from '../../src/features/chat/components';
 import { useChatRooms } from '../../src/features/chat/hooks';
-import { useChatSimplified } from '../../src/features/chat/hooks/useChatSimplified';
+import { ConcurrentChat } from '../../src/features/concurrent-chat';
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
@@ -28,34 +28,10 @@ export default function ChatScreen() {
   // Track if user has started typing to hide welcome text
   const [hasUserTyped, setHasUserTyped] = React.useState(false);
 
-  const {
-    messages,
-    loading,
-    input,
-    // ❌ Remove legacy state
-    // isNewMessageLoading,
-    regeneratingIndices,
-    processingMessages,
-    messageQueue,
-    sendMessage: originalSendMessage,
-    handleInputChange,
-    regenerateMessage,
-  } = useChatSimplified(numericRoomId);
+  const loading = false;
   const { logout } = useLogout();
   
-  // Wrap sendMessage to maintain focus after sending
-  const sendMessage = async () => {
-    await originalSendMessage();
-    maintainFocus();
-  };
-
-  // Handle input change and track if user has typed
-  const handleInputChangeWithTracking = (text: string) => {
-    if (text.length > 0 && !hasUserTyped) {
-      setHasUserTyped(true);
-    }
-    handleInputChange(text);
-  };
+  // No longer need local input/message wiring; ConcurrentChat handles it.
 
   const handleNewChat = () => {
     startNewChat();
@@ -85,23 +61,7 @@ export default function ChatScreen() {
           onChatSelect={handleChatSelect}
           selectedChatId={roomId}
         />
-
-        {/* Messages */}
-        <MessageList
-          messages={messages}
-          isNewMessageLoading={processingMessages.size > 0}
-          regeneratingIndices={regeneratingIndices}
-          onRegenerate={regenerateMessage}
-          showWelcomeText={!hasUserTyped}
-        />
-
-        {/* Input */}
-        <ChatInput
-          input={input}
-          onChangeText={handleInputChangeWithTracking}
-          onSend={sendMessage}
-          inputRef={inputRef}
-        />
+        <ConcurrentChat roomId={numericRoomId ?? undefined} showHeader={false} />
       </KeyboardAvoidingView>
     </LoadingWrapper>
   );

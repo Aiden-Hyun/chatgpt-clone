@@ -26,6 +26,7 @@ interface ConcurrentChatProps {
   roomId?: number;
   initialModel?: string;
   className?: string;
+  showHeader?: boolean;
 }
 
 /**
@@ -52,6 +53,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   roomId,
   initialModel = 'gpt-3.5-turbo',
   className,
+  showHeader = true,
 }) => {
   // Dependency injection container and event bus - initialize services immediately
   const [eventBus] = useState(() => new EventBus());
@@ -263,6 +265,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       style={styles.container}
     >
       {/* Header with model selector and controls */}
+      {showHeader && (
       <View style={{ 
         flexDirection: 'row', 
         justifyContent: 'space-between', 
@@ -310,6 +313,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           )}
         </View>
       </View>
+      )}
 
       {/* Error display */}
       {error && (
