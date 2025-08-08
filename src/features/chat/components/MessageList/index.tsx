@@ -36,6 +36,13 @@ export const MessageList: React.FC<MessageListProps> = ({
   const [selectedWelcomeKey, setSelectedWelcomeKey] = useState('');
   const cursorOpacity = useRef(new Animated.Value(1)).current;
 
+  // Track indices that should animate once regeneration completes
+  const [recentlyRegenerated, setRecentlyRegenerated] = useState<Set<number>>(new Set());
+  const completedToClearRef = useRef<Set<number>>(new Set());
+  const prevContentsRef = useRef<string[]>([]);
+  // Emit per-message animation triggers when regeneration completes
+  const [animationTriggers, setAnimationTriggers] = useState<Map<number, string>>(new Map());
+
   // Array of welcome message keys
   const welcomeMessageKeys = [
     'welcome.how_are_you',
@@ -78,6 +85,43 @@ export const MessageList: React.FC<MessageListProps> = ({
       fontWeight: theme.fontWeights.medium as '500',
     },
   });
+
+  // Detect regeneration completion and schedule clearing of the one-shot flag
+  useEffect(() => {
+    const prevContents = prevContentsRef.current;
+    const nextContents = messages.map(m => m.content);
+
+    recentlyRegenerated.forEach(index => {
+      const isRegen = regeneratingIndices.has(index);
+      const contentChanged = nextContents[index] !== prevContents[index];
+      if (!isRegen && contentChanged) {
+        console.log('[REGENERATE] Completed', { index, contentChanged });
+        // Fire a one-shot animation trigger for this index
+        setAnimationTriggers(prev => {
+          const copy = new Map(prev);
+          const token = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+          copy.set(index, token);
+          console.log('[ANIMATION] Trigger', { index, token });
+          return copy;
+        });
+        // Keep the flag for one more render, then clear in next cycle
+        completedToClearRef.current.add(index);
+      }
+    });
+
+    // Clear any indices that were marked in the previous cycle
+    if (completedToClearRef.current.size > 0) {
+      setRecentlyRegenerated(prev => {
+        const copy = new Set(prev);
+        completedToClearRef.current.forEach(i => copy.delete(i));
+        console.log('[REGENERATE] ClearRecently', { indices: Array.from(completedToClearRef.current) });
+        return copy;
+      });
+      completedToClearRef.current.clear();
+    }
+
+    prevContentsRef.current = nextContents;
+  }, [messages, regeneratingIndices, recentlyRegenerated]);
 
   // Select random welcome message when component mounts or welcome text should be shown
   useEffect(() => {
@@ -156,6 +200,8 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
     const isRegenerating = regeneratingIndices.has(index);
+    const wasRecentlyRegenerated = recentlyRegenerated.has(index);
+    const triggerToken = animationTriggers.get(index);
     
     // Group consecutive messages from the same sender
     const showAvatar =
@@ -165,18 +211,27 @@ export const MessageList: React.FC<MessageListProps> = ({
       (index < messagesWithLoading.length - 1 && messagesWithLoading[index + 1].role !== item.role);
 
     // Determine if this message should animate
-    // Animate if it's a new assistant message (last message) with content, or being regenerated
-    const shouldAnimate = (item.role === 'assistant' && index === messagesWithLoading.length - 1 ) || isRegenerating;
+    // Animate if it's a new assistant message (last message), being regenerated, or just completed regeneration
+    const shouldAnimate = (item.role === 'assistant' && index === messagesWithLoading.length - 1 ) || isRegenerating || wasRecentlyRegenerated;
 
+    const handleRegenerate = () => {
+      console.log('[REGENERATE] Dispatch', { index, isRegenerating, isNewMessageLoading, shouldAnimate });
+      // Mark this index to animate when regeneration completes
+      setRecentlyRegenerated(prev => new Set(prev).add(index));
+      onRegenerate(index);
+    };
+
+    console.log('[ANIMATION-DECIDE]', { index, isRegenerating, wasRecentlyRegenerated, isLast: index === messagesWithLoading.length - 1, shouldAnimate, triggerToken });
     return (
       <MessageItem
         message={item}
         index={index}
         isNewMessageLoading={isNewMessageLoading && index === messages.length}
         isRegenerating={isRegenerating}
+        animationTrigger={triggerToken}
         onRegenerate={
           item.role === 'assistant' && !isRegenerating && !isNewMessageLoading
-            ? () => onRegenerate(index)
+            ? handleRegenerate
             : undefined
         }
         showAvatar={showAvatar}
@@ -193,7 +248,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}
-      extraData={[messages, isNewMessageLoading, regeneratingIndices]}
+      extraData={[messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated, animationTriggers]}
       onContentSizeChange={() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }}

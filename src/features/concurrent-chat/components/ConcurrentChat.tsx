@@ -203,6 +203,10 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     if (!message || message.role !== 'assistant') return;
 
     try {
+      // Mark message as processing to show loading state during regeneration
+      console.log('[REGENERATE] UI → mark processing', { index, messageId: message.id });
+      updateMessage(message.id, { status: 'processing', content: '' });
+
       // Get regeneration service
       const regenerationService = serviceContainer.get('regenerationService') as RegenerationService;
       
@@ -216,6 +220,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       );
       
       // Update the message in state
+      console.log('[REGENERATE] UI → completed', { index, messageId: message.id, contentLength: regeneratedMessage.content?.length });
       updateMessage(message.id, {
         content: regeneratedMessage.content,
         status: 'completed'
@@ -227,6 +232,8 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         `Failed to regenerate message: ${error instanceof Error ? error.message : 'Unknown error'}`,
         [{ text: 'OK' }]
       );
+      // Restore to previous state if needed
+      updateMessage(message.id, { status: 'completed' });
     }
   }, [messages, serviceContainer, updateMessage]);
 

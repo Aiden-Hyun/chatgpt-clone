@@ -23,11 +23,15 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createMessageInteractionBarStyles(theme);
+  const handleRegeneratePress = () => {
+    console.log('[REGENERATE] Click');
+    onRegenerate?.();
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.iconButton} onPress={onRegenerate}>
+        <TouchableOpacity style={styles.iconButton} onPress={handleRegeneratePress}>
           <MaterialIcons name="refresh" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         

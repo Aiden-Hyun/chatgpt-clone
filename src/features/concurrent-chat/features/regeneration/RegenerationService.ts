@@ -72,6 +72,7 @@ export class RegenerationService extends BasePlugin {
         message: context[context.length - 1], // Use the last message as the one being regenerated
         context,
       });
+      console.log('[REGENERATE] Service requested', { messageId, contextSize: context.length });
 
       // Get AI service from container
       const aiService = this.container.get<IAIService>('aiService');
@@ -79,10 +80,12 @@ export class RegenerationService extends BasePlugin {
       // Create regeneration promise
       const regenerationPromise = this.performRegeneration(messageId, context, model, aiService);
       this.regenerationQueue.set(messageId, regenerationPromise);
+      console.log('[REGENERATE] Service queued', { messageId, inQueue: this.regenerationQueue.size });
 
       const regeneratedMessage = await regenerationPromise;
       
       this.log(`Regeneration completed for message: ${messageId}`);
+      console.log('[REGENERATE] Service completed', { messageId });
       return regeneratedMessage;
 
     } catch (error) {
