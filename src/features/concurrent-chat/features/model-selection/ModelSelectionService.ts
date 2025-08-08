@@ -2,19 +2,23 @@ import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
 import { MessageEvent } from '../../core/types/events/MessageEvents';
 import { IModelSelector } from '../../core/types/interfaces/IModelSelector';
-import { BasePlugin } from '../../plugins/BasePlugin';
+// Plugin base removed; convert to plain service while keeping API
 
 /**
  * Model Selection Service Plugin
  * Provides enhanced model selection functionality with room-specific settings
  */
-export class ModelSelectionService extends BasePlugin {
+export class ModelSelectionService {
+  private readonly eventBus: EventBus;
+  private readonly container: ServiceContainer;
+  private subscriptions: string[] = [];
   private roomModelSettings = new Map<number, string>();
   private userPreferences = new Map<string, any>();
   private modelUsageStats = new Map<string, number>();
 
   constructor(eventBus: EventBus, container: ServiceContainer) {
-    super('model-selection-service', 'Model Selection Service', '1.0.0', eventBus, container);
+    this.eventBus = eventBus;
+    this.container = container;
   }
 
   async init(): Promise<void> {
@@ -311,5 +315,28 @@ export class ModelSelectionService extends BasePlugin {
         }
       }
     });
+  }
+
+  // --- Helpers to replace BasePlugin functionality ---
+  private publishEvent(event: MessageEvent): void {
+    this.eventBus.publish(event.type, event);
+  }
+
+  private subscribeToEvent(eventType: string, handler: (event: MessageEvent) => void | Promise<void>): void {
+    const id = this.eventBus.subscribe(eventType, handler);
+    this.subscriptions.push(id);
+  }
+
+  private cleanupSubscriptions(): void {
+    this.subscriptions.forEach(id => this.eventBus.unsubscribeById(id));
+    this.subscriptions = [];
+  }
+
+  private log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
+    const ts = new Date().toISOString();
+    const prefix = `[model-selection-service]`;
+    if (level === 'error') console.error(ts, prefix, message);
+    else if (level === 'warn') console.warn(ts, prefix, message);
+    else console.log(ts, prefix, message);
   }
 } 

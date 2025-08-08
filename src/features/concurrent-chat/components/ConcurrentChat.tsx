@@ -14,7 +14,6 @@ import { EventBus } from '../core/events/EventBus';
 import { useConcurrentChat } from '../core/hooks/useConcurrentChat';
 import { useMessageCommands } from '../core/hooks/useMessageCommands';
 import { useModelSelection } from '../core/hooks/useModelSelection';
-import { usePluginSystem } from '../core/hooks/usePluginSystem';
 import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
 import { ConcurrentMessageProcessor } from '../core/services/ConcurrentMessageProcessor';
 import { ModelSelectionService } from '../core/services/ModelSelectionService';
@@ -102,9 +101,8 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     getHistoryCount,
   } = useMessageCommands(eventBus, serviceContainer);
 
-  const {
-    plugins,
-  } = usePluginSystem(eventBus, serviceContainer);
+  // Plugin system removed; keep placeholder values
+  const plugins: any[] = [];
 
   const {
     currentModel,

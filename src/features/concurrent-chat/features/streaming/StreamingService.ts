@@ -2,13 +2,16 @@ import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
 import { MessageEvent } from '../../core/types/events/MessageEvents';
 import { IAIService } from '../../core/types/interfaces/IAIService';
-import { BasePlugin } from '../../plugins/BasePlugin';
+// Plugin base removed; convert to plain service while keeping API
 
 /**
  * Streaming Service Plugin
  * Handles message streaming and provides streaming functionality
  */
-export class StreamingService extends BasePlugin {
+export class StreamingService {
+  private readonly eventBus: EventBus;
+  private readonly container: ServiceContainer;
+  private subscriptions: string[] = [];
   private activeStreams = new Map<string, {
     messageId: string;
     content: string;
@@ -23,7 +26,8 @@ export class StreamingService extends BasePlugin {
   private chunkDelay: number = 50; // 50ms between chunks
 
   constructor(eventBus: EventBus, container: ServiceContainer) {
-    super('streaming-service', 'Streaming Service', '1.0.0', eventBus, container);
+    this.eventBus = eventBus;
+    this.container = container;
   }
 
   async init(): Promise<void> {
@@ -389,5 +393,28 @@ export class StreamingService extends BasePlugin {
         }
       }
     });
+  }
+
+  // --- Helpers to replace BasePlugin functionality ---
+  private publishEvent(event: MessageEvent): void {
+    this.eventBus.publish(event.type, event);
+  }
+
+  private subscribeToEvent(eventType: string, handler: (event: MessageEvent) => void | Promise<void>): void {
+    const id = this.eventBus.subscribe(eventType, handler);
+    this.subscriptions.push(id);
+  }
+
+  private cleanupSubscriptions(): void {
+    this.subscriptions.forEach(id => this.eventBus.unsubscribeById(id));
+    this.subscriptions = [];
+  }
+
+  private log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
+    const ts = new Date().toISOString();
+    const prefix = `[streaming-service]`;
+    if (level === 'error') console.error(ts, prefix, message);
+    else if (level === 'warn') console.warn(ts, prefix, message);
+    else console.log(ts, prefix, message);
   }
 } 

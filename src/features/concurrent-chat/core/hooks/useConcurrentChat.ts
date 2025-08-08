@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PluginManager } from '../../plugins/PluginManager';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';
 import { MESSAGE_EVENT_TYPES, MessageEvent } from '../types/events/MessageEvents';
@@ -16,8 +15,7 @@ export function useConcurrentChat(
   serviceContainer: ServiceContainer,
   roomId?: number
 ) {
-  // Core services
-  const [pluginManager] = useState(() => new PluginManager(eventBus, serviceContainer));
+  // Core services (no plugin manager)
   
   // State
   const [messages, setMessages] = useState<ConcurrentMessage[]>([]);
@@ -40,10 +38,6 @@ export function useConcurrentChat(
         aiServiceRef.current = serviceContainer.get<IAIService>('aiService');
         modelSelectorRef.current = serviceContainer.get<IModelSelector>('modelSelector');
 
-        // Initialize plugin manager
-        await pluginManager.initializePlugins();
-        await pluginManager.startPlugins();
-
         // Set up event subscriptions
         setupEventSubscriptions();
 
@@ -62,9 +56,8 @@ export function useConcurrentChat(
     // Cleanup function
     return () => {
       cleanupEventSubscriptions();
-      pluginManager.destroyPlugins();
     };
-  }, [roomId, serviceContainer, pluginManager, eventBus]);
+  }, [roomId, serviceContainer, eventBus]);
 
   // Set up event subscriptions
   const setupEventSubscriptions = useCallback(() => {
@@ -311,10 +304,8 @@ export function useConcurrentChat(
     return [];
   }, []);
 
-  // Get plugin statistics
-  const getPluginStats = useCallback(() => {
-    return pluginManager.getPluginStats();
-  }, [pluginManager]);
+  // Get plugin statistics (removed)
+  const getPluginStats = useCallback(() => ({ total: 0, eventPlugins: 0, renderPlugins: 0, lifecyclePlugins: 0, active: 0, initialized: 0 }), []);
 
   return {
     // State
@@ -338,6 +329,6 @@ export function useConcurrentChat(
     // Services (for advanced usage)
     eventBus,
     serviceContainer,
-    pluginManager,
+    // pluginManager removed
   };
 } 

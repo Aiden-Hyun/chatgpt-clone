@@ -2,13 +2,16 @@ import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
 import { MessageEvent } from '../../core/types/events/MessageEvents';
 import { ConcurrentMessage } from '../../core/types/interfaces/IMessageProcessor';
-import { BasePlugin } from '../../plugins/BasePlugin';
+// Plugin base removed; convert to plain service while keeping API
 
 /**
  * Editing Service Plugin
  * Handles message editing and provides editing functionality
  */
-export class EditingService extends BasePlugin {
+export class EditingService {
+  private readonly eventBus: EventBus;
+  private readonly container: ServiceContainer;
+  private subscriptions: string[] = [];
   private editingSessions = new Map<string, {
     originalMessage: ConcurrentMessage;
     editedContent: string;
@@ -19,7 +22,8 @@ export class EditingService extends BasePlugin {
   private autoSaveEnabled: boolean = true;
 
   constructor(eventBus: EventBus, container: ServiceContainer) {
-    super('editing-service', 'Editing Service', '1.0.0', eventBus, container);
+    this.eventBus = eventBus;
+    this.container = container;
   }
 
   async init(): Promise<void> {
@@ -125,8 +129,8 @@ export class EditingService extends BasePlugin {
         },
       };
 
-      // Publish editing saved event
-      this.publishEvent({
+    // Publish editing saved event
+    this.publishEvent({
         type: 'EDITING_SAVED',
         timestamp: Date.now(),
         messageId,
@@ -288,6 +292,29 @@ export class EditingService extends BasePlugin {
         }
       }
     });
+  }
+
+  // --- Helpers to replace BasePlugin functionality ---
+  private publishEvent(event: MessageEvent): void {
+    this.eventBus.publish(event.type, event);
+  }
+
+  private subscribeToEvent(eventType: string, handler: (event: MessageEvent) => void | Promise<void>): void {
+    const id = this.eventBus.subscribe(eventType, handler);
+    this.subscriptions.push(id);
+  }
+
+  private cleanupSubscriptions(): void {
+    this.subscriptions.forEach(id => this.eventBus.unsubscribeById(id));
+    this.subscriptions = [];
+  }
+
+  private log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
+    const ts = new Date().toISOString();
+    const prefix = `[editing-service]`;
+    if (level === 'error') console.error(ts, prefix, message);
+    else if (level === 'warn') console.warn(ts, prefix, message);
+    else console.log(ts, prefix, message);
   }
 
   private startAutoSaveTimer(): void {

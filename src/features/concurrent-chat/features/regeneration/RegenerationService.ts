@@ -3,19 +3,22 @@ import { EventBus } from '../../core/events/EventBus';
 import { MessageEvent } from '../../core/types/events/MessageEvents';
 import { IAIService } from '../../core/types/interfaces/IAIService';
 import { ConcurrentMessage } from '../../core/types/interfaces/IMessageProcessor';
-import { BasePlugin } from '../../plugins/BasePlugin';
 
 /**
- * Regeneration Service Plugin
- * Handles message regeneration and provides regeneration functionality
+ * Regeneration Service (no plugin base)
+ * Handles message regeneration and provides regeneration functionality using DI + EventBus
  */
-export class RegenerationService extends BasePlugin {
+export class RegenerationService {
+  private readonly eventBus: EventBus;
+  private readonly container: ServiceContainer;
+  private subscriptions: string[] = [];
   private regenerationQueue = new Map<string, Promise<ConcurrentMessage>>();
   private maxRetries: number = 3;
   private retryDelay: number = 1000; // 1 second
 
   constructor(eventBus: EventBus, container: ServiceContainer) {
-    super('regeneration-service', 'Regeneration Service', '1.0.0', eventBus, container);
+    this.eventBus = eventBus;
+    this.container = container;
   }
 
   async init(): Promise<void> {
@@ -227,7 +230,7 @@ export class RegenerationService extends BasePlugin {
           if (!session || !session.access_token) {
             throw new Error('No valid session found');
           }
-          console.log('🔄 [REGENERATION] Session found for user: ${session.user?.email || \'unknown\'}');
+          console.log('🔄 [REGENERATION] Session found for user: ${session.user?.email || \"unknown\"}');
         } catch (error) {
           throw new Error('No active session found. Please ensure you are logged in before regenerating messages.');
         }
@@ -291,5 +294,28 @@ export class RegenerationService extends BasePlugin {
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // --- Helpers to replace BasePlugin functionality ---
+  private publishEvent(event: MessageEvent): void {
+    this.eventBus.publish(event.type, event);
+  }
+
+  private subscribeToEvent(eventType: string, handler: (event: MessageEvent) => void | Promise<void>): void {
+    const id = this.eventBus.subscribe(eventType, handler);
+    this.subscriptions.push(id);
+  }
+
+  private cleanupSubscriptions(): void {
+    this.subscriptions.forEach(id => this.eventBus.unsubscribeById(id));
+    this.subscriptions = [];
+  }
+
+  private log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
+    const ts = new Date().toISOString();
+    const prefix = `[regeneration-service]`;
+    if (level === 'error') console.error(ts, prefix, message);
+    else if (level === 'warn') console.warn(ts, prefix, message);
+    else console.log(ts, prefix, message);
   }
 } 
