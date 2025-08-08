@@ -83,7 +83,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   // UI state
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [hasUserTyped, setHasUserTyped] = useState(false);
+  const [hasSentFirst, setHasSentFirst] = useState(false);
   const [isHydrating, setIsHydrating] = useState(false);
   const { inputRef, maintainFocus } = useInputFocus();
   const firstUserMessageRef = useRef<string | null>(null);
@@ -180,9 +180,9 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   }, [roomId, replaceMessages]);
 
   useEffect(() => {
-    const welcome = !hasUserTyped && !isHydrating && messages.length === 0;
-    try { console.log('[WELCOME] gate', { welcome, hasUserTyped, isHydrating, len: messages.length }); } catch {}
-  }, [hasUserTyped, isHydrating, messages.length]);
+    const welcome = !hasSentFirst && !isHydrating && messages.length === 0;
+    try { console.log('[WELCOME] gate', { welcome, hasSentFirst, isHydrating, len: messages.length }); } catch {}
+  }, [hasSentFirst, isHydrating, messages.length]);
 
   // Option A: Activate new room on ROOM_CREATED
   useEffect(() => {
@@ -206,7 +206,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
     try {
       setIsSending(true);
-      if (!hasUserTyped) setHasUserTyped(true);
       // Cache first user message for persistence if this is a new chat without roomId
       if (!roomId) {
         firstUserMessageRef.current = inputValue.trim();
@@ -241,6 +240,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       );
       
       await executeCommand(sendCommand);
+      if (!hasSentFirst) setHasSentFirst(true);
       
       // Clear input after successful send
       setInputValue('');
@@ -255,7 +255,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     } finally {
       setIsSending(false);
     }
-  }, [inputValue, isSending, hasUserTyped, executeCommand, serviceContainer, maintainFocus, roomId, currentModel, messages]);
+  }, [inputValue, isSending, hasSentFirst, executeCommand, serviceContainer, maintainFocus, roomId, currentModel, messages]);
 
   const handleModelChange = useCallback(async (newModel: string) => {
     try {
@@ -317,11 +317,8 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
   // Handle input change and track typing
   const handleInputChange = useCallback((text: string) => {
-    if (text.length > 0 && !hasUserTyped) {
-      setHasUserTyped(true);
-    }
     setInputValue(text);
-  }, [hasUserTyped]);
+  }, []);
 
   // Convert concurrent state to chat component props
   const chatMessages = toChatMessages(messages);
@@ -426,7 +423,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         isNewMessageLoading={isNewMessageLoading}
         regeneratingIndices={regeneratingIndices}
         onRegenerate={handleRegenerate}
-        showWelcomeText={!hasUserTyped && !isHydrating && messages.length === 0}
+        showWelcomeText={!hasSentFirst && !isHydrating && messages.length === 0}
       />
 
       {/* Input using proven ChatInput component */}
