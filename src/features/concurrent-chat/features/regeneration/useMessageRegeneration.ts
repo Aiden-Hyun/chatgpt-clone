@@ -79,9 +79,7 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
       throw new Error('Regeneration service not initialized');
     }
 
-    console.log('🔄 [HOOK] Starting regeneration for messageId:', messageId);
-    console.log('🔄 [HOOK] Original content:', originalContent);
-    console.log('🔄 [HOOK] Conversation history received:', conversationHistory);
+    
 
     try {
       setError(null);
@@ -97,16 +95,15 @@ export function useMessageRegeneration(eventBus: EventBus, serviceContainer: Ser
             status: 'completed'
           }];
       
-      console.log('🔄 [HOOK] Final context being passed to regeneration service:', context);
-      console.log('🔄 [HOOK] Context length:', context.length);
+      
       
       const regeneratedMessage = await regenerationService.regenerateMessage(messageId, context);
       
-      console.log('🔄 [HOOK] Regenerated message received:', regeneratedMessage);
+      
       return regeneratedMessage;
     } catch (err) {
       const errorMessage = `Failed to regenerate message: ${err instanceof Error ? err.message : 'Unknown error'}`;
-      console.log('🔄 [HOOK] Regeneration failed:', errorMessage);
+      
       setError(errorMessage);
       throw new Error(errorMessage);
     }

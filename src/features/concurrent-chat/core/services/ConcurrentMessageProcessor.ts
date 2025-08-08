@@ -27,7 +27,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
   }
 
   async process(message: ConcurrentMessage): Promise<ConcurrentMessage> {
-    console.log('🔄 [MessageProcessor] Processing message:', message);
+    
     
     if (!message || !message.content) {
       throw new Error('Invalid message');
@@ -35,7 +35,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
 
     try {
       // Publish message sent event (user message completed)
-      console.log('📤 [MessageProcessor] Publishing MESSAGE_SENT event');
+      
       this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_SENT, {
         type: MESSAGE_EVENT_TYPES.MESSAGE_SENT,
         timestamp: Date.now(),
@@ -46,7 +46,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
       // For user messages, just mark as completed and get AI response
       if (message.role === 'user') {
         // Get AI service and session
-        console.log('🤖 [MessageProcessor] Getting AI service and session');
+        
         const aiService = this.serviceContainer.get<IAIService>('aiService');
         const session = this.serviceContainer.get('session');
 
@@ -57,7 +57,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           throw new Error('No active session');
         }
 
-        console.log('✅ [MessageProcessor] AI service and session found');
+        
 
         // Create AI request
         const request = {
@@ -67,7 +67,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           max_tokens: 1000,
         };
 
-        console.log('🚀 [MessageProcessor] Calling AI service with:', request);
+        
 
         // Create assistant message with processing status (for animation)
         const assistantMessage: ConcurrentMessage = {
@@ -90,7 +90,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
 
         // Call AI service (this will take time, showing animation)
         const aiResponse = await aiService.sendMessage(request, session);
-        console.log('✅ [MessageProcessor] AI response received:', aiResponse);
+        
         
         const assistantContent = aiResponse.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
 

@@ -95,13 +95,13 @@ export const MessageList: React.FC<MessageListProps> = ({
       const isRegen = regeneratingIndices.has(index);
       const contentChanged = nextContents[index] !== prevContents[index];
       if (!isRegen && contentChanged) {
-        console.log('[REGENERATE] Completed', { index, contentChanged });
+        // regen completed
         // Fire a one-shot animation trigger for this index
         setAnimationTriggers(prev => {
           const copy = new Map(prev);
           const token = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
           copy.set(index, token);
-          console.log('[ANIMATION] Trigger', { index, token });
+          // animation trigger
           return copy;
         });
         // Keep the flag for one more render, then clear in next cycle
@@ -114,7 +114,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       setRecentlyRegenerated(prev => {
         const copy = new Set(prev);
         completedToClearRef.current.forEach(i => copy.delete(i));
-        console.log('[REGENERATE] ClearRecently', { indices: Array.from(completedToClearRef.current) });
+        // clear recently regenerated markers
         return copy;
       });
       completedToClearRef.current.clear();
@@ -215,13 +215,11 @@ export const MessageList: React.FC<MessageListProps> = ({
     const shouldAnimate = (item.role === 'assistant' && index === messagesWithLoading.length - 1 ) || isRegenerating || wasRecentlyRegenerated;
 
     const handleRegenerate = () => {
-      console.log('[REGENERATE] Dispatch', { index, isRegenerating, isNewMessageLoading, shouldAnimate });
       // Mark this index to animate when regeneration completes
       setRecentlyRegenerated(prev => new Set(prev).add(index));
       onRegenerate(index);
     };
 
-    console.log('[ANIMATION-DECIDE]', { index, isRegenerating, wasRecentlyRegenerated, isLast: index === messagesWithLoading.length - 1, shouldAnimate, triggerToken });
     return (
       <MessageItem
         message={item}

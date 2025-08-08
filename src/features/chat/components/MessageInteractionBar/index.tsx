@@ -24,7 +24,6 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
   const theme = useAppTheme();
   const styles = createMessageInteractionBarStyles(theme);
   const handleRegeneratePress = () => {
-    console.log('[REGENERATE] Click');
     onRegenerate?.();
   };
 

@@ -62,9 +62,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     const container = new ServiceContainer();
     
     // Register core services synchronously before hooks run
-    console.log('🔍 [ConcurrentChat] Creating services with supabase:', supabase);
-    console.log('🔍 [ConcurrentChat] Supabase type:', typeof supabase);
-    console.log('🔍 [ConcurrentChat] Supabase keys:', Object.keys(supabase || {}));
     
     const aiService = new ConcurrentAIService();
     const messageProcessor = new ConcurrentMessageProcessor(eventBus, container);
@@ -74,7 +71,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     container.register('messageProcessor', messageProcessor);
     container.register('modelSelector', modelSelector);
     
-    console.log('✅ Core services registered synchronously');
+    
     return container;
   });
   
@@ -88,11 +85,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const styles = createChatStyles();
 
   // Core hooks with all advanced functionality (corrected parameter order)
-  const {
-    messages,
-    updateMessage,
-    error,
-  } = useConcurrentChat(eventBus, serviceContainer, roomId);
+  const { messages, updateMessage } = useConcurrentChat(eventBus, serviceContainer, roomId);
 
   const {
     executeCommand,
@@ -127,10 +120,9 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         serviceContainer.register('regenerationService', regenerationService);
         serviceContainer.register('editingService', editingService);
         serviceContainer.register('streamingService', streamingService);
-
-        console.log('✅ Additional services initialized successfully');
+        
       } catch (error) {
-        console.error('❌ Failed to initialize additional services:', error);
+        // no-op
       }
     };
 
@@ -139,10 +131,8 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
   // Command handlers using Command Pattern
   const handleSendMessage = useCallback(async () => {
-    console.log('🚀 [ConcurrentChat] handleSendMessage called with:', { inputValue: inputValue.trim(), isSending });
     
     if (!inputValue.trim() || isSending) {
-      console.log('❌ [ConcurrentChat] Message send blocked - empty input or already sending');
       return;
     }
 
@@ -150,10 +140,8 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       setIsSending(true);
       if (!hasUserTyped) setHasUserTyped(true);
 
-      console.log('📤 [ConcurrentChat] Getting message processor from service container');
       // Get message processor from service container
       const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
-      console.log('✅ [ConcurrentChat] Message processor retrieved:', !!messageProcessor);
       
       // Create and execute SendMessageCommand (correct signature: processor, content, roomId)
       const sendCommand = new SendMessageCommand(
@@ -162,15 +150,13 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         roomId || null
       );
       
-      console.log('⚡ [ConcurrentChat] Executing SendMessageCommand');
       await executeCommand(sendCommand);
-      console.log('✅ [ConcurrentChat] SendMessageCommand executed successfully');
       
       // Clear input after successful send
       setInputValue('');
       maintainFocus();
     } catch (err) {
-      console.error('❌ [ConcurrentChat] Error sending message:', err);
+      
       Alert.alert(
         'Error',
         `Failed to send message: ${err instanceof Error ? err.message : 'Unknown error'}`,
@@ -202,7 +188,6 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
     try {
       // Mark message as processing to show loading state during regeneration
-      console.log('[REGENERATE] UI → mark processing', { index, messageId: message.id });
       updateMessage(message.id, { status: 'processing', content: '' });
 
       // Get regeneration service
@@ -218,13 +203,12 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       );
       
       // Update the message in state
-      console.log('[REGENERATE] UI → completed', { index, messageId: message.id, contentLength: regeneratedMessage.content?.length });
       updateMessage(message.id, {
         content: regeneratedMessage.content,
         status: 'completed'
       });
     } catch (error) {
-      console.error('Regeneration failed:', error);
+      
       Alert.alert(
         'Error',
         `Failed to regenerate message: ${error instanceof Error ? error.message : 'Unknown error'}`,

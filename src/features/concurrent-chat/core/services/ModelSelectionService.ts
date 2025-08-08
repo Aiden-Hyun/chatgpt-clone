@@ -23,9 +23,7 @@ export class ModelSelectionService implements IModelSelector {
   private roomModels = new Map<number, string>();
 
   constructor(private supabase: any) {
-    console.log('🔍 [ModelSelectionService] Constructor called with supabase:', supabase);
-    console.log('🔍 [ModelSelectionService] Supabase type:', typeof supabase);
-    console.log('🔍 [ModelSelectionService] Supabase keys:', Object.keys(supabase || {}));
+    
     
     if (!supabase) {
       throw new Error('Supabase client is required');
@@ -111,10 +109,7 @@ export class ModelSelectionService implements IModelSelector {
 
       // Try to get from Supabase
       if (this.supabase) {
-        console.log('🔍 [ModelSelectionService] Attempting to fetch model for room:', roomId);
-        console.log('🔍 [ModelSelectionService] Supabase client:', this.supabase);
-        console.log('🔍 [ModelSelectionService] Supabase client type:', typeof this.supabase);
-        console.log('🔍 [ModelSelectionService] Supabase client keys:', Object.keys(this.supabase || {}));
+        
         
         try {
           const { data, error } = await this.supabase
@@ -123,10 +118,7 @@ export class ModelSelectionService implements IModelSelector {
             .eq('id', roomId)
             .maybeSingle();
 
-          console.log('🔍 [ModelSelectionService] Supabase response:', { data, error });
-
           if (error) {
-            console.error('🔍 [ModelSelectionService] Supabase error:', error);
             // If room doesn't exist or other error, return current model
             return this.currentModel;
           }
@@ -136,8 +128,7 @@ export class ModelSelectionService implements IModelSelector {
             this.roomModels.set(roomId, data.model);
             return data.model;
           }
-        } catch (supabaseError) {
-          console.error('🔍 [ModelSelectionService] Supabase request failed:', supabaseError);
+        } catch {
           return this.currentModel;
         }
       }

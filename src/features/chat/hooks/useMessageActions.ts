@@ -114,7 +114,7 @@ export const useMessageActions = ({
   }, [roomId, messages, setMessages, setupMessageProcessing, cleanupMessageProcessing, handleMessageError, setDrafts, selectedModel]);
 
   const regenerateMessage = useCallback(async (index: number) => {
-    console.log('[REGENERATE] Start', { index });
+    
     if (index < 0 || index >= messages.length) return;
 
     const targetMessage = messages[index];
@@ -132,7 +132,7 @@ export const useMessageActions = ({
     startRegenerating(index);
 
     try {
-      console.log('[REGENERATE] Handler → sendMessageHandler');
+      
       await sendMessageHandler({
         userContent: userMessage.content,
         numericRoomId: roomId,
@@ -146,14 +146,14 @@ export const useMessageActions = ({
         messageId, // ✅ Phase 2: Pass message ID for regeneration
       });
       logger.info('Message regeneration completed', { index });
-      console.log('[REGENERATE] Handler completed', { index });
+      
     } catch (error) {
       logger.error('Failed to regenerate message', { index, error: error as Error });
       stopRegenerating(index);
       throw error;
     } finally {
       stopRegenerating(index);
-      console.log('[REGENERATE] Stop', { index });
+      
     }
   }, [roomId, messages, setMessages, startRegenerating, stopRegenerating, setDrafts, selectedModel]);
 

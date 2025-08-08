@@ -67,11 +67,7 @@ export function useConcurrentChat(
     subscriptions.push(
       eventBus.subscribe(MESSAGE_EVENT_TYPES.MESSAGE_SENT, (event: MessageEvent) => {
                 if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_SENT) {
-          console.log('📥 [useConcurrentChat] MESSAGE_SENT event:', { 
-            messageId: event.message.id, 
-            role: event.message.role, 
-            status: event.message.status 
-          });
+          
           
           setMessages(prev => {
           // Check if this message already exists
@@ -84,11 +80,11 @@ export function useConcurrentChat(
               ...updatedMessages[existingMessageIndex], 
               status: 'processing' 
             };
-            console.log('📥 [useConcurrentChat] Updated existing message to processing');
+            
             return updatedMessages;
           } else {
             // Add new message (for assistant messages)
-            console.log('📥 [useConcurrentChat] Added new processing message');
+            
             return [...prev, event.message];
           }
         });
@@ -99,11 +95,7 @@ export function useConcurrentChat(
     subscriptions.push(
       eventBus.subscribe(MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED, (event: MessageEvent) => {
         if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED) {
-          console.log('📥 [useConcurrentChat] MESSAGE_COMPLETED event:', { 
-            messageId: event.message.id, 
-            role: event.message.role, 
-            status: event.message.status 
-          });
+          
           
           setMessages(prev => {
           // Check if this message already exists
@@ -113,11 +105,11 @@ export function useConcurrentChat(
             // Update existing message
             const updatedMessages = [...prev];
             updatedMessages[existingMessageIndex] = { ...event.message };
-            console.log('📥 [useConcurrentChat] Updated existing message to completed');
+            
             return updatedMessages;
           } else {
             // Add new message (for assistant messages)
-            console.log('📥 [useConcurrentChat] Added new completed message');
+            
             return [...prev, event.message];
           }
         });

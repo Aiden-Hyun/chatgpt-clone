@@ -63,21 +63,12 @@ export const RegenerateButton: React.FC<RegenerateButtonProps> = ({
 
     try {
       onRegenerationStart?.();
-      
-      console.log('🚀 RegenerateButton: Starting regeneration for messageId:', messageId);
-      console.log('🚀 RegenerateButton: Conversation history length:', conversationHistory?.length || 0);
       const newContent = await regenerateMessage(messageId, originalContent, conversationHistory);
-      console.log('✅ RegenerateButton: Regeneration completed, newContent:', newContent);
-      console.log('🔍 RegenerateButton: newContent type:', typeof newContent);
-      console.log('🔍 RegenerateButton: newContent keys:', Object.keys(newContent || {}));
       
       // Extract content string from ConcurrentMessage object
       const contentString = typeof newContent === 'string' ? newContent : (newContent?.content || 'Regeneration completed');
-      console.log('📞 RegenerateButton: Calling onRegenerationComplete with content:', contentString);
       onRegenerationComplete?.(contentString);
-      console.log('✅ RegenerateButton: onRegenerationComplete callback called');
     } catch (error) {
-      console.error('❌ RegenerateButton: Error during regeneration:', error);
       const errorMessage = error instanceof Error ? error.message : 'Regeneration failed';
       onRegenerationError?.(errorMessage);
     }

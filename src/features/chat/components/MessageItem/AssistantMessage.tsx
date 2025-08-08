@@ -45,10 +45,8 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   /* Enqueue new animation whenever content changes & shouldAnimate is true     */
   /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    console.log('[ANIMATION] Check', { shouldAnimate, contentLength: message.content?.length, queueSize: animationQueue.length, trigger: animationTrigger });
     if ((shouldAnimate || animationTrigger) && message.content && message.content.trim().length > 0) {
       const animationId = `anim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log('[ANIMATION] Enqueue', { id: animationId, content: message.content.slice(0, 30) });
       // Prepare UI immediately to avoid flashing full text
       setDisplayedContent('');
       setShowCursor(true);
@@ -67,7 +65,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
       const updated = [...prev];
       updated.forEach(item => {
         if (item.status === 'pending') {
-          console.log('[ANIMATION] Run', { id: item.id });
           startAnimation(item.id, item.content);
           item.status = 'running';
         }
@@ -81,7 +78,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   /* Animation helpers                                                          */
   /* -------------------------------------------------------------------------- */
   const startAnimation = (animationId: string, content: string) => {
-    console.log('[ANIMATION] Start', { id: animationId, length: content.length });
     const typewriterSpeed = 35; // ms per character
     const characters = content.split('');
     let currentIndex = 0;
@@ -107,7 +103,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   };
 
   const endAnimation = (animationId: string, finalContent: string) => {
-    console.log('[ANIMATION] End', { id: animationId });
     setAnimationQueue(prev => prev.map(item => item.id === animationId ? { ...item, status: 'completed' } : item));
     setDisplayedContent(finalContent);
     if (cursorIntervalRef.current) {

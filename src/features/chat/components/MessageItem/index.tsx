@@ -27,7 +27,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   isLastInGroup = true,
   shouldAnimate = false,
   }) => {
-    console.log('[MESSAGE-ITEM]', { index, role: message.role, isRegenerating, isNewMessageLoading, shouldAnimate, trigger: animationTrigger });
     // Show loading message for new messages at the bottom
     if (isNewMessageLoading && message.role === 'assistant' && !message.content) {
       return <LoadingMessage />;
@@ -35,7 +34,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   // Show loading message for regenerating messages
   if (isRegenerating && message.role === 'assistant') {
-    console.log('[MESSAGE-ITEM] Loading (regen)', { index });
     return <LoadingMessage />;
   }
 

@@ -52,8 +52,7 @@ export class ConcurrentAIService implements IAIService {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.log('🔍 API Error:', errorText);
+        await response.text();
         throw new Error(`AI API error: ${response.status} - ${response.statusText || 'Internal Server Error'}`);
       }
 
@@ -150,7 +149,7 @@ export class ConcurrentAIService implements IAIService {
                 }
               } catch (parseError) {
                 // Ignore parse errors for malformed JSON in stream
-                console.warn('Failed to parse streaming chunk:', parseError);
+                // ignore malformed stream lines
               }
             }
           }

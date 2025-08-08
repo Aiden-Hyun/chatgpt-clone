@@ -75,7 +75,7 @@ export class RegenerationService {
         message: context[context.length - 1], // Use the last message as the one being regenerated
         context,
       });
-      console.log('[REGENERATE] Service requested', { messageId, contextSize: context.length });
+      
 
       // Get AI service from container
       const aiService = this.container.get<IAIService>('aiService');
@@ -83,12 +83,11 @@ export class RegenerationService {
       // Create regeneration promise
       const regenerationPromise = this.performRegeneration(messageId, context, model, aiService);
       this.regenerationQueue.set(messageId, regenerationPromise);
-      console.log('[REGENERATE] Service queued', { messageId, inQueue: this.regenerationQueue.size });
+      
 
       const regeneratedMessage = await regenerationPromise;
       
       this.log(`Regeneration completed for message: ${messageId}`);
-      console.log('[REGENERATE] Service completed', { messageId });
       return regeneratedMessage;
 
     } catch (error) {
@@ -230,15 +229,14 @@ export class RegenerationService {
           if (!session || !session.access_token) {
             throw new Error('No valid session found');
           }
-          console.log('🔄 [REGENERATION] Session found for user: ${session.user?.email || \"unknown\"}');
+          
         } catch (error) {
           throw new Error('No active session found. Please ensure you are logged in before regenerating messages.');
         }
 
         // Send regeneration request
-        console.log('🔄 [REGENERATION] Calling AI service with request...');
+        
         const response = await aiService.sendMessage(request, session);
-        console.log('🔄 [REGENERATION] AI service response:', response);
 
         // Create regenerated message with same ID to replace original
         const regeneratedMessage: ConcurrentMessage = {
