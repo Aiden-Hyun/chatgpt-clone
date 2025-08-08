@@ -4,7 +4,7 @@ import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../shared/lib/globalEven
 import { supabase } from '../../../shared/lib/supabase';
 
 export interface ChatRoom { id: number; name: string; }
-export interface ChatRoomWithLastMsg { id: number; name: string; }
+export interface ChatRoomWithLastMsg { id: number; name: string; last_message?: string; last_activity?: string; updated_at?: string }
 
 export const useChatRooms = () => {
   const [rooms, setRooms] = useState<ChatRoomWithLastMsg[]>([]);
@@ -24,7 +24,7 @@ export const useChatRooms = () => {
     console.log('[ROOMS] fetchRooms:query chatrooms');
     const { data: allRoomRows, error: roomsError } = await supabase
       .from('chatrooms')
-      .select('id')
+      .select('id, updated_at')
       .eq('user_id', session.user.id);
 
     if (roomsError || !allRoomRows) {
@@ -69,17 +69,26 @@ export const useChatRooms = () => {
       .order('created_at', { ascending: false });
 
     // Build map of first (latest) message per room
-    const latestByRoom = new Map<number, string>();
+    const latestByRoom = new Map<number, { content?: string; created_at?: string }>();
     messageRows?.forEach(msg => {
       if (!latestByRoom.has(msg.room_id)) {
-        latestByRoom.set(msg.room_id, msg.content as string);
+        latestByRoom.set(msg.room_id, { content: msg.content as string, created_at: msg.created_at as string });
       }
     });
 
-    const mapped: ChatRoomWithLastMsg[] = roomIdsWithMessages.map(roomId => ({
-      id: roomId,
-      name: latestByRoom.get(roomId) || 'New Chat',
-    }));
+    const mapped: ChatRoomWithLastMsg[] = roomIdsWithMessages
+      .map(roomId => ({
+        id: roomId,
+        name: latestByRoom.get(roomId)?.content || 'New Chat',
+        last_message: latestByRoom.get(roomId)?.content,
+        last_activity: latestByRoom.get(roomId)?.created_at,
+        updated_at: (allRoomRows.find(r => r.id === roomId) as any)?.updated_at as string | undefined,
+      }))
+      .sort((a, b) => {
+        const at = a.last_activity ? new Date(a.last_activity).getTime() : 0;
+        const bt = b.last_activity ? new Date(b.last_activity).getTime() : 0;
+        return bt - at;
+      });
 
     setRooms(mapped);
     setLoading(false);
@@ -94,13 +103,15 @@ export const useChatRooms = () => {
       const name = payload?.name as string | undefined;
       if (!roomId) return;
       console.log('[ROOMS] global-created', roomId);
-      // Merge room if missing
       const { data: roomRow } = await supabase
         .from('chatrooms')
         .select('id, name, updated_at')
         .eq('id', roomId)
         .maybeSingle();
-      setRooms(prev => (prev.some(r => r.id === roomId) ? prev : [{ id: roomId, name: name || roomRow?.name || 'New Chat' }, ...prev]));
+      setRooms(prev => {
+        const filtered = prev.filter(r => r.id !== roomId);
+        return [{ id: roomId, name: name || roomRow?.name || 'New Chat', updated_at: roomRow?.updated_at }, ...filtered];
+      });
     });
     // Realtime: listen for message inserts to reflect new rooms instantly
     let channel: any;
@@ -119,12 +130,20 @@ export const useChatRooms = () => {
               .select('id, name, updated_at')
               .eq('id', roomId)
               .maybeSingle();
-            // Merge without duplicate using prev snapshot
+            // Move room to the top (or insert if missing)
             setRooms(prev => {
-              if (prev.some(r => r.id === roomId)) return prev;
-              const next = [{ id: roomId, name: roomRow?.name || 'New Chat' }, ...prev];
-              console.log('[ROOMS-RT] merged room', roomId, '→ total', next.length);
-              return next;
+              const existing = prev.find(r => r.id === roomId);
+              const filtered = prev.filter(r => r.id !== roomId);
+              return [
+                {
+                  id: roomId,
+                  name: existing?.name || roomRow?.name || 'New Chat',
+                  last_message: (payload.new as any).content as string | undefined ?? existing?.last_message,
+                  last_activity: (payload.new as any).created_at as string | undefined ?? existing?.last_activity,
+                  updated_at: roomRow?.updated_at ?? existing?.updated_at,
+                },
+                ...filtered,
+              ];
             });
           } catch (e) {
             // Fallback: trigger full fetch
