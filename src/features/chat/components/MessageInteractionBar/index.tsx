@@ -3,6 +3,7 @@ import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../../../shared/hooks';
 import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
+import { useToast } from '../../../alert';
 
 interface MessageInteractionBarProps {
   onRegenerate?: () => void;
@@ -23,6 +24,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createMessageInteractionBarStyles(theme);
+  const { showSuccess } = useToast();
   const handleRegeneratePress = () => {
     onRegenerate?.();
   };
@@ -46,7 +48,13 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
           <MaterialIcons name="volume-up" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.iconButton} onPress={onCopy}>
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => {
+            onCopy?.();
+            try { showSuccess('Copied to clipboard'); } catch {}
+          }}
+        >
           <MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />
         </TouchableOpacity>
         

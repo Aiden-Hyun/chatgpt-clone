@@ -153,7 +153,13 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
           onLike={() => console.log('Like pressed')}
           onDislike={() => console.log('Dislike pressed')}
           onShare={() => console.log('Share pressed')}
-          onCopy={() => console.log('Copy pressed')}
+          onCopy={() => {
+            try {
+              if (typeof navigator !== 'undefined' && navigator.clipboard && message.content) {
+                navigator.clipboard.writeText(message.content);
+              }
+            } catch {}
+          }}
           onAudio={() => console.log('Audio pressed')}
         />
       )}
