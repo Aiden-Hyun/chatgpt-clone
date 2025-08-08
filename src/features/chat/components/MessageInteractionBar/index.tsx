@@ -61,10 +61,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <TouchableOpacity
           style={styles.iconButton}
           onPress={async () => {
-            try {
-              await onShare?.();
-              showSuccess('Shared');
-            } catch {}
+            try { await onShare?.(); } catch {}
           }}
         >
           <MaterialIcons name="share" size={20} color={theme.colors.text.secondary} />
