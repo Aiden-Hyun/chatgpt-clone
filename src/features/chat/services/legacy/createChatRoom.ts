@@ -6,6 +6,8 @@ export const createChatRoom = async (
   userId: string,
   model: string = 'gpt-3.5-turbo'
 ): Promise<number | null> => {
+  // NOTE: Room creation should occur only after a successful AI response to avoid
+  // saving empty chatrooms. The calling code ensures this sequencing.
   const defaultName = `Chat ${new Date().toLocaleString()}`;
 
   const { data, error } = await supabase
@@ -20,4 +22,4 @@ export const createChatRoom = async (
   }
 
   return data.id;
-}; 
+};

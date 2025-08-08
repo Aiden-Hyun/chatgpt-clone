@@ -277,6 +277,11 @@ export function useConcurrentChat(
     ));
   }, []);
 
+  // Replace all messages (hydration)
+  const replaceMessages = useCallback((newMessages: ConcurrentMessage[]) => {
+    setMessages(newMessages);
+  }, []);
+
   // Change model
   const changeModel = useCallback(async (newModel: string) => {
     try {
@@ -313,6 +318,7 @@ export function useConcurrentChat(
     retryMessage,
     clearMessages,
     updateMessage,
+    replaceMessages,
     changeModel,
     
     // Utilities

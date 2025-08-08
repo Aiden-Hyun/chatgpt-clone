@@ -4,6 +4,9 @@ import { createChatStyles } from '../../../../app/chat/chat.styles';
 import { useInputFocus } from '../../../shared/hooks';
 import { supabase } from '../../../shared/lib/supabase';
 import { ChatInput, MessageList } from '../../chat/components';
+import { configureServices } from '../../chat/services/config/ServiceConfiguration';
+import { ServiceFactory } from '../../chat/services/core';
+import type { ChatMessage } from '../../chat/types';
 import {
     toChatMessages
 } from '../adapters/messageAdapter';
@@ -84,7 +87,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const styles = createChatStyles();
 
   // Core hooks with all advanced functionality (corrected parameter order)
-  const { messages, updateMessage, error } = useConcurrentChat(eventBus, serviceContainer, roomId);
+  const { messages, updateMessage, replaceMessages, error } = useConcurrentChat(eventBus, serviceContainer, roomId);
 
   const {
     executeCommand,
@@ -107,6 +110,9 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   useEffect(() => {
     const initializeAdditionalServices = async () => {
       try {
+        // Ensure chat services are configured (idempotent)
+        try { configureServices(); } catch {}
+
         // Register session from Supabase (needed by AI service)
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
@@ -128,6 +134,31 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
     initializeAdditionalServices();
   }, [serviceContainer, eventBus]);
+
+  // Load chat history when roomId changes
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!roomId) return;
+      try {
+        const messageService = ServiceFactory.createMessageService();
+        const chatHistory = await messageService.loadMessages(roomId);
+        // Map ChatMessage[] to ConcurrentMessage[] and hydrate
+        const hydrated = (chatHistory as ChatMessage[]).map((m, idx) => ({
+          id: `hist_${roomId}_${idx}`,
+          role: m.role,
+          content: m.content,
+          status: 'completed' as const,
+          timestamp: Date.now() - (chatHistory.length - idx) * 1000,
+          roomId,
+        }));
+        // Replace local messages in one shot for clean hydration
+        replaceMessages(hydrated);
+      } catch (e) {
+        // Ignore history load failures for now
+      }
+    };
+    loadHistory();
+  }, [roomId, replaceMessages]);
 
   // Command handlers using Command Pattern
   const handleSendMessage = useCallback(async () => {
