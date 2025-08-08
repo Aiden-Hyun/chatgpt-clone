@@ -54,6 +54,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
         ...prev,
         { id: animationId, content: message.content, status: 'pending' },
       ]);
+      try { console.log('[ANIM] enqueue', { len: message.content.length, trigger: !!animationTrigger, shouldAnimate }); } catch {}
     }
   }, [shouldAnimate, message.content, animationTrigger]);
 
@@ -99,6 +100,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
       }
     };
 
+    try { console.log('[ANIM] start'); } catch {}
     typeNext();
   };
 
@@ -110,6 +112,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
       cursorIntervalRef.current = null;
     }
     setShowCursor(false);
+    try { console.log('[ANIM] end'); } catch {}
     const timeout = animationTimeoutsRef.current.get(animationId);
     if (timeout) clearTimeout(timeout);
     animationTimeoutsRef.current.delete(animationId);

@@ -40,6 +40,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   const [recentlyRegenerated, setRecentlyRegenerated] = useState<Set<number>>(new Set());
   const completedToClearRef = useRef<Set<number>>(new Set());
   const prevContentsRef = useRef<string[]>([]);
+  const prevProcessingRef = useRef<Set<number>>(new Set());
   // Emit per-message animation triggers when regeneration completes
   const [animationTriggers, setAnimationTriggers] = useState<Map<number, string>>(new Map());
 
@@ -86,10 +87,39 @@ export const MessageList: React.FC<MessageListProps> = ({
     },
   });
 
-  // Detect regeneration completion and schedule clearing of the one-shot flag
+  // Capture the initial hydrated message count to suppress animation for preloaded history
+  const initialHydratedLengthRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (initialHydratedLengthRef.current === null && messages.length > 0) {
+      initialHydratedLengthRef.current = messages.length;
+      try { console.log('[ANIM] initCount', initialHydratedLengthRef.current); } catch {}
+    }
+  }, [messages.length]);
+
+  // Detect regeneration completion and processing→completed transition (for live replies)
   useEffect(() => {
     const prevContents = prevContentsRef.current;
     const nextContents = messages.map(m => m.content);
+
+    // Detect assistant reply completion (processing→completed)
+    const finishedProcessing: number[] = [];
+    prevProcessingRef.current.forEach((idx) => {
+      if (!regeneratingIndices.has(idx)) {
+        finishedProcessing.push(idx);
+      }
+    });
+    finishedProcessing.forEach(index => {
+      const becameNonEmpty = (prevContents[index] ?? '') === '' && (nextContents[index] ?? '').length > 0;
+      if (becameNonEmpty) {
+        setAnimationTriggers(prev => {
+          const copy = new Map(prev);
+          const token = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+          copy.set(index, token);
+          return copy;
+        });
+        try { console.log('[ANIM] reply-complete', index); } catch {}
+      }
+    });
 
     recentlyRegenerated.forEach(index => {
       const isRegen = regeneratingIndices.has(index);
@@ -104,6 +134,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           // animation trigger
           return copy;
         });
+        try { console.log('[ANIM] regen-complete', index); } catch {}
         // Keep the flag for one more render, then clear in next cycle
         completedToClearRef.current.add(index);
       }
@@ -121,6 +152,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
 
     prevContentsRef.current = nextContents;
+    prevProcessingRef.current = new Set(regeneratingIndices);
   }, [messages, regeneratingIndices, recentlyRegenerated]);
 
   // Select random welcome message when component mounts or welcome text should be shown
@@ -179,7 +211,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
   }, [messages.length, showWelcomeText, isNewMessageLoading, cursorOpacity]);
 
-  // Show welcome text if no messages and welcome text should be shown
+  // Show welcome text only when truly idle (not during hydration/loading)
   if (messages.length === 0 && showWelcomeText && !isNewMessageLoading) {
     return (
       <View style={styles.welcomeContainer}>
@@ -211,8 +243,15 @@ export const MessageList: React.FC<MessageListProps> = ({
       (index < messagesWithLoading.length - 1 && messagesWithLoading[index + 1].role !== item.role);
 
     // Determine if this message should animate
-    // Animate if it's a new assistant message (last message), being regenerated, or just completed regeneration
-    const shouldAnimate = (item.role === 'assistant' && index === messagesWithLoading.length - 1 ) || isRegenerating || wasRecentlyRegenerated;
+    // Suppress animation for any message that was part of the initial hydration.
+    const initialCount = initialHydratedLengthRef.current ?? messages.length;
+    const isHydrationMessage = initialHydratedLengthRef.current !== null && index < initialCount;
+    const isNewAssistantAtEnd = item.role === 'assistant' && index === messagesWithLoading.length - 1 && messagesWithLoading.length > initialCount;
+    const shouldAnimate = (!isHydrationMessage && isNewAssistantAtEnd) || isRegenerating || wasRecentlyRegenerated;
+
+    if (index === messagesWithLoading.length - 1 && item.role === 'assistant') {
+      try { console.log('[ANIM] decide', { init: initialCount, len: messagesWithLoading.length, hyd: isHydrationMessage, regen: isRegenerating || wasRecentlyRegenerated, animate: shouldAnimate }); } catch {}
+    }
 
     const handleRegenerate = () => {
       // Mark this index to animate when regeneration completes

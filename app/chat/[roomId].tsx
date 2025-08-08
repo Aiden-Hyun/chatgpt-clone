@@ -19,6 +19,7 @@ export default function ChatScreen() {
   // Handle temporary room IDs - if roomId starts with 'temp_', treat it as a new room
   const isTemporaryRoom = roomId?.startsWith('temp_');
   const numericRoomId = isTemporaryRoom ? null : (roomId ? parseInt(roomId, 10) : null);
+  try { console.log('[NAV] route', { roomId, isTemporaryRoom, numericRoomId }); } catch {}
   
   const { inputRef, maintainFocus } = useInputFocus();
   const { disableBackButton } = useBackButtonHandler({ enabled: true });
@@ -38,6 +39,7 @@ export default function ChatScreen() {
   };
 
   const handleChatSelect = (selectedRoomId: string) => {
+    try { console.log('[NAV] select', selectedRoomId); } catch {}
     router.push({ pathname: '/chat/[roomId]', params: { roomId: selectedRoomId } });
   };
 

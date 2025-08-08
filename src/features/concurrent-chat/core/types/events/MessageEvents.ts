@@ -75,6 +75,15 @@ export interface MessagesClearedEvent extends BaseMessageEvent {
 }
 
 /**
+ * Event fired when a new room is created and first turn is persisted
+ */
+export interface RoomCreatedEvent extends BaseMessageEvent {
+  type: 'ROOM_CREATED';
+  roomId: number;
+  name?: string;
+}
+
+/**
  * Event fired when the model is changed
  */
 export interface ModelChangedEvent extends BaseMessageEvent {
@@ -191,6 +200,7 @@ export type MessageEvent =
   | MessageCancelledEvent
   | MessageRetriedEvent
   | MessagesClearedEvent
+  | RoomCreatedEvent
   | ModelChangedEvent
   | StreamingStartedEvent
   | StreamingChunkEvent
@@ -216,6 +226,7 @@ export const MESSAGE_EVENT_TYPES = {
   MESSAGE_CANCELLED: 'MESSAGE_CANCELLED',
   MESSAGE_RETRIED: 'MESSAGE_RETRIED',
   MESSAGES_CLEARED: 'MESSAGES_CLEARED',
+  ROOM_CREATED: 'ROOM_CREATED',
   MODEL_CHANGED: 'MODEL_CHANGED',
   STREAMING_STARTED: 'STREAMING_STARTED',
   STREAMING_CHUNK: 'STREAMING_CHUNK',

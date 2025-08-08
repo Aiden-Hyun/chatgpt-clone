@@ -50,6 +50,11 @@ export const createChatSidebarStyles = (theme: any) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border.light,
   },
+  chatItemMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   selectedChatItem: {
     backgroundColor: theme.colors.background.secondary,
   },
@@ -76,6 +81,11 @@ export const createChatSidebarStyles = (theme: any) => StyleSheet.create({
     fontSize: 11,
     color: theme.colors.text.tertiary,
     fontFamily: theme.fontFamily.primary,
+  },
+  chatItemDelete: {
+    marginLeft: 8,
+    padding: 6,
+    borderRadius: 6,
   },
   userProfile: {
     flexDirection: 'row',

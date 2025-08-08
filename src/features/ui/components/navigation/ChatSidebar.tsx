@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../../shared/hooks';
+import { useToast } from '../../../alert';
 import { useUserInfo } from '../../../auth';
 import { useChatRooms } from '../../../chat/hooks';
 import { createChatSidebarStyles } from './ChatSidebar.styles';
@@ -28,8 +29,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 }) => {
   const theme = useAppTheme();
   const { t } = useLanguageContext();
+  const { showSuccess } = useToast();
   const { userName } = useUserInfo();
-  const { rooms } = useChatRooms();
+  const { rooms, deleteRoom, fetchRooms } = useChatRooms();
   const styles = createChatSidebarStyles(theme);
 
   // Animation values
@@ -69,18 +71,46 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   }, [isVisible, slideAnim, fadeAnim]);
 
   const handleChatSelect = (roomId: string) => {
+    console.log('[SIDEBAR] select chat', { roomId });
     onChatSelect(roomId);
     onClose();
   };
 
   const handleNewChat = () => {
+    console.log('[SIDEBAR] new chat');
     onNewChat();
     onClose();
   };
 
   const handleSettings = () => {
+    console.log('[SIDEBAR] open settings');
     onClose();
     onSettings();
+  };
+
+  const handleDelete = async (roomId: number) => {
+    console.log('[SIDEBAR] delete icon pressed', { roomId, selectedChatId });
+    try {
+      await deleteRoom(roomId);
+      console.log('[SIDEBAR] delete success', { roomId });
+      // Localized toast
+      showSuccess(t('chat.room_deleted'), 2500);
+      try {
+        const maybePromise = fetchRooms?.();
+        if (maybePromise && typeof (maybePromise as any).then === 'function') {
+          (maybePromise as Promise<any>).then(() => console.log('[SIDEBAR] rooms refreshed after delete'));
+        }
+      } catch (e) {
+        console.log('[SIDEBAR] fetchRooms error', e);
+      }
+      if (selectedChatId && selectedChatId === String(roomId)) {
+        console.log('[SIDEBAR] deleted current room → redirecting to new chat');
+        onNewChat();
+        onClose();
+      }
+    } catch (e) {
+      console.log('[SIDEBAR] delete failed', e);
+    }
   };
 
   return (
@@ -106,34 +136,45 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
           {/* Chat History */}
           <ScrollView style={styles.chatHistory} showsVerticalScrollIndicator={false}>
             {rooms.map((room) => (
-              <TouchableOpacity
+              <View
                 key={room.id}
                 style={[
                   styles.chatItem,
                   selectedChatId === room.id.toString() && styles.selectedChatItem
                 ]}
-                onPress={() => handleChatSelect(room.id.toString())}
               >
-                <MaterialIcons 
-                  name="chat" 
-                  size={16} 
-                  color={selectedChatId === room.id.toString() ? theme.colors.primary : theme.colors.text.secondary} 
-                />
-                <View style={styles.chatItemContent}>
-                  <Text style={[
-                    styles.chatItemTitle,
-                    selectedChatId === room.id.toString() && styles.selectedChatItemTitle
-                  ]}>
-                    {room.name}
+                <TouchableOpacity
+                  style={styles.chatItemMain}
+                  onPress={() => handleChatSelect(room.id.toString())}
+                >
+                  <MaterialIcons 
+                    name="chat" 
+                    size={16} 
+                    color={selectedChatId === room.id.toString() ? theme.colors.primary : theme.colors.text.secondary} 
+                  />
+                  <View style={styles.chatItemContent}>
+                    <Text style={[
+                      styles.chatItemTitle,
+                      selectedChatId === room.id.toString() && styles.selectedChatItemTitle
+                    ]}>
+                      {room.name}
+                    </Text>
+                    <Text style={styles.chatItemSubtitle}>
+                      {room.last_message || t('sidebar.no_messages')}
+                    </Text>
+                  </View>
+                  <Text style={styles.chatItemTime}>
+                    {room.updated_at ? new Date(room.updated_at).toLocaleDateString() : ''}
                   </Text>
-                  <Text style={styles.chatItemSubtitle}>
-                    {room.last_message || t('sidebar.no_messages')}
-                  </Text>
-                </View>
-                <Text style={styles.chatItemTime}>
-                  {room.updated_at ? new Date(room.updated_at).toLocaleDateString() : ''}
-                </Text>
-              </TouchableOpacity>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.chatItemDelete}
+                  onPress={() => handleDelete(room.id)}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <MaterialIcons name="delete" size={18} color={theme.colors.status.error.primary} />
+                </TouchableOpacity>
+              </View>
             ))}
           </ScrollView>
 

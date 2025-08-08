@@ -6,6 +6,9 @@ import { IAIService } from '../types/interfaces/IAIService';
 import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../types/interfaces/IModelSelector';
 
+// Simple in-memory cache to avoid empty flashes between room switches
+const roomMessageCache: Map<number, ConcurrentMessage[]> = new Map();
+
 /**
  * Main hook for concurrent chat functionality
  * Manages state, message processing, and plugin coordination
@@ -46,6 +49,13 @@ export function useConcurrentChat(
           const model = await modelSelectorRef.current.getModelForRoom(roomId);
           setCurrentModel(model);
         }
+        // Hydrate from cache immediately to avoid empty UI on navigation
+        if (roomId && roomMessageCache.has(roomId)) {
+          const cached = roomMessageCache.get(roomId)!;
+          setMessages(cached);
+          try { console.log('[CACHE] hydrate', { roomId, count: cached.length }); } catch {}
+        }
+        try { console.log('[STATE] init', { roomId, model: roomId ? 'room' : 'global' }); } catch {}
       } catch (err) {
         setError(`Failed to initialize services: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
@@ -58,6 +68,14 @@ export function useConcurrentChat(
       cleanupEventSubscriptions();
     };
   }, [roomId, serviceContainer, eventBus]);
+
+  // Keep cache updated per room
+  useEffect(() => {
+    if (roomId) {
+      roomMessageCache.set(roomId, messages);
+      try { console.log('[CACHE] update', { roomId, count: messages.length }); } catch {}
+    }
+  }, [messages, roomId]);
 
   // Set up event subscriptions
   const setupEventSubscriptions = useCallback(() => {
@@ -81,10 +99,11 @@ export function useConcurrentChat(
               status: 'processing' 
             };
             
+            try { console.log('[EVT] SENT:update-existing', { id: event.message.id }); } catch {}
             return updatedMessages;
           } else {
             // Add new message (for assistant messages)
-            
+            try { console.log('[EVT] SENT:add', { id: event.message.id }); } catch {}
             return [...prev, event.message];
           }
         });
@@ -106,10 +125,11 @@ export function useConcurrentChat(
             const updatedMessages = [...prev];
             updatedMessages[existingMessageIndex] = { ...event.message };
             
+            try { console.log('[EVT] DONE:update-existing', { id: event.message.id }); } catch {}
             return updatedMessages;
           } else {
             // Add new message (for assistant messages)
-            
+            try { console.log('[EVT] DONE:add', { id: event.message.id }); } catch {}
             return [...prev, event.message];
           }
         });

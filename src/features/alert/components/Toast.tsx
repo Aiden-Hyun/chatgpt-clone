@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  TouchableOpacity,
+    Animated,
+    StyleSheet,
+    Text,
+    TouchableOpacity
 } from 'react-native';
 import { useAppTheme } from '../../../shared/hooks';
 
@@ -95,6 +93,7 @@ export const Toast: React.FC<ToastProps> = ({
 
   return (
     <Animated.View
+      pointerEvents="box-none"
       style={[
         styles.container,
         {
@@ -107,6 +106,8 @@ export const Toast: React.FC<ToastProps> = ({
         style={styles.toast}
         onPress={onPress}
         activeOpacity={0.8}
+        // Important: keep the touchable itself clickable, but don't block outside
+        // This works cross-platform without modal
       >
         <Text style={styles.icon}>{getIcon()}</Text>
         <Text style={styles.message}>{message}</Text>
@@ -121,10 +122,10 @@ export const Toast: React.FC<ToastProps> = ({
 const createStyles = (theme: any, type: string) => StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 120,
+    bottom: 24,
     left: 20,
     right: 20,
-    zIndex: 1000,
+    zIndex: 9999,
   },
   toast: {
     backgroundColor: type === 'success' 

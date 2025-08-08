@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { createChatStyles } from '../../../../app/chat/chat.styles';
 import { useInputFocus } from '../../../shared/hooks';
@@ -21,6 +21,8 @@ import { ConcurrentMessageProcessor } from '../core/services/ConcurrentMessagePr
 import { ModelSelectionService } from '../core/services/ModelSelectionService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 
+import { PersistenceService } from '../core/services/PersistenceService';
+import { MESSAGE_EVENT_TYPES } from '../core/types/events/MessageEvents';
 import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
 import { RegenerationService } from '../features/regeneration/RegenerationService';
@@ -58,6 +60,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   className,
   showHeader = true,
 }) => {
+  try { console.log('[CHAT] mount', { roomId }); } catch {}
   // Dependency injection container and event bus - initialize services immediately
   const [eventBus] = useState(() => new EventBus());
   const [serviceContainer] = useState(() => {
@@ -81,7 +84,11 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [hasUserTyped, setHasUserTyped] = useState(false);
+  const [isHydrating, setIsHydrating] = useState(false);
   const { inputRef, maintainFocus } = useInputFocus();
+  const firstUserMessageRef = useRef<string | null>(null);
+  const activeRoomIdRef = useRef<number | null>(roomId ?? null);
+  const [activeRoomId, setActiveRoomId] = useState<number | null>(roomId ?? null);
   
   // Get proven styles
   const styles = createChatStyles();
@@ -122,9 +129,13 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         // Register feature services
         const regenerationService = new RegenerationService(eventBus, serviceContainer);
         const editingService = new EditingService(eventBus, serviceContainer);
+        const persistenceService = new PersistenceService();
 
         serviceContainer.register('regenerationService', regenerationService);
         serviceContainer.register('editingService', editingService);
+        serviceContainer.register('persistenceService', persistenceService);
+        // Expose activeRoomId into container for processor to read (first-turn persistence)
+        serviceContainer.register('activeRoomId', activeRoomIdRef);
         // streaming removed
         
       } catch (error) {
@@ -137,11 +148,15 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
   // Load chat history when roomId changes
   useEffect(() => {
+    try { console.log('[CHAT] useEffect:roomId', roomId); } catch {}
     const loadHistory = async () => {
       if (!roomId) return;
+      try { console.log('[HISTORY] load-start', { roomId }); } catch {}
+      setIsHydrating(true);
       try {
         const messageService = ServiceFactory.createMessageService();
         const chatHistory = await messageService.loadMessages(roomId);
+        try { console.log('[HISTORY] loaded', { count: chatHistory?.length ?? 0 }); } catch {}
         // Map ChatMessage[] to ConcurrentMessage[] and hydrate
         const hydrated = (chatHistory as ChatMessage[]).map((m, idx) => ({
           id: `hist_${roomId}_${idx}`,
@@ -153,12 +168,34 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         }));
         // Replace local messages in one shot for clean hydration
         replaceMessages(hydrated);
+        try { console.log('[HISTORY] hydrated'); } catch {}
       } catch (e) {
-        // Ignore history load failures for now
+        try { console.log('[HISTORY] load-error', e); } catch {}
+      } finally {
+        setIsHydrating(false);
+        try { console.log('[HISTORY] hydrating:false'); } catch {}
       }
     };
     loadHistory();
   }, [roomId, replaceMessages]);
+
+  useEffect(() => {
+    const welcome = !hasUserTyped && !isHydrating && messages.length === 0;
+    try { console.log('[WELCOME] gate', { welcome, hasUserTyped, isHydrating, len: messages.length }); } catch {}
+  }, [hasUserTyped, isHydrating, messages.length]);
+
+  // Option A: Activate new room on ROOM_CREATED
+  useEffect(() => {
+    const subId = eventBus.subscribe(MESSAGE_EVENT_TYPES.ROOM_CREATED, (evt: any) => {
+      const newId = evt?.roomId as number | undefined;
+      if (!newId) return;
+      activeRoomIdRef.current = newId;
+      setActiveRoomId(newId);
+      replaceMessages(messages.map(m => ({ ...m, roomId: newId })));
+      try { console.log('[ROOM] activated', newId); } catch {}
+    });
+    return () => eventBus.unsubscribeById(subId);
+  }, [eventBus, messages, replaceMessages]);
 
   // Command handlers using Command Pattern
   const handleSendMessage = useCallback(async () => {
@@ -170,15 +207,36 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     try {
       setIsSending(true);
       if (!hasUserTyped) setHasUserTyped(true);
+      // Cache first user message for persistence if this is a new chat without roomId
+      if (!roomId) {
+        firstUserMessageRef.current = inputValue.trim();
+      }
 
-      // Get message processor from service container
+      // Get services
       const messageProcessor = serviceContainer.get<IMessageProcessor>('messageProcessor');
+      const persistence = serviceContainer.get('persistenceService') as PersistenceService;
+      const session = serviceContainer.get('session') as any;
       
-      // Create and execute SendMessageCommand (processor, content, roomId, context)
+      // Option D: Pre-create room if none active
+      let targetRoomId = activeRoomIdRef.current || roomId || null;
+      if (!targetRoomId) {
+        try {
+          const firstUserText = inputValue.trim();
+          const createdId = await persistence.createRoom({ session, model: currentModel, initialName: firstUserText });
+          activeRoomIdRef.current = createdId;
+          setActiveRoomId(createdId);
+          targetRoomId = createdId;
+          try { console.log('[ROOM] pre-created', createdId); } catch {}
+        } catch (e) {
+          try { console.log('[ROOM] pre-create failed, sending temp'); } catch {}
+        }
+      }
+
+      // Create and execute SendMessageCommand (processor, content, targetRoomId, context)
       const sendCommand = new SendMessageCommand(
         messageProcessor,
         inputValue.trim(),
-        roomId || null,
+        targetRoomId,
         messages
       );
       
@@ -197,7 +255,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
     } finally {
       setIsSending(false);
     }
-  }, [inputValue, isSending, hasUserTyped, executeCommand, serviceContainer, maintainFocus, roomId]);
+  }, [inputValue, isSending, hasUserTyped, executeCommand, serviceContainer, maintainFocus, roomId, currentModel, messages]);
 
   const handleModelChange = useCallback(async (newModel: string) => {
     try {
@@ -368,7 +426,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         isNewMessageLoading={isNewMessageLoading}
         regeneratingIndices={regeneratingIndices}
         onRegenerate={handleRegenerate}
-        showWelcomeText={!hasUserTyped}
+        showWelcomeText={!hasUserTyped && !isHydrating && messages.length === 0}
       />
 
       {/* Input using proven ChatInput component */}

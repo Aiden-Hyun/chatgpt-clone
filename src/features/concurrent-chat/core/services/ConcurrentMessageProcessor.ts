@@ -1,3 +1,4 @@
+import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../../shared/lib/globalEvents';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';
 import { MESSAGE_EVENT_TYPES } from '../types/events/MessageEvents';
@@ -66,7 +67,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           if (!modelToUse) {
             modelToUse = message.roomId ? await selector.getModelForRoom(message.roomId) : selector.getCurrentModel();
           }
-          console.log('[MODEL] Processor → resolved model', { modelToUse, roomId: message.roomId });
+          try { console.log('[MODEL] Processor→resolved', { modelToUse, roomId: message.roomId }); } catch {}
         } catch {}
 
         // Build conversation history from metadata.context or fallback to minimal
@@ -79,7 +80,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
         }
         // Always include the current user turn last
         history.push({ role: message.role, content: message.content });
-        console.log('[AI] Processor → request context size', history.length);
+        try { console.log('[AI] ctx', history.length); } catch {}
 
         // Create AI request
         const request = {
@@ -102,7 +103,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           model: modelToUse,
         };
 
-        // Publish assistant message started event (for animation)
+        // Publish assistant message started event (for loading/processing)
         this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_SENT, {
           type: MESSAGE_EVENT_TYPES.MESSAGE_SENT,
           timestamp: Date.now(),
@@ -123,13 +124,49 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           status: 'completed',
         };
 
-        // Publish assistant message completed event
+        // Publish assistant message completed event (UI will detect processing→completed)
         this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED, {
           type: MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED,
           timestamp: Date.now(),
           messageId: completedAssistantMessage.id,
           message: completedAssistantMessage,
         });
+        try { console.log('[ANIM] complete-publish'); } catch {}
+
+        // Persist turn(s)
+        if (!message.roomId) {
+          // First turn for a new chat
+          try {
+            const persistence = this.serviceContainer.get<any>('persistenceService');
+            // If pre-created by UI, prefer that id
+            const preId = (this.serviceContainer as any).get?.('activeRoomId');
+            const roomId = await persistence.persistFirstTurn({
+              session,
+              model: request.model,
+              numericRoomId: preId ?? null,
+              userContent: message.content,
+              assistantContent: assistantContent,
+            });
+            this.eventBus.publish(MESSAGE_EVENT_TYPES.ROOM_CREATED, {
+              type: MESSAGE_EVENT_TYPES.ROOM_CREATED,
+              timestamp: Date.now(),
+              roomId,
+            } as any);
+            // Also emit app-wide event so sidebar can react without Realtime
+            GlobalEvents.emit(GLOBAL_EVENT_TYPES.ROOMS_CREATED, { roomId });
+          } catch {}
+        } else {
+          // Existing room: append both user and assistant messages
+          try {
+            const persistence = this.serviceContainer.get<any>('persistenceService');
+            await persistence.persistTurn({
+              session,
+              roomId: message.roomId,
+              userContent: message.content,
+              assistantContent: assistantContent,
+            });
+          } catch {}
+        }
 
         return completedAssistantMessage;
       }
