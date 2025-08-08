@@ -164,6 +164,10 @@ export const MessageList: React.FC<MessageListProps> = ({
       index === messagesWithLoading.length - 1 ||
       (index < messagesWithLoading.length - 1 && messagesWithLoading[index + 1].role !== item.role);
 
+    // Determine if this message should animate
+    // Animate if it's a new assistant message (last message) with content, or being regenerated
+    const shouldAnimate = (item.role === 'assistant' && index === messagesWithLoading.length - 1 ) || isRegenerating;
+
     return (
       <MessageItem
         message={item}
@@ -177,6 +181,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         }
         showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
+        shouldAnimate={shouldAnimate}
       />
     );
   };

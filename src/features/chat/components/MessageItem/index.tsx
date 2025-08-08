@@ -12,6 +12,7 @@ interface MessageItemProps {
   onRegenerate?: () => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
+  shouldAnimate?: boolean; // Whether this message should have typewriter animation
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({
@@ -22,6 +23,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onRegenerate,
   showAvatar = true,
   isLastInGroup = true,
+  shouldAnimate = false,
   }) => {
     // Show loading message for new messages at the bottom
     if (isNewMessageLoading && message.role === 'assistant' && !message.content) {
@@ -51,6 +53,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         onRegenerate={onRegenerate}
         showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
+        shouldAnimate={shouldAnimate}
       />
     );
   }

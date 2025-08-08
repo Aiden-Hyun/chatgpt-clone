@@ -241,20 +241,23 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   // isNewMessageLoading: false because we handle processing messages in our own state
   const isNewMessageLoading = false;
   
-  // regeneratingIndices: set of indices for messages being regenerated
+  // regeneratingIndices: set of indices for messages being regenerated OR processing
   const regeneratingIndices = new Set<number>();
   messages.forEach((msg, index) => {
-    if (msg.role === 'assistant' && msg.status === 'processing') {
+    if (msg.role === 'assistant' && (msg.status === 'processing' || msg.status === 'pending')) {
       regeneratingIndices.add(index);
+      // console.log(`🎬 [Animation] Added index ${index} to regeneratingIndices for message:`, { id: msg.id, role: msg.role, status: msg.status });
     }
   });
   
-  console.log('🎬 [Animation] States:', {
-    isNewMessageLoading,
-    regeneratingIndices: Array.from(regeneratingIndices),
-    messagesCount: messages.length,
-    processingMessages: messages.filter(m => m.status === 'processing').map(m => ({ id: m.id, role: m.role }))
-  });
+  // Animation states for debugging (commented out to reduce log noise)
+  // console.log('🎬 [Animation] States:', {
+  //   isNewMessageLoading,
+  //   regeneratingIndices: Array.from(regeneratingIndices),
+  //   messagesCount: messages.length,
+  //   processingMessages: messages.filter(m => m.status === 'processing').map(m => ({ id: m.id, role: m.role, content: m.content })),
+  //   allMessages: messages.map(m => ({ id: m.id, role: m.role, status: m.status, content: m.content?.substring(0, 20) }))
+  // });
 
   return (
     <KeyboardAvoidingView

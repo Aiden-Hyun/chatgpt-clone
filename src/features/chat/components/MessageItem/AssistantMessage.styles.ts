@@ -23,5 +23,11 @@ export const createAssistantMessageStyles = () => {
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.xl,
     },
+    cursor: {
+      fontSize: theme.fontSizes.lg,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.normal as '400',
+    },
   });
 }; 

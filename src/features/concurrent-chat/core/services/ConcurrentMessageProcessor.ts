@@ -69,18 +69,12 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
 
         console.log('🚀 [MessageProcessor] Calling AI service with:', request);
 
-        // Call AI service
-        const aiResponse = await aiService.sendMessage(request, session);
-        console.log('✅ [MessageProcessor] AI response received:', aiResponse);
-        
-        const assistantContent = aiResponse.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
-
-        // Create assistant message (start with processing status for animation)
+        // Create assistant message with processing status (for animation)
         const assistantMessage: ConcurrentMessage = {
           id: `assistant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          content: '', // Start empty for animation
+          content: '', // Empty content for loading animation
           role: 'assistant',
-          status: 'processing', // Start as processing for animation
+          status: 'processing', // Processing status for animation
           timestamp: Date.now(),
           roomId: message.roomId,
           model: message.model,
@@ -94,8 +88,11 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           message: assistantMessage,
         });
 
-        // Simulate typing delay for animation
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Call AI service (this will take time, showing animation)
+        const aiResponse = await aiService.sendMessage(request, session);
+        console.log('✅ [MessageProcessor] AI response received:', aiResponse);
+        
+        const assistantContent = aiResponse.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
 
         // Update assistant message with content and completed status
         const completedAssistantMessage: ConcurrentMessage = {
