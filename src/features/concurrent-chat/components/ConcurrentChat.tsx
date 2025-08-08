@@ -85,7 +85,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const styles = createChatStyles();
 
   // Core hooks with all advanced functionality (corrected parameter order)
-  const { messages, updateMessage } = useConcurrentChat(eventBus, serviceContainer, roomId);
+  const { messages, updateMessage, error } = useConcurrentChat(eventBus, serviceContainer, roomId);
 
   const {
     executeCommand,
