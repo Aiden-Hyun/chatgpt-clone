@@ -23,7 +23,6 @@ import { IModelSelector } from '../core/types/interfaces/IModelSelector';
 import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
 import { RegenerationService } from '../features/regeneration/RegenerationService';
-import { StreamingService } from '../features/streaming/StreamingService';
 
 interface ConcurrentChatProps {
   roomId?: number;
@@ -115,11 +114,10 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         // Register feature services
         const regenerationService = new RegenerationService(eventBus, serviceContainer);
         const editingService = new EditingService(eventBus, serviceContainer);
-        const streamingService = new StreamingService(eventBus, serviceContainer);
 
         serviceContainer.register('regenerationService', regenerationService);
         serviceContainer.register('editingService', editingService);
-        serviceContainer.register('streamingService', streamingService);
+        // streaming removed
         
       } catch (error) {
         // no-op
