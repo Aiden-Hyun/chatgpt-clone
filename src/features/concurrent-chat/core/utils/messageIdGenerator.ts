@@ -1,3 +1,8 @@
+/*
+Phase 1 Analysis — File Notes (messageIdGenerator)
+- Uses Date.now + Math.random; non-monotonic under clock skew and low entropy for high concurrency.
+- Consider switching to ULID for sortable, low-collision ids. Keep API shape stable for now.
+*/
 /**
  * Utility functions for generating unique IDs for different purposes in the concurrent chat system.
  * Each function generates IDs with a specific prefix and timestamp for easy identification and debugging.

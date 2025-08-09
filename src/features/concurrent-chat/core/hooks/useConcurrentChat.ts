@@ -1,3 +1,15 @@
+/*
+Phase 1 Analysis — File Notes (useConcurrentChat)
+- Hook keeps local `messages` array state and mutates it on events and actions → multiple sources of truth vs commands/services;
+  leads to race conditions when concurrent sends/updates arrive out of order.
+- Event handlers mutate arrays (setMessages(prev => ...)) without a central store; late events after cancel can still update UI.
+- `sendMessage` creates a new message and directly calls processor.process → bypasses command/queue; no AbortController.
+- `cancelMessage` only updates UI and publishes event; does not stop network.
+- `retryMessage` clones message with new id but no guard for original inflight run; can interleave outputs.
+- `replaceMessages` used for hydration; lacks reconciliation across active in-flight messages.
+- `currentModel` updates via event; model reads not atomic with send execution.
+→ Replace with MessageStore.observe() and per-message FSM transitions.
+*/
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';

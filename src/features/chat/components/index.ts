@@ -10,6 +10,4 @@ export { MessageItem } from './MessageItem';
 export { UserMessage } from './MessageItem/UserMessage';
 export { AssistantMessage } from './MessageItem/AssistantMessage';
 
-// Legacy components (to be removed later)
-export { default as ChatMessageBubble } from './ChatMessageBubble';
-export { default as ChatMessageList } from './ChatMessageList';
+// Legacy components removed (unused)

@@ -1,3 +1,10 @@
+/*
+Phase 1 Analysis — File Notes (PersistenceService)
+- Writes occur per-turn and sometimes in first-turn path inside processor; not batched nor tied to terminal message states.
+- No transaction/atomic upsert; potential for partial persistence when assistant generation fails mid-way.
+- Emits global events inside service; side-effect coupling.
+- Future: batch writes on terminal states only, decouple from UI, and avoid per-chunk writes.
+*/
 import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../../shared/lib/globalEvents';
 import { supabase } from '../../../../shared/lib/supabase';
 

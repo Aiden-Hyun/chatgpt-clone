@@ -1,3 +1,11 @@
+/*
+Phase 1 Analysis — File Notes (ConcurrentChat component)
+- Creates its own EventBus and ServiceContainer per mount; ok, but not shared across app → isolation good, yet leads to duplicated state.
+- Hydrates messages from legacy chat `ServiceFactory` adapter, then hook manages its own array → no central store.
+- Commands exist but send path sometimes bypasses command via hook `sendMessage`.
+- Persistence happens inside processor, tightly coupled to UI lifecycle; no batching or terminal-state-only writes.
+- No streaming cancellation wiring; cancel from UI does not abort network.
+*/
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import { createChatStyles } from '../../../../app/chat/chat.styles';
@@ -91,7 +99,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const { inputRef, maintainFocus } = useInputFocus();
   const firstUserMessageRef = useRef<string | null>(null);
   const activeRoomIdRef = useRef<number | null>(roomId ?? null);
-  const [activeRoomId, setActiveRoomId] = useState<number | null>(roomId ?? null);
+  const [/* activeRoomId (unused) */ , setActiveRoomId] = useState<number | null>(roomId ?? null); // kept for local display/bridge only
   
   // Get proven styles
   const styles = createChatStyles();
@@ -141,7 +149,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         serviceContainer.register('activeRoomId', activeRoomIdRef);
         // streaming removed
         
-      } catch (error) {
+      } catch {
         // no-op
       }
     };
@@ -240,7 +248,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
           setActiveRoomId(createdId);
           targetRoomId = createdId;
           try { console.log('[ROOM] pre-created', createdId); } catch {}
-        } catch (e) {
+        } catch {
           try { console.log('[ROOM] pre-create failed, sending temp'); } catch {}
         }
       }

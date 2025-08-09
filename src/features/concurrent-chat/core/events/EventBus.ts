@@ -1,3 +1,10 @@
+/*
+Phase 1 Analysis — File Notes (EventBus)
+- API is stringly-typed with wildcard patterns; consumers pass constants but compiler cannot enforce event payload shape.
+- History/replay exists, but no per-topic payload typing, and no backpressure or bounded replay per topic.
+- No lifecycle linkage to message FSM; subscribers directly mutate UI state arrays.
+- Will be hardened to accept discriminated union MessageEvent and forbid arbitrary names.
+*/
 /**
  * Event Bus for the concurrent chat system.
  * Follows SOLID principles with single responsibility for event management.
@@ -95,7 +102,7 @@ export class EventBus {
    * @param subscriptionId - The subscription ID to unsubscribe
    */
   unsubscribeById(subscriptionId: string): void {
-    for (const [eventType, eventSubscribers] of this.subscribers.entries()) {
+    for (const [, eventSubscribers] of this.subscribers.entries()) {
       const index = eventSubscribers.findIndex(sub => sub.id === subscriptionId);
       if (index !== -1) {
         eventSubscribers.splice(index, 1);

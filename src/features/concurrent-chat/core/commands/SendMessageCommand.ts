@@ -1,3 +1,10 @@
+/*
+Phase 1 Analysis — File Notes (SendMessageCommand)
+- Generates request id via generateRequestId; ok for command id, but message id created here becomes lifecycle anchor without FSM ownership.
+- execute constructs user message and calls processor.process(message) directly; no queue/backpressure or AbortController; multiple rapid executes can interleave.
+- No streaming or chunk routing; relies on processor to finalize, losing fine-grained state transitions.
+- Undo maps to processor 'undo' with same content — not clearly idempotent or meaningful for networked send.
+*/
 import { ICommand } from '../types/interfaces/ICommand';
 import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { generateRequestId } from '../utils/messageIdGenerator';

@@ -11,5 +11,4 @@ export * from './components/navigation';
 // Icon components
 export { IconSymbol, HoverDetector } from './components/icons';
 
-// Development components
-export * from './components/dev'; 
+// Development components removed (unused)

@@ -1,3 +1,12 @@
+/*
+Phase 1 Analysis — File Notes (ConcurrentAIService)
+- No AbortController support for streaming; cannot cancel in-flight requests, risking orphaned readers and late chunks after UI cancel.
+- Streaming loop lacks external signal; should accept { signal } and early-exit on abort; currently only releaseLock in finally.
+- Service is stateless and not integrated with EventBus; higher layers must route CHUNK/END; fine for separation but hinders typed lifecycle.
+- sendMessageWithStreaming returns an object but does not emit progress; callers must aggregate; no idempotency guarantees.
+- Error handling swallows malformed stream lines but does not guard against partial JSON interleaving.
+- Model/provider guard is inline; should be validated earlier (ValidationService) to keep transport thin.
+*/
 import { IAIService } from '../types/interfaces/IAIService';
 
 /**
@@ -157,7 +166,7 @@ export class ConcurrentAIService implements IAIService {
                     onChunk(content);
                   }
                 }
-              } catch (parseError) {
+              } catch {
                 // Ignore parse errors for malformed JSON in stream
                 // ignore malformed stream lines
               }

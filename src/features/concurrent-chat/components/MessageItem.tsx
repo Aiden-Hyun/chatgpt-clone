@@ -1,3 +1,7 @@
+/*
+Phase 1 Analysis — File Notes (MessageItem)
+- Pure presentation; actions trigger callbacks. Should remain read-only; upstream should be the only mutation point via commands/store.
+*/
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { ConcurrentMessage } from '../core/types/interfaces/IMessageProcessor';

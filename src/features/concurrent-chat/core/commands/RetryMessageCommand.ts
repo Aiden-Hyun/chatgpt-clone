@@ -1,3 +1,9 @@
+/*
+Phase 1 Analysis — File Notes (RetryMessageCommand)
+- Retries call processor.process({ type: 'retry' }) with original messageId; lacks guard to ensure prior run reached terminal state; can race with in-flight stream.
+- No new AbortController or fresh runId; idempotency unclear; may cause duplicated completions.
+- undo() maps to cancel — semantically odd for a retry command; canceling a retry should abort the new run, not previous.
+*/
 import { ICommand } from '../types/interfaces/ICommand';
 import { IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { generateRequestId } from '../utils/messageIdGenerator';

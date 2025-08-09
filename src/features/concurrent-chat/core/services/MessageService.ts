@@ -1,3 +1,11 @@
+/*
+Phase 1 Analysis — File Notes (MessageService)
+- Maintains its own processingMessages Set and commandHistory — introduces second source of truth for message lifecycle separate from UI state/hook and EventBus history.
+- Publishes string events (e.g., 'message.sent') not aligned with typed MESSAGE_EVENT_TYPES — type safety gap.
+- process() calls use loosely-typed payloads ('type' discriminator) — no strict command/processor contract; encourages non-idempotent retries.
+- No cancellation plumbing or AbortController; cancel/retry calls are forwarded without affecting in-flight network.
+- Duplicates responsibilities with hooks/useConcurrentChat and commands; should be replaced by MessageStore + FSM orchestration.
+*/
 import { EventBus } from '../events/EventBus';
 import { IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 

@@ -1,3 +1,9 @@
+/*
+Phase 1 Analysis — File Notes (types/events/MessageEvents)
+- Strong union types are defined, but not enforced at EventBus publish/subscribe level.
+- Event names exist as const strings; mismatch with other areas using dot-notated strings (e.g., 'message.sent').
+- Some fields may be redundant or too strict for streaming (e.g., response on completed, while streaming path not modeled here yet with Abort semantics).
+*/
 import { ConcurrentMessage } from '../interfaces/IMessageProcessor';
 
 /**

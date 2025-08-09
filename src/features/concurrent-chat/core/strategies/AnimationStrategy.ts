@@ -1,3 +1,7 @@
+/*
+Phase 1 Analysis — File Notes (AnimationStrategy)
+- Web-centric HTMLElement API in RN context; currently unused in ConcurrentChat. Should not be wired to mutable message props; future: subscribe to store diffs if needed.
+*/
 import { IAnimationStrategy } from '../types/interfaces/IAnimationStrategy';
 
 /**

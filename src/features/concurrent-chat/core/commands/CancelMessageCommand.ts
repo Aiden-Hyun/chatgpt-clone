@@ -1,3 +1,8 @@
+/*
+Phase 1 Analysis — File Notes (CancelMessageCommand)
+- Sends processor 'cancel' by messageId only; no AbortController to actually abort network/stream.
+- Undo maps to 'resume' which is undefined behavior without resumable transport; risks inconsistent UI.
+*/
 import { ICommand } from '../types/interfaces/ICommand';
 import { IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { generateRequestId } from '../utils/messageIdGenerator';

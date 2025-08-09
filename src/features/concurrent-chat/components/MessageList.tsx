@@ -1,3 +1,8 @@
+/*
+Phase 1 Analysis — File Notes (MessageList)
+- Pure presentational list reading `messages` from props; fine, but assumes upstream array is canonical.
+- Will remain read-only; upstream should subscribe to MessageStore for deterministic ordering and state.
+*/
 import React from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import { ConcurrentMessage } from '../core/types/interfaces/IMessageProcessor';

@@ -1,3 +1,13 @@
+/*
+Phase 1 Analysis — File Notes (ConcurrentMessageProcessor)
+- Publishes UI events directly (MESSAGE_SENT/COMPLETED/FAILED) and mutates message status meanings implicitly; no per-message FSM guards → susceptible to late-chunk or duplicate-complete races.
+- Lacks streaming pathway; uses non-streaming send then emits completed in one shot; concurrent send/abort/retry semantics not enforced.
+- Shared dependencies fetched from ServiceContainer at runtime (aiService, session, modelSelector, persistence) — implicit coupling and hidden invariants.
+- Persists on every turn inline; no batching/atomic guarantees; may write even if UI cancels, and mixes read/update flows.
+- Generates assistant id via Date.now + Math.random → potential collisions under concurrency; not ULID/monotonic.
+- EventBus types used via constants, but bus accepts string topics — not discriminated unions; risk of typos.
+- No AbortController plumbed through; CANCEL/RETRY path depends on outer commands, but processor ignores them.
+*/
 import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../../shared/lib/globalEvents';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';

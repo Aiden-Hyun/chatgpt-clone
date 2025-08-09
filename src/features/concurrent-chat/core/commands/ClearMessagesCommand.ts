@@ -1,3 +1,8 @@
+/*
+Phase 1 Analysis — File Notes (ClearMessagesCommand)
+- Executes processor 'clear' and stores cleared messages for undo; without centralized MessageStore, UI state may diverge.
+- No batching/atomic persistence handling; may clear UI while DB writes fail.
+*/
 import { ICommand } from '../types/interfaces/ICommand';
 import { IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { generateRequestId } from '../utils/messageIdGenerator';

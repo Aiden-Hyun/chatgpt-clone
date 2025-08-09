@@ -1,3 +1,7 @@
+/*
+Phase 1 Analysis — File Notes (MessageInput)
+- Stateless input + send; OK. Keep props stable during refactor.
+*/
 import React, { useRef, useState } from 'react';
 import {
   View,
