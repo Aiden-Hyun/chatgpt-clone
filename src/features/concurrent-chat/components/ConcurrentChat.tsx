@@ -32,6 +32,7 @@ interface ConcurrentChatProps {
   initialModel?: string;
   className?: string;
   showHeader?: boolean;
+  onModelChangeBridge?: (apply: (model: string) => Promise<void>, currentModel: string) => void;
 }
 
 /**
@@ -59,6 +60,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   initialModel = 'gpt-3.5-turbo',
   className,
   showHeader = true,
+  onModelChangeBridge,
 }) => {
   try { console.log('[CHAT] mount', { roomId }); } catch {}
   // Dependency injection container and event bus - initialize services immediately
@@ -274,6 +276,15 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
       );
     }
   }, [changeModel, setModelForRoom, currentModel, roomId]);
+
+  // Expose a bridge for parent header to control model selection
+  useEffect(() => {
+    if (!onModelChangeBridge) return;
+    const apply = async (model: string) => {
+      await handleModelChange(model);
+    };
+    onModelChangeBridge(apply, currentModel);
+  }, [onModelChangeBridge, handleModelChange, currentModel]);
 
   // Handle regeneration using existing services
   const handleRegenerate = useCallback(async (index: number) => {

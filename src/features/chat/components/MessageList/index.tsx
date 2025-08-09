@@ -249,7 +249,8 @@ export const MessageList: React.FC<MessageListProps> = ({
     const initialCount = initialHydratedLengthRef.current ?? messages.length;
     const isHydrationMessage = initialHydratedLengthRef.current !== null && index < initialCount;
     const isNewAssistantAtEnd = item.role === 'assistant' && index === messagesWithLoading.length - 1 && messagesWithLoading.length > initialCount;
-    const shouldAnimate = (!isHydrationMessage && isNewAssistantAtEnd) || isRegenerating || wasRecentlyRegenerated;
+    // Only animate for the newest assistant message or explicit regen completions
+    const shouldAnimate = (!isHydrationMessage && isNewAssistantAtEnd) || wasRecentlyRegenerated;
 
     if (index === messagesWithLoading.length - 1 && item.role === 'assistant') {
       try { console.log('[ANIM] decide', { init: initialCount, len: messagesWithLoading.length, hyd: isHydrationMessage, regen: isRegenerating || wasRecentlyRegenerated, animate: shouldAnimate }); } catch {}

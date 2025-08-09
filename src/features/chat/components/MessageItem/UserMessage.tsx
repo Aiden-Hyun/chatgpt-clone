@@ -17,8 +17,8 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   isLastInGroup = true,
   onSendEdited,
 }) => {
-  const styles = createUserMessageStyles();
   const theme = useAppTheme();
+  const styles = createUserMessageStyles(theme);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
 

@@ -15,6 +15,7 @@ interface ChatHeaderProps {
   // Model selection props for chat rooms
   selectedModel?: string;
   onModelChange?: (model: string) => void;
+  showModelSelection?: boolean;
 }
 
 /**
@@ -30,6 +31,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   selectedChatId,
   selectedModel,
   onModelChange,
+  showModelSelection = true,
 }) => {
   const { isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
@@ -93,6 +95,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         onDesignShowcase={handleDesignShowcase}
         selectedModel={selectedModel}
         onModelChange={onModelChange}
+        showModelSelection={showModelSelection}
       />
     </View>
   );

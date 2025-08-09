@@ -1,9 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../../shared/hooks';
 
-export const createUserMessageStyles = () => {
-  const theme = useAppTheme();
-  
+export const createUserMessageStyles = (theme: any) => {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',

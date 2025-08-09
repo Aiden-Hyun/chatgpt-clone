@@ -25,6 +25,8 @@ export default function ChatScreen() {
   const { disableBackButton } = useBackButtonHandler({ enabled: true });
   const { startNewChat } = useChatRooms();
   const styles = createChatStyles();
+  const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
+  const [currentModel, setCurrentModel] = React.useState<string>('gpt-3.5-turbo');
 
   // Track if user has started typing to hide welcome text
   const [hasUserTyped, setHasUserTyped] = React.useState(false);
@@ -62,8 +64,21 @@ export default function ChatScreen() {
           onNewChat={handleNewChat}
           onChatSelect={handleChatSelect}
           selectedChatId={roomId}
+          selectedModel={currentModel}
+          onModelChange={async (model) => {
+            console.log('[MODEL] header selected', model);
+            setCurrentModel(model);
+            if (modelApplyRef.current) {
+              try { await modelApplyRef.current(model); } catch {}
+            }
+          }}
+          showModelSelection
         />
-        <ConcurrentChat roomId={numericRoomId ?? undefined} showHeader={false} />
+        <ConcurrentChat 
+          roomId={numericRoomId ?? undefined} 
+          showHeader={false}
+          onModelChangeBridge={(apply, model) => { modelApplyRef.current = apply; setCurrentModel(model); }}
+        />
       </KeyboardAvoidingView>
     </LoadingWrapper>
   );

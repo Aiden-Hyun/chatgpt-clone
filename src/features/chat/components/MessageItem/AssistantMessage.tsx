@@ -44,8 +44,11 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   /* -------------------------------------------------------------------------- */
   /* Enqueue new animation whenever content changes & shouldAnimate is true     */
   /* -------------------------------------------------------------------------- */
+  const lastTriggerRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if ((shouldAnimate || animationTrigger) && message.content && message.content.trim().length > 0) {
+    const triggerChanged = animationTrigger && animationTrigger !== lastTriggerRef.current;
+    if ((shouldAnimate || triggerChanged) && message.content && message.content.trim().length > 0) {
       const animationId = `anim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       // Prepare UI immediately to avoid flashing full text
       setDisplayedContent('');
@@ -54,7 +57,8 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
         ...prev,
         { id: animationId, content: message.content, status: 'pending' },
       ]);
-      try { console.log('[ANIM] enqueue', { len: message.content.length, trigger: !!animationTrigger, shouldAnimate }); } catch {}
+      lastTriggerRef.current = animationTrigger || lastTriggerRef.current;
+      try { console.log('[ANIM] enqueue', { len: message.content.length, triggerChanged, shouldAnimate }); } catch {}
     }
   }, [shouldAnimate, message.content, animationTrigger]);
 
