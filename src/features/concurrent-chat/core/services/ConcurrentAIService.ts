@@ -43,6 +43,11 @@ export class ConcurrentAIService implements IAIService {
 
     try {
       console.log('[AI] POST', `${this.EDGE_FUNCTION_BASE_URL}/openai-chat`, { model: request.model });
+      // Guard for unsupported providers
+      const unsupported = ['claude', 'anthropic'];
+      if (unsupported.some(key => String(request.model).toLowerCase().includes(key))) {
+        throw new Error('UNSUPPORTED_MODEL');
+      }
       const response = await fetch(`${this.EDGE_FUNCTION_BASE_URL}/openai-chat`, {
         method: 'POST',
         headers: {
@@ -62,6 +67,9 @@ export class ConcurrentAIService implements IAIService {
       return data;
     } catch (error) {
       // Re-throw with more context
+      if (error instanceof Error && error.message === 'UNSUPPORTED_MODEL') {
+        throw error;
+      }
       throw new Error(`Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

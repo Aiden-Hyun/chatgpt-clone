@@ -10,6 +10,8 @@ const AI_MODELS = [
   { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
   { label: 'Claude 3', value: 'claude-3' },
 ];
+// Models not available in this project (UI-only guard)
+const UNSUPPORTED_KEYS = ['claude', 'anthropic'];
 
 interface QuickActionsMenuProps {
   isVisible: boolean;
@@ -103,26 +105,37 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 <MaterialIcons name="arrow-back" size={20} color={theme.colors.text.tertiary} />
                 <Text style={styles.backMenuText}> {t('menu.back')}</Text>
               </TouchableOpacity>
-              {AI_MODELS.map((model) => (
-                <TouchableOpacity 
-                  key={model.value}
-                  style={[
-                    styles.menuItem,
-                    selectedModel === model.value && styles.selectedMenuItem
-                  ]}
-                  onPress={() => handleModelSelect(model.value)}
-                >
-                  <Text style={[
-                    styles.menuText,
-                    selectedModel === model.value && styles.selectedMenuText
-                  ]}>
-                    {model.label}
-                  </Text>
-                  {selectedModel === model.value && (
-                    <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
-                  )}
-                </TouchableOpacity>
-              ))}
+              {AI_MODELS.map((model) => {
+                const isUnsupported = UNSUPPORTED_KEYS.some(k => model.value.toLowerCase().includes(k) || model.label.toLowerCase().includes(k));
+                const disabled = isUnsupported;
+                return (
+                  <TouchableOpacity 
+                    key={model.value}
+                    style={[
+                      styles.menuItem,
+                      selectedModel === model.value && styles.selectedMenuItem,
+                      disabled && styles.disabledMenuItem,
+                    ]}
+                    disabled={disabled}
+                    onPress={() => !disabled && handleModelSelect(model.value)}
+                  >
+                    <Text style={[
+                      styles.menuText,
+                      selectedModel === model.value && styles.selectedMenuText,
+                      disabled && styles.disabledMenuText,
+                    ]}>
+                      {model.label}
+                    </Text>
+                    {disabled ? (
+                      <MaterialIcons name="block" size={18} color={theme.colors.text.tertiary} />
+                    ) : (
+                      selectedModel === model.value && (
+                        <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
+                      )
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
             </>
           )}
         </View>
@@ -159,6 +172,9 @@ const createStyles = (theme: any) => StyleSheet.create({
   selectedMenuItem: {
     backgroundColor: theme.colors.background.secondary,
   },
+  disabledMenuItem: {
+    opacity: 0.5,
+  },
   backMenuItem: {
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
@@ -178,6 +194,9 @@ const createStyles = (theme: any) => StyleSheet.create({
   selectedMenuText: {
     color: theme.colors.status.info.primary,
     fontWeight: theme.fontWeights.semibold as '600',
+  },
+  disabledMenuText: {
+    color: theme.colors.text.tertiary,
   },
   backMenuText: {
     fontSize: theme.fontSizes.md,

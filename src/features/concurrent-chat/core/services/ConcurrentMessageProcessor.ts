@@ -67,6 +67,11 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           if (!modelToUse) {
             modelToUse = message.roomId ? await selector.getModelForRoom(message.roomId) : selector.getCurrentModel();
           }
+          // Re-fetch just before request to avoid race with recent selection
+          if (message.roomId) {
+            const fresh = await selector.getModelForRoom(message.roomId);
+            if (fresh) modelToUse = fresh;
+          }
           try { console.log('[MODEL] Processor→resolved', { modelToUse, roomId: message.roomId }); } catch {}
         } catch {}
 
@@ -89,6 +94,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           temperature: 0.7,
           max_tokens: 1000,
         };
+        try { console.log('[MODEL] Processor→using', request.model); } catch {}
 
         
 
@@ -112,7 +118,27 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
         });
 
         // Call AI service (this will take time, showing animation)
-        const aiResponse = await aiService.sendMessage(request, session);
+        let aiResponse;
+        try {
+          aiResponse = await aiService.sendMessage(request, session);
+        } catch (err) {
+          if (err instanceof Error && err.message === 'UNSUPPORTED_MODEL') {
+            // Inform user in their language via a friendly assistant message
+            const unsupportedMsg: ConcurrentMessage = {
+              ...assistantMessage,
+              content: 'This model is not available. Please choose another model.',
+              status: 'completed',
+            };
+            this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED, {
+              type: MESSAGE_EVENT_TYPES.MESSAGE_COMPLETED,
+              timestamp: Date.now(),
+              messageId: unsupportedMsg.id,
+              message: unsupportedMsg,
+            });
+            return unsupportedMsg;
+          }
+          throw err;
+        }
         
         
         const assistantContent = aiResponse.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
