@@ -11,6 +11,7 @@ interface MessageItemProps {
   isRegenerating: boolean;
   animationTrigger?: string;
   onRegenerate?: () => void;
+  onUserEditRegenerate?: (index: number, newText: string) => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
   shouldAnimate?: boolean; // Whether this message should have typewriter animation
@@ -23,6 +24,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   isRegenerating,
   animationTrigger,
   onRegenerate,
+  onUserEditRegenerate,
   showAvatar = true,
   isLastInGroup = true,
   shouldAnimate = false,
@@ -43,6 +45,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       <UserMessage
         message={message}
         isLastInGroup={isLastInGroup}
+        onSendEdited={(newText: string) => onUserEditRegenerate?.(index, newText)}
       />
     );
   }

@@ -10,6 +10,7 @@ interface MessageListProps {
   isNewMessageLoading: boolean;
   regeneratingIndices: Set<number>;
   onRegenerate: (index: number) => void;
+  onUserEditRegenerate?: (index: number, newText: string) => void;
   showWelcomeText: boolean;
 }
 
@@ -18,6 +19,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   isNewMessageLoading,
   regeneratingIndices,
   onRegenerate,
+  onUserEditRegenerate,
   showWelcomeText,
 }) => {
   // Add render counting for performance monitoring
@@ -271,6 +273,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             ? handleRegenerate
             : undefined
         }
+        onUserEditRegenerate={onUserEditRegenerate}
         showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
         shouldAnimate={shouldAnimate}

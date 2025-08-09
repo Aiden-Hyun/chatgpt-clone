@@ -423,6 +423,27 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         isNewMessageLoading={isNewMessageLoading}
         regeneratingIndices={regeneratingIndices}
         onRegenerate={handleRegenerate}
+        onUserEditRegenerate={async (userIndex: number, newText: string) => {
+          try { console.log('[EDIT] send', { userIndex, newTextLen: newText?.length }); } catch {}
+          const userMsg = messages[userIndex];
+          if (!userMsg || userMsg.role !== 'user') return;
+          updateMessage(userMsg.id, { content: newText });
+          const assistantIndex = messages.findIndex((m, idx) => idx > userIndex && m.role === 'assistant');
+          try { console.log('[EDIT] next assistant index', assistantIndex); } catch {}
+          if (assistantIndex === -1) return;
+          const assistantMsg = messages[assistantIndex];
+          updateMessage(assistantMsg.id, { status: 'processing', content: '' });
+          const history = messages.slice(0, assistantIndex).map((m, idx) => (idx === userIndex ? { ...m, content: newText } : m));
+          try {
+            const regenerationService = serviceContainer.get('regenerationService') as RegenerationService;
+            const regenerated = await regenerationService.regenerateMessage(assistantMsg.id, history, currentModel);
+            updateMessage(assistantMsg.id, { content: regenerated.content, status: 'completed' });
+            try { console.log('[EDIT] done'); } catch {}
+          } catch (e) {
+            updateMessage(assistantMsg.id, { status: 'completed' });
+            try { console.log('[EDIT] failed', e); } catch {}
+          }
+        }}
         showWelcomeText={!hasSentFirst && !isHydrating && messages.length === 0}
       />
 

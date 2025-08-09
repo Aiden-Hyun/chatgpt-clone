@@ -18,7 +18,7 @@ export const createUserMessageStyles = () => {
       backgroundColor: theme.colors.message.user,
       borderRadius: theme.borderRadius.lg,
       padding: theme.spacing.md,
-      maxWidth: '70%',
+      maxWidth: '85%',
       minWidth: 40,
       ...theme.shadows.light,
     },
@@ -32,5 +32,26 @@ export const createUserMessageStyles = () => {
       color: theme.colors.message.userText,
       lineHeight: 22,
     },
+    bubbleEdit: {
+      backgroundColor: theme.colors.message.user,
+      borderRadius: theme.borderRadius.lg,
+      padding: theme.spacing.md,
+      width: '92%',
+      alignSelf: 'flex-end',
+      ...theme.shadows.light,
+    },
+    actionRow: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      gap: theme.spacing.sm,
+      marginTop: theme.spacing.sm,
+    },
+    actionButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 14,
+      borderWidth: 1.5,
+      borderRadius: theme.borderRadius.sm,
+      backgroundColor: 'transparent',
+    },
   });
-}; 
+};
