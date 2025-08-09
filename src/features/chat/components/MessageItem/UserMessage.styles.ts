@@ -18,8 +18,9 @@ export const createUserMessageStyles = () => {
       backgroundColor: theme.colors.message.user,
       borderRadius: theme.borderRadius.lg,
       padding: theme.spacing.md,
-      maxWidth: '85%',
-      minWidth: 40,
+     //maxWidth: '85%',
+      //minWidth: 40,
+      width: '100%',
       ...theme.shadows.light,
     },
     bubbleCompact: {

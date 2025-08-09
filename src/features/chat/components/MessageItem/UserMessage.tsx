@@ -1,8 +1,8 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useAppTheme } from '../../../../shared/hooks';
 import { HoverDetector } from '../../../../features/ui';
+import { useAppTheme } from '../../../../shared/hooks';
 import { ChatMessage } from '../../types';
 import { createUserMessageStyles } from './UserMessage.styles';
 
@@ -24,7 +24,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
-      <View style={{ alignItems: 'flex-end', maxWidth: '85%' }}>
+      <View style={{ alignItems: 'flex-end' }}>
         {isEditing ? (
           <View style={styles.bubbleEdit}>
             <TextInput
