@@ -6,8 +6,7 @@ import { IAIService } from '../types/interfaces/IAIService';
 import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../types/interfaces/IModelSelector';
 
-// Simple in-memory cache to avoid empty flashes between room switches
-const roomMessageCache: Map<number, ConcurrentMessage[]> = new Map();
+// In-memory cache removed to avoid stale/partial history across navigation
 
 /**
  * Main hook for concurrent chat functionality
@@ -49,12 +48,6 @@ export function useConcurrentChat(
           const model = await modelSelectorRef.current.getModelForRoom(roomId);
           setCurrentModel(model);
         }
-        // Hydrate from cache immediately to avoid empty UI on navigation
-        if (roomId && roomMessageCache.has(roomId)) {
-          const cached = roomMessageCache.get(roomId)!;
-          setMessages(cached);
-          try { console.log('[CACHE] hydrate', { roomId, count: cached.length }); } catch {}
-        }
         try { console.log('[STATE] init', { roomId, model: roomId ? 'room' : 'global' }); } catch {}
       } catch (err) {
         setError(`Failed to initialize services: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -69,13 +62,7 @@ export function useConcurrentChat(
     };
   }, [roomId, serviceContainer, eventBus]);
 
-  // Keep cache updated per room
-  useEffect(() => {
-    if (roomId) {
-      roomMessageCache.set(roomId, messages);
-      try { console.log('[CACHE] update', { roomId, count: messages.length }); } catch {}
-    }
-  }, [messages, roomId]);
+  // Cache removed: always rely on DB hydration performed by ConcurrentChat on room change
 
   // Set up event subscriptions
   const setupEventSubscriptions = useCallback(() => {
@@ -299,6 +286,13 @@ export function useConcurrentChat(
 
   // Replace all messages (hydration)
   const replaceMessages = useCallback((newMessages: ConcurrentMessage[]) => {
+    try {
+      if (newMessages.length === 0) {
+        console.log('[STATE] replaceMessages EMPTY');
+      } else {
+        console.log('[STATE] replaceMessages APPLY', { len: newMessages.length, first: newMessages[0]?.id, last: newMessages[newMessages.length - 1]?.id });
+      }
+    } catch {}
     setMessages(newMessages);
   }, []);
 

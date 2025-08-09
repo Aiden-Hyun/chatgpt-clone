@@ -7,33 +7,33 @@ import { ThemedButton } from '../src/features/ui';
 import { useAppTheme } from '../src/shared/hooks';
 // Import Lucide icons for showcase
 import {
-    AlertCircle,
-    Bookmark,
-    Check,
-    ChevronDown,
-    ChevronLeft,
-    Copy,
-    Download,
-    Edit,
-    Heart,
-    Home,
-    Info,
-    LogOut,
-    MessageSquare,
-    MoreHorizontal,
-    RotateCcw,
-    Search,
-    Send,
-    Settings,
-    Share2,
-    Star,
-    ThumbsDown,
-    ThumbsUp,
-    Trash2,
-    Upload,
-    User,
-    Volume2,
-    X
+  AlertCircle,
+  Bookmark,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  Copy,
+  Download,
+  Edit,
+  Heart,
+  Home,
+  Info,
+  LogOut,
+  MessageSquare,
+  MoreHorizontal,
+  RotateCcw,
+  Search,
+  Send,
+  Settings,
+  Share2,
+  Star,
+  ThumbsDown,
+  ThumbsUp,
+  Trash2,
+  Upload,
+  User,
+  Volume2,
+  X
 } from 'lucide-react-native';
 
 // Import Expo Vector Icons
@@ -52,7 +52,7 @@ export default function DesignShowcaseScreen() {
   const [selectedButton, setSelectedButton] = useState<string | null>(null);
 
   const handleBack = () => {
-    router.push('/');
+    router.back();
   };
 
   const handleOpenChatGPTDemo = () => {

@@ -86,6 +86,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [hasSentFirst, setHasSentFirst] = useState(false);
+  const historyLoadSeqRef = useRef(0);
   const [isHydrating, setIsHydrating] = useState(false);
   const { inputRef, maintainFocus } = useInputFocus();
   const firstUserMessageRef = useRef<string | null>(null);
@@ -150,15 +151,16 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
 
   // Load chat history when roomId changes
   useEffect(() => {
-    try { console.log('[CHAT] useEffect:roomId', roomId); } catch {}
+    try { console.log('[NAV] concurrent-chat mount/useRoom', { roomId }); } catch {}
     const loadHistory = async () => {
       if (!roomId) return;
+      const seq = ++historyLoadSeqRef.current;
       try { console.log('[HISTORY] load-start', { roomId }); } catch {}
       setIsHydrating(true);
       try {
         const messageService = ServiceFactory.createMessageService();
         const chatHistory = await messageService.loadMessages(roomId);
-        try { console.log('[HISTORY] loaded', { count: chatHistory?.length ?? 0 }); } catch {}
+        try { console.log('[HISTORY] loaded', { roomId, seq, count: chatHistory?.length ?? 0 }); } catch {}
         // Map ChatMessage[] to ConcurrentMessage[] and hydrate
         const hydrated = (chatHistory as ChatMessage[]).map((m, idx) => ({
           id: `hist_${roomId}_${idx}`,
@@ -170,15 +172,25 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         }));
         // Replace local messages in one shot for clean hydration
         replaceMessages(hydrated);
-        try { console.log('[HISTORY] hydrated'); } catch {}
+        try {
+          console.log('[HISTORY] hydrated', {
+            roomId,
+            seq,
+            applied: seq === historyLoadSeqRef.current,
+            len: hydrated.length,
+            firstId: hydrated[0]?.id,
+            lastId: hydrated[hydrated.length - 1]?.id,
+          });
+        } catch {}
       } catch (e) {
         try { console.log('[HISTORY] load-error', e); } catch {}
       } finally {
         setIsHydrating(false);
-        try { console.log('[HISTORY] hydrating:false'); } catch {}
+        try { console.log('[HISTORY] hydrating:false', { roomId, seq, currentSeq: historyLoadSeqRef.current }); } catch {}
       }
     };
     loadHistory();
+    return () => { try { console.log('[NAV] concurrent-chat unmount/leaveRoom', { roomId }); } catch {} };
   }, [roomId, replaceMessages]);
 
   useEffect(() => {
