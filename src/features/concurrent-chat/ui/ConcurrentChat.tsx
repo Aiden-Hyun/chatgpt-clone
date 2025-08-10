@@ -10,7 +10,7 @@ import type { ChatMessage } from '../../chat/types';
 import {
     toChatMessages
 } from '../adapters/messageAdapter';
-import { SendMessageCommand } from '../core/commands/SendMessageCommand';
+import { SendMessageCommand } from '../core/commands';
 import { ServiceContainer } from '../core/container/ServiceContainer';
 import { EventBus } from '../core/events/EventBus';
 import { useConcurrentChat } from '../core/hooks/useConcurrentChat';

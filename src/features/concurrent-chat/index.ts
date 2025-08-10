@@ -13,11 +13,7 @@ export { usePluginSystem } from './core/hooks/usePluginSystem';
 export * from './core/types';
 
 // Commands
-export { CancelMessageCommand } from './core/commands/CancelMessageCommand';
-export { ChangeModelCommand } from './core/commands/ChangeModelCommand';
-export { ClearMessagesCommand } from './core/commands/ClearMessagesCommand';
-export { RetryMessageCommand } from './core/commands/RetryMessageCommand';
-export { SendMessageCommand } from './core/commands/SendMessageCommand';
+export { CancelMessageCommand, ChangeModelCommand, ClearMessagesCommand, RetryMessageCommand, SendMessageCommand } from './core/commands';
 
 // Core services (for external usage)
 export { ServiceContainer } from './core/container/ServiceContainer';
