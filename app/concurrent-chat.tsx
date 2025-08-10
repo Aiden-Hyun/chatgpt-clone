@@ -1,7 +1,7 @@
 // import React from 'react';
 // import { SafeAreaView, StyleSheet, useColorScheme } from 'react-native';
 // import { useAuth } from '../src/features/auth/context';
-// import { ConcurrentChat } from '../src/features/concurrent-chat/components';
+// import { ConcurrentChat } from '../src/features/concurrent-chat';
 // import { theme } from '../src/features/theme/lib/theme';
 
 // export default function ConcurrentChatScreen() {
