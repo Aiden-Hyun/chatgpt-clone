@@ -79,14 +79,14 @@ export function useConcurrentChat(
           const existingMessageIndex = prev.findIndex(msg => msg.id === event.message.id);
           
           if (existingMessageIndex >= 0) {
-            // Update existing message status
             const updatedMessages = [...prev];
-            updatedMessages[existingMessageIndex] = { 
-              ...updatedMessages[existingMessageIndex], 
-              status: 'processing' 
-            };
-            
-            try { console.log('[EVT] SENT:update-existing', { id: event.message.id }); } catch {}
+            const isAssistant = event.message.role === 'assistant';
+            // Only set processing for assistant placeholders; user messages should reflect completed status
+            updatedMessages[existingMessageIndex] = isAssistant
+              ? { ...updatedMessages[existingMessageIndex], status: 'processing' }
+              : { ...updatedMessages[existingMessageIndex], ...event.message };
+
+            try { console.log('[EVT] SENT:update-existing', { id: event.message.id, role: event.message.role }); } catch {}
             return updatedMessages;
           } else {
             // Add new message (for assistant messages)

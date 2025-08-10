@@ -146,6 +146,43 @@ describe('useConcurrentChat', () => {
 
       expect(result.current.messages).toHaveLength(0);
     });
+
+    it('should keep user message not-processing and set assistant placeholder to processing', async () => {
+      const userId = 'user_1';
+      const assistantId = 'assistant_1';
+
+      // Mock processor to publish MESSAGE_SENT events similar to real processor
+      (mockMessageProcessor.process as jest.Mock).mockImplementation(async (message: any) => {
+        mockEventBus.publish('MESSAGE_SENT' as any, {
+          type: 'MESSAGE_SENT',
+          timestamp: Date.now(),
+          messageId: userId,
+          message: { ...message, id: userId, status: 'completed' },
+        } as any);
+
+        mockEventBus.publish('MESSAGE_SENT' as any, {
+          type: 'MESSAGE_SENT',
+          timestamp: Date.now(),
+          messageId: assistantId,
+          message: { id: assistantId, role: 'assistant', content: '', status: 'processing' },
+        } as any);
+
+        return message;
+      });
+
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+      });
+
+      const userMsg = result.current.messages.find(m => m.role === 'user');
+      const assistantMsg = result.current.messages.find(m => m.role === 'assistant');
+      expect(userMsg).toBeDefined();
+      expect(userMsg?.status).not.toBe('processing');
+      expect(assistantMsg).toBeDefined();
+      expect(assistantMsg?.status).toBe('processing');
+    });
   });
 
   describe('model operations', () => {
