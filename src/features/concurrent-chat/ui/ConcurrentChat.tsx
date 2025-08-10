@@ -16,12 +16,12 @@ import { EventBus } from '../core/events/EventBus';
 import { useConcurrentChat } from '../core/hooks/useConcurrentChat';
 import { useMessageCommands } from '../core/hooks/useMessageCommands';
 import { useModelSelection } from '../core/hooks/useModelSelection';
-import { ConcurrentAIService } from '../core/services/ConcurrentAIService';
-import { ConcurrentMessageProcessor } from '../core/services/ConcurrentMessageProcessor';
-import { ModelSelectionService } from '../core/services/ModelSelectionService';
+import { ConcurrentAIService } from '../services/ConcurrentAIService';
+import { ConcurrentMessageProcessor } from '../services/ConcurrentMessageProcessor';
+import { ModelSelectionService } from '../services/ModelSelectionService';
 import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
 
-import { PersistenceService } from '../core/services/PersistenceService';
+import { PersistenceService } from '../services/PersistenceService';
 import { MESSAGE_EVENT_TYPES } from '../core/types/events/MessageEvents';
 import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
