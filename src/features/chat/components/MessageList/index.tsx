@@ -115,7 +115,8 @@ export const MessageList: React.FC<MessageListProps> = ({
     });
     finishedProcessing.forEach(index => {
       const becameNonEmpty = (prevContents[index] ?? '') === '' && (nextContents[index] ?? '').length > 0;
-      if (becameNonEmpty) {
+      // Only trigger animation if we don't already have one for this index
+      if (becameNonEmpty && !animationTriggers.has(index)) {
         setAnimationTriggers(prev => {
           const copy = new Map(prev);
           const token = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -158,7 +159,8 @@ export const MessageList: React.FC<MessageListProps> = ({
 
     prevContentsRef.current = nextContents;
     prevProcessingRef.current = new Set(regeneratingIndices);
-  }, [messages, regeneratingIndices, recentlyRegenerated]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, regeneratingIndices, recentlyRegenerated]); // animationTriggers intentionally excluded to prevent infinite loop
 
   // Select random welcome message when component mounts or welcome text should be shown
   useEffect(() => {
@@ -284,8 +286,9 @@ export const MessageList: React.FC<MessageListProps> = ({
     // Only animate for the newest assistant message or explicit regen completions
     const shouldAnimate = (!isHydrationMessage && isNewAssistantAtEnd) || wasRecentlyRegenerated;
 
-    if (index === messagesWithLoading.length - 1 && item.role === 'assistant') {
-      try { console.log('[ANIM] decide', { init: initialCount, len: messagesWithLoading.length, hyd: isHydrationMessage, regen: isRegenerating || wasRecentlyRegenerated, animate: shouldAnimate }); } catch {}
+    // Only log animation decision for debugging when needed
+    if (index === messagesWithLoading.length - 1 && item.role === 'assistant' && shouldAnimate) {
+      try { console.log('[ANIM] Animation decision:', { shouldAnimate }); } catch {}
     }
 
     const handleRegenerate = () => {

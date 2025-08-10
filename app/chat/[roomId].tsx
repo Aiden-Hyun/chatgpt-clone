@@ -6,9 +6,8 @@ import {
     Platform,
 } from 'react-native';
 import { useLogout } from '../../src/features/auth';
-import { ChatHeader } from '../../src/features/chat/components';
+import { ChatHeader, UnifiedChat } from '../../src/features/chat/components';
 import { useChatRooms } from '../../src/features/chat/hooks';
-import { ConcurrentChat } from '../../src/features/concurrent-chat';
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
 import { createChatStyles } from './chat.styles';
@@ -74,7 +73,7 @@ export default function ChatScreen() {
           }}
           showModelSelection
         />
-        <ConcurrentChat 
+        <UnifiedChat 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}
           onModelChangeBridge={(apply, model) => { modelApplyRef.current = apply; setCurrentModel(model); }}

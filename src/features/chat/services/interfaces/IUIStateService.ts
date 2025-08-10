@@ -31,6 +31,15 @@ export interface IUIStateService {
   }): void;
   
   /**
+   * Update message content without animation
+   */
+  updateMessageContent(args: {
+    fullContent: string;
+    regenerateIndex?: number;
+    messageId?: string;
+  }): void;
+
+  /**
    * Animate response with typewriter effect
    */
   animateResponse(args: {

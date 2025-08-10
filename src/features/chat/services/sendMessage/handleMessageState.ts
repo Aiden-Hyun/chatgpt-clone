@@ -32,9 +32,7 @@ export const handleMessageState = ({
         ? { ...assistantMsg, _loadingId: messageId }
         : assistantMsg;
       
-      // ✅ Phase 3: Add debug logging to track message creation
-      console.log(`3️⃣ [MESSAGE-CREATION] Creating assistant message with _loadingId: ${messageId}`);
-      console.log(`3️⃣ [MESSAGE-CREATION] Current messages count: ${prev.length}, new messages will be at indices: ${prev.length}, ${prev.length + 1}`);
+      // Create new user and assistant messages
       
       return [...prev, userMsg, enhancedAssistantMsg];
     });

@@ -138,11 +138,19 @@ export class MessageSenderService {
         contentLength: fullContent.length 
       });
       
-      this.uiStateService.animateResponse({
+      // DISABLED: Legacy animation system causing infinite loops
+      // Using new TypewriterText component instead for animation
+      // But we still need to update the message state immediately
+      
+      // Update the message state without animation
+      this.uiStateService.updateMessageContent({
         fullContent,
         regenerateIndex,
-        messageId, // ✅ Phase 3: Pass messageId to animation
-        onComplete: async () => {
+        messageId
+      });
+      
+      // Directly call the completion logic without legacy animation
+      (async () => {
           try {
             this.loggingService.debug(`Starting post-animation operations for request ${requestId}`);
             
@@ -214,8 +222,8 @@ export class MessageSenderService {
           } catch (error) {
             this.loggingService.error(`Error in post-animation operations for request ${requestId}`, { error });
           }
-        }
-      });
+        })(); // Immediately execute the async function
+      // }); // End of disabled animateResponse
 
       const duration = Date.now() - startTime;
       this.loggingService.info(`Message send completed successfully for request ${requestId}`, {

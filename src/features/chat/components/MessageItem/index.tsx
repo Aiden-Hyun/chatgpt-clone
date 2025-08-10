@@ -54,7 +54,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   if (message.role === 'assistant') {
     return (
       <AssistantMessage
-        key={animationTrigger || `${index}-${message.content?.length || 0}`}
+        key={animationTrigger || `assistant-${index}`}
         message={message}
         onRegenerate={onRegenerate}
         showAvatar={showAvatar}
