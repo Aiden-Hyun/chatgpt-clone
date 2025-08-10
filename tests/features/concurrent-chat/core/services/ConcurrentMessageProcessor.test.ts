@@ -125,4 +125,88 @@ describe('ConcurrentMessageProcessor', () => {
       expect(failedEvents).toHaveLength(0);
     });
   });
+
+  describe('first turn persistence', () => {
+    it('should persist first turn to correct room ID when activeRoomId is registered as numeric value', async () => {
+      // Arrange: Configure AI service to succeed
+      mockAIService.sendMessage.mockResolvedValueOnce({
+        id: 'ai-response-123',
+        content: 'Hello! How can I help you?',
+        model: 'gpt-3.5-turbo',
+        timestamp: Date.now(),
+      });
+
+      // Register a numeric activeRoomId (42) in service container
+      const mockPersistenceService = {
+        persistFirstTurn: jest.fn().mockResolvedValue(42),
+      };
+      serviceContainer.register('persistenceService', mockPersistenceService);
+      serviceContainer.register('activeRoomId', 42); // Register as numeric value, not ref object
+
+      const userMessage: ConcurrentMessage = {
+        id: 'user_msg_123',
+        content: 'Hello, this is the first message',
+        role: 'user',
+        status: 'pending',
+        timestamp: Date.now(),
+        // No roomId - this triggers first turn persistence logic
+      };
+
+      // Act: Process the user message
+      const result = await processor.process(userMessage);
+
+      // Assert: Should return completed message
+      expect(result.status).toBe('completed');
+
+      // Verify persistFirstTurn was called with correct room ID
+      expect(mockPersistenceService.persistFirstTurn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          numericRoomId: 42, // Should receive the numeric value, not an object
+          userContent: 'Hello, this is the first message',
+          assistantContent: expect.any(String), // Don't care about exact content, just that it's a string
+        })
+      );
+    });
+
+    it('should handle null activeRoomId and create new room', async () => {
+      // Arrange: Configure AI service to succeed
+      mockAIService.sendMessage.mockResolvedValueOnce({
+        id: 'ai-response-456',
+        content: 'Hi! I can help you with that.',
+        model: 'gpt-3.5-turbo',
+        timestamp: Date.now(),
+      });
+
+      // Register null activeRoomId
+      const mockPersistenceService = {
+        persistFirstTurn: jest.fn().mockResolvedValue(123),
+      };
+      serviceContainer.register('persistenceService', mockPersistenceService);
+      serviceContainer.register('activeRoomId', null); // Register as null
+
+      const userMessage: ConcurrentMessage = {
+        id: 'user_msg_456',
+        content: 'Hello, this should create a new room',
+        role: 'user',
+        status: 'pending',
+        timestamp: Date.now(),
+        // No roomId - this triggers first turn persistence logic
+      };
+
+      // Act: Process the user message
+      const result = await processor.process(userMessage);
+
+      // Assert: Should return completed message
+      expect(result.status).toBe('completed');
+
+      // Verify persistFirstTurn was called with null room ID (create new room path)
+      expect(mockPersistenceService.persistFirstTurn).toHaveBeenCalledWith(
+        expect.objectContaining({
+          numericRoomId: null, // Should receive null, triggering room creation
+          userContent: 'Hello, this should create a new room',
+          assistantContent: expect.any(String), // Don't care about exact content, just that it's a string
+        })
+      );
+    });
+  });
 });

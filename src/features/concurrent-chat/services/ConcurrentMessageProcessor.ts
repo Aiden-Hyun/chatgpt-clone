@@ -164,11 +164,11 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
           try {
             const persistence = this.serviceContainer.get<any>('persistenceService');
             // If pre-created by UI, prefer that id
-            const preId = (this.serviceContainer as any).get?.('activeRoomId');
+            const registeredRoomId = (this.serviceContainer as any).get?.('activeRoomId');
             const roomId = await persistence.persistFirstTurn({
               session,
               model: request.model,
-              numericRoomId: preId ?? null,
+              numericRoomId: registeredRoomId ?? null,
               userContent: message.content,
               assistantContent: assistantContent,
             });

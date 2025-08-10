@@ -138,7 +138,7 @@ export const ConcurrentChat: React.FC<ConcurrentChatProps> = ({
         serviceContainer.register('editingService', editingService);
         serviceContainer.register('persistenceService', persistenceService);
         // Expose activeRoomId into container for processor to read (first-turn persistence)
-        serviceContainer.register('activeRoomId', activeRoomIdRef);
+        serviceContainer.register('activeRoomId', activeRoomIdRef.current ?? null);
         // streaming removed
         
       } catch (error) {
