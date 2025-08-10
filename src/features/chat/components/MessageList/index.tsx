@@ -3,6 +3,7 @@ import { Animated, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../../shared/hooks';
 import { ChatMessage } from '../../types';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';
 
 interface MessageListProps {
@@ -37,6 +38,9 @@ export const MessageList: React.FC<MessageListProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedWelcomeKey, setSelectedWelcomeKey] = useState('');
   const cursorOpacity = useRef(new Animated.Value(1)).current;
+  // Stable IDs for messages to ensure consistent FlatList keys
+  const stableIdsRef = useRef<string[]>([]);
+  const placeholderIdRef = useRef<string | null>(null);
 
   // Track indices that should animate once regeneration completes
   const [recentlyRegenerated, setRecentlyRegenerated] = useState<Set<number>>(new Set());
@@ -213,6 +217,23 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
   }, [messages.length, showWelcomeText, isNewMessageLoading, cursorOpacity]);
 
+  // Ensure each message has a stable id. Prefer existing ids or _loadingId; otherwise generate once per index
+  useEffect(() => {
+    const ids = stableIdsRef.current;
+    // Grow or shrink to match messages length
+    if (messages.length < ids.length) {
+      ids.length = messages.length;
+    }
+    for (let i = 0; i < messages.length; i++) {
+      const explicitId = (messages[i] as any).id ?? (messages[i] as any)._loadingId;
+      if (explicitId) {
+        ids[i] = explicitId;
+      } else if (!ids[i]) {
+        ids[i] = generateMessageId();
+      }
+    }
+  }, [messages]);
+
   // Show welcome text only when truly idle (not during hydration/loading)
   if (messages.length === 0 && showWelcomeText && !isNewMessageLoading) {
     return (
@@ -227,10 +248,24 @@ export const MessageList: React.FC<MessageListProps> = ({
     );
   }
 
-  // Add empty assistant message for new message loading
+  // Prepare messages with stable ids for rendering
+  const messagesWithIds = messages.map((m, i) => {
+    const explicitId = (m as any).id ?? (m as any)._loadingId;
+    if (explicitId) return m as any;
+    return { ...(m as any), id: stableIdsRef.current[i] } as any;
+  }) as ChatMessage[];
+
+  // Add empty assistant message for new message loading, with a stable id
   const messagesWithLoading = isNewMessageLoading
-    ? [...messages, { role: 'assistant' as const, content: '' }]
-    : messages;
+    ? [
+        ...messagesWithIds,
+        {
+          role: 'assistant' as const,
+          content: '',
+          id: (placeholderIdRef.current ||= generateMessageId()),
+        } as any,
+      ]
+    : messagesWithIds;
 
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
     const isRegenerating = regeneratingIndices.has(index);
@@ -285,7 +320,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <FlatList
       data={messagesWithLoading}
-      keyExtractor={(_, index) => index.toString()}
+      keyExtractor={(item: any) => item.id}
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}
