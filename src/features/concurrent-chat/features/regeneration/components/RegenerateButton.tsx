@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
-import { ConcurrentMessage } from '../../core/types/interfaces/IMessageProcessor';
+import { ConcurrentMessage } from '../../core/types';
 import { useMessageRegeneration } from '../useMessageRegeneration';
 
 interface RegenerateButtonProps {

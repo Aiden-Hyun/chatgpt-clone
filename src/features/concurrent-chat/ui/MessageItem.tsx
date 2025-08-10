@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { ConcurrentMessage } from '../core/types/interfaces/IMessageProcessor';
+import { ConcurrentMessage } from '../core/types';
 
 interface MessageItemProps {
   message: ConcurrentMessage;

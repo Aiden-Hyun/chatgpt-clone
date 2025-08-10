@@ -1,5 +1,5 @@
 import { ChatMessage } from '../../chat/types';
-import { ConcurrentMessage } from '../core/types/interfaces/IMessageProcessor';
+import { ConcurrentMessage } from '../core/types';
 
 /**
  * Message Adapter

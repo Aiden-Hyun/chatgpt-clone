@@ -1,5 +1,5 @@
 import { EventBus } from '../core/events/EventBus';
-import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
+import { IMessageProcessor } from '../core/types';
 
 export class MessageService {
   private commandHistory: any[] = [];

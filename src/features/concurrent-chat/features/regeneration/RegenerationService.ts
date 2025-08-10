@@ -1,8 +1,7 @@
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
 import { MessageEvent } from '../../core/types/events/MessageEvents';
-import { IAIService } from '../../core/types/interfaces/IAIService';
-import { ConcurrentMessage } from '../../core/types/interfaces/IMessageProcessor';
+import { IAIService, ConcurrentMessage } from '../../core/types';
 
 /**
  * Regeneration Service (no plugin base)

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
-import { ConcurrentMessage } from '../../core/types/interfaces/IMessageProcessor';
+import { ConcurrentMessage } from '../../core/types';
 import { EditingService } from './EditingService';
 
 /**

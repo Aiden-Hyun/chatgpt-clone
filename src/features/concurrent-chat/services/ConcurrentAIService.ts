@@ -1,4 +1,4 @@
-import { IAIService } from '../core/types/interfaces/IAIService';
+import { IAIService } from '../core/types';
 
 /**
  * ConcurrentAIService implements IAIService for AI API communication.

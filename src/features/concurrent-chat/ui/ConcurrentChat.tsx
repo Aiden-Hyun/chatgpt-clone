@@ -19,7 +19,7 @@ import { useModelSelection } from '../core/hooks/useModelSelection';
 import { ConcurrentAIService } from '../services/ConcurrentAIService';
 import { ConcurrentMessageProcessor } from '../services/ConcurrentMessageProcessor';
 import { ModelSelectionService } from '../services/ModelSelectionService';
-import { IMessageProcessor } from '../core/types/interfaces/IMessageProcessor';
+import { IMessageProcessor } from '../core/types';
 
 import { PersistenceService } from '../services/PersistenceService';
 import { MESSAGE_EVENT_TYPES } from '../core/types/events/MessageEvents';

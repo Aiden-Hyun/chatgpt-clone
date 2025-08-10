@@ -1,4 +1,4 @@
-import { IModelSelector } from '../core/types/interfaces/IModelSelector';
+import { IModelSelector } from '../core/types';
 
 /**
  * ModelSelectionService implements IModelSelector for model selection.

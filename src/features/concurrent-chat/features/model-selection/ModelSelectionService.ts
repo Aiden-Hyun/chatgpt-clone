@@ -1,7 +1,7 @@
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
 import { MessageEvent } from '../../core/types/events/MessageEvents';
-import { IModelSelector } from '../../core/types/interfaces/IModelSelector';
+import { IModelSelector } from '../../core/types';
 // Plugin base removed; convert to plain service while keeping API
 
 /**
