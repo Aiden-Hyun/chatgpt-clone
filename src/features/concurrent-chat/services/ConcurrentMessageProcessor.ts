@@ -199,16 +199,38 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
       // For non-user messages, just return as completed
       return { ...message, status: 'completed' };
     } catch (error) {
-      // Mark message as failed
-      const failedMessage = { ...message, status: 'failed' as const };
-      
-      this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_FAILED, {
-        type: MESSAGE_EVENT_TYPES.MESSAGE_FAILED,
-        timestamp: Date.now(),
-        messageId: message.id,
-        message: failedMessage,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+      // For user messages, create a failed assistant placeholder instead of failing the user message
+      if (message.role === 'user') {
+        // Create failed assistant message
+        const failedAssistantMessage: ConcurrentMessage = {
+          id: `assistant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          content: '',
+          role: 'assistant',
+          status: 'failed' as const,
+          timestamp: Date.now(),
+          roomId: message.roomId,
+          model: message.model,
+        };
+        
+        this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_FAILED, {
+          type: MESSAGE_EVENT_TYPES.MESSAGE_FAILED,
+          timestamp: Date.now(),
+          messageId: failedAssistantMessage.id,
+          message: failedAssistantMessage,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      } else {
+        // For non-user messages, mark the message itself as failed
+        const failedMessage = { ...message, status: 'failed' as const };
+        
+        this.eventBus.publish(MESSAGE_EVENT_TYPES.MESSAGE_FAILED, {
+          type: MESSAGE_EVENT_TYPES.MESSAGE_FAILED,
+          timestamp: Date.now(),
+          messageId: message.id,
+          message: failedMessage,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
 
       throw error;
     }

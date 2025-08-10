@@ -228,5 +228,78 @@ describe('useConcurrentChat', () => {
       // Should handle errors gracefully
       expect(result.current.messages).toHaveLength(1);
     });
+
+    it('should only mark assistant messages as failed, never user messages', async () => {
+      const { result } = renderHook(() => useConcurrentChat(mockEventBus, mockServiceContainer));
+
+      // Add initial messages - one user, one assistant
+      act(() => {
+        result.current.replaceMessages([
+          {
+            id: 'user_msg_123',
+            content: 'Hello',
+            role: 'user',
+            status: 'completed',
+            timestamp: Date.now(),
+          },
+          {
+            id: 'assistant_msg_456',
+            content: 'Hi there!',
+            role: 'assistant',
+            status: 'processing',
+            timestamp: Date.now(),
+          },
+        ]);
+      });
+
+      // Simulate MESSAGE_FAILED event for assistant message
+      act(() => {
+        mockEventBus.publish('MESSAGE_FAILED', {
+          type: 'MESSAGE_FAILED',
+          timestamp: Date.now(),
+          messageId: 'assistant_msg_456',
+          message: {
+            id: 'assistant_msg_456',
+            content: 'Hi there!',
+            role: 'assistant',
+            status: 'failed',
+            timestamp: Date.now(),
+          },
+          error: 'AI service error',
+        });
+      });
+
+      // Assistant message should be marked as failed
+      const assistantMessage = result.current.messages.find(m => m.id === 'assistant_msg_456');
+      expect(assistantMessage?.status).toBe('failed');
+      expect(assistantMessage?.error).toBe('AI service error');
+
+      // User message should remain completed (not affected)
+      const userMessage = result.current.messages.find(m => m.id === 'user_msg_123');
+      expect(userMessage?.status).toBe('completed');
+      expect(userMessage?.error).toBeUndefined();
+
+      // Simulate MESSAGE_FAILED event with user message ID (should be ignored due to role guard)
+      act(() => {
+        mockEventBus.publish('MESSAGE_FAILED', {
+          type: 'MESSAGE_FAILED',
+          timestamp: Date.now(),
+          messageId: 'user_msg_123',
+          message: {
+            id: 'user_msg_123',
+            content: 'Hello',
+            role: 'user',
+            status: 'failed',
+            timestamp: Date.now(),
+          },
+          error: 'Should not affect user message',
+        });
+      });
+
+      // User message should still be completed (protected by role guard)
+      const userMessageAfter = result.current.messages.find(m => m.id === 'user_msg_123');
+      expect(userMessageAfter?.status).toBe('completed');
+      expect(userMessageAfter?.error).toBeUndefined();
+    });
   });
 }); 

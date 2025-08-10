@@ -129,7 +129,7 @@ export function useConcurrentChat(
         if (event.type === MESSAGE_EVENT_TYPES.MESSAGE_FAILED) {
           setMessages(prev => 
             prev.map(msg => 
-              msg.id === event.message.id 
+              msg.id === event.message.id && msg.role === 'assistant'
                 ? { ...msg, status: 'failed', error: event.error }
                 : msg
             )
