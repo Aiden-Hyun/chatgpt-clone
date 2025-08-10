@@ -286,10 +286,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     // Only animate for the newest assistant message or explicit regen completions
     const shouldAnimate = (!isHydrationMessage && isNewAssistantAtEnd) || wasRecentlyRegenerated;
 
-    // Only log animation decision for debugging when needed
-    if (index === messagesWithLoading.length - 1 && item.role === 'assistant' && shouldAnimate) {
-      try { console.log('[ANIM] Animation decision:', { shouldAnimate }); } catch {}
-    }
+    // Animation decision logging removed to prevent console spam
 
     const handleRegenerate = () => {
       // Mark this index to animate when regeneration completes

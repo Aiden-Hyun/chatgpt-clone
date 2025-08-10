@@ -1,5 +1,5 @@
 // useChat.ts - Coordinator hook that combines useMessages and useMessageInput
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { useMessagesCombined } from './messages';
 import { useMessageInput } from './useMessageInput';
@@ -49,11 +49,12 @@ export const useChat = (numericRoomId: number | null) => {
   } = useMessageInput(numericRoomId, isNewlyCreatedRoom);
   
   // Wrapper for sendMessage that handles input clearing
-  const sendMessage = async () => {
+  // Memoized to prevent ChatInput re-renders
+  const sendMessage = useCallback(async () => {
     if (!input.trim()) return;
     const userContent = input.trim();
     
-    // Store the current room key before sending
+    // Store the current room key before sending  
     const currentRoomKey = numericRoomId ? numericRoomId.toString() : 'new';
     console.log(`Sending message from room ${currentRoomKey}`);
     
@@ -77,12 +78,13 @@ export const useChat = (numericRoomId: number | null) => {
     
     // If we're in a 'new' room, we'll handle the draft clearing in sendMessageToBackend
     // This avoids race conditions with navigation and state updates
-  };
+  }, [input, numericRoomId, clearInput, sendMessageToBackend, drafts, setDrafts, handleInputChange]);
   
   // Wrapper for regenerateMessage
-  const regenerateMessage = async (index: number) => {
+  // Memoized to prevent unnecessary re-renders
+  const regenerateMessage = useCallback(async (index: number) => {
     await regenerateMessageInBackend(index, drafts, setDrafts);
-  };
+  }, [regenerateMessageInBackend, drafts, setDrafts]);
 
   return {
     // Message state

@@ -1,4 +1,4 @@
-// useMessageInput.ts - Hook for managing chat input and draft messages
+// useMessageInput.ts - Hook for managing chat input and draft messages  
 import { useCallback, useEffect, useRef, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 
@@ -60,25 +60,30 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
   /**
    * Handle input changes and save to drafts
    * Memoized to prevent unnecessary re-renders
+   * Fixed: Use useRef to avoid re-creating callback when roomId changes
    */
+  const roomIdRef = useRef(numericRoomId);
+  roomIdRef.current = numericRoomId;
+  
   const handleInputChange = useCallback((text: string) => {
     setInput(text);
-    const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
+    const roomKey = roomIdRef.current ? roomIdRef.current.toString() : 'new';
     setDrafts((prev) => ({ ...prev, [roomKey]: text }));
-  }, [numericRoomId]);
+  }, []); // Empty dependency array - stable reference
 
   /**
    * Clear the current input field
    * Memoized to prevent unnecessary re-renders
+   * Fixed: Use roomIdRef to avoid re-creating callback when roomId changes
    */
   const clearInput = useCallback(() => {
     setInput('');
     
     // Also clear the current room's draft when explicitly clearing input
     // This helps with the new chatroom case where the room ID changes
-    const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
+    const roomKey = roomIdRef.current ? roomIdRef.current.toString() : 'new';
     setDrafts(prev => ({ ...prev, [roomKey]: '' }));
-  }, [numericRoomId]);
+  }, []); // Empty dependency array - stable reference
 
   /**
    * Update drafts for a specific room

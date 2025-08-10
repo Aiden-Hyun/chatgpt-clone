@@ -35,6 +35,9 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
 }) => {
   // Get proven styles
   const styles = createChatStyles();
+  
+  // Create stable inputRef to prevent ChatInput re-renders
+  const inputRef = React.useRef<any>(null);
 
   // Use the existing proven chat hook
   const {
@@ -71,18 +74,20 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      {/* Messages using proven MessageList component */}
-      <MessageList
-        messages={messages}
-        isNewMessageLoading={loading && messages.length > 0 && messages[messages.length - 1]?.role === 'assistant' && !messages[messages.length - 1]?.content}
-        regeneratingIndices={regeneratingIndices}
-        onRegenerate={regenerateMessage}
-        onUserEditRegenerate={async (userIndex: number, newText: string) => {
-          // Simple edit implementation - could be enhanced later
-          console.log('[EDIT] User edit not fully implemented yet', { userIndex, newTextLen: newText?.length });
-        }}
-        showWelcomeText={messages.length === 0 && !loading}
-      />
+      {/* Messages using proven MessageList component - memoized to prevent input-related re-renders */}
+      {React.useMemo(() => (
+        <MessageList
+          messages={messages}
+          isNewMessageLoading={loading && messages.length > 0 && messages[messages.length - 1]?.role === 'assistant' && !messages[messages.length - 1]?.content}
+          regeneratingIndices={regeneratingIndices}
+          onRegenerate={regenerateMessage}
+          onUserEditRegenerate={async (userIndex: number, newText: string) => {
+            // Simple edit implementation - could be enhanced later
+            console.log('[EDIT] User edit not fully implemented yet', { userIndex, newTextLen: newText?.length });
+          }}
+          showWelcomeText={messages.length === 0 && !loading}
+        />
+      ), [messages, loading, regeneratingIndices, regenerateMessage])}
 
       {/* Input using proven ChatInput component */}
       <ChatInput
@@ -91,7 +96,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
         onSend={sendMessage}
         sending={sending}
         isTyping={isTyping}
-        inputRef={React.useRef(null)}
+        inputRef={inputRef}
       />
     </KeyboardAvoidingView>
   );
