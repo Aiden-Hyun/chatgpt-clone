@@ -16,8 +16,8 @@ export function useModelSelection(eventBus: EventBus, serviceContainer: ServiceC
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentModel, setCurrentModel] = useState<string>('gpt-3.5-turbo');
-  const [availableModels, setAvailableModels] = useState<Array<{ label: string; value: string; description?: string }>>([]);
-  const [modelRecommendations, setModelRecommendations] = useState<Array<{ model: string; reason: string; score: number }>>([]);
+  const [availableModels, setAvailableModels] = useState<{ label: string; value: string; description?: string }[]>([]);
+  const [modelRecommendations, setModelRecommendations] = useState<{ model: string; reason: string; score: number }[]>([]);
   const [modelUsageStats, setModelUsageStats] = useState<Map<string, number>>(new Map());
 
   // Initialize model selection service
