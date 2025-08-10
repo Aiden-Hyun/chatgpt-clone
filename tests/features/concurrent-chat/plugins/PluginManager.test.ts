@@ -1,6 +1,6 @@
 import { ServiceContainer } from '../../../../src/features/concurrent-chat/core/container/ServiceContainer';
 import { EventBus } from '../../../../src/features/concurrent-chat/core/events/EventBus';
-import { MessageEvent } from '../../../../src/features/concurrent-chat/core/types/events/MessageEvents';
+import { MessageEvent } from '../../../../src/features/concurrent-chat/core/types/events';
 import { BasePlugin } from '../../../../src/features/concurrent-chat/plugins/BasePlugin';
 import { PluginManager } from '../../../../src/features/concurrent-chat/plugins/PluginManager';
 

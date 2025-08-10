@@ -2,7 +2,7 @@ import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../shared/lib/globalEven
 import { ServiceContainer } from '../core/container/ServiceContainer';
 import { EventBus } from '../core/events/EventBus';
 import { ConcurrentMessage, IAIService, IMessageProcessor } from '../core/types';
-import { MESSAGE_EVENT_TYPES } from '../core/types/events/MessageEvents';
+import { MESSAGE_EVENT_TYPES } from '../core/types/events';
 
 /**
  * ConcurrentMessageProcessor - Real implementation of IMessageProcessor

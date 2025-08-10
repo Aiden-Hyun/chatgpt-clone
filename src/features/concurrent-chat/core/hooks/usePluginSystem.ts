@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';
-import { MessageEvent } from '../types/events/MessageEvents';
+import { MessageEvent } from '../types/events';
 
 /**
  * Hook for managing the plugin system in the concurrent chat system

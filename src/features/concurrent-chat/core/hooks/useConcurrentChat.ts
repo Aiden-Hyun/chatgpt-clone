@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';
-import { MESSAGE_EVENT_TYPES, MessageEvent } from '../types/events/MessageEvents';
+import { MESSAGE_EVENT_TYPES, MessageEvent } from '../types/events';
 import { IAIService } from '../types/interfaces/IAIService';
 import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
 import { IModelSelector } from '../types/interfaces/IModelSelector';

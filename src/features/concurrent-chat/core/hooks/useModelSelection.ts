@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';
-import { MESSAGE_EVENT_TYPES, MessageEvent } from '../types/events/MessageEvents';
+import { MESSAGE_EVENT_TYPES, MessageEvent } from '../types/events';
 import { IModelSelector } from '../types/interfaces/IModelSelector';
 
 /**

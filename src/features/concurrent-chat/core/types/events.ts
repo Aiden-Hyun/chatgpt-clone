@@ -1,4 +1,4 @@
-import { ConcurrentMessage } from '../interfaces/IMessageProcessor';
+import { ConcurrentMessage } from './interfaces/IMessageProcessor';
 
 /**
  * Base interface for all message events
@@ -250,4 +250,4 @@ export function isMessageEventType<T extends MessageEvent>(
   type: T['type']
 ): event is T {
   return event.type === type;
-} 
+}

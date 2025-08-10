@@ -8,8 +8,4 @@ export { IMessageValidator } from './interfaces/IMessageValidator';
 export { IModelSelector } from './interfaces/IModelSelector';
 
 // Event types
-export {
-    AnimationCompletedEvent, AnimationStartedEvent, BaseMessageEvent, EditingCancelledEvent, EditingSavedEvent, EditingStartedEvent, MESSAGE_EVENT_TYPES, MessageCancelledEvent, MessageCompletedEvent, MessageEvent, MessageFailedEvent, MessageProcessingEvent, MessageRetriedEvent, MessageSentEvent, MessagesClearedEvent,
-    ModelChangedEvent, RegenerationRequestedEvent, StreamingChunkEvent,
-    StreamingEndedEvent, StreamingStartedEvent, isMessageEventType
-} from './events/MessageEvents';
+export * from './events';

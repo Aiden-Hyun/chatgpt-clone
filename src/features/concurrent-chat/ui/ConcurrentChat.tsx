@@ -22,7 +22,7 @@ import { ModelSelectionService } from '../services/ModelSelectionService';
 import { IMessageProcessor } from '../core/types';
 
 import { PersistenceService } from '../services/PersistenceService';
-import { MESSAGE_EVENT_TYPES } from '../core/types/events/MessageEvents';
+import { MESSAGE_EVENT_TYPES } from '../core/types/events';
 import { EditingService } from '../features/editing/EditingService';
 import { ModelSelector } from '../features/model-selection/components/ModelSelector';
 import { RegenerationService } from '../features/regeneration/RegenerationService';
