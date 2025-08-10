@@ -250,9 +250,10 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   // Prepare messages with stable ids for rendering
   const messagesWithIds = messages.map((m, i) => {
-    const explicitId = (m as any).id ?? (m as any)._loadingId;
-    if (explicitId) return m as any;
-    return { ...(m as any), id: stableIdsRef.current[i] } as any;
+    const existingId = (m as any).id as string | undefined;
+    const loadingId = (m as any)._loadingId as string | undefined;
+    const resolvedId = existingId ?? loadingId ?? stableIdsRef.current[i];
+    return { ...(m as any), id: resolvedId } as any;
   }) as ChatMessage[];
 
   // Add empty assistant message for new message loading, with a stable id
