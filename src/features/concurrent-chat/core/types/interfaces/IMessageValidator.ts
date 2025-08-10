@@ -1,4 +1,4 @@
-import { ConcurrentMessage } from './IMessageProcessor';
+import { ConcurrentMessage } from '../messages';
 
 /**
  * Interface for message validation in the concurrent chat system

@@ -1,6 +1,6 @@
 import { ICommand } from '../types/interfaces/ICommand';
 import { IModelSelector } from '../types/interfaces/IModelSelector';
-import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
+import { ConcurrentMessage, IMessageProcessor } from '../types';
 import { generateRequestId } from '../utils/messageIdGenerator';
 
 export class SendMessageCommand implements ICommand {

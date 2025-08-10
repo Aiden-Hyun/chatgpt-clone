@@ -1,4 +1,4 @@
-import { ConcurrentMessage } from './interfaces/IMessageProcessor';
+import { ConcurrentMessage } from './messages';
 
 /**
  * Base interface for all message events

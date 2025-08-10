@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ConcurrentMessage } from './IMessageProcessor';
+import { ConcurrentMessage } from '../messages';
 
 /**
  * Interface for message rendering in the concurrent chat system

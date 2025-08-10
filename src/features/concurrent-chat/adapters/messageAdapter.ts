@@ -1,5 +1,4 @@
-import { ChatMessage } from '../../chat/types';
-import { ConcurrentMessage } from '../core/types';
+import { ChatMessage, ConcurrentMessage } from '../core/types';
 
 /**
  * Message Adapter

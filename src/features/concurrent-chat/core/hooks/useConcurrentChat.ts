@@ -3,7 +3,7 @@ import { ServiceContainer } from '../container/ServiceContainer';
 import { EventBus } from '../events/EventBus';
 import { MESSAGE_EVENT_TYPES, MessageEvent } from '../types/events';
 import { IAIService } from '../types/interfaces/IAIService';
-import { ConcurrentMessage, IMessageProcessor } from '../types/interfaces/IMessageProcessor';
+import { ConcurrentMessage, IMessageProcessor } from '../types';
 import { IModelSelector } from '../types/interfaces/IModelSelector';
 
 // In-memory cache removed to avoid stale/partial history across navigation

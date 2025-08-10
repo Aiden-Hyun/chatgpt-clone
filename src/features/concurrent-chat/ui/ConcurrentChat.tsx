@@ -6,7 +6,7 @@ import { supabase } from '../../../shared/lib/supabase';
 import { ChatInput, MessageList } from '../../chat/components';
 import { configureServices } from '../../chat/services/config/ServiceConfiguration';
 import { ServiceFactory } from '../../chat/services/core';
-import type { ChatMessage } from '../../chat/types';
+import type { ChatMessage } from '../core/types';
 import {
     toChatMessages
 } from '../adapters/messageAdapter';

@@ -6,20 +6,8 @@
  * allowing for flexible message types and async processing.
  */
 
-/**
- * Represents a message in the concurrent chat system
- */
-export interface ConcurrentMessage {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant' | 'system';
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
-  timestamp: number;
-  roomId?: number;
-  model?: string;
-  error?: string;
-  metadata?: Record<string, any>;
-}
+// Re-export ConcurrentMessage from the centralized messages module
+export { ConcurrentMessage } from '../messages';
 
 export interface IMessageProcessor {
   /**
