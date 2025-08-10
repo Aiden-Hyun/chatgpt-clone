@@ -1,7 +1,6 @@
 // src/features/chat/services/index.ts
 
-// Legacy exports (for backward compatibility) - moved to legacy folder
-export * from './legacy';
+// Legacy exports removed - functionality consolidated into implementation classes
 
 // Main sendMessageHandler (now uses SOLID architecture)
 export { sendMessageHandler } from './sendMessage/index';

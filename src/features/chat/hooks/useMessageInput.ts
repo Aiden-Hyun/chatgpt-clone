@@ -1,5 +1,5 @@
 // useMessageInput.ts - Hook for managing chat input and draft messages
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 
 /**
@@ -59,24 +59,26 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
 
   /**
    * Handle input changes and save to drafts
+   * Memoized to prevent unnecessary re-renders
    */
-  const handleInputChange = (text: string) => {
+  const handleInputChange = useCallback((text: string) => {
     setInput(text);
     const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
     setDrafts((prev) => ({ ...prev, [roomKey]: text }));
-  };
+  }, [numericRoomId]);
 
   /**
    * Clear the current input field
+   * Memoized to prevent unnecessary re-renders
    */
-  const clearInput = () => {
+  const clearInput = useCallback(() => {
     setInput('');
     
     // Also clear the current room's draft when explicitly clearing input
     // This helps with the new chatroom case where the room ID changes
     const roomKey = numericRoomId ? numericRoomId.toString() : 'new';
-        setDrafts(prev => ({ ...prev, [roomKey]: '' }));
-  };
+    setDrafts(prev => ({ ...prev, [roomKey]: '' }));
+  }, [numericRoomId]);
 
   /**
    * Update drafts for a specific room

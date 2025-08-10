@@ -1,11 +1,24 @@
 // src/features/chat/services/implementations/SupabaseChatRoomService.ts
 import { supabase } from '../../../../shared/lib/supabase';
 import { IChatRoomService } from '../interfaces/IChatRoomService';
-import { createChatRoom } from '../legacy/createChatRoom';
 
 export class SupabaseChatRoomService implements IChatRoomService {
   async createRoom(userId: string, model: string): Promise<number | null> {
-    return createChatRoom(userId, model);
+    // Consolidated from legacy/createChatRoom.ts
+    const defaultName = `Chat ${new Date().toLocaleString()}`;
+
+    const { data, error } = await supabase
+      .from('chatrooms')
+      .insert({ name: defaultName, user_id: userId, model })
+      .select('id')
+      .single();
+
+    if (error || !data) {
+      console.error('Failed to create chatroom:', error);
+      return null;
+    }
+
+    return data.id;
   }
 
   async updateRoom(roomId: number, updates: {

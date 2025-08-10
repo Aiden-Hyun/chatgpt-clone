@@ -1,4 +1,4 @@
-import React, { RefObject, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useMemo, useState } from 'react';
 import {
     Text,
     TextInput,
@@ -21,82 +21,89 @@ interface ChatInputProps {
 /**
  * ChatInput
  * Handles message input and submission UI.
+ * Optimized to prevent unnecessary re-renders on every keystroke.
  */
-const ChatInput: React.FC<ChatInputProps> = ({
+const ChatInput: React.FC<ChatInputProps> = React.memo(function ChatInput({
   input,
   onChangeText,
   onSend,
   sending,
   isTyping,
   inputRef,
-}) => {
-  // Add render counting for performance monitoring
-  const renderCount = useRef(0);
-  renderCount.current += 1;
-  
-  // Log render count every 5 renders (disabled for performance)
-  // if (renderCount.current % 5 === 0) {
-  //   console.log(`[RENDER-COUNT] ChatInput: ${renderCount.current} renders`);
-  // }
-
+}) {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const { t } = useLanguageContext();
   
-  // Get styles from dedicated style file
-  const { styles, placeholderTextColor } = createChatInputStyles(isInputFocused);
+  // Memoize styles to prevent recreation on every render
+  const { styles, placeholderTextColor } = useMemo(
+    () => createChatInputStyles(isInputFocused),
+    [isInputFocused]
+  );
 
-  const getSendButtonStyle = () => {
-    if (!input.trim()) {
-      return [styles.sendButton, styles.disabledButton];
-    }
-    return styles.sendButton;
-  };
+  // Memoize computed values based on input state
+  const hasText = useMemo(() => input.trim().length > 0, [input]);
+  
+  const sendButtonStyle = useMemo(() => {
+    return hasText 
+      ? styles.sendButton 
+      : [styles.sendButton, styles.disabledButton];
+  }, [styles.sendButton, styles.disabledButton, hasText]);
 
-  const getSendButtonTextStyle = () => {
-    if (!input.trim()) {
-      return [styles.sendButtonText, styles.disabledButtonText];
-    }
-    return styles.sendButtonText;
-  };
+  const sendButtonTextStyle = useMemo(() => {
+    return hasText 
+      ? styles.sendButtonText 
+      : [styles.sendButtonText, styles.disabledButtonText];
+  }, [styles.sendButtonText, styles.disabledButtonText, hasText]);
 
-  const getInputStyle = () => {
-    if (isInputFocused) {
-      return [styles.input, styles.inputFocused];
+  const inputStyle = useMemo(() => {
+    return isInputFocused 
+      ? [styles.input, styles.inputFocused] 
+      : styles.input;
+  }, [styles.input, styles.inputFocused, isInputFocused]);
+
+  // Memoize event handlers to prevent recreation
+  const handleFocus = useCallback(() => setIsInputFocused(true), []);
+  const handleBlur = useCallback(() => setIsInputFocused(false), []);
+  
+  const handleKeyPress = useCallback(({ nativeEvent }: any) => {
+    if (nativeEvent.key === 'Enter' && input.trim()) {
+      onSend();
     }
-    return styles.input;
-  };
+  }, [input, onSend]);
+
+  const handleSendPress = useCallback(() => {
+    if (hasText) {
+      onSend();
+    }
+  }, [hasText, onSend]);
 
   return (
     <View style={styles.inputRow}>
       <TextInput
         ref={inputRef}
-        style={getInputStyle()}
+        style={inputStyle}
         value={input}
         onChangeText={onChangeText}
         placeholder={t('chat.placeholder')}
         placeholderTextColor={placeholderTextColor}
-        onFocus={() => setIsInputFocused(true)}
-        onBlur={() => setIsInputFocused(false)}
-        onKeyPress={({ nativeEvent }) => {
-          if (nativeEvent.key === 'Enter' && input.trim()) {
-            onSend();
-          }
-        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onKeyPress={handleKeyPress}
         autoFocus
         editable={true}
       />
       <TouchableOpacity
-        style={getSendButtonStyle()}
-        onPress={onSend}
-        disabled={!input.trim()}
+        style={sendButtonStyle}
+        onPress={handleSendPress}
+        disabled={!hasText}
         activeOpacity={0.8}
       >
-        <Text style={getSendButtonTextStyle()}>
+        <Text style={sendButtonTextStyle}>
           {t('chat.send')}
         </Text>
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 export default ChatInput; 
