@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ServiceContainer } from '../../core/container/ServiceContainer';
 import { EventBus } from '../../core/events/EventBus';
-import { ModelSelectionService } from './ModelSelectionService';
+import { ModelSelectionService } from '../../services/ModelSelectionService';
 
 /**
  * Hook for managing enhanced model selection

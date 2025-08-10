@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { EventBus } from '../../../../src/features/concurrent-chat/core/events/EventBus';
 import { ServiceContainer } from '../../../../src/features/concurrent-chat/core/container/ServiceContainer';
-import { ModelSelectionService } from '../../../../src/features/concurrent-chat/features/model-selection/ModelSelectionService';
+import { ModelSelectionService } from '../../../../src/features/concurrent-chat/services/ModelSelectionService';
 import { useModelSelection } from '../../../../src/features/concurrent-chat/features/model-selection/useModelSelection';
 import { IModelSelector } from '../../../../src/features/concurrent-chat/core/types/interfaces/IModelSelector';
 

@@ -8,5 +8,5 @@ export { useMessageEditing } from './editing/useMessageEditing';
 
 // streaming removed
 
-export { ModelSelectionService } from './model-selection/ModelSelectionService';
+export { ModelSelectionService } from '../services/ModelSelectionService';
 export { useModelSelection } from './model-selection/useModelSelection';

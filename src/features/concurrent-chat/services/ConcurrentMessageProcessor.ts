@@ -1,8 +1,8 @@
 import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../shared/lib/globalEvents';
 import { ServiceContainer } from '../core/container/ServiceContainer';
 import { EventBus } from '../core/events/EventBus';
+import { ConcurrentMessage, IAIService, IMessageProcessor } from '../core/types';
 import { MESSAGE_EVENT_TYPES } from '../core/types/events/MessageEvents';
-import { IAIService, ConcurrentMessage, IMessageProcessor } from '../core/types';
 
 /**
  * ConcurrentMessageProcessor - Real implementation of IMessageProcessor
@@ -75,7 +75,7 @@ export class ConcurrentMessageProcessor implements IMessageProcessor {
         } catch {}
 
         // Build conversation history from metadata.context or fallback to minimal
-        const history: Array<{ role: string; content: string }> = [];
+        const history: { role: string; content: string }[] = [];
         const contextFromMetadata = (message as any).metadata?.context as ConcurrentMessage[] | undefined;
         if (Array.isArray(contextFromMetadata)) {
           for (const m of contextFromMetadata) {

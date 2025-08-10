@@ -1,4 +1,4 @@
-import { ModelSelectionService } from '../../../../../src/features/concurrent-chat/core/services/ModelSelectionService';
+import { ModelSelectionService } from '../../../../../src/features/concurrent-chat/services/ModelSelectionService';
 import { IModelSelector } from '../../../../../src/features/concurrent-chat/core/types/interfaces/IModelSelector';
 
 describe('ModelSelectionService', () => {
