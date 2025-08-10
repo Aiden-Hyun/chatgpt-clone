@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Animated, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../../shared/hooks';
@@ -35,7 +35,6 @@ export const MessageList: React.FC<MessageListProps> = ({
   const theme = useAppTheme();
   const { t } = useLanguageContext();
   const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedWelcomeKey, setSelectedWelcomeKey] = useState('');
   const cursorOpacity = useRef(new Animated.Value(1)).current;
   // Stable IDs for messages to ensure consistent FlatList keys
@@ -51,7 +50,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   const [animationTriggers, setAnimationTriggers] = useState<Map<number, string>>(new Map());
 
   // Array of welcome message keys
-  const welcomeMessageKeys = [
+  const welcomeMessageKeys = useMemo(() => [
     'welcome.how_are_you',
     'welcome.whats_on_mind', 
     'welcome.how_can_help',
@@ -62,7 +61,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     'welcome.next_big_idea',
     'welcome.ready_adventure',
     'welcome.help_discover'
-  ];
+  ], []);
 
   const typingSpeed = 30; // milliseconds per character
 
@@ -167,7 +166,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       const randomKey = welcomeMessageKeys[Math.floor(Math.random() * welcomeMessageKeys.length)];
       setSelectedWelcomeKey(randomKey);
     }
-  }, [messages.length, showWelcomeText, isNewMessageLoading]);
+  }, [messages.length, showWelcomeText, isNewMessageLoading, welcomeMessageKeys]);
 
   // Typewriter animation effect
   useEffect(() => {
@@ -176,16 +175,13 @@ export const MessageList: React.FC<MessageListProps> = ({
       
       // Reset animation when welcome text should be shown
       setDisplayedText('');
-      setCurrentIndex(0);
+      let currentIndex = 0;
       
       const typeNextChar = () => {
-        setCurrentIndex(prevIndex => {
-          if (prevIndex < welcomeMessage.length) {
-            setDisplayedText(prevText => prevText + welcomeMessage[prevIndex]);
-            return prevIndex + 1;
-          }
-          return prevIndex;
-        });
+        if (currentIndex < welcomeMessage.length) {
+          setDisplayedText(prevText => prevText + welcomeMessage[currentIndex]);
+          currentIndex++;
+        }
       };
 
       const interval = setInterval(typeNextChar, typingSpeed);
@@ -321,7 +317,10 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <FlatList
       data={messagesWithLoading}
-      keyExtractor={(item: any) => item.id}
+      keyExtractor={(item: any, index: number) => {
+        const key = item.id || `fallback_${index}`;
+        return key;
+      }}
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}
