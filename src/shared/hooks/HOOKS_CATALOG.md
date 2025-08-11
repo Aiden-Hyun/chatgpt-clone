@@ -36,7 +36,7 @@ This document catalogs ALL custom hooks available in the app to prevent hardcodi
 - `useChat` - Main chat functionality coordinator with state machine (replaces useMessages)
 - `useChatRooms` - Chat room management
 - `useMessageInput` - Message input handling
-- `useMessageStorage` - Local storage for messages
+- `useOptimisticMessages` - Optimistic loading for new chat rooms
 - `useModelSelection` - AI model selection
 - `useChatContext` - Provides chat context (React context hook)
 

@@ -3,7 +3,6 @@ import { IAIApiService } from '../interfaces/IAIApiService';
 import { IChatRoomService } from '../interfaces/IChatRoomService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { INavigationService } from '../interfaces/INavigationService';
-import { IStorageService } from '../interfaces/IStorageService';
 import { IUIStateService } from '../interfaces/IUIStateService';
 import { ChatMessage } from '../types';
 
@@ -11,7 +10,6 @@ export interface ServiceConfig {
   aiApiService: { new(): IAIApiService };
   chatRoomService: { new(): IChatRoomService };
   messageService: { new(): IMessageService };
-  storageService: { new(): IStorageService };
   navigationService: { new(): INavigationService };
   uiStateService: {
     new(
@@ -51,10 +49,7 @@ export class ServiceRegistry {
     return new config.messageService();
   }
 
-  static createStorageService(): IStorageService {
-    const config = this.getConfig();
-    return new config.storageService();
-  }
+
 
   static createNavigationService(): INavigationService {
     const config = this.getConfig();

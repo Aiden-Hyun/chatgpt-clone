@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import React from 'react';
 import {
     KeyboardAvoidingView,
@@ -52,7 +52,28 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   };
 
   const handleChatSelect = (selectedRoomId: string) => {
-    try { console.log('[NAV] select', selectedRoomId); } catch {}
+    try { 
+      console.log('🚀 [NAV] Chat selection received', { 
+        selectedRoomId, 
+        currentRoomId: roomId,
+        selectedRoomIdType: typeof selectedRoomId,
+        timestamp: new Date().toISOString() 
+      });
+      
+      // Don't navigate to the same room
+      if (selectedRoomId === roomId) {
+        console.log('⏹️ [NAV] Already in room, skipping navigation', selectedRoomId);
+        return;
+      }
+      
+      // Navigate to the selected room
+      console.log('🎯 [NAV] Navigating to room', selectedRoomId);
+      router.push(`/chat/${selectedRoomId}`);
+      
+      console.log('✅ [NAV] Navigation command sent', selectedRoomId);
+    } catch (error) {
+      console.error('❌ [NAV] Navigation error', error);
+    }
   };
 
   const handleBack = () => {
@@ -130,6 +151,15 @@ const ChatScreen = () => {
   // Handle temporary room IDs - if roomId starts with 'temp_', treat it as a new room
   const isTemporaryRoom = roomId?.startsWith('temp_') ?? false;
   const numericRoomId = isTemporaryRoom ? null : (roomId ? parseInt(roomId, 10) : null);
+  
+  if (__DEV__) {
+    console.log('🏠 [CHAT-SCREEN] Route params changed', {
+      roomId,
+      isTemporaryRoom,
+      numericRoomId,
+      timestamp: new Date().toISOString()
+    });
+  }
   
   // 🎯 CONTEXT CONSUMPTION: All context/hook consumption happens here
   const chatScreenState = useChatScreen();

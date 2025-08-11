@@ -4,7 +4,6 @@ export * from './IAIApiService';
 export * from './IChatRoomService';
 export * from './IMessageService';
 export * from './INavigationService';
-export * from './IStorageService';
 export * from './IUIStateService';
 
 // New segregated interfaces

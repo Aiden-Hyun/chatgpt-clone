@@ -82,7 +82,20 @@ export class SupabaseMessageService implements IMessageService {
 
   async loadMessages(roomId: number): Promise<ChatMessage[]> {
     // Consolidated from legacy/loadMessages.ts
-    if (!roomId) return [];
+    if (!roomId) {
+      if (__DEV__) {
+        console.log('⚠️ [DB-SERVICE] No roomId provided, returning empty array');
+      }
+      return [];
+    }
+
+    if (__DEV__) {
+      console.log(`📊 [DB-SERVICE] Executing SQL query for room ${roomId}`, {
+        query: 'SELECT role, content FROM messages WHERE room_id = ? ORDER BY id ASC',
+        roomId,
+        timestamp: new Date().toISOString()
+      });
+    }
 
     const { data, error } = await supabase
       .from('messages')
@@ -90,9 +103,24 @@ export class SupabaseMessageService implements IMessageService {
       .eq('room_id', roomId)
       .order('id', { ascending: true });
 
-    if (error || !data) {
-      console.error('Failed to load messages:', error);
+    if (error) {
+      console.error(`❌ [DB-SERVICE] Database error for room ${roomId}:`, error);
       return [];
+    }
+    
+    if (!data) {
+      console.warn(`⚠️ [DB-SERVICE] No data returned for room ${roomId}`);
+      return [];
+    }
+
+    if (__DEV__) {
+      console.log(`✅ [DB-SERVICE] Successfully loaded ${data.length} messages for room ${roomId}`, {
+        messages: data.map((msg, index) => ({
+          index,
+          role: msg.role,
+          contentPreview: msg.content?.substring(0, 50) + '...'
+        }))
+      });
     }
 
     return data as ChatMessage[];

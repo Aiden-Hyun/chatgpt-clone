@@ -4,8 +4,8 @@ export * from './useChatRooms';
 export * from './useMessageInput';
 
 // New extracted hooks
-export * from './useMessageStorage';
 export * from './useModelSelection';
+export * from './useOptimisticMessages';
 
 // Legacy message hooks removed - using new state machine system
 

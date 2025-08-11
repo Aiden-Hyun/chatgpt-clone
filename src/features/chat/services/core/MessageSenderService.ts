@@ -4,11 +4,11 @@ import { IAIApiService } from '../interfaces/IAIApiService';
 import { IChatRoomService } from '../interfaces/IChatRoomService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { INavigationService } from '../interfaces/INavigationService';
-import { IStorageService } from '../interfaces/IStorageService';
-import { IUIStateService } from '../interfaces/IUIStateService';
+
 import { ChatMessage } from '../../types';
-import { AIApiRequest } from '../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
+import { IUIStateService } from '../interfaces/IUIStateService';
+import { AIApiRequest } from '../types';
 import { IAIResponseProcessor } from './AIResponseProcessor';
 import { LoggingService } from './LoggingService';
 import { RetryService } from './RetryService';
@@ -40,7 +40,6 @@ export class MessageSenderService {
     private chatRoomService: IChatRoomService,
     private messageService: IMessageService,
     private aiApiService: IAIApiService,
-    private storageService: IStorageService,
     private navigationService: INavigationService,
     private uiStateService: IUIStateService,
     private responseProcessor: IAIResponseProcessor

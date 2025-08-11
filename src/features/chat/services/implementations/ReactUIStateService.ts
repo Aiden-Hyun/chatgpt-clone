@@ -7,6 +7,8 @@ import { IUIStateService } from '../interfaces/IUIStateService';
 // Removed: import { animateResponse } from '../legacy/animateResponse'; // No longer needed
 import { handleDraftCleanup } from '../sendMessage/handleDraftCleanup';
 import { ChatMessage } from '../types';
+import { MessageStateManager } from '../MessageStateManager';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 
 export class ReactUIStateService implements 
   IUIStateService, 
@@ -15,11 +17,15 @@ export class ReactUIStateService implements
   IAnimationService, 
   IDraftService {
   
+  private messageStateManager: MessageStateManager;
+  
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     private setIsTyping: React.Dispatch<React.SetStateAction<boolean>>,
     private setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>
-  ) {}
+  ) {
+    this.messageStateManager = new MessageStateManager(setMessages);
+  }
 
   updateMessageState(args: {
     regenerateIndex?: number;
@@ -27,27 +33,37 @@ export class ReactUIStateService implements
     assistantMsg: ChatMessage;
     messageId?: string;
   }): void {
-    // Inline message state handling (moved from deleted handleMessageState.ts)
+    // ✅ STATE MACHINE: Use MessageStateManager for consistent state management
     if (args.regenerateIndex !== undefined) {
+      // For regeneration, find the message by index and start regeneration
       this.setMessages((prev) => {
-        const updated = [...prev];
-        // Update the assistant message at the regeneration index
-        updated[args.regenerateIndex!] = { 
-          ...updated[args.regenerateIndex!], 
-          content: '', 
-          state: 'loading'  // Set to loading state for regeneration
-        };
-        return updated;
+        const messageToRegenerate = prev[args.regenerateIndex!];
+        if (messageToRegenerate?.id) {
+          // Use state manager for regeneration
+          this.messageStateManager.startRegeneration(messageToRegenerate.id);
+        } else {
+          // Fallback for messages without ID (shouldn't happen in new system)
+          const updated = [...prev];
+          updated[args.regenerateIndex!] = { 
+            ...updated[args.regenerateIndex!], 
+            content: '', 
+            state: 'loading',
+            id: generateMessageId() // Assign ID if missing
+          };
+          return updated;
+        }
+        return prev; // State manager handles the update
       });
     } else {
-      // Normal flow: add new user and assistant messages
-      this.setMessages((prev) => {
-        const enhancedAssistantMsg = args.messageId 
-          ? { ...args.assistantMsg, id: args.messageId }
-          : args.assistantMsg;
-        
-        return [...prev, args.userMsg, enhancedAssistantMsg];
-      });
+      // ✅ STATE MACHINE: Create message pair atomically
+      const userMessageId = args.userMsg.id || generateMessageId();
+      const assistantMessageId = args.messageId || args.assistantMsg.id || generateMessageId();
+      
+      this.messageStateManager.createMessagePair(
+        userMessageId,
+        args.userMsg.content,
+        assistantMessageId
+      );
     }
   }
 
@@ -56,9 +72,16 @@ export class ReactUIStateService implements
   }
 
   addErrorMessage(message: string): void {
+    // ✅ STATE MACHINE: Create error message with proper state
+    const errorMessageId = generateMessageId();
     this.setMessages((prev) => [
       ...prev,
-      { role: 'assistant', content: message },
+      { 
+        role: 'assistant', 
+        content: message, 
+        state: 'error',
+        id: errorMessageId 
+      },
     ]);
   }
 
@@ -78,36 +101,31 @@ export class ReactUIStateService implements
     regenerateIndex?: number;
     messageId?: string;
   }): void {
-
-    
-    this.setMessages((prev) => {
-      const updated = [...prev];
-      
-      let targetIndex: number;
-      
-      if (args.regenerateIndex !== undefined) {
-        // For regeneration, use the specified index
-        targetIndex = args.regenerateIndex;
-      } else if (args.messageId) {
-        // Find message by ID
-        targetIndex = updated.findIndex(msg => msg.id === args.messageId);
-      } else {
-        // Find the last assistant message (fallback)
-        targetIndex = updated.findLastIndex(msg => msg.role === 'assistant');
-      }
-      
-      // Update the target message with full content and set to animating state
-      if (targetIndex >= 0 && targetIndex < updated.length) {
-        updated[targetIndex] = { 
-          ...updated[targetIndex],
-          fullContent: args.fullContent,
-          content: args.fullContent, // Also update regular content
-          state: 'animating'  // Trigger animation
-        };
-      }
-      
-      return updated;
-    });
+    // ✅ STATE MACHINE: Use MessageStateManager for consistent state transitions
+    if (args.messageId) {
+      // Preferred: Use message ID for direct targeting
+      this.messageStateManager.finishStreamingAndAnimate(args.messageId, args.fullContent);
+    } else if (args.regenerateIndex !== undefined) {
+      // Find message by index and use state manager
+      this.setMessages((prev) => {
+        const messageToUpdate = prev[args.regenerateIndex!];
+        if (messageToUpdate?.id) {
+          this.messageStateManager.finishStreamingAndAnimate(messageToUpdate.id, args.fullContent);
+        }
+        return prev; // State manager handles the update
+      });
+    } else {
+      // Fallback: Find the last assistant message in loading state
+      this.setMessages((prev) => {
+        const lastLoadingAssistant = [...prev].reverse().find(
+          msg => msg.role === 'assistant' && msg.state === 'loading'
+        );
+        if (lastLoadingAssistant?.id) {
+          this.messageStateManager.finishStreamingAndAnimate(lastLoadingAssistant.id, args.fullContent);
+        }
+        return prev; // State manager handles the update
+      });
+    }
   }
 
   // REMOVED: animateResponse method - replaced with TypewriterText component

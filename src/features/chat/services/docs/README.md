@@ -22,7 +22,7 @@ The interfaces have been segregated following the Interface Segregation Principl
 ### Hooks
 Extracted hooks for better separation of concerns:
 
-- `useMessageStorage` - Handles local storage operations
+- `useOptimisticMessages` - Handles optimistic loading for new chat rooms
 - `useModelSelection` - Manages model selection and persistence
 
 ## Usage
@@ -48,9 +48,9 @@ const messageSender = ServiceFactory.createMessageSender(
 
 ### 3. Use Extracted Hooks
 ```typescript
-import { useMessageStorage, useModelSelection } from '../hooks';
+import { useOptimisticMessages, useModelSelection } from '../hooks';
 
-const { storedMessages, storedModel } = useMessageStorage(roomId);
+const { optimisticMessages, optimisticModel } = useOptimisticMessages(roomId);
 const { selectedModel, updateModel } = useModelSelection(roomId);
 ```
 

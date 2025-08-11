@@ -8,8 +8,8 @@ import { UserMessage } from './UserMessage';
 interface MessageItemProps {
   message: ChatMessage;
   index: number;
-  isNewMessageLoading: boolean;
-  isRegenerating: boolean;
+  // ✅ STATE MACHINE: Remove legacy boolean flags - use message.state instead
+  isRegenerating?: boolean; // Keep for regeneration tracking by index
   onRegenerate?: () => void;
   onUserEditRegenerate?: (index: number, newText: string) => void;
   showAvatar?: boolean;
@@ -19,14 +19,13 @@ interface MessageItemProps {
 export const MessageItem: React.FC<MessageItemProps> = ({
   message,
   index,
-  isNewMessageLoading,
   isRegenerating,
   onRegenerate,
   onUserEditRegenerate,
   showAvatar = true,
   isLastInGroup = true,
   }) => {
-    // Use message state for assistant messages instead of external loading flags
+    // ✅ STATE MACHINE: Use message state for all rendering decisions
     if (message.role === 'assistant') {
       switch (message.state) {
         case 'loading':
@@ -46,9 +45,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       }
     }
 
-    // Backward compatibility: Show loading for legacy patterns
-    if ((isNewMessageLoading && message.role === 'assistant' && !message.content) ||
-        (isRegenerating && message.role === 'assistant')) {
+    // ✅ STATE MACHINE: Backward compatibility for regeneration by index
+    if (isRegenerating && message.role === 'assistant') {
       return <LoadingMessage />;
     }
 

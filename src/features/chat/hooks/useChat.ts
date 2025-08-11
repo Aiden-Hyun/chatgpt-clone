@@ -6,20 +6,20 @@ import { generateMessageId } from '../utils/messageIdGenerator';
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
-import { useMessageStorage } from './useMessageStorage';
 import { useModelSelection } from './useModelSelection';
+import { useOptimisticMessages } from './useOptimisticMessages';
 
 export const useChat = (numericRoomId: number | null) => {
   
   const [isNewlyCreatedRoom, setIsNewlyCreatedRoom] = useState(false);
   
-  // Check if this is a newly created room
+  // Check if this is a newly created room by looking for optimistic data
   useEffect(() => {
     const checkRoom = async () => {
       if (numericRoomId) {
         try {
-          const storedData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
-          const isNewRoom = !!storedData;
+          const optimisticData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
+          const isNewRoom = !!optimisticData;
           setIsNewlyCreatedRoom(isNewRoom);
         } catch {
           setIsNewlyCreatedRoom(false);
@@ -32,62 +32,132 @@ export const useChat = (numericRoomId: number | null) => {
     checkRoom();
   }, [numericRoomId]);
   
-  // Use the new individual hooks with state machine support
+  // ✅ STATE MACHINE: Use simplified chat state with state machine support
   const chatState = useChatState(numericRoomId);
   const {
     messages,
     loading,
     regeneratingIndices,
-    processingMessages,
-    messageQueue,
-    isRegenerating,
+    getLoadingMessages,
+    getAnimatingMessages,
+    isNewMessageLoading,
     setMessages,
     setLoading,
-    startMessageProcessing,
-    stopMessageProcessing,
-    isMessageProcessing,
-    getProcessingMessageIds,
-    addMessageToQueue,
-    updateMessageStatus,
-    removeMessageFromQueue,
-    cleanupMessageProcessing,
-    setupMessageProcessing,
-    handleMessageError,
     startRegenerating,
     stopRegenerating,
+    isRegenerating,
   } = chatState;
 
-  // Message storage for navigation
-  const { storedMessages } = useMessageStorage(numericRoomId);
+  // Optimistic messages for new chat room loading
+  const { optimisticMessages } = useOptimisticMessages(numericRoomId);
 
   // Load messages when the room ID changes
   useEffect(() => {
     const loadMessages = async () => {
+
+      
       setLoading(true);
 
       if (numericRoomId) {
-        // If we have stored messages from navigation, use those
-        if (storedMessages && storedMessages.length > 0) {
-          const hydratedStoredMessages = storedMessages.map(msg => ({ 
-            ...msg, 
-            state: 'hydrated' as const,  // Never animate stored messages
-            id: msg.id || generateMessageId()
-          }));
-          setMessages(hydratedStoredMessages);
-          setLoading(false);
-        } else {
-          // Otherwise load from database using service
+        try {
+          // 🎯 OPTIMISTIC LOADING: Always load full history from database first
+          // Optimistic messages are just temporary cache for brand new rooms
           const messageService = ServiceFactory.createMessageService();
+          
+
+          
           const history = await messageService.loadMessages(numericRoomId);
           
-          const hydratedHistory = history.map(msg => ({ 
-            ...msg, 
-            state: 'hydrated' as const,  // Never animate database messages
-            id: msg.id || generateMessageId()
-          }));
-          setMessages(hydratedHistory);
-          setLoading(false);
+          if (__DEV__) {
+            console.log(`📡 [DB-RESPONSE] Database returned ${history.length} messages for room ${numericRoomId}`, {
+              messageIds: history.map(m => m.id),
+              firstMessage: history[0]?.content?.substring(0, 50) + '...',
+              lastMessage: history[history.length - 1]?.content?.substring(0, 50) + '...'
+            });
+          }
+          
+          if (history.length > 0) {
+            // Normal case: Use complete database history
+            const hydratedHistory = history.map(msg => ({ 
+              ...msg, 
+              state: 'hydrated' as const,  // Never animate database messages
+              id: msg.id || generateMessageId()
+            }));
+            
+            setMessages(hydratedHistory);
+            
+            if (__DEV__) {
+              console.log(`✅ [MESSAGE-LOAD] Set ${hydratedHistory.length} messages for room ${numericRoomId}`);
+            }
+          } else if (optimisticMessages && optimisticMessages.length > 0) {
+            // Brand new room case: Database empty, use optimistic messages temporarily
+            const hydratedOptimisticMessages = optimisticMessages.map(msg => ({ 
+              ...msg, 
+              state: 'hydrated' as const,
+              id: msg.id || generateMessageId()
+            }));
+            setMessages(hydratedOptimisticMessages);
+            
+            if (__DEV__) {
+              console.log(`[OPTIMISTIC-LOAD] Using optimistic messages for new room ${numericRoomId}, polling for database sync`);
+            }
+            
+            // Set up polling to refresh from database once it's ready
+            // This handles the race condition between database insert and navigation
+            const pollForDatabaseSync = async () => {
+              for (let attempt = 1; attempt <= 10; attempt++) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                try {
+                  const dbMessages = await messageService.loadMessages(numericRoomId);
+                  if (dbMessages.length > 0) {
+                    const hydratedDbMessages = dbMessages.map(msg => ({ 
+                      ...msg, 
+                      state: 'hydrated' as const,
+                      id: msg.id || generateMessageId()
+                    }));
+                    setMessages(hydratedDbMessages);
+                    if (__DEV__) {
+                      console.log(`[OPTIMISTIC-LOAD] Database sync complete for room ${numericRoomId} (attempt ${attempt})`);
+                    }
+                    break;
+                  }
+                } catch (pollError) {
+                  if (__DEV__) {
+                    console.warn(`[OPTIMISTIC-LOAD] Database poll attempt ${attempt} failed for room ${numericRoomId}:`, pollError);
+                  }
+                }
+              }
+            };
+            
+            // Start polling in background (non-blocking)
+            pollForDatabaseSync();
+          } else {
+            // Empty room case: No messages at all
+            setMessages([]);
+            if (__DEV__) {
+              console.log(`[MESSAGE-LOAD] No messages found for room ${numericRoomId}`);
+            }
+          }
+        } catch (error) {
+          console.error(`[MESSAGE-LOAD] Failed to load messages for room ${numericRoomId}:`, error);
+          
+          // Fallback to optimistic messages if database fails
+          if (optimisticMessages && optimisticMessages.length > 0) {
+            const hydratedOptimisticMessages = optimisticMessages.map(msg => ({ 
+              ...msg, 
+              state: 'hydrated' as const,
+              id: msg.id || generateMessageId()
+            }));
+            setMessages(hydratedOptimisticMessages);
+            if (__DEV__) {
+              console.log(`[OPTIMISTIC-LOAD] Using optimistic messages as fallback for room ${numericRoomId}`);
+            }
+          } else {
+            setMessages([]);
+          }
         }
+        setLoading(false);
       } else {
         // No room ID, reset messages and show welcome text
         setMessages([]);
@@ -96,7 +166,9 @@ export const useChat = (numericRoomId: number | null) => {
     };
 
     loadMessages();
-  }, [numericRoomId, storedMessages, setMessages, setLoading]);
+  }, [numericRoomId, optimisticMessages, setMessages, setLoading]);
+  
+
 
   // Model selection
   const { selectedModel, updateModel } = useModelSelection(numericRoomId);
@@ -110,7 +182,7 @@ export const useChat = (numericRoomId: number | null) => {
     clearInput
   } = useMessageInput(numericRoomId, isNewlyCreatedRoom);
 
-  // Message actions (needs drafts from input hook)
+  // ✅ STATE MACHINE: Message actions using state machine
   const {
     sendMessage: sendMessageToBackend,
     regenerateMessage: regenerateMessageInBackend,
@@ -118,16 +190,7 @@ export const useChat = (numericRoomId: number | null) => {
     roomId: numericRoomId,
     messages,
     setMessages,
-    startMessageProcessing,
-    stopMessageProcessing,
-    isMessageProcessing,
-    getProcessingMessageIds,
-    addMessageToQueue,
-    updateMessageStatus,
-    removeMessageFromQueue,
-    cleanupMessageProcessing,
-    setupMessageProcessing,
-    handleMessageError,
+    // Regeneration functions
     startRegenerating,
     stopRegenerating,
     drafts,
@@ -173,17 +236,18 @@ export const useChat = (numericRoomId: number | null) => {
   }, [regenerateMessageInBackend]);
 
   return {
-    // Message state (compatible with old API)
+    // ✅ STATE MACHINE: Message state (compatible with old API)
     messages,
     loading,
-    sending: processingMessages.size > 0, // Convert Set to boolean for backward compatibility
+    sending: getLoadingMessages().length > 0, // ✅ STATE MACHINE: Derive from message states
     isTyping: false, // TODO: Implement typing state in new system
     regeneratingIndex: regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null, // Convert Set to single index for backward compatibility
     
-    // New state machine fields
+    // ✅ STATE MACHINE: New state machine fields
     regeneratingIndices,
-    processingMessages,
-    messageQueue,
+    isNewMessageLoading,
+    getLoadingMessages,
+    getAnimatingMessages,
     isRegenerating,
     
     // Input state

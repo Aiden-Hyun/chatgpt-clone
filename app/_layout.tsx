@@ -1,12 +1,13 @@
 // app/_layout.tsx
 import { Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, AppState, View } from 'react-native';
 import { ToastContainer, ToastProvider } from '../src/features/alert';
 import { AuthProvider, useAuth } from '../src/features/auth';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 import { LanguageProvider } from '../src/features/language';
 import { ThemeProvider } from '../src/features/theme';
+import { resetDebugGlobals } from '../src/shared/lib/resetDebugGlobals';
 
 // Initialize services
 configureServices();
@@ -19,6 +20,17 @@ function ProtectedRoutes() {
   // Define auth routes that don't require authentication
   const authRoutes = ['/auth', '/signup', '/forgot-password'];
   const isAuthRoute = authRoutes.includes(pathname);
+
+  // 🧹 MEMORY LEAK PREVENTION: Reset debug globals when app backgrounds
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState !== 'active') {
+        resetDebugGlobals();
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !session && !isAuthRoute) {

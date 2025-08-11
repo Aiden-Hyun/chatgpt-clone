@@ -71,7 +71,12 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   }, [isVisible, slideAnim, fadeAnim]);
 
   const handleChatSelect = (roomId: string) => {
-    console.log('[SIDEBAR] select chat', { roomId });
+    console.log('🎯 [SIDEBAR] Chat selected', { 
+      roomId, 
+      roomIdType: typeof roomId,
+      timestamp: new Date().toISOString(),
+      availableRooms: rooms.map(r => ({ id: r.id, name: r.name }))
+    });
     onChatSelect(roomId);
     onClose();
   };

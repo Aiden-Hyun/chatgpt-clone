@@ -86,7 +86,6 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
       {React.useMemo(() => (
         <MessageList
           messages={messages}
-          isNewMessageLoading={loading && messages.length > 0 && messages[messages.length - 1]?.role === 'assistant' && !messages[messages.length - 1]?.content}
           regeneratingIndices={regeneratingIndices}
           onRegenerate={regenerateMessage}
           onUserEditRegenerate={async (userIndex: number, newText: string) => {

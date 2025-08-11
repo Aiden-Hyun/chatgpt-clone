@@ -103,13 +103,11 @@ jest.mock('./src/features/chat/hooks/useChatRooms', () => ({
   })),
 }));
 
-// Mock useMessageStorage hook
-jest.mock('./src/features/chat/hooks/useMessageStorage', () => ({
-  useMessageStorage: jest.fn(() => ({
-    messages: [],
-    setMessages: jest.fn(),
-    loading: false,
-    setLoading: jest.fn(),
+// Mock useOptimisticMessages hook
+jest.mock('./src/features/chat/hooks/useOptimisticMessages', () => ({
+  useOptimisticMessages: jest.fn(() => ({
+    optimisticMessages: null,
+    optimisticModel: null,
   })),
 }));
 

@@ -8,7 +8,7 @@ import { MessageItem } from '../MessageItem';
 
 interface MessageListProps {
   messages: ChatMessage[];
-  isNewMessageLoading: boolean;
+  // ✅ STATE MACHINE: Remove legacy loading flag - derive from message states
   regeneratingIndices: Set<number>;
   onRegenerate: (index: number) => void;
   onUserEditRegenerate?: (index: number, newText: string) => void;
@@ -17,7 +17,6 @@ interface MessageListProps {
 
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
-  isNewMessageLoading,
   regeneratingIndices,
   onRegenerate,
   onUserEditRegenerate,
@@ -26,6 +25,8 @@ export const MessageList: React.FC<MessageListProps> = ({
   // Add render counting for performance monitoring
   const renderCount = useRef(0);
   renderCount.current += 1;
+  
+
   
   // Log render count every 5 renders (disabled for performance)
   // if (renderCount.current % 5 === 0) {
@@ -59,6 +60,12 @@ export const MessageList: React.FC<MessageListProps> = ({
   ], []);
 
   const typingSpeed = 30; // milliseconds per character
+
+  // ✅ STATE MACHINE: Derive loading state from message states
+  const isNewMessageLoading = useMemo(() => {
+    const lastMessage = messages[messages.length - 1];
+    return lastMessage?.role === 'assistant' && lastMessage?.state === 'loading';
+  }, [messages]);
 
   // Memoize styles to prevent re-creation on every render
   const styles = React.useMemo(() => StyleSheet.create({
@@ -116,6 +123,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   // Track animation state to prevent multiple concurrent animations
   const animationRunningRef = useRef(false);
   const currentWelcomeKeyRef = useRef<string>('');
+  const typewriterTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Typewriter animation effect - with stable animation to prevent restarts
   useEffect(() => {
@@ -142,20 +150,25 @@ export const MessageList: React.FC<MessageListProps> = ({
         if (currentIndex < welcomeMessage.length) {
           setDisplayedText(welcomeMessage.slice(0, currentIndex + 1)); // Use slice instead of concatenation
           currentIndex++;
-          setTimeout(typeNextChar, typingSpeed);
+          typewriterTimeoutRef.current = setTimeout(typeNextChar, typingSpeed);
         } else {
           // Animation complete
           animationRunningRef.current = false;
+          typewriterTimeoutRef.current = null;
         }
       };
 
       // Start animation
-      setTimeout(typeNextChar, typingSpeed);
+      typewriterTimeoutRef.current = setTimeout(typeNextChar, typingSpeed);
       
       // Cleanup function
       return () => {
         isCancelled = true;
         animationRunningRef.current = false;
+        if (typewriterTimeoutRef.current) {
+          clearTimeout(typewriterTimeoutRef.current);
+          typewriterTimeoutRef.current = null;
+        }
       };
     }
   }, [selectedWelcomeKey, messages.length, showWelcomeText, isNewMessageLoading, t, typingSpeed]);
@@ -201,6 +214,34 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
   }, [messages]);
 
+  // Prepare messages with stable ids for rendering (must be before early return)
+  const messagesWithIds = useMemo(() => 
+    messages.map((m, i) => {
+      const existingId = (m as any).id as string | undefined;
+      const loadingId = (m as any)._loadingId as string | undefined;
+      const resolvedId = existingId ?? loadingId ?? stableIdsRef.current[i];
+      return { ...(m as any), id: resolvedId } as any;
+    }) as ChatMessage[], 
+    [messages]
+  );
+
+  // Add empty assistant message for new message loading, with a stable id
+  const messagesWithLoading = useMemo(() => 
+    isNewMessageLoading
+      ? [
+          ...messagesWithIds,
+          {
+            role: 'assistant' as const,
+            content: '',
+            id: (placeholderIdRef.current ||= generateMessageId()),
+          } as any,
+        ]
+      : messagesWithIds,
+    [messagesWithIds, isNewMessageLoading]
+  );
+  
+
+
   // Show welcome text only when truly idle (not during hydration/loading)
   if (messages.length === 0 && showWelcomeText && !isNewMessageLoading) {
     return (
@@ -214,26 +255,6 @@ export const MessageList: React.FC<MessageListProps> = ({
       </View>
     );
   }
-
-  // Prepare messages with stable ids for rendering
-  const messagesWithIds = messages.map((m, i) => {
-    const existingId = (m as any).id as string | undefined;
-    const loadingId = (m as any)._loadingId as string | undefined;
-    const resolvedId = existingId ?? loadingId ?? stableIdsRef.current[i];
-    return { ...(m as any), id: resolvedId } as any;
-  }) as ChatMessage[];
-
-  // Add empty assistant message for new message loading, with a stable id
-  const messagesWithLoading = isNewMessageLoading
-    ? [
-        ...messagesWithIds,
-        {
-          role: 'assistant' as const,
-          content: '',
-          id: (placeholderIdRef.current ||= generateMessageId()),
-        } as any,
-      ]
-    : messagesWithIds;
 
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
     const isRegenerating = regeneratingIndices.has(index);
@@ -258,9 +279,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       <MessageItem
         message={item}
         index={index}
-        isNewMessageLoading={isNewMessageLoading && index === messages.length}
         isRegenerating={isRegenerating}
-
         onRegenerate={
           item.role === 'assistant' && !isRegenerating && !isNewMessageLoading
             ? handleRegenerate
@@ -273,6 +292,8 @@ export const MessageList: React.FC<MessageListProps> = ({
     );
   };
 
+
+
   return (
     <FlatList
       data={messagesWithLoading}
@@ -284,6 +305,11 @@ export const MessageList: React.FC<MessageListProps> = ({
       contentContainerStyle={styles.container}
       ref={flatListRef}
       extraData={[messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated]}
+      // 🔧 FIX: Ensure all messages are rendered, not just visible ones
+      initialNumToRender={Math.max(messagesWithLoading.length, 20)}
+      maxToRenderPerBatch={50}
+      windowSize={10}
+      removeClippedSubviews={false}
       onContentSizeChange={() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }}

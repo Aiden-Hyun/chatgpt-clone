@@ -17,7 +17,6 @@ export class ServiceFactory {
     const chatRoomService = ServiceRegistry.createChatRoomService();
     const messageService = ServiceRegistry.createMessageService();
     const aiApiService = ServiceRegistry.createAIApiService();
-    const storageService = ServiceRegistry.createStorageService();
     const navigationService = ServiceRegistry.createNavigationService();
     const uiStateService = ServiceRegistry.createUIStateService(setMessages, setIsTyping, setDrafts);
     const responseProcessor = new OpenAIResponseProcessor();
@@ -27,7 +26,6 @@ export class ServiceFactory {
       chatRoomService,
       messageService,
       aiApiService,
-      storageService,
       navigationService,
       uiStateService,
       responseProcessor
@@ -49,9 +47,7 @@ export class ServiceFactory {
     return ServiceRegistry.createAIApiService();
   }
 
-  static createStorageService() {
-    return ServiceRegistry.createStorageService();
-  }
+
 
   static createNavigationService() {
     return ServiceRegistry.createNavigationService();
