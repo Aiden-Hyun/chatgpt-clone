@@ -634,19 +634,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, []); // Stable function - no dependencies needed
 
   // 🎯 STEP 3: Memoize LanguageContext value to prevent unnecessary re-renders
-  const value = useMemo(() => {
-    if (__DEV__) {
-      console.log('🌍 [LANGUAGE-CONTEXT] Value memoization triggered', {
-        currentLanguage,
-        note: 'This should only log when language actually changes'
-      });
-    }
-    return {
-      t,
-      currentLanguage,
-      setLanguage,
-    };
-  }, [t, currentLanguage, setLanguage]); // Only recreate when these actually change
+  const value = useMemo(() => ({
+    t,
+    currentLanguage,
+    setLanguage,
+  }), [t, currentLanguage, setLanguage]); // Only recreate when these actually change
 
   return (
     <LanguageContext.Provider value={value}>

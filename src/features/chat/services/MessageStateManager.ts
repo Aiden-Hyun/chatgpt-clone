@@ -16,10 +16,6 @@ export class MessageStateManager {
    * Transition a message to a new state
    */
   transition(messageId: string, newState: MessageState): void {
-    if (__DEV__) {
-      console.log('[STATE-MANAGER] transition', { messageId, newState });
-    }
-    
     this.setMessages(prev => prev.map(msg => 
       msg.id === messageId 
         ? { ...msg, state: newState }
@@ -31,13 +27,6 @@ export class MessageStateManager {
    * Set full content and transition to animating state
    */
   setFullContentAndAnimate(messageId: string, fullContent: string): void {
-    if (__DEV__) {
-      console.log('[STATE-MANAGER] setFullContentAndAnimate', { 
-        messageId, 
-        contentLength: fullContent.length 
-      });
-    }
-    
     this.setMessages(prev => prev.map(msg => 
       msg.id === messageId 
         ? { 

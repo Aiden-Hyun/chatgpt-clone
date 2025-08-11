@@ -19,13 +19,13 @@ export const handleDraftCleanup = ({
       updatedDrafts['new'] = '';
       // Set empty draft for the new room
       updatedDrafts[roomId.toString()] = '';
-      if (__DEV__) { console.log(`Setting empty draft for new room ${roomId}`); }
+
       return updatedDrafts;
     });
   } else {
     // For existing rooms, just clear the current room's draft
     const roomKey = roomId.toString();
     setDrafts((prev) => ({ ...prev, [roomKey]: '' }));
-    if (__DEV__) { console.log(`Cleared draft for existing room ${roomKey}`); }
+
   }
 };

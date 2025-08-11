@@ -10,30 +10,6 @@ import { useMessageStorage } from './useMessageStorage';
 import { useModelSelection } from './useModelSelection';
 
 export const useChat = (numericRoomId: number | null) => {
-  // DETECTIVE MODE: Track exactly where each useChat call comes from
-  if (__DEV__) {
-    if (!(global as any).useChatRenderCount) (global as any).useChatRenderCount = 0;
-    if (!(global as any).useChatStartTime) (global as any).useChatStartTime = performance.now();
-    
-    const callCount = ++((global as any).useChatRenderCount);
-    const timeSinceStart = Math.round(performance.now() - (global as any).useChatStartTime);
-    
-    // Get detailed stack trace to see where this call originates
-    const stack = new Error().stack?.split('\n').slice(1, 6).map(line => 
-      line.trim().replace(/^\s*at\s+/, '').replace(/\s+\(.+\)/, '')
-    );
-    
-    console.log(`🕵️ [useChat-${callCount}] +${timeSinceStart}ms HOOK CALLED`, {
-      numericRoomId,
-      callNumber: callCount,
-      timeSinceStart: `+${timeSinceStart}ms`,
-      calledFrom: stack?.[0] || 'unknown',
-      stackTrace: stack,
-      componentStack: stack?.filter(line => 
-        line.includes('Chat') || line.includes('Screen') || line.includes('Component')
-      )
-    });
-  }
   
   const [isNewlyCreatedRoom, setIsNewlyCreatedRoom] = useState(false);
   
@@ -87,7 +63,6 @@ export const useChat = (numericRoomId: number | null) => {
   // Load messages when the room ID changes
   useEffect(() => {
     const loadMessages = async () => {
-      if (__DEV__) { console.log(`📞 [useChat] Setting loading=true`, { numericRoomId }); }
       setLoading(true);
 
       if (numericRoomId) {
@@ -99,7 +74,6 @@ export const useChat = (numericRoomId: number | null) => {
             id: msg.id || generateMessageId()
           }));
           setMessages(hydratedStoredMessages);
-          if (__DEV__) { console.log(`📞 [useChat] Setting loading=false (stored messages)`, { count: hydratedStoredMessages.length }); }
           setLoading(false);
         } else {
           // Otherwise load from database using service
@@ -112,13 +86,11 @@ export const useChat = (numericRoomId: number | null) => {
             id: msg.id || generateMessageId()
           }));
           setMessages(hydratedHistory);
-          if (__DEV__) { console.log(`📞 [useChat] Setting loading=false (database)`, { count: hydratedHistory.length }); }
           setLoading(false);
         }
       } else {
         // No room ID, reset messages and show welcome text
         setMessages([]);
-        if (__DEV__) { console.log(`📞 [useChat] Setting loading=false (no room)`, { numericRoomId }); }
         setLoading(false);
       }
     };

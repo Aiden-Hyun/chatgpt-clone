@@ -78,13 +78,7 @@ export class ReactUIStateService implements
     regenerateIndex?: number;
     messageId?: string;
   }): void {
-    if (__DEV__) {
-      console.log('[UI-STATE] setMessageFullContentAndAnimate', {
-        contentLength: args.fullContent.length,
-        regenerateIndex: args.regenerateIndex,
-        messageId: args.messageId
-      });
-    }
+
     
     this.setMessages((prev) => {
       const updated = [...prev];

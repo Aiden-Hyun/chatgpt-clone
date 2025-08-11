@@ -14,9 +14,6 @@ import { useBackButtonHandler, useInputFocus } from './index';
  * After: 1 composite hook call → 1 render
  */
 export function useChatScreen() {
-  if (__DEV__) {
-    console.log('🎯 [COMPOSITE-HOOK] useChatScreen initializing all hooks together');
-  }
 
   // Initialize all hooks together
   const inputFocus = useInputFocus();
@@ -28,14 +25,7 @@ export function useChatScreen() {
   const chatScreenState = useMemo(() => {
     const styles = createChatStyles(theme);
     
-    if (__DEV__) {
-      console.log('🎯 [COMPOSITE-HOOK] State memoization triggered', {
-        hasInputRef: !!inputFocus.inputRef,
-        hasTheme: !!theme,
-        hasStyles: !!styles,
-        note: 'All hooks initialized together in single render'
-      });
-    }
+
 
     return {
       // Input focus state

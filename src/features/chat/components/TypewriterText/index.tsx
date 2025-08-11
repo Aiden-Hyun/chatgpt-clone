@@ -40,31 +40,12 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
 
   // Reset when text changes - but prevent restarts during streaming
   useEffect(() => {
-    if (__DEV__) {
-      console.log('[TYPEWRITER] useEffect triggered', { 
-        text: text?.substring(0, 20) + (text?.length > 20 ? '...' : ''), 
-        textLength: text?.length,
-        targetTextLength: targetTextRef.current?.length,
-        animationStarted: animationStartedRef.current,
-        speed, 
-        showCursor, 
-        startAnimation,
-        isAnimating,
-        currentIndex: currentIndexRef.current,
-        isComplete: isCompleteRef.current
-      });
-    }
+
 
     // If animation has already started and new text is just an extension of the current target,
     // update the target but don't restart the animation
     if (animationStartedRef.current && text && targetTextRef.current && text.startsWith(targetTextRef.current)) {
-      if (__DEV__) { 
-        console.log('[TYPEWRITER] extending target text during animation', {
-          oldLength: targetTextRef.current.length,
-          newLength: text.length,
-          isExtension: true
-        }); 
-      }
+
       targetTextRef.current = text;
       return; // Don't restart animation
     }
@@ -92,7 +73,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
 
     // Only start animation if text exists and startAnimation is true
     if (text && text.length > 0 && startAnimation) {
-      if (__DEV__) { console.log('[TYPEWRITER] starting animation', { textLength: text.length, speed }); }
+
       setIsAnimating(true);
       currentIndexRef.current = 0;
       animationStartedRef.current = true;
@@ -117,7 +98,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
           timeoutRef.current = setTimeout(typeNext, speed);
         } else {
           // Animation complete
-          if (__DEV__) { console.log('[TYPEWRITER] animation completed', { textLength: currentTargetText.length }); }
+
           setIsAnimating(false);
           isCompleteRef.current = true;
           animationStartedRef.current = false;

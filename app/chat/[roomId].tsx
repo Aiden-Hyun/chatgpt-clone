@@ -116,13 +116,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
 
   const equal = primitiveEqual && functionsEqual && stateEqual;
 
-  if (__DEV__ && !equal) {
-    const changed: string[] = [];
-    if (!primitiveEqual) changed.push('primitiveProps(roomId/isTemporaryRoom/numericRoomId)');
-    if (!functionsEqual) changed.push('functions(onModelChangeBridge/logout)');
-    if (!stateEqual) changed.push('chatScreenState');
-    console.log('🕵️ [PURE-MEMO] Prop change detected → allow re-render', { changed });
-  }
+
 
   return equal;
 });
@@ -164,39 +158,7 @@ const ChatScreen = () => {
     logout,
   }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, onModelChangeBridge, logout]);
 
-  if (__DEV__) {
-    // Render counter with dependency change tracking
-    if (!(global as any).wrapperRenderCount) (global as any).wrapperRenderCount = 0;
-    if (!(global as any).prevWrapperDeps) (global as any).prevWrapperDeps = {};
-    (global as any).wrapperRenderCount++;
 
-    const currentDeps = {
-      roomId,
-      isTemporaryRoom,
-      numericRoomId,
-      chatScreenStateIdentity: chatScreenState,
-      onModelChangeBridgeIdentity: onModelChangeBridge,
-      logoutIdentity: logout,
-    };
-
-    const changedDeps: string[] = [];
-    Object.keys(currentDeps).forEach(key => {
-      if ((global as any).prevWrapperDeps[key] !== (currentDeps as any)[key]) {
-        changedDeps.push(key);
-      }
-    });
-    (global as any).prevWrapperDeps = currentDeps;
-
-    console.log(`🔢 [RENDER-COUNT] Context Wrapper Render #${(global as any).wrapperRenderCount}`, {
-      changedDeps: changedDeps.length > 0 ? changedDeps : 'none',
-      note: changedDeps.length > 0 ? `Dependencies changed: ${changedDeps.join(', ')}` : 'Re-render with same dependencies - likely React context initialization cascade'
-    });
-
-    console.log('🎯 [CONTEXT-WRAPPER] Passing props to pure component', {
-      propsKeys: Object.keys(chatScreenProps),
-      note: 'Pure component should only re-render when these props change'
-    });
-  }
 
   return <ChatScreenPure {...chatScreenProps} />;
 };

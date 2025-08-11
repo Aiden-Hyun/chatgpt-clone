@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../shared/lib/globalEvents';
 import { supabase } from '../../../shared/lib/supabase';
+import { chatDebugLog } from '../constants';
 
 export interface ChatRoom { id: number; name: string; }
 export interface ChatRoomWithLastMsg { id: number; name: string; last_message?: string; last_activity?: string; updated_at?: string }
@@ -9,13 +10,13 @@ export interface ChatRoomWithLastMsg { id: number; name: string; last_message?: 
 export const useChatRooms = () => {
   const [rooms, setRooms] = useState<ChatRoomWithLastMsg[]>([]);
   const [loading, setLoading] = useState(true);
-  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
+
 
   const fetchRooms = useCallback(async () => {
 
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      if (__DEV__) { console.log('[ROOMS] fetchRooms:no-session'); }
+  
       router.replace('/login');
       return;
     }
@@ -49,7 +50,7 @@ export const useChatRooms = () => {
       .in('room_id', allRoomIds);
 
     if (!roomsWithMessages || roomsWithMessages.length === 0) {
-      if (__DEV__) { console.log('[ROOMS] fetchRooms:no rooms with messages'); }
+
       setRooms([]);
       setLoading(false);
       return;
@@ -102,7 +103,7 @@ export const useChatRooms = () => {
       const roomId = payload?.roomId as number | undefined;
       const name = payload?.name as string | undefined;
       if (!roomId) return;
-      if (__DEV__) { console.log('[ROOMS] global-created', roomId); }
+      chatDebugLog('[ROOMS] global-created', { roomId });
       const { data: roomRow } = await supabase
         .from('chatrooms')
         .select('id, name, updated_at')
@@ -123,7 +124,7 @@ export const useChatRooms = () => {
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` }, async (payload) => {
           try {
             const roomId = (payload.new as any).room_id as number;
-            if (__DEV__) { console.log('[ROOMS-RT] insert for room', roomId); }
+            chatDebugLog('[ROOMS-RT] insert for room', { roomId });
             // Fetch room metadata
             const { data: roomRow } = await supabase
               .from('chatrooms')
@@ -145,13 +146,13 @@ export const useChatRooms = () => {
                 ...filtered,
               ];
             });
-          } catch (e) {
+          } catch {
             // Fallback: trigger full fetch
             fetchRooms();
           }
         })
         .subscribe();
-      setSubscriptionId('rooms-message-inserts');
+
     })();
     return () => {
       if (channel) supabase.removeChannel(channel);
@@ -160,7 +161,6 @@ export const useChatRooms = () => {
   }, [fetchRooms]);
 
   const deleteRoom = async (roomId: number) => {
-    if (__DEV__) { console.log('[ROOMS] deleteRoom:start', { roomId }); }
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
@@ -177,9 +177,9 @@ export const useChatRooms = () => {
         return;
       }
       setRooms(prev => prev.filter(room => room.id !== roomId));
-      if (__DEV__) { console.log('[ROOMS] deleteRoom:done', { roomId }); }
-    } catch (e) {
-      console.warn('[ROOMS] deleteRoom:exception', e);
+
+    } catch {
+      console.warn('[ROOMS] deleteRoom:exception');
       return;
     }
   };

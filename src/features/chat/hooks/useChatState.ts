@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ChatMessage } from '../types';
 import { logger } from '../utils/logger';
 
@@ -28,18 +28,6 @@ interface ChatState {
 }
 
 export const useChatState = (roomId: number | null) => {
-  // Add render counting for performance monitoring
-  const renderCount = useRef(0);
-  renderCount.current += 1;
-  
-  // Log render count every 5 renders
-  if (renderCount.current % 5 === 0) {
-    console.log(`[RENDER-COUNT] useChatState: ${renderCount.current} renders`);
-  }
-
-  // Performance optimization: Memoize state to prevent unnecessary re-renders
-  const memoizedState = useRef<ChatState | null>(null);
-  const lastStateHash = useRef<string>('');
 
   const [state, setState] = useState<ChatState>({
     messages: [],

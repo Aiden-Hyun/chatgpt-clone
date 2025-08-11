@@ -22,20 +22,11 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   const theme = useAppTheme();
   const styles = React.useMemo(() => createAssistantMessageStyles(theme), [theme]);
 
-  // Add render counter for performance monitoring (disabled)
-  // const renderCountRef = React.useRef(0);
-  // renderCountRef.current++;
-  // if (renderCountRef.current % 5 === 0) {
-  //   console.log(`[ASSISTANT-RENDER] Count: ${renderCountRef.current}`);
-  // }
-
   // State-based rendering: use message.state to determine behavior
   const useAnimation = message.state === 'animating';
   const contentToShow = message.state === 'animating' 
     ? (message.fullContent || message.content) 
     : message.content;
-
-  // Debug logging removed for performance
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
@@ -47,7 +38,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
           showCursor={true}
           style={styles.text}
           onComplete={() => {
-            if (__DEV__) { console.log('[ASSISTANT] TypewriterText completed for message', message.id); }
             // Transition to completed state when animation finishes
             if (message.id) {
               // TODO: Add state manager call here when we have access to it

@@ -36,12 +36,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // 🎯 STEP 2: Memoize setThemeMode function to prevent recreation
   const setThemeMode = useCallback(async (mode: ThemeMode) => {
-    if (__DEV__) {
-      console.log('🎨 [THEME-CONTEXT] setThemeMode called', {
-        mode,
-        note: 'This function is now memoized - stable reference'
-      });
-    }
+
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
       setThemeModeState(mode);
@@ -59,20 +54,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   })();
 
   // 🎯 STEP 2: Memoize ThemeContext value to prevent unnecessary re-renders
-  const value = useMemo(() => {
-    if (__DEV__) {
-      console.log('🎨 [THEME-CONTEXT] Value memoization triggered', {
-        themeMode,
-        currentTheme,
-        note: 'This should only log when theme actually changes'
-      });
-    }
-    return {
-      themeMode,
-      setThemeMode,
-      currentTheme,
-    };
-  }, [themeMode, setThemeMode, currentTheme]); // Only recreate when these actually change
+  const value = useMemo(() => ({
+    themeMode,
+    setThemeMode,
+    currentTheme,
+  }), [themeMode, setThemeMode, currentTheme]); // Only recreate when these actually change
 
   return (
     <ThemeContext.Provider value={value}>

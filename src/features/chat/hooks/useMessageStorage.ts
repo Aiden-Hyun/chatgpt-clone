@@ -20,12 +20,12 @@ export const useMessageStorage = (numericRoomId: number | null) => {
         const storedData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
         if (storedData) {
           const messages = JSON.parse(storedData);
-          if (__DEV__) { console.log('[MESSAGE-STORAGE] found stored messages', { count: messages.length, roomId: numericRoomId }); }
+
           setStoredMessages(messages);
           
           // Clear the stored messages to avoid showing them again on refresh
           await mobileStorage.removeItem(`chat_messages_${numericRoomId}`);
-          if (__DEV__) { console.log('[MESSAGE-STORAGE] cleared stored messages from storage'); }
+
         }
 
         // Check for stored model
@@ -36,7 +36,7 @@ export const useMessageStorage = (numericRoomId: number | null) => {
           await mobileStorage.removeItem(`chat_model_${numericRoomId}`);
         }
       } catch (e) {
-        if (__DEV__) { console.log('[storage] No stored data found for room in mobileStorage'); }
+
         setStoredMessages(null);
         setStoredModel(null);
       }
