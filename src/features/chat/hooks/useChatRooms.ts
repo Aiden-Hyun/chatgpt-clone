@@ -184,9 +184,10 @@ export const useChatRooms = () => {
     }
   };
 
-  const startNewChat = () => {
+  // Use stable identity to avoid re-renders in consumers that depend on this function
+  const startNewChat = useCallback(() => {
     router.push('/chat');
-  };
+  }, []);
 
   return {
     rooms,

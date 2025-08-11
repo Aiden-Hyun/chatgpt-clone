@@ -90,22 +90,47 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
       </KeyboardAvoidingView>
     </LoadingWrapper>
   );
+}, (prev, next) => {
+  // Custom comparison: prevent re-render unless meaningful props actually change
+  const primitiveEqual =
+    prev.roomId === next.roomId &&
+    prev.isTemporaryRoom === next.isTemporaryRoom &&
+    prev.numericRoomId === next.numericRoomId;
+
+  const functionsEqual =
+    prev.onModelChangeBridge === next.onModelChangeBridge &&
+    prev.logout === next.logout;
+
+  // Shallow compare chatScreenState contents (allow different object wrapper if inner refs/functions unchanged)
+  const a = prev.chatScreenState;
+  const b = next.chatScreenState;
+  const stateEqual =
+    a === b || (
+      a?.inputRef === b?.inputRef &&
+      a?.maintainFocus === b?.maintainFocus &&
+      a?.disableBackButton === b?.disableBackButton &&
+      a?.startNewChat === b?.startNewChat &&
+      a?.theme === b?.theme &&
+      a?.styles === b?.styles
+    );
+
+  const equal = primitiveEqual && functionsEqual && stateEqual;
+
+  if (__DEV__ && !equal) {
+    const changed: string[] = [];
+    if (!primitiveEqual) changed.push('primitiveProps(roomId/isTemporaryRoom/numericRoomId)');
+    if (!functionsEqual) changed.push('functions(onModelChangeBridge/logout)');
+    if (!stateEqual) changed.push('chatScreenState');
+    console.log('🕵️ [PURE-MEMO] Prop change detected → allow re-render', { changed });
+  }
+
+  return equal;
 });
 
 ChatScreenPure.displayName = 'ChatScreenPure';
 
 // 🎯 CONTEXT CONSUMER WRAPPER: Consumes all contexts and passes props to pure component
 const ChatScreen = () => {
-  if (__DEV__) {
-    // Simple render counter
-    if (!(global as any).wrapperRenderCount) (global as any).wrapperRenderCount = 0;
-    (global as any).wrapperRenderCount++;
-    
-    console.log(`🔢 [RENDER-COUNT] Context Wrapper Render #${(global as any).wrapperRenderCount}`, {
-      note: 'This wrapper consumes contexts and will re-render on context changes'
-    });
-  }
-
   const { roomId } = useLocalSearchParams<{ roomId?: string }>();
   
   // Handle temporary room IDs - if roomId starts with 'temp_', treat it as a new room
@@ -140,6 +165,33 @@ const ChatScreen = () => {
   }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, onModelChangeBridge, logout]);
 
   if (__DEV__) {
+    // Render counter with dependency change tracking
+    if (!(global as any).wrapperRenderCount) (global as any).wrapperRenderCount = 0;
+    if (!(global as any).prevWrapperDeps) (global as any).prevWrapperDeps = {};
+    (global as any).wrapperRenderCount++;
+
+    const currentDeps = {
+      roomId,
+      isTemporaryRoom,
+      numericRoomId,
+      chatScreenStateIdentity: chatScreenState,
+      onModelChangeBridgeIdentity: onModelChangeBridge,
+      logoutIdentity: logout,
+    };
+
+    const changedDeps: string[] = [];
+    Object.keys(currentDeps).forEach(key => {
+      if ((global as any).prevWrapperDeps[key] !== (currentDeps as any)[key]) {
+        changedDeps.push(key);
+      }
+    });
+    (global as any).prevWrapperDeps = currentDeps;
+
+    console.log(`🔢 [RENDER-COUNT] Context Wrapper Render #${(global as any).wrapperRenderCount}`, {
+      changedDeps: changedDeps.length > 0 ? changedDeps : 'none',
+      note: changedDeps.length > 0 ? `Dependencies changed: ${changedDeps.join(', ')}` : 'Re-render with same dependencies - likely React context initialization cascade'
+    });
+
     console.log('🎯 [CONTEXT-WRAPPER] Passing props to pure component', {
       propsKeys: Object.keys(chatScreenProps),
       note: 'Pure component should only re-render when these props change'
