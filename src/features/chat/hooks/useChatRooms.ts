@@ -2,21 +2,20 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../shared/lib/globalEvents';
 import { supabase } from '../../../shared/lib/supabase';
+import { useAuth } from '../../auth';
 import { chatDebugLog } from '../constants';
 
 export interface ChatRoom { id: number; name: string; }
 export interface ChatRoomWithLastMsg { id: number; name: string; last_message?: string; last_activity?: string; updated_at?: string }
 
 export const useChatRooms = () => {
+  const { session } = useAuth();
   const [rooms, setRooms] = useState<ChatRoomWithLastMsg[]>([]);
   const [loading, setLoading] = useState(true);
 
 
   const fetchRooms = useCallback(async () => {
-
-    const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-  
       router.replace('/login');
       return;
     }
@@ -94,7 +93,7 @@ export const useChatRooms = () => {
     setRooms(mapped);
     setLoading(false);
 
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     fetchRooms();
@@ -117,7 +116,6 @@ export const useChatRooms = () => {
     // Realtime: listen for message inserts to reflect new rooms instantly
     let channel: any;
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       channel = supabase
         .channel('rooms-message-inserts')
@@ -158,10 +156,9 @@ export const useChatRooms = () => {
       if (channel) supabase.removeChannel(channel);
       off?.();
     };
-  }, [fetchRooms]);
+  }, [fetchRooms, session]);
 
   const deleteRoom = async (roomId: number) => {
-    const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
     try {
