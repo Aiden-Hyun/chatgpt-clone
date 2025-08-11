@@ -24,46 +24,40 @@ export function useChatScreen() {
   const chatRooms = useChatRooms();
   const theme = useAppTheme();
 
-  // Memoize individual hook results to prevent identity changes
-  const stableInputRef = useMemo(() => inputFocus.inputRef, [inputFocus.inputRef]);
-  const stableMaintainFocus = useMemo(() => inputFocus.maintainFocus, [inputFocus.maintainFocus]);
-  const stableDisableBackButton = useMemo(() => backButton.disableBackButton, [backButton.disableBackButton]);
-  const stableStartNewChat = useMemo(() => chatRooms.startNewChat, [chatRooms.startNewChat]);
-  const stableStyles = useMemo(() => createChatStyles(theme), [theme]);
-
   // Memoize the entire result to prevent recreation
   const chatScreenState = useMemo(() => {
+    const styles = createChatStyles(theme);
+    
     if (__DEV__) {
       console.log('🎯 [COMPOSITE-HOOK] State memoization triggered', {
-        hasInputRef: !!stableInputRef,
+        hasInputRef: !!inputFocus.inputRef,
         hasTheme: !!theme,
-        hasStyles: !!stableStyles,
-        note: 'All hooks initialized together with stable references'
+        hasStyles: !!styles,
+        note: 'All hooks initialized together in single render'
       });
     }
 
     return {
       // Input focus state
-      inputRef: stableInputRef,
-      maintainFocus: stableMaintainFocus,
+      inputRef: inputFocus.inputRef,
+      maintainFocus: inputFocus.maintainFocus,
       
       // Back button state
-      disableBackButton: stableDisableBackButton,
+      disableBackButton: backButton.disableBackButton,
       
       // Chat rooms state
-      startNewChat: stableStartNewChat,
+      startNewChat: chatRooms.startNewChat,
       
       // Theme and styles
       theme,
-      styles: stableStyles,
+      styles,
     };
   }, [
-    stableInputRef,
-    stableMaintainFocus,
-    stableDisableBackButton,
-    stableStartNewChat,
+    inputFocus.inputRef,
+    inputFocus.maintainFocus,
+    backButton.disableBackButton,
+    chatRooms.startNewChat,
     theme,
-    stableStyles,
   ]); // Only recreate when these actually change
 
   return chatScreenState;
