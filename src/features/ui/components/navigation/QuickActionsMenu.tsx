@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../../shared/hooks';
+import { useAppTheme } from '../../../theme/lib/theme';
 
 // AI Models for selection
 const AI_MODELS = [

@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ChatSidebar, QuickActionsMenu, useSidebar } from '../../../../features/ui';
-import { useAppTheme } from '../../../../shared/hooks';
+import { useAppTheme } from '../../../theme/lib/theme';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 interface ChatHeaderProps {

@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../src/shared/hooks';
 
-export const createSettingsStyles = () => {
-  const theme = useAppTheme();
+export const createSettingsStyles = (theme: any) => {
   
   return StyleSheet.create({
     container: {

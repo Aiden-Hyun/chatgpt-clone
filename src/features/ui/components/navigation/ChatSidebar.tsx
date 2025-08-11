@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../../shared/hooks';
+import { useAppTheme } from '../../../theme/lib/theme';
 import { useToast } from '../../../alert';
 import { useUserInfo } from '../../../auth';
 import { useChatRooms } from '../../../chat/hooks';

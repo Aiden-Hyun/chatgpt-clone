@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../src/shared/hooks';
 
-export const createCommonStyles = () => {
-  const theme = useAppTheme();
+export const createCommonStyles = (theme: any) => {
   
   return StyleSheet.create({
     container: {

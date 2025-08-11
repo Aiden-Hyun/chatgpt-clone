@@ -1,11 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../src/shared/hooks';
 
 // Note: This file now exports a function that returns styles based on the current theme
 // Components should use this function instead of importing styles directly
 
-export const createIndexStyles = () => {
-  const theme = useAppTheme();
+export const createIndexStyles = (theme: any) => {
   
   return StyleSheet.create({
     container: { 

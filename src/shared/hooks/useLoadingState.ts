@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useAppTheme } from './useAppTheme';
+import { useAppTheme } from '../../features/theme/lib/theme';
 
 interface UseLoadingStateOptions {
   initialLoading?: boolean;

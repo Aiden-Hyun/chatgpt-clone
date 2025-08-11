@@ -1,7 +1,7 @@
 // src/features/chat/components/ErrorMessage/index.tsx
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useAppTheme } from '../../../../shared/hooks';
+import { useAppTheme } from '../../../theme/lib/theme';
 import { ChatMessage } from '../../types';
 import { createErrorMessageStyles } from './ErrorMessage.styles';
 

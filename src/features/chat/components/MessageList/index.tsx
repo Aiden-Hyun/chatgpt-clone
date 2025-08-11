@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../../shared/hooks';
+import { useAppTheme } from '../../../theme/lib/theme';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';

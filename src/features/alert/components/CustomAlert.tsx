@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { useAppTheme } from '../../../shared/hooks';
+import { useAppTheme } from '../../theme/lib/theme';
 
 interface CustomAlertProps {
   visible: boolean;

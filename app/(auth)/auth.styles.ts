@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../src/shared/hooks';
 
-export const createAuthStyles = () => {
-  const theme = useAppTheme();
+export const createAuthStyles = (theme: any) => {
   
   return StyleSheet.create({
     loadingContainer: {

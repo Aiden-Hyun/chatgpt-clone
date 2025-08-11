@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../src/shared/hooks';
 
-export const createLoadingStyles = () => {
-  const theme = useAppTheme();
+export const createLoadingStyles = (theme: any) => {
   
   return StyleSheet.create({
     container: {

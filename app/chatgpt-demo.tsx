@@ -2,7 +2,7 @@
 // import React, { useEffect, useRef, useState } from 'react';
 // import { Animated, Modal, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 // import { useUserInfo } from '../src/features/auth';
-// import { useAppTheme } from '../src/shared/hooks';
+// import { useAppTheme } from '../src/features/theme/lib/theme';
 
 // // Mock chat data for demo
 // const MOCK_CHATS = [

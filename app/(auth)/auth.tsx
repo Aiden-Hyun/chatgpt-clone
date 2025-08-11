@@ -15,6 +15,7 @@ import {
 import { useToast } from '../../src/features/alert';
 import { useEmailSignin } from '../../src/features/auth/hooks';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
+import { useAppTheme } from '../../src/features/theme/lib/theme';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { useLoadingState } from '../../src/shared/hooks';
 import { useErrorStateCombined } from '../../src/shared/hooks/error';
@@ -39,7 +40,8 @@ export default function AuthScreen() {
   const { showSuccess } = useToast();
   
   const pathname = usePathname();
-  const styles = createAuthStyles();
+  const theme = useAppTheme();
+  const styles = createAuthStyles(theme);
   const navigationAttempted = useRef(false);
   const { t } = useLanguageContext();
   

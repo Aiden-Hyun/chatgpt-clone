@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../../shared/hooks';
+import { useAppTheme } from '../../../theme/lib/theme';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {

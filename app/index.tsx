@@ -7,6 +7,7 @@ import { useLogout, useUserInfo } from '../src/features/auth';
 import { RoomListItem } from '../src/features/chat/components';
 import { useChatRooms } from '../src/features/chat/hooks';
 import { useLanguageContext } from '../src/features/language';
+import { useAppTheme } from '../src/features/theme/lib/theme';
 import { LoadingWrapper, QuickActionsMenu } from '../src/features/ui';
 import { useRefreshOnFocus } from '../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
@@ -17,7 +18,8 @@ export default function HomeScreen() {
   const { logout, isLoggingOut } = useLogout();
   const { t } = useLanguageContext();
   const { showSuccess } = useToast();
-  const styles = createIndexStyles();
+  const theme = useAppTheme();
+  const styles = createIndexStyles(theme);
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
 
   // Refresh rooms when screen comes into focus

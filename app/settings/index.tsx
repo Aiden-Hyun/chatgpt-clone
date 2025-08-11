@@ -6,7 +6,7 @@ import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert'
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { ThemeSelector } from '../../src/features/theme';
-import { useAppTheme } from '../../src/shared/hooks';
+import { useAppTheme } from '../../src/features/theme/lib/theme';
 import { createSettingsStyles } from './settings.styles';
 
 export default function SettingsScreen() {
@@ -17,7 +17,7 @@ export default function SettingsScreen() {
   const { updateProfile, isUpdating } = useUpdateProfile();
   const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
   const { showSuccess } = useToast();
-  const styles = createSettingsStyles();
+  const styles = createSettingsStyles(theme);
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [isEditingName, setIsEditingName] = React.useState(false);

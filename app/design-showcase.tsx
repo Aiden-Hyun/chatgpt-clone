@@ -4,7 +4,7 @@ import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, Vi
 import { CustomAlert, useCustomAlert, useToast } from '../src/features/alert';
 import { LanguageSelector, useLanguageContext } from '../src/features/language';
 import { ThemedButton } from '../src/features/ui';
-import { useAppTheme } from '../src/shared/hooks';
+import { useAppTheme } from '../src/features/theme/lib/theme';
 // Import Lucide icons for showcase
 import {
   AlertCircle,
