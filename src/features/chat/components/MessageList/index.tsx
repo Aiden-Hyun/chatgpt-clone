@@ -265,4 +265,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       }}
     />
   );
-}; 
+};
+
+export { MessageList };
+export default MessageList; 

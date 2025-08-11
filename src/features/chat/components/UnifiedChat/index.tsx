@@ -3,7 +3,8 @@ import { KeyboardAvoidingView, Platform } from 'react-native';
 import { createChatStyles } from '../../../../../app/chat/chat.styles';
 import { useAppTheme } from '../../../theme/lib/theme';
 import { useChat } from '../../hooks';
-import { ChatInput, MessageList } from '../index';
+import ChatInput from '../ChatInput';
+import MessageList from '../MessageList';
 
 interface UnifiedChatProps {
   roomId?: number;
