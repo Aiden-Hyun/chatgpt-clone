@@ -10,6 +10,7 @@ import { ChatHeader, UnifiedChat } from '../../src/features/chat/components';
 import { useChatRooms } from '../../src/features/chat/hooks';
 import { LoadingWrapper } from '../../src/features/ui';
 import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
+import { useAppTheme } from '../../src/features/theme/lib/theme';
 import { createChatStyles } from './chat.styles';
 
 export default function ChatScreen() {
@@ -23,7 +24,8 @@ export default function ChatScreen() {
   const { inputRef, maintainFocus } = useInputFocus();
   const { disableBackButton } = useBackButtonHandler({ enabled: true });
   const { startNewChat } = useChatRooms();
-  const styles = createChatStyles();
+  const theme = useAppTheme();
+  const styles = createChatStyles(theme);
   const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
   const [currentModel, setCurrentModel] = React.useState<string>('gpt-3.5-turbo');
 

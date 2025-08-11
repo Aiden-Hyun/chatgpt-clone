@@ -6,7 +6,6 @@ import { StyleSheet } from 'react-native';
 export const createChatStyles = (theme: any) => {
   // Safety check - provide default theme if undefined
   if (!theme || !theme.colors) {
-    console.warn('[STYLES] Theme is undefined, using fallback');
     theme = {
       colors: { background: { primary: '#FFFFFF' }, text: { primary: '#000000' }, border: { light: '#E0E0E0' }, status: { success: { primary: '#4CAF50' }, info: { primary: '#2196F3' } }, interactive: { disabled: { primary: '#CCCCCC' } } },
       spacing: { lg: 16, xs: 4, md: 8, xl: 24, xxs: 2 },
