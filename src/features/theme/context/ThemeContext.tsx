@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -34,15 +34,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     loadThemeMode();
   }, []);
 
-  // Save theme mode to storage
-  const setThemeMode = async (mode: ThemeMode) => {
+  // 🎯 STEP 2: Memoize setThemeMode function to prevent recreation
+  const setThemeMode = useCallback(async (mode: ThemeMode) => {
+    if (__DEV__) {
+      console.log('🎨 [THEME-CONTEXT] setThemeMode called', {
+        mode,
+        note: 'This function is now memoized - stable reference'
+      });
+    }
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
       setThemeModeState(mode);
     } catch (error) {
       console.error('Failed to save theme mode:', error);
     }
-  };
+  }, []); // Stable function - no dependencies needed
 
   // Determine current theme based on mode and system preference
   const currentTheme: 'light' | 'dark' = (() => {
@@ -52,11 +58,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return themeMode;
   })();
 
-  const value: ThemeContextType = {
-    themeMode,
-    setThemeMode,
-    currentTheme,
-  };
+  // 🎯 STEP 2: Memoize ThemeContext value to prevent unnecessary re-renders
+  const value = useMemo(() => {
+    if (__DEV__) {
+      console.log('🎨 [THEME-CONTEXT] Value memoization triggered', {
+        themeMode,
+        currentTheme,
+        note: 'This should only log when theme actually changes'
+      });
+    }
+    return {
+      themeMode,
+      setThemeMode,
+      currentTheme,
+    };
+  }, [themeMode, setThemeMode, currentTheme]); // Only recreate when these actually change
 
   return (
     <ThemeContext.Provider value={value}>

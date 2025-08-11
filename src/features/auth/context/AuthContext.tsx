@@ -5,6 +5,7 @@ import React, {
     ReactNode,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import { supabase } from '../../../shared/lib/supabase';
@@ -41,8 +42,20 @@ export function AuthProvider({ children }: Props) {
     };
   }, []);
 
+  // 🎯 STEP 1: Memoize AuthContext value to prevent unnecessary re-renders
+  const value = useMemo(() => {
+    if (__DEV__) {
+      console.log('🔧 [AUTH-CONTEXT] Value memoization triggered', {
+        session: session ? 'authenticated' : 'null',
+        isLoading,
+        note: 'This should only log when session or isLoading actually change'
+      });
+    }
+    return { session, isLoading };
+  }, [session, isLoading]); // Only recreate when these actually change
+
   return (
-    <AuthContext.Provider value={{ session, isLoading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

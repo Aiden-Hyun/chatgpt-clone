@@ -1,5 +1,6 @@
 // src/shared/hooks/index.ts
 export { useBackButtonHandler } from './useBackButtonHandler';
+export { useChatScreen } from './useChatScreen';
 export { useColorScheme } from './useColorScheme';
 export { useColorScheme as useColorSchemeWeb } from './useColorScheme.web';
 export { useInputFocus } from './useInputFocus';

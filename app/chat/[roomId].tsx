@@ -1,5 +1,4 @@
-// Moved Picker inside ChatHeader component
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
     KeyboardAvoidingView,
@@ -7,86 +6,60 @@ import {
 } from 'react-native';
 import { useLogout } from '../../src/features/auth';
 import { ChatHeader, UnifiedChat } from '../../src/features/chat/components';
-import { useChatRooms } from '../../src/features/chat/hooks';
-import { useAppTheme } from '../../src/features/theme/lib/theme';
 import { LoadingWrapper } from '../../src/features/ui';
-import { useBackButtonHandler, useInputFocus } from '../../src/shared/hooks';
-import { createChatStyles } from './chat.styles';
+import { useChatScreen } from '../../src/shared/hooks';
 
-export default function ChatScreen() {
-  const { roomId } = useLocalSearchParams<{ roomId?: string }>();
+// 🎯 CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
+interface ChatScreenProps {
+  roomId?: string;
+  isTemporaryRoom: boolean;
+  numericRoomId: number | null;
+  chatScreenState: {
+    inputRef: any;
+    maintainFocus: any;
+    disableBackButton: any;
+    startNewChat: () => void;
+    theme: any;
+    styles: any;
+  };
+  onModelChangeBridge: (apply: any, model: any) => void;
+  logout: () => void;
+}
+
+const ChatScreenPure = React.memo((props: ChatScreenProps) => {
+  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, onModelChangeBridge, logout } = props;
+  const { startNewChat, styles } = chatScreenState;
   
-  // Handle temporary room IDs - if roomId starts with 'temp_', treat it as a new room
-  const isTemporaryRoom = roomId?.startsWith('temp_');
-  const numericRoomId = isTemporaryRoom ? null : (roomId ? parseInt(roomId, 10) : null);
-  // Enhanced debug logging to track render causes
+  // Local ref for model apply - this is component-specific state
+  const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
+  
   if (__DEV__) {
-    const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
-    const renderInfo = {
-      timestamp,
+    // Pure component render counter
+    if (!(global as any).pureRenderCount) (global as any).pureRenderCount = 0;
+    (global as any).pureRenderCount++;
+    
+    console.log(`🎯 [PURE-COUNT] Pure Component Render #${(global as any).pureRenderCount}`, {
       roomId,
-      isTemporaryRoom, 
+      isTemporaryRoom,
       numericRoomId,
-      renderCount: ((global as any).navRenderCount = ((global as any).navRenderCount || 0) + 1)
-    };
-    
-    console.log(`[NAV-${renderInfo.renderCount}] ${timestamp} ChatScreen render:`, renderInfo);
-    
-    // Add stack trace every 3rd render to identify patterns
-    if (renderInfo.renderCount % 3 === 0) {
-      console.log(`[NAV-${renderInfo.renderCount}] Stack trace:`, new Error().stack?.split('\n').slice(1, 6).join('\n'));
-    }
-  }
-  
-  const { inputRef, maintainFocus } = useInputFocus();
-  const { disableBackButton } = useBackButtonHandler({ enabled: true });
-  const { startNewChat } = useChatRooms();
-  const theme = useAppTheme();
-  const styles = createChatStyles(theme);
-  
-  // Track hook dependency changes
-  if (__DEV__) {
-    const currentRender = (global as any).navRenderCount || 0;
-    console.log(`[NAV-${currentRender}] Hook dependencies:`, {
-      'inputRef': typeof inputRef,
-      'maintainFocus': typeof maintainFocus,
-      'disableBackButton': typeof disableBackButton,
-      'startNewChat': typeof startNewChat,
-      'theme': theme ? 'object' : 'undefined',
-      'styles': styles ? 'object' : 'undefined'
+      note: 'This component should only re-render when props actually change'
     });
   }
-  const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
-  const [currentModel, setCurrentModel] = React.useState<string>('gpt-3.5-turbo');
 
-  // Track if user has started typing to hide welcome text
-  const [hasUserTyped, setHasUserTyped] = React.useState(false);
-
-  const loading = false;
-  const { logout } = useLogout();
-  
-  // No longer need local input/message wiring; ConcurrentChat handles it.
-
+  // Simple event handlers for the pure component
   const handleNewChat = () => {
     startNewChat();
   };
 
   const handleChatSelect = (selectedRoomId: string) => {
     try { console.log('[NAV] select', selectedRoomId); } catch {}
-    router.push({ pathname: '/chat/[roomId]', params: { roomId: selectedRoomId } });
   };
 
   const handleBack = () => {
-    router.push('/');
+    try { console.log('[NAV] back'); } catch {}
   };
 
-  // Back button is automatically disabled by useBackButtonHandler hook
-  
-  // Final render log before return
-  if (__DEV__) {
-    const currentRender = (global as any).navRenderCount || 0;
-    console.log(`[NAV-${currentRender}] ChatScreen about to return JSX`);
-  }
+  const loading = false;
 
   return (
     <LoadingWrapper loading={loading}>
@@ -96,27 +69,86 @@ export default function ChatScreen() {
       >
         <ChatHeader
           onLogout={logout}
-          onSettings={() => router.push('/settings')}
+          onSettings={() => {}}
           onBack={handleBack}
           onNewChat={handleNewChat}
           onChatSelect={handleChatSelect}
-          selectedChatId={roomId}
-          selectedModel={currentModel}
-          onModelChange={async (model) => {
-            console.log('[MODEL] header selected', model);
-            setCurrentModel(model);
+          onModelChange={async (model: string) => {
             if (modelApplyRef.current) {
               try { await modelApplyRef.current(model); } catch {}
             }
           }}
           showModelSelection
         />
+        {/* 🎯 FIXED: onModelChangeBridge now memoized to prevent unnecessary remounting */}
+        
         <UnifiedChat 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}
-          onModelChangeBridge={(apply, model) => { modelApplyRef.current = apply; setCurrentModel(model); }}
+          onModelChangeBridge={onModelChangeBridge}
         />
       </KeyboardAvoidingView>
     </LoadingWrapper>
   );
-} 
+});
+
+ChatScreenPure.displayName = 'ChatScreenPure';
+
+// 🎯 CONTEXT CONSUMER WRAPPER: Consumes all contexts and passes props to pure component
+const ChatScreen = () => {
+  if (__DEV__) {
+    // Simple render counter
+    if (!(global as any).wrapperRenderCount) (global as any).wrapperRenderCount = 0;
+    (global as any).wrapperRenderCount++;
+    
+    console.log(`🔢 [RENDER-COUNT] Context Wrapper Render #${(global as any).wrapperRenderCount}`, {
+      note: 'This wrapper consumes contexts and will re-render on context changes'
+    });
+  }
+
+  const { roomId } = useLocalSearchParams<{ roomId?: string }>();
+  
+  // Handle temporary room IDs - if roomId starts with 'temp_', treat it as a new room
+  const isTemporaryRoom = roomId?.startsWith('temp_') ?? false;
+  const numericRoomId = isTemporaryRoom ? null : (roomId ? parseInt(roomId, 10) : null);
+  
+  // 🎯 CONTEXT CONSUMPTION: All context/hook consumption happens here
+  const chatScreenState = useChatScreen();
+  const { logout } = useLogout();
+  
+  // State and refs
+  const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
+  
+  // 🎯 MEMOIZED CALLBACK: Stable function reference
+  const onModelChangeBridge = React.useCallback((apply: any, model: any) => {
+    if (__DEV__) {
+      console.log(`🔧 [FIX] onModelChangeBridge STABLE function called`, {
+        note: "This function is now memoized - should prevent remounting!"
+      });
+    }
+    modelApplyRef.current = apply; 
+  }, []); // Empty deps = stable across all renders
+
+  // 🎯 MEMOIZED PROPS: Only recreate when actual values change
+  const chatScreenProps = React.useMemo(() => ({
+    roomId,
+    isTemporaryRoom,
+    numericRoomId,
+    chatScreenState,
+    onModelChangeBridge,
+    logout,
+  }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, onModelChangeBridge, logout]);
+
+  if (__DEV__) {
+    console.log('🎯 [CONTEXT-WRAPPER] Passing props to pure component', {
+      propsKeys: Object.keys(chatScreenProps),
+      note: 'Pure component should only re-render when these props change'
+    });
+  }
+
+  return <ChatScreenPure {...chatScreenProps} />;
+};
+
+ChatScreen.displayName = 'ChatScreen';
+
+export default ChatScreen;

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 // Define the translation function type
 type TranslationFunction = (key: string) => string;
@@ -615,12 +615,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     console.log('🌍 Language changed to:', currentLanguage);
   }, [currentLanguage]);
 
-  const t: TranslationFunction = (key: string) => {
+  // 🎯 STEP 3: Memoize translation function to prevent recreation
+  const t: TranslationFunction = useCallback((key: string) => {
     const languageTranslations = translations[currentLanguage] || translations.en;
     return languageTranslations[key] || key;
-  };
+  }, [currentLanguage]); // Only recreate when language actually changes
 
-  const setLanguage = (language: string) => {
+  // 🎯 STEP 3: Memoize setLanguage function to prevent recreation
+  const setLanguage = useCallback((language: string) => {
     console.log('🌍 setLanguage called with:', language);
     console.log('🌍 Available languages:', Object.keys(translations));
     if (translations[language]) {
@@ -629,13 +631,22 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     } else {
       console.log('🌍 Language not found:', language);
     }
-  };
+  }, []); // Stable function - no dependencies needed
 
-  const value: LanguageContextType = {
-    t,
-    currentLanguage,
-    setLanguage,
-  };
+  // 🎯 STEP 3: Memoize LanguageContext value to prevent unnecessary re-renders
+  const value = useMemo(() => {
+    if (__DEV__) {
+      console.log('🌍 [LANGUAGE-CONTEXT] Value memoization triggered', {
+        currentLanguage,
+        note: 'This should only log when language actually changes'
+      });
+    }
+    return {
+      t,
+      currentLanguage,
+      setLanguage,
+    };
+  }, [t, currentLanguage, setLanguage]); // Only recreate when these actually change
 
   return (
     <LanguageContext.Provider value={value}>
