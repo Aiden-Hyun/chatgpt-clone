@@ -53,8 +53,8 @@ function ProtectedRoutes() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="chat" />
+        <Stack.Screen name="settings/index" />
+        <Stack.Screen name="chat/index" />
         <Stack.Screen name="chat/[roomId]" />
         <Stack.Screen name="design-showcase" />
         <Stack.Screen name="chatgpt-demo" />

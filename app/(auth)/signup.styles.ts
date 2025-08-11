@@ -38,4 +38,6 @@ export const createSignupStyles = () => {
       textDecorationLine: 'underline',
     },
   });
-}; 
+};
+
+export default createSignupStyles; 

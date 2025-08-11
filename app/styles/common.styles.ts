@@ -19,4 +19,6 @@ export const createCommonStyles = (theme: any) => {
       backgroundColor: theme.colors.background.primary,
     },
   });
-}; 
+};
+
+export default createCommonStyles; 

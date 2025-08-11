@@ -101,4 +101,6 @@ export const createAuthStyles = (theme: any) => {
       textAlign: 'center',
     },
   });
-}; 
+};
+
+export default createAuthStyles; 

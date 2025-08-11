@@ -98,4 +98,6 @@ export const createIndexStyles = (theme: any) => {
       fontWeight: '600',
     },
   });
-}; 
+};
+
+export default createIndexStyles; 

@@ -169,4 +169,6 @@ export const createSettingsStyles = (theme: any) => {
       fontFamily: theme.fontFamily.primary,
     },
   });
-}; 
+};
+
+export default createSettingsStyles; 

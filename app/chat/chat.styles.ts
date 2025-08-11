@@ -118,4 +118,6 @@ export const createChatStyles = (theme: any) => {
       opacity: 0.6
     }
   });
-}; 
+};
+
+export default createChatStyles; 

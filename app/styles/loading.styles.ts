@@ -16,4 +16,6 @@ export const createLoadingStyles = (theme: any) => {
       fontFamily: theme.fontFamily.primary,
     },
   });
-}; 
+};
+
+export default createLoadingStyles; 

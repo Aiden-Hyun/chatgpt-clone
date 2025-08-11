@@ -44,4 +44,6 @@ export const createForgotPasswordStyles = () => {
       textDecorationLine: 'underline',
     },
   });
-}; 
+};
+
+export default createForgotPasswordStyles; 

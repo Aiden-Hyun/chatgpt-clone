@@ -44,13 +44,13 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start(() => {
         // Then fade in the backdrop after sidebar is fully open
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 150,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
       });
     } else {
@@ -58,13 +58,13 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 150,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start(() => {
         // Then slide the sidebar out
         Animated.timing(slideAnim, {
           toValue: -320,
           duration: 200,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
       });
     }

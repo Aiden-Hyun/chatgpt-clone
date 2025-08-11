@@ -141,12 +141,12 @@ export const MessageList: React.FC<MessageListProps> = ({
           Animated.timing(cursorOpacity, {
             toValue: 0,
             duration: 500,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(cursorOpacity, {
             toValue: 1,
             duration: 500,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
         ])
       );
@@ -267,5 +267,4 @@ export const MessageList: React.FC<MessageListProps> = ({
   );
 };
 
-export { MessageList };
 export default MessageList; 

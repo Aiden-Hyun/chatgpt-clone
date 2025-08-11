@@ -1,3 +1,29 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+// Placeholder component since the demo is commented out
+export default function ChatGPTDemo() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>ChatGPT Demo - Coming Soon</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  text: {
+    fontSize: 18,
+    color: '#333',
+  },
+});
+
+// Original demo code (commented out):
 // import { MaterialIcons } from '@expo/vector-icons';
 // import React, { useEffect, useRef, useState } from 'react';
 // import { Animated, Modal, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';

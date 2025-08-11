@@ -46,7 +46,7 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start(() => {
         // Change text
         setCurrentTextIndex((prev) => (prev + 1) % detailedLoadingTexts.length);
@@ -54,7 +54,7 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 200,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }).start();
       });
     }, 3000); // Change text every 3 seconds
@@ -70,51 +70,51 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
           Animated.timing(dot1Anim, {
             toValue: 1,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(dot2Anim, {
             toValue: 0.4,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(dot3Anim, {
             toValue: 0.7,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
         ]),
         Animated.parallel([
           Animated.timing(dot1Anim, {
             toValue: 0.7,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(dot2Anim, {
             toValue: 1,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(dot3Anim, {
             toValue: 0.4,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
         ]),
         Animated.parallel([
           Animated.timing(dot1Anim, {
             toValue: 0.4,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(dot2Anim, {
             toValue: 0.7,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
           Animated.timing(dot3Anim, {
             toValue: 1,
             duration: 400,
-            useNativeDriver: true,
+            useNativeDriver: false,
           }),
         ]),
       ]).start(() => animateDots());

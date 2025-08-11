@@ -37,12 +37,12 @@ export const Toast: React.FC<ToastProps> = ({
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
         Animated.timing(slideAnim, {
           toValue: 0,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: false,
         }),
       ]).start();
 
@@ -62,12 +62,12 @@ export const Toast: React.FC<ToastProps> = ({
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
       Animated.timing(slideAnim, {
         toValue: -100,
         duration: 200,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
     ]).start(() => {
       onHide?.();
@@ -93,9 +93,9 @@ export const Toast: React.FC<ToastProps> = ({
 
   return (
     <Animated.View
-      pointerEvents="box-none"
       style={[
         styles.container,
+        { pointerEvents: 'box-none' },
         {
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
