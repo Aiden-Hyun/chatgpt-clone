@@ -6,7 +6,9 @@ import { IMessageService } from '../interfaces/IMessageService';
 import { INavigationService } from '../interfaces/INavigationService';
 import { IStorageService } from '../interfaces/IStorageService';
 import { IUIStateService } from '../interfaces/IUIStateService';
-import { AIApiRequest, ChatMessage } from '../types';
+import { ChatMessage } from '../../types';
+import { AIApiRequest } from '../types';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 import { IAIResponseProcessor } from './AIResponseProcessor';
 import { LoggingService } from './LoggingService';
 import { RetryService } from './RetryService';
@@ -64,8 +66,18 @@ export class MessageSenderService {
       const { userContent, numericRoomId, messages, model, regenerateIndex, originalAssistantContent, session, messageId } = request;
 
       // Create user and assistant message objects
-      const userMsg: ChatMessage = { role: 'user', content: userContent };
-      const assistantMsg: ChatMessage = { role: 'assistant', content: '' };
+      const userMsg: ChatMessage = { 
+        role: 'user', 
+        content: userContent,
+        state: 'completed',           // User messages are immediately completed
+        id: generateMessageId()
+      };
+      const assistantMsg: ChatMessage = { 
+        role: 'assistant', 
+        content: '', 
+        state: 'loading',           // Start in loading state
+        id: messageId || generateMessageId()     // Use provided ID or generate new one
+      };
 
       // Step 1: Update UI state for new messages or regeneration
       this.loggingService.debug(`Updating UI state for request ${requestId}`, { 
@@ -142,11 +154,11 @@ export class MessageSenderService {
       // Using new TypewriterText component instead for animation
       // But we still need to update the message state immediately
       
-      // Update the message state without animation
-      this.uiStateService.updateMessageContent({
+      // Set full content and transition to animating state
+      this.uiStateService.setMessageFullContentAndAnimate({
         fullContent,
         regenerateIndex,
-        messageId
+        messageId: assistantMsg.id
       });
       
       // Directly call the completion logic without legacy animation

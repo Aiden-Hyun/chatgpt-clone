@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { ChatSidebar, QuickActionsMenu, useSidebar } from '../../../../features/ui';
+import { useAppTheme } from '../../../../shared/hooks';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 interface ChatHeaderProps {
@@ -35,7 +36,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   const { isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
-  const styles = createChatHeaderStyles();
+  const theme = useAppTheme();
+  const styles = React.useMemo(() => createChatHeaderStyles(theme), [theme]);
 
   const handleSettings = () => {
     setIsQuickActionsVisible(false);

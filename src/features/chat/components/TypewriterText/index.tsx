@@ -33,17 +33,52 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
   const cursorIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const currentIndexRef = useRef(0);
   const isCompleteRef = useRef(false);
+  
+  // Track the target text to prevent restarting animation on content updates
+  const targetTextRef = useRef<string>('');
+  const animationStartedRef = useRef(false);
 
-  // Reset when text changes
+  // Reset when text changes - but prevent restarts during streaming
   useEffect(() => {
+    if (__DEV__) {
+      console.log('[TYPEWRITER] useEffect triggered', { 
+        text: text?.substring(0, 20) + (text?.length > 20 ? '...' : ''), 
+        textLength: text?.length,
+        targetTextLength: targetTextRef.current?.length,
+        animationStarted: animationStartedRef.current,
+        speed, 
+        showCursor, 
+        startAnimation,
+        isAnimating,
+        currentIndex: currentIndexRef.current,
+        isComplete: isCompleteRef.current
+      });
+    }
+
+    // If animation has already started and new text is just an extension of the current target,
+    // update the target but don't restart the animation
+    if (animationStartedRef.current && text && targetTextRef.current && text.startsWith(targetTextRef.current)) {
+      if (__DEV__) { 
+        console.log('[TYPEWRITER] extending target text during animation', {
+          oldLength: targetTextRef.current.length,
+          newLength: text.length,
+          isExtension: true
+        }); 
+      }
+      targetTextRef.current = text;
+      return; // Don't restart animation
+    }
+
     // Clear any existing timeouts
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
+
     }
     if (cursorIntervalRef.current) {
       clearInterval(cursorIntervalRef.current);
       cursorIntervalRef.current = null;
+
     }
 
     // Reset state
@@ -52,11 +87,15 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
     setShowCursorBlink(false);
     currentIndexRef.current = 0;
     isCompleteRef.current = false;
+    animationStartedRef.current = false;
+    targetTextRef.current = text || '';
 
     // Only start animation if text exists and startAnimation is true
     if (text && text.length > 0 && startAnimation) {
+      if (__DEV__) { console.log('[TYPEWRITER] starting animation', { textLength: text.length, speed }); }
       setIsAnimating(true);
       currentIndexRef.current = 0;
+      animationStartedRef.current = true;
       
       // Start cursor blinking
       if (showCursor) {
@@ -69,16 +108,19 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
       // Start typewriter effect
       const typeNext = () => {
         const currentIndex = currentIndexRef.current;
+        const currentTargetText = targetTextRef.current;
         
-        if (currentIndex < text.length && !isCompleteRef.current) {
-          setDisplayedText(text.slice(0, currentIndex + 1));
+        if (currentIndex < currentTargetText.length && !isCompleteRef.current) {
+          setDisplayedText(currentTargetText.slice(0, currentIndex + 1));
           currentIndexRef.current++;
           
           timeoutRef.current = setTimeout(typeNext, speed);
         } else {
           // Animation complete
+          if (__DEV__) { console.log('[TYPEWRITER] animation completed', { textLength: currentTargetText.length }); }
           setIsAnimating(false);
           isCompleteRef.current = true;
+          animationStartedRef.current = false;
           
           // Stop cursor blinking after animation
           if (cursorIntervalRef.current) {
@@ -98,6 +140,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
       timeoutRef.current = setTimeout(typeNext, speed);
     } else {
       // If not animating, show full text immediately
+
       setDisplayedText(text);
     }
 
@@ -113,6 +156,8 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
       }
     };
   }, [text, speed, showCursor, startAnimation]); // Only depend on props, not state
+  
+  // Removed excessive prop change debugging that was running on every render
 
   // Cleanup on unmount
   useEffect(() => {

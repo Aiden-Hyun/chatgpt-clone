@@ -1,9 +1,8 @@
 // src/features/chat/services/types/index.ts
+import { ChatMessage } from '../../types';
 
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
+// Re-export ChatMessage for services
+export type { ChatMessage };
 
 export interface AIApiRequest {
   roomId: number;

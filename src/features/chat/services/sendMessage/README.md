@@ -7,7 +7,7 @@ This module handles the sending and regeneration of chat messages in the applica
 The module is organized into the following files:
 
 - `index.ts` - Main entry point and controller for sending/regenerating messages
-- `handleMessageState.ts` - Updates UI state for new/regenerated messages
+- `handleMessageState.ts` - REMOVED: Logic moved to ReactUIStateService.updateMessageState()
 - `handlePostAnimation.ts` - Handles database operations after message animation
 - `handleDraftCleanup.ts` - Manages draft message cleanup
 - `handleNewRoomRedirect.ts` - Handles session storage and navigation for new rooms

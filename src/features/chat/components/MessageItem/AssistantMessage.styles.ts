@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../../shared/hooks';
 
-export const createAssistantMessageStyles = () => {
-  const theme = useAppTheme();
+export const createAssistantMessageStyles = (theme: any) => {
   
   return StyleSheet.create({
     container: {

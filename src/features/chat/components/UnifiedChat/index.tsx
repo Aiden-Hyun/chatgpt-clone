@@ -1,6 +1,7 @@
 import React from 'react';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { createChatStyles } from '../../../../../app/chat/chat.styles';
+import { useAppTheme } from '../../../theme/lib/theme';
 import { useChat } from '../../hooks';
 import { ChatInput, MessageList } from '../index';
 
@@ -33,8 +34,9 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   showHeader = true,
   onModelChangeBridge,
 }) => {
-  // Get proven styles
-  const styles = createChatStyles();
+  // Get proven styles - memoized to prevent excessive re-renders
+  const theme = useAppTheme();
+  const styles = React.useMemo(() => createChatStyles(theme), [theme]);
   
   // Create stable inputRef to prevent ChatInput re-renders
   const inputRef = React.useRef<any>(null);
@@ -69,6 +71,8 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     regeneratingIndices.add(regeneratingIndex);
   }
 
+  // Welcome text is controlled by MessageList based on messages.length === 0 && !loading
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -83,7 +87,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
           onRegenerate={regenerateMessage}
           onUserEditRegenerate={async (userIndex: number, newText: string) => {
             // Simple edit implementation - could be enhanced later
-            console.log('[EDIT] User edit not fully implemented yet', { userIndex, newTextLen: newText?.length });
+            if (__DEV__) { console.log('[EDIT] User edit not fully implemented yet', { userIndex, newTextLen: newText?.length }); }
           }}
           showWelcomeText={messages.length === 0 && !loading}
         />

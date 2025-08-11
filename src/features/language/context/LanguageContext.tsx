@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 // Define the translation function type
 type TranslationFunction = (key: string) => string;
@@ -608,10 +608,10 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [currentLanguage, setCurrentLanguage] = React.useState('en');
+  const [currentLanguage, setCurrentLanguage] = useState('en');
 
   // Debug when currentLanguage changes
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('🌍 Language changed to:', currentLanguage);
   }, [currentLanguage]);
 

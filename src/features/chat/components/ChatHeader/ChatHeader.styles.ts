@@ -1,12 +1,10 @@
-import { StyleSheet, Platform } from 'react-native';
-import { useAppTheme } from '../../../../shared/hooks';
+import { Platform, StyleSheet } from 'react-native';
 
 /**
  * ChatHeader Styles
  * Dedicated style file for ChatHeader component
  */
-export const createChatHeaderStyles = () => {
-  const theme = useAppTheme();
+export const createChatHeaderStyles = (theme: any) => {
   
   return StyleSheet.create({
     header: {

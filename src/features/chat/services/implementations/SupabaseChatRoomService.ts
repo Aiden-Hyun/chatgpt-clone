@@ -85,7 +85,7 @@ export class SupabaseChatRoomService implements IChatRoomService {
   }
 
   async deleteRoom(roomId: number): Promise<void> {
-    console.log('[ROOMS] service.deleteRoom:start', { roomId });
+    if (__DEV__) { console.log('[ROOMS] service.deleteRoom:start', { roomId }); }
     const { error } = await supabase
       .from('chatrooms')
       .delete()
@@ -95,6 +95,6 @@ export class SupabaseChatRoomService implements IChatRoomService {
       console.error('Failed to delete room:', error);
       throw error;
     }
-    console.log('[ROOMS] service.deleteRoom:done', { roomId });
+    if (__DEV__) { console.log('[ROOMS] service.deleteRoom:done', { roomId }); }
   }
 } 

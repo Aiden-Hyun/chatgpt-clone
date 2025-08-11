@@ -1,11 +1,23 @@
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../src/shared/hooks';
 
 // Note: This file now exports a function that returns styles based on the current theme
 // Components should use this function instead of importing styles directly
 
-export const createChatStyles = () => {
-  const theme = useAppTheme();
+export const createChatStyles = (theme: any) => {
+  // Safety check - provide default theme if undefined
+  if (!theme || !theme.colors) {
+    console.warn('[STYLES] Theme is undefined, using fallback');
+    theme = {
+      colors: { background: { primary: '#FFFFFF' }, text: { primary: '#000000' }, border: { light: '#E0E0E0' }, status: { success: { primary: '#4CAF50' }, info: { primary: '#2196F3' } }, interactive: { disabled: { primary: '#CCCCCC' } } },
+      spacing: { lg: 16, xs: 4, md: 8, xl: 24, xxs: 2 },
+      fontSizes: { sm: 14, md: 16, xl: 24 },
+      borderRadius: { xl: 12 },
+      shadows: { light: {}, medium: {}, heavy: {} },
+      fontWeights: { medium: '500' },
+      fontFamily: { primary: 'System' },
+      letterSpacing: { normal: 0, wide: 1 }
+    };
+  }
   
   return StyleSheet.create({
     container: { 

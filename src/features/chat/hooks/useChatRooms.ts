@@ -12,16 +12,16 @@ export const useChatRooms = () => {
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
 
   const fetchRooms = useCallback(async () => {
-    console.log('[ROOMS] fetchRooms:start');
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      console.log('[ROOMS] fetchRooms:no-session');
+      if (__DEV__) { console.log('[ROOMS] fetchRooms:no-session'); }
       router.replace('/login');
       return;
     }
 
     // First, get all chat rooms for the user
-    console.log('[ROOMS] fetchRooms:query chatrooms');
+
     const { data: allRoomRows, error: roomsError } = await supabase
       .from('chatrooms')
       .select('id, updated_at')
@@ -34,7 +34,7 @@ export const useChatRooms = () => {
     }
 
     const allRoomIds = allRoomRows.map(r => r.id);
-    console.log('[ROOMS] fetchRooms:roomIds', allRoomIds.length);
+
     if (allRoomIds.length === 0) {
       setRooms([]);
       setLoading(false);
@@ -42,14 +42,14 @@ export const useChatRooms = () => {
     }
 
     // Get rooms that have messages
-    console.log('[ROOMS] fetchRooms:query messages for rooms');
+
     const { data: roomsWithMessages } = await supabase
       .from('messages')
       .select('room_id')
       .in('room_id', allRoomIds);
 
     if (!roomsWithMessages || roomsWithMessages.length === 0) {
-      console.log('[ROOMS] fetchRooms:no rooms with messages');
+      if (__DEV__) { console.log('[ROOMS] fetchRooms:no rooms with messages'); }
       setRooms([]);
       setLoading(false);
       return;
@@ -57,10 +57,10 @@ export const useChatRooms = () => {
 
     // Get unique room IDs that have messages
     const roomIdsWithMessages = [...new Set(roomsWithMessages.map(m => m.room_id))];
-    console.log('[ROOMS] fetchRooms:roomsWithMessages', roomIdsWithMessages.length);
+
 
     // Fetch latest user messages for rooms that have messages
-    console.log('[ROOMS] fetchRooms:query latest user messages');
+
     const { data: messageRows } = await supabase
       .from('messages')
       .select('room_id, content, created_at')
@@ -92,7 +92,7 @@ export const useChatRooms = () => {
 
     setRooms(mapped);
     setLoading(false);
-    console.log('[ROOMS] fetchRooms:done', { count: mapped.length });
+
   }, []);
 
   useEffect(() => {
@@ -102,7 +102,7 @@ export const useChatRooms = () => {
       const roomId = payload?.roomId as number | undefined;
       const name = payload?.name as string | undefined;
       if (!roomId) return;
-      console.log('[ROOMS] global-created', roomId);
+      if (__DEV__) { console.log('[ROOMS] global-created', roomId); }
       const { data: roomRow } = await supabase
         .from('chatrooms')
         .select('id, name, updated_at')
@@ -123,7 +123,7 @@ export const useChatRooms = () => {
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` }, async (payload) => {
           try {
             const roomId = (payload.new as any).room_id as number;
-            console.log('[ROOMS-RT] insert for room', roomId);
+            if (__DEV__) { console.log('[ROOMS-RT] insert for room', roomId); }
             // Fetch room metadata
             const { data: roomRow } = await supabase
               .from('chatrooms')
@@ -160,7 +160,7 @@ export const useChatRooms = () => {
   }, [fetchRooms]);
 
   const deleteRoom = async (roomId: number) => {
-    console.log('[ROOMS] deleteRoom:start', { roomId });
+    if (__DEV__) { console.log('[ROOMS] deleteRoom:start', { roomId }); }
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
@@ -177,7 +177,7 @@ export const useChatRooms = () => {
         return;
       }
       setRooms(prev => prev.filter(room => room.id !== roomId));
-      console.log('[ROOMS] deleteRoom:done', { roomId });
+      if (__DEV__) { console.log('[ROOMS] deleteRoom:done', { roomId }); }
     } catch (e) {
       console.warn('[ROOMS] deleteRoom:exception', e);
       return;

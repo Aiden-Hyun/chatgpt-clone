@@ -118,7 +118,7 @@ export const useChatState = (roomId: number | null) => {
       loadingStates: prev => {
         const newState = { 
           ...prev, 
-          processingMessages: new Set([...(prev.processingMessages || []), messageId]) 
+          processingMessages: new Set([...Array.from(prev.processingMessages || new Set<string>()), messageId]) 
         };
         logger.debug('Updated loading states', { 
           messageId, 
@@ -274,7 +274,7 @@ export const useChatState = (roomId: number | null) => {
     updateState({
       loadingStates: prev => ({
         ...prev,
-        regenerating: new Set([...(prev.regenerating || []), index]),
+        regenerating: new Set([...Array.from(prev.regenerating || new Set<number>()), index]),
       })
     });
   }, [updateState]);

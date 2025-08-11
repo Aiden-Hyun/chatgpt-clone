@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChatMessage } from '../../types';
+import { ErrorMessage } from '../ErrorMessage';
 import { LoadingMessage } from '../LoadingMessage';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
@@ -9,12 +10,10 @@ interface MessageItemProps {
   index: number;
   isNewMessageLoading: boolean;
   isRegenerating: boolean;
-  animationTrigger?: string;
   onRegenerate?: () => void;
   onUserEditRegenerate?: (index: number, newText: string) => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
-  shouldAnimate?: boolean; // Whether this message should have typewriter animation
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({
@@ -22,22 +21,36 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   index,
   isNewMessageLoading,
   isRegenerating,
-  animationTrigger,
   onRegenerate,
   onUserEditRegenerate,
   showAvatar = true,
   isLastInGroup = true,
-  shouldAnimate = false,
   }) => {
-    // Show loading message for new messages at the bottom
-    if (isNewMessageLoading && message.role === 'assistant' && !message.content) {
-      return <LoadingMessage />;
+    // Use message state for assistant messages instead of external loading flags
+    if (message.role === 'assistant') {
+      switch (message.state) {
+        case 'loading':
+          return <LoadingMessage />;
+        case 'error':
+          return (
+            <ErrorMessage 
+              message={message} 
+              onRetry={() => {
+                if (onRegenerate) {
+                  onRegenerate();
+                }
+              }} 
+            />
+          );
+        // Continue to render logic below for 'animating', 'completed', 'hydrated' states
+      }
     }
 
-  // Show loading message for regenerating messages
-  if (isRegenerating && message.role === 'assistant') {
-    return <LoadingMessage />;
-  }
+    // Backward compatibility: Show loading for legacy patterns
+    if ((isNewMessageLoading && message.role === 'assistant' && !message.content) ||
+        (isRegenerating && message.role === 'assistant')) {
+      return <LoadingMessage />;
+    }
 
   // Render user message
   if (message.role === 'user') {
@@ -52,15 +65,15 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   // Render assistant message
   if (message.role === 'assistant') {
+    // Debug logging removed for performance
+
     return (
       <AssistantMessage
-        key={animationTrigger || `assistant-${index}`}
+        key={`assistant-${index}`}
         message={message}
         onRegenerate={onRegenerate}
         showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
-        shouldAnimate={shouldAnimate}
-        animationTrigger={animationTrigger}
       />
     );
   }

@@ -1,6 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useAppTheme } from '../../../../shared/hooks';
 import { createRoomListItemStyles } from './RoomListItem.styles';
 
 interface ChatRoom {
@@ -15,8 +16,9 @@ interface Props {
 }
 
 const RoomListItem: React.FC<Props> = ({ room, onDelete, onPress }) => {
-  // Get styles from dedicated style file
-  const styles = createRoomListItemStyles();
+  // Get styles from dedicated style file - memoized to prevent re-renders
+  const theme = useAppTheme();
+  const styles = React.useMemo(() => createRoomListItemStyles(theme), [theme]);
   
   return (
     <View style={styles.roomContainer}>

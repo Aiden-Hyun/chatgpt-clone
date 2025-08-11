@@ -6,7 +6,6 @@ import { ITypingStateService } from '../interfaces/ITypingStateService';
 import { IUIStateService } from '../interfaces/IUIStateService';
 // Removed: import { animateResponse } from '../legacy/animateResponse'; // No longer needed
 import { handleDraftCleanup } from '../sendMessage/handleDraftCleanup';
-import { handleMessageState } from '../sendMessage/handleMessageState';
 import { ChatMessage } from '../types';
 
 export class ReactUIStateService implements 
@@ -26,15 +25,30 @@ export class ReactUIStateService implements
     regenerateIndex?: number;
     userMsg: ChatMessage;
     assistantMsg: ChatMessage;
-    messageId?: string; // ✅ Phase 2: Add message ID support
+    messageId?: string;
   }): void {
-    handleMessageState({
-      regenerateIndex: args.regenerateIndex,
-      setMessages: this.setMessages,
-      userMsg: args.userMsg,
-      assistantMsg: args.assistantMsg,
-      messageId: args.messageId, // ✅ Phase 2: Pass message ID to handler
-    });
+    // Inline message state handling (moved from deleted handleMessageState.ts)
+    if (args.regenerateIndex !== undefined) {
+      this.setMessages((prev) => {
+        const updated = [...prev];
+        // Update the assistant message at the regeneration index
+        updated[args.regenerateIndex!] = { 
+          ...updated[args.regenerateIndex!], 
+          content: '', 
+          state: 'loading'  // Set to loading state for regeneration
+        };
+        return updated;
+      });
+    } else {
+      // Normal flow: add new user and assistant messages
+      this.setMessages((prev) => {
+        const enhancedAssistantMsg = args.messageId 
+          ? { ...args.assistantMsg, id: args.messageId }
+          : args.assistantMsg;
+        
+        return [...prev, args.userMsg, enhancedAssistantMsg];
+      });
+    }
   }
 
   setTyping(isTyping: boolean): void {
@@ -59,14 +73,19 @@ export class ReactUIStateService implements
     });
   }
 
-  updateMessageContent(args: {
+  setMessageFullContentAndAnimate(args: {
     fullContent: string;
     regenerateIndex?: number;
     messageId?: string;
   }): void {
-    // Update message content immediately for UI display
+    if (__DEV__) {
+      console.log('[UI-STATE] setMessageFullContentAndAnimate', {
+        contentLength: args.fullContent.length,
+        regenerateIndex: args.regenerateIndex,
+        messageId: args.messageId
+      });
+    }
     
-    // Update message content immediately without animation
     this.setMessages((prev) => {
       const updated = [...prev];
       
@@ -75,20 +94,22 @@ export class ReactUIStateService implements
       if (args.regenerateIndex !== undefined) {
         // For regeneration, use the specified index
         targetIndex = args.regenerateIndex;
+      } else if (args.messageId) {
+        // Find message by ID
+        targetIndex = updated.findIndex(msg => msg.id === args.messageId);
       } else {
-        // Find the last assistant message (usually empty/loading)
+        // Find the last assistant message (fallback)
         targetIndex = updated.findLastIndex(msg => msg.role === 'assistant');
-        
-        // If no assistant message found, add a new one
-        if (targetIndex === -1) {
-          updated.push({ role: 'assistant', content: args.fullContent });
-          return updated;
-        }
       }
       
-      // Update the target message with full content
+      // Update the target message with full content and set to animating state
       if (targetIndex >= 0 && targetIndex < updated.length) {
-        updated[targetIndex] = { role: 'assistant', content: args.fullContent };
+        updated[targetIndex] = { 
+          ...updated[targetIndex],
+          fullContent: args.fullContent,
+          content: args.fullContent, // Also update regular content
+          state: 'animating'  // Trigger animation
+        };
       }
       
       return updated;

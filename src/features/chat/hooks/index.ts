@@ -7,6 +7,5 @@ export * from './useMessageInput';
 export * from './useMessageStorage';
 export * from './useModelSelection';
 
-// Modularized message hooks
-export * from './messages';
+// Legacy message hooks removed - using new state machine system
 

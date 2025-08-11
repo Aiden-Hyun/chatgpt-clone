@@ -31,9 +31,9 @@ export interface IUIStateService {
   }): void;
   
   /**
-   * Update message content without animation
+   * Set message full content and transition to animating state
    */
-  updateMessageContent(args: {
+  setMessageFullContentAndAnimate(args: {
     fullContent: string;
     regenerateIndex?: number;
     messageId?: string;

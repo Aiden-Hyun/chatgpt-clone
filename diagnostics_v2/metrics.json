@@ -1,0 +1,21 @@
+{
+  "approx": true,
+  "files_total_ts": 149,
+  "files_total_tsx": 53,
+  "chat_folder": {
+    "files": 80,
+    "loc": 3800,
+    "functions_over_100_loc": 2,
+    "any_usages": 45,
+    "default_exports": 5,
+    "cycles": 0,
+    "duplicate_clusters": 1
+  },
+  "per_folder_summary": {
+    "components/ui": { "files": 20, "loc": 900 },
+    "services": { "files": 25, "loc": 1200 },
+    "core/hooks": { "files": 25, "loc": 1100 },
+    "controller/sendMessage": { "files": 6, "loc": 400 },
+    "types": { "files": 1, "loc": 120 }
+  }
+}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useAppTheme } from '../../../../shared/hooks';
 import { ChatMessage } from '../../types';
 import { MessageInteractionBar } from '../MessageInteractionBar';
 import { TypewriterText } from '../TypewriterText';
@@ -10,8 +11,6 @@ interface AssistantMessageProps {
   onRegenerate?: () => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
-  shouldAnimate?: boolean;
-  animationTrigger?: string; // token to force-start animation when it changes
 }
 
 export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(function AssistantMessage({
@@ -19,10 +18,9 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   onRegenerate,
   showAvatar = true, // (kept for future use)
   isLastInGroup = true,
-  shouldAnimate = false,
-  animationTrigger,
 }: AssistantMessageProps) {
-  const styles = createAssistantMessageStyles();
+  const theme = useAppTheme();
+  const styles = React.useMemo(() => createAssistantMessageStyles(theme), [theme]);
 
   // Add render counter for performance monitoring (disabled)
   // const renderCountRef = React.useRef(0);
@@ -31,27 +29,35 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   //   console.log(`[ASSISTANT-RENDER] Count: ${renderCountRef.current}`);
   // }
 
-  // Simple logic: if we should animate and have content, use TypewriterText
-  // Otherwise, just show the text directly
-  const hasContent = message.content && message.content.trim().length > 0;
-  const useAnimation = shouldAnimate && hasContent;
+  // State-based rendering: use message.state to determine behavior
+  const useAnimation = message.state === 'animating';
+  const contentToShow = message.state === 'animating' 
+    ? (message.fullContent || message.content) 
+    : message.content;
+
+  // Debug logging removed for performance
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
       {useAnimation ? (
         <TypewriterText
-          text={message.content}
+          text={contentToShow}
           startAnimation={true}
           speed={35}
           showCursor={true}
           style={styles.text}
           onComplete={() => {
-            // Animation completed
+            if (__DEV__) { console.log('[ASSISTANT] TypewriterText completed for message', message.id); }
+            // Transition to completed state when animation finishes
+            if (message.id) {
+              // TODO: Add state manager call here when we have access to it
+              // messageStateManager.markCompleted(message.id);
+            }
           }}
         />
       ) : (
         <Text style={styles.text}>
-          {message.content}
+          {contentToShow}
         </Text>
       )}
 

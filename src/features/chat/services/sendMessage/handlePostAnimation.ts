@@ -38,7 +38,7 @@ export const handlePostAnimation = async ({
     // If regenerating, update the assistant message in the database
     // Otherwise, insert both user and assistant messages
     if (regenerateIndex !== undefined) {
-      console.log(`🔄 Updating regenerated message in database for room ${roomId}`);
+      if (__DEV__) { console.log(`🔄 Updating regenerated message in database for room ${roomId}`); }
       if (originalAssistantContent) {
         await updateAssistantMessage({
           roomId,
@@ -50,7 +50,7 @@ export const handlePostAnimation = async ({
         console.warn('[regen] originalAssistantContent missing; skipping DB update');
       }
     } else {
-      console.log(`📝 Inserting new messages in database for room ${roomId}`);
+      if (__DEV__) { console.log(`📝 Inserting new messages in database for room ${roomId}`); }
       await insertMessages({
         roomId,
         userMessage: userMsg,

@@ -7,7 +7,7 @@ export class MobileStorageService implements IStorageService {
   async storeMessages(roomId: number, messages: ChatMessage[]): Promise<void> {
     try {
       mobileStorage.setItem(`chat_messages_${roomId}`, JSON.stringify(messages));
-      console.log(`[storage] Saved messages for room ${roomId}`);
+      if (__DEV__) { console.log(`[storage] Saved messages for room ${roomId}`); }
     } catch (error) {
       console.error('[storage] Failed to store messages:', error);
       throw error;
@@ -20,7 +20,7 @@ export class MobileStorageService implements IStorageService {
       if (!stored) return null;
       
       const messages = JSON.parse(stored) as ChatMessage[];
-      console.log(`[storage] Retrieved messages for room ${roomId}`);
+      if (__DEV__) { console.log(`[storage] Retrieved messages for room ${roomId}`); }
       return messages;
     } catch (error) {
       console.error('[storage] Failed to get messages:', error);
@@ -31,7 +31,7 @@ export class MobileStorageService implements IStorageService {
   async storeModel(roomId: number, model: string): Promise<void> {
     try {
       mobileStorage.setItem(`chat_model_${roomId}`, model);
-      console.log(`[storage] Saved model (${model}) for room ${roomId}`);
+      if (__DEV__) { console.log(`[storage] Saved model (${model}) for room ${roomId}`); }
     } catch (error) {
       console.error('[storage] Failed to store model:', error);
       throw error;
@@ -51,7 +51,7 @@ export class MobileStorageService implements IStorageService {
   async markAsNewRoom(roomId: number): Promise<void> {
     try {
       mobileStorage.setItem(`new_room_created_${roomId}`, 'true');
-      console.log(`[storage] Marked room ${roomId} as new`);
+      if (__DEV__) { console.log(`[storage] Marked room ${roomId} as new`); }
     } catch (error) {
       console.error('[storage] Failed to mark room as new:', error);
       throw error;
@@ -73,7 +73,7 @@ export class MobileStorageService implements IStorageService {
       mobileStorage.removeItem(`chat_messages_${roomId}`);
       mobileStorage.removeItem(`chat_model_${roomId}`);
       mobileStorage.removeItem(`new_room_created_${roomId}`);
-      console.log(`[storage] Cleared all data for room ${roomId}`);
+      if (__DEV__) { console.log(`[storage] Cleared all data for room ${roomId}`); }
     } catch (error) {
       console.error('[storage] Failed to clear room data:', error);
       throw error;

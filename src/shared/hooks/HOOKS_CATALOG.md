@@ -33,9 +33,8 @@ This document catalogs ALL custom hooks available in the app to prevent hardcodi
 ## 🚀 Feature-Specific Hooks
 
 ### **Chat Features**
-- `useChat` - Main chat functionality coordinator
+- `useChat` - Main chat functionality coordinator with state machine (replaces useMessages)
 - `useChatRooms` - Chat room management
-- `useMessagesCombined` - Message management (replaces useMessages)
 - `useMessageInput` - Message input handling
 - `useMessageStorage` - Local storage for messages
 - `useModelSelection` - AI model selection

@@ -59,8 +59,8 @@ Use this decision tree to quickly find the right hook for your use case.
 │   └── → `useChat(roomId)`
 ├── Chat room management
 │   └── → `useChatRooms()`
-├── Message management
-│   └── → `useMessagesCombined(roomId)`
+├── Message management  
+│   └── → `useChat(roomId)` (includes state machine)
 ├── Message input handling
 │   └── → `useMessageInput(roomId, isNewRoom)`
 ├── Model selection

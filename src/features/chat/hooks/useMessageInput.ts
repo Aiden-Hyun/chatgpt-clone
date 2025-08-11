@@ -36,7 +36,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
           if (flag === 'true') {
             isNewRoom = true;
             await mobileStorage.removeItem(`new_room_created_${numericRoomId}`);
-            console.log(`[storage] new_room_created flag detected for room ${numericRoomId}`);
+            if (__DEV__) { console.log(`[storage] new_room_created flag detected for room ${numericRoomId}`); }
           }
         } catch {
           /* swallow */
@@ -46,11 +46,11 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
       if (isNewRoom) {
         setInput('');
         setDrafts(prev => ({ ...prev, [roomKey]: '' }));
-        console.log(`Cleared input for room ${roomKey}`);
+        if (__DEV__) { console.log(`Cleared input for room ${roomKey}`); }
       } else {
         const currentDraft = draftsRef.current[roomKey] || '';
         setInput(currentDraft);
-        console.log(`Restored draft for room ${roomKey}: "${currentDraft}"`);
+        if (__DEV__) { console.log(`Restored draft for room ${roomKey}: "${currentDraft}"`); }
       }
     };
 

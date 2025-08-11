@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import { useLanguageContext } from '../../../../features/language';
+import { useAppTheme } from '../../../../shared/hooks';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {
@@ -32,11 +33,12 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const { t } = useLanguageContext();
+  const theme = useAppTheme();
   
   // CRITICAL FIX: Memoize styles to prevent expensive re-creation
   const { styles, placeholderTextColor } = useMemo(
-    () => createChatInputStyles(isInputFocused),
-    [isInputFocused]
+    () => createChatInputStyles(isInputFocused, theme),
+    [isInputFocused, theme]
   );
 
   const hasText = input.trim().length > 0;

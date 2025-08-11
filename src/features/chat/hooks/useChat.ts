@@ -1,8 +1,13 @@
-// useChat.ts - Coordinator hook that combines useMessages and useMessageInput
+// useChat.ts - Coordinator hook that combines individual message hooks with state machine support
 import { useCallback, useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
-import { useMessagesCombined } from './messages';
+import { ServiceFactory } from '../services/core';
+import { generateMessageId } from '../utils/messageIdGenerator';
+import { useChatState } from './useChatState';
+import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
+import { useMessageStorage } from './useMessageStorage';
+import { useModelSelection } from './useModelSelection';
 
 export const useChat = (numericRoomId: number | null) => {
   const [isNewlyCreatedRoom, setIsNewlyCreatedRoom] = useState(false);
@@ -15,7 +20,7 @@ export const useChat = (numericRoomId: number | null) => {
           const storedData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
           const isNewRoom = !!storedData;
           setIsNewlyCreatedRoom(isNewRoom);
-          console.log(`Room ${numericRoomId} detected as ${isNewRoom ? 'newly created' : 'existing'} room`);
+          if (__DEV__) { console.log(`Room ${numericRoomId} detected as ${isNewRoom ? 'newly created' : 'existing'} room`); }
         } catch {
           setIsNewlyCreatedRoom(false);
         }
@@ -27,19 +32,80 @@ export const useChat = (numericRoomId: number | null) => {
     checkRoom();
   }, [numericRoomId]);
   
-  // Use the extracted hooks
+  // Use the new individual hooks with state machine support
+  const chatState = useChatState(numericRoomId);
   const {
     messages,
     loading,
-    sending,
-    isTyping,
-    regeneratingIndex,
-    selectedModel,
-    sendMessage: sendMessageToBackend,
-    regenerateMessage: regenerateMessageInBackend,
-    updateModel
-  } = useMessagesCombined(numericRoomId);
+    regeneratingIndices,
+    processingMessages,
+    messageQueue,
+    isRegenerating,
+    setMessages,
+    setLoading,
+    startMessageProcessing,
+    stopMessageProcessing,
+    isMessageProcessing,
+    getProcessingMessageIds,
+    addMessageToQueue,
+    updateMessageStatus,
+    removeMessageFromQueue,
+    cleanupMessageProcessing,
+    setupMessageProcessing,
+    handleMessageError,
+    startRegenerating,
+    stopRegenerating,
+  } = chatState;
+
+  // Message storage for navigation
+  const { storedMessages } = useMessageStorage(numericRoomId);
+
+  // Load messages when the room ID changes
+  useEffect(() => {
+    const loadMessages = async () => {
+      setLoading(true);
+
+      if (numericRoomId) {
+        // If we have stored messages from navigation, use those
+        if (storedMessages && storedMessages.length > 0) {
+          if (__DEV__) { console.log('[CHAT] using stored messages', { count: storedMessages.length, roomId: numericRoomId }); }
+          const hydratedStoredMessages = storedMessages.map(msg => ({ 
+            ...msg, 
+            state: 'hydrated' as const,  // Never animate stored messages
+            id: msg.id || generateMessageId()
+          }));
+          setMessages(hydratedStoredMessages);
+          setLoading(false);
+        } else {
+          // Otherwise load from database using service
+          if (__DEV__) { console.log('[CHAT] loading from database', { roomId: numericRoomId }); }
+          const messageService = ServiceFactory.createMessageService();
+          const history = await messageService.loadMessages(numericRoomId);
+          if (__DEV__) { console.log('[CHAT] loaded from database', { count: history.length, roomId: numericRoomId }); }
+          
+          const hydratedHistory = history.map(msg => ({ 
+            ...msg, 
+            state: 'hydrated' as const,  // Never animate database messages
+            id: msg.id || generateMessageId()
+          }));
+          setMessages(hydratedHistory);
+          setLoading(false);
+        }
+      } else {
+        // No room ID, reset messages
+        if (__DEV__) { console.log('[CHAT] no room ID, resetting messages'); }
+        setMessages([]);
+        setLoading(false);
+      }
+    };
+
+    loadMessages();
+  }, [numericRoomId, storedMessages]); // Keep storedMessages to react to navigation changes
+
+  // Model selection
+  const { selectedModel, updateModel } = useModelSelection(numericRoomId);
   
+  // Input management
   const {
     input,
     drafts,
@@ -47,6 +113,30 @@ export const useChat = (numericRoomId: number | null) => {
     handleInputChange,
     clearInput
   } = useMessageInput(numericRoomId, isNewlyCreatedRoom);
+
+  // Message actions (needs drafts from input hook)
+  const {
+    sendMessage: sendMessageToBackend,
+    regenerateMessage: regenerateMessageInBackend,
+  } = useMessageActions({
+    roomId: numericRoomId,
+    messages,
+    setMessages,
+    startMessageProcessing,
+    stopMessageProcessing,
+    isMessageProcessing,
+    getProcessingMessageIds,
+    addMessageToQueue,
+    updateMessageStatus,
+    removeMessageFromQueue,
+    cleanupMessageProcessing,
+    setupMessageProcessing,
+    handleMessageError,
+    startRegenerating,
+    stopRegenerating,
+    drafts,
+    setDrafts,
+  });
   
   // Wrapper for sendMessage that handles input clearing
   // Memoized to prevent ChatInput re-renders
@@ -56,14 +146,14 @@ export const useChat = (numericRoomId: number | null) => {
     
     // Store the current room key before sending  
     const currentRoomKey = numericRoomId ? numericRoomId.toString() : 'new';
-    console.log(`Sending message from room ${currentRoomKey}`);
+    if (__DEV__) { console.log(`Sending message from room ${currentRoomKey}`); }
     
     // Clear input immediately for better UX
     clearInput();
     
     try {
-      // Send the message and handle drafts
-      await sendMessageToBackend(userContent, drafts, setDrafts);
+      // Send the message (drafts are handled internally by the new system)
+      await sendMessageToBackend(userContent);
       
       // Message sent successfully - input is already cleared
     } catch (error) {
@@ -78,21 +168,27 @@ export const useChat = (numericRoomId: number | null) => {
     
     // If we're in a 'new' room, we'll handle the draft clearing in sendMessageToBackend
     // This avoids race conditions with navigation and state updates
-  }, [input, numericRoomId, clearInput, sendMessageToBackend, drafts, setDrafts, handleInputChange]);
+  }, [input, numericRoomId, clearInput, sendMessageToBackend, handleInputChange]);
   
   // Wrapper for regenerateMessage
   // Memoized to prevent unnecessary re-renders
   const regenerateMessage = useCallback(async (index: number) => {
-    await regenerateMessageInBackend(index, drafts, setDrafts);
-  }, [regenerateMessageInBackend, drafts, setDrafts]);
+    await regenerateMessageInBackend(index);
+  }, [regenerateMessageInBackend]);
 
   return {
-    // Message state
+    // Message state (compatible with old API)
     messages,
     loading,
-    sending,
-    isTyping,
-    regeneratingIndex,
+    sending: processingMessages.size > 0, // Convert Set to boolean for backward compatibility
+    isTyping: false, // TODO: Implement typing state in new system
+    regeneratingIndex: regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null, // Convert Set to single index for backward compatibility
+    
+    // New state machine fields
+    regeneratingIndices,
+    processingMessages,
+    messageQueue,
+    isRegenerating,
     
     // Input state
     input,
