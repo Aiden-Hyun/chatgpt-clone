@@ -20,7 +20,6 @@ export const useChat = (numericRoomId: number | null) => {
           const storedData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
           const isNewRoom = !!storedData;
           setIsNewlyCreatedRoom(isNewRoom);
-          if (__DEV__) { console.log(`Room ${numericRoomId} detected as ${isNewRoom ? 'newly created' : 'existing'} room`); }
         } catch {
           setIsNewlyCreatedRoom(false);
         }
@@ -68,7 +67,6 @@ export const useChat = (numericRoomId: number | null) => {
       if (numericRoomId) {
         // If we have stored messages from navigation, use those
         if (storedMessages && storedMessages.length > 0) {
-          if (__DEV__) { console.log('[CHAT] using stored messages', { count: storedMessages.length, roomId: numericRoomId }); }
           const hydratedStoredMessages = storedMessages.map(msg => ({ 
             ...msg, 
             state: 'hydrated' as const,  // Never animate stored messages
@@ -78,10 +76,8 @@ export const useChat = (numericRoomId: number | null) => {
           setLoading(false);
         } else {
           // Otherwise load from database using service
-          if (__DEV__) { console.log('[CHAT] loading from database', { roomId: numericRoomId }); }
           const messageService = ServiceFactory.createMessageService();
           const history = await messageService.loadMessages(numericRoomId);
-          if (__DEV__) { console.log('[CHAT] loaded from database', { count: history.length, roomId: numericRoomId }); }
           
           const hydratedHistory = history.map(msg => ({ 
             ...msg, 
@@ -92,15 +88,14 @@ export const useChat = (numericRoomId: number | null) => {
           setLoading(false);
         }
       } else {
-        // No room ID, reset messages
-        if (__DEV__) { console.log('[CHAT] no room ID, resetting messages'); }
+        // No room ID, reset messages and show welcome text
         setMessages([]);
         setLoading(false);
       }
     };
 
     loadMessages();
-  }, [numericRoomId, storedMessages]); // Keep storedMessages to react to navigation changes
+  }, [numericRoomId, storedMessages, setMessages, setLoading]);
 
   // Model selection
   const { selectedModel, updateModel } = useModelSelection(numericRoomId);

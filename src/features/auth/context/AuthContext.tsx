@@ -1,6 +1,6 @@
 // src/features/auth/context/AuthContext.tsx
 import { Session } from '@supabase/supabase-js';
-import {
+import React, {
     createContext,
     ReactNode,
     useContext,

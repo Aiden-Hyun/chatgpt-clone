@@ -108,30 +108,57 @@ export const MessageList: React.FC<MessageListProps> = ({
   useEffect(() => {
     if (messages.length === 0 && showWelcomeText && !isNewMessageLoading) {
       const randomKey = welcomeMessageKeys[Math.floor(Math.random() * welcomeMessageKeys.length)];
+
       setSelectedWelcomeKey(randomKey);
     }
   }, [messages.length, showWelcomeText, isNewMessageLoading, welcomeMessageKeys]);
 
-  // Typewriter animation effect
+  // Track animation state to prevent multiple concurrent animations
+  const animationRunningRef = useRef(false);
+  const currentWelcomeKeyRef = useRef<string>('');
+
+  // Typewriter animation effect - with stable animation to prevent restarts
   useEffect(() => {
     if (messages.length === 0 && showWelcomeText && !isNewMessageLoading && selectedWelcomeKey) {
+      // Prevent starting new animation if one is already running for the same key
+      if (animationRunningRef.current && currentWelcomeKeyRef.current === selectedWelcomeKey) {
+        return;
+      }
+
       const welcomeMessage = t(selectedWelcomeKey);
+      
+      // Mark animation as running
+      animationRunningRef.current = true;
+      currentWelcomeKeyRef.current = selectedWelcomeKey;
       
       // Reset animation when welcome text should be shown
       setDisplayedText('');
       let currentIndex = 0;
+      let isCancelled = false; // Prevent race conditions
       
       const typeNextChar = () => {
+        if (isCancelled) return; // Stop if effect was cleaned up
+        
         if (currentIndex < welcomeMessage.length) {
-          setDisplayedText(prevText => prevText + welcomeMessage[currentIndex]);
+          setDisplayedText(welcomeMessage.slice(0, currentIndex + 1)); // Use slice instead of concatenation
           currentIndex++;
+          setTimeout(typeNextChar, typingSpeed);
+        } else {
+          // Animation complete
+          animationRunningRef.current = false;
         }
       };
 
-      const interval = setInterval(typeNextChar, typingSpeed);
-      return () => clearInterval(interval);
+      // Start animation
+      setTimeout(typeNextChar, typingSpeed);
+      
+      // Cleanup function
+      return () => {
+        isCancelled = true;
+        animationRunningRef.current = false;
+      };
     }
-  }, [messages.length, showWelcomeText, isNewMessageLoading, selectedWelcomeKey, t, typingSpeed]);
+  }, [selectedWelcomeKey, messages.length, showWelcomeText, isNewMessageLoading, t, typingSpeed]);
 
   // Blinking cursor animation
   useEffect(() => {
