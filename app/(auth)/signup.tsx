@@ -1,10 +1,11 @@
-import { router } from 'expo-router';
+
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useToast } from '../../src/features/alert';
 import { useEmailSignup } from '../../src/features/auth/hooks';
 import { useLanguageContext } from '../../src/features/language';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
+import { router } from 'expo-router';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
@@ -15,6 +16,7 @@ export default function SignupScreen() {
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
   const { signUp, isLoading } = useEmailSignup();
   const { showError } = useToast();
+
   const styles = createSignupStyles();
 
   // Refs for form handling
@@ -79,7 +81,7 @@ export default function SignupScreen() {
           [
             { 
               text: 'OK', 
-              onPress: () => {
+              onPress: async () => {
                 console.log('Success alert OK pressed, navigating to signin');
                 try {
                   router.replace('/signin');

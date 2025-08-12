@@ -1,5 +1,5 @@
+import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { useNavigation } from '../../../shared/hooks';
 import { supabase } from '../../../shared/lib/supabase';
 
 /**
@@ -8,7 +8,6 @@ import { supabase } from '../../../shared/lib/supabase';
  */
 export const useLogout = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { navigateToLogin } = useNavigation();
 
   const logout = useCallback(async () => {
     try {
@@ -18,15 +17,15 @@ export const useLogout = () => {
       await supabase.auth.signOut();
       
       // Navigate to login screen
-      navigateToLogin();
+      router.replace('/auth');
     } catch (error) {
       console.error('Error during logout:', error);
       // Even if there's an error, try to navigate to login
-      navigateToLogin();
+      router.replace('/auth');
     } finally {
       setIsLoggingOut(false);
     }
-  }, [navigateToLogin]);
+  }, []);
 
   return {
     logout,

@@ -90,7 +90,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
       >
         <ChatHeader
           onLogout={logout}
-          onSettings={() => {}}
+          onSettings={() => { router.push('/settings'); }}
           onBack={handleBack}
           onNewChat={handleNewChat}
           onChatSelect={handleChatSelect}

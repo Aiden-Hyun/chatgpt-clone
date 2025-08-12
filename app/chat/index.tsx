@@ -6,6 +6,7 @@ import { LoadingWrapper } from '../../src/features/ui';
 export default function NewChatScreen() {
   const { session } = useAuth();
 
+
   useEffect(() => {
     const createNewChat = async () => {
       try {

@@ -1,10 +1,11 @@
-import { router } from 'expo-router';
+
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { useToast } from '../../src/features/alert';
 import { usePasswordReset } from '../../src/features/auth/hooks';
 import { useLanguageContext } from '../../src/features/language';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
+import { router } from 'expo-router';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
@@ -13,6 +14,7 @@ export default function ForgotPasswordScreen() {
   const { resetPassword, isLoading } = usePasswordReset();
   const { showError } = useToast();
   const { t } = useLanguageContext();
+
   const styles = createForgotPasswordStyles();
 
   const validateEmail = (email: string) => {
@@ -37,7 +39,7 @@ export default function ForgotPasswordScreen() {
         Alert.alert(
           'Success', 
           'Password reset email sent. Please check your email and follow the instructions.',
-          [{ text: 'OK', onPress: () => {
+          [{ text: 'OK', onPress: async () => {
             try {
               router.replace('/signin');
             } catch (error) {
@@ -53,7 +55,7 @@ export default function ForgotPasswordScreen() {
     }
   };
 
-  const handleGoBack = () => {
+  const handleGoBack = async () => {
     try {
       router.back();
     } catch (error) {

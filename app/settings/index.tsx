@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+
 import { router } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -29,7 +30,7 @@ export default function SettingsScreen() {
   }, [userName]);
 
   const handleBack = () => {
-    router.push('/');
+    router.back();
   };
 
   const handleLogout = async () => {
