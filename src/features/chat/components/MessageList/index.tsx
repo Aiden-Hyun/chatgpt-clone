@@ -241,6 +241,11 @@ export const MessageList: React.FC<MessageListProps> = ({
     [messagesWithIds, isNewMessageLoading]
   );
   
+  // Memoize extraData array to prevent unnecessary re-renders
+  const extraDataArray = useMemo(() => 
+    [messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated],
+    [messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated]
+  );
 
 
   // Show welcome text only when truly idle (not during hydration/loading)
@@ -302,7 +307,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}
-      extraData={[messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated]}
+      extraData={extraDataArray}
       // 🚀 FlashList Optimization
       estimatedItemSize={100} // Average height of a message item
       onContentSizeChange={() => {
