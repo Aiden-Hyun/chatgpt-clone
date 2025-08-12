@@ -45,25 +45,54 @@ serve(async (req) => {
     });
   }
 
-  // Get user ID from JWT token
-  const authHeader = req.headers.get("authorization");
-  let userId = null;
-  if (authHeader) {
-    try {
-      const token = authHeader.replace("Bearer ", "");
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      userId = payload.sub;
-    } catch (e) {
-      console.log("JWT parse error:", e);
-    }
+  // Initialize Supabase client for JWT verification
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return new Response("Missing Supabase configuration", {
+      status: 500,
+      headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
+    });
   }
 
-  // Initialize Supabase client
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  let supabaseClient = null;
-  if (supabaseUrl && serviceKey) {
-    supabaseClient = createClient(supabaseUrl, serviceKey);
+  // Create client for JWT verification
+  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: req.headers.get("authorization") ?? "" } }
+  });
+
+  // Verify JWT and get user
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: "Missing authorization header" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+      },
+    });
+  }
+
+  const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+  if (authError || !user) {
+    console.log("Auth error:", authError);
+    return new Response(JSON.stringify({ error: "Invalid JWT" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+      },
+    });
+  }
+
+  const userId = user.id;
+  console.log("Authenticated user:", userId);
+
+  // Create service role client for database operations
+  let serviceClient = null;
+  if (serviceKey) {
+    serviceClient = createClient(supabaseUrl, serviceKey);
   }
 
   let data;
@@ -111,12 +140,12 @@ serve(async (req) => {
   }
 
   // Store messages if everything succeeded
-  if (supabaseClient && userId && roomId && data.choices?.[0]?.message) {
+  if (serviceClient && userId && roomId && data.choices?.[0]?.message) {
     const userMessage = messages[messages.length - 1];
     const assistantMessage = data.choices[0].message;
 
     try {
-      await supabaseClient.from("messages").insert([
+      await serviceClient.from("messages").insert([
         {
           room_id: roomId,
           user_id: userId,

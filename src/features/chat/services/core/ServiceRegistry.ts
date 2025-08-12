@@ -1,10 +1,12 @@
 // src/features/chat/services/core/ServiceRegistry.ts
+import { Session } from '@supabase/supabase-js';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { IAnimationService } from '../interfaces/IAnimationService';
 import { IChatRoomService } from '../interfaces/IChatRoomService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { IMessageStateService } from '../interfaces/IMessageStateService';
 import { INavigationService } from '../interfaces/INavigationService';
+import { IRegenerationService } from '../interfaces/IRegenerationService';
 import { ITypingStateService } from '../interfaces/ITypingStateService';
 import { IUIStateService } from '../interfaces/IUIStateService';
 import { ChatMessage } from '../types';
@@ -37,6 +39,17 @@ export interface ServiceConfig {
     new (
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
     ): IAnimationService;
+  };
+  regenerationService: {
+    new (
+      messageStateManager: any, // Using any to avoid circular dependency
+      aiApiService: IAIApiService,
+      messageService: IMessageService,
+      setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+      session: Session,
+      selectedModel: string,
+      roomId: number | null
+    ): IRegenerationService;
   };
   // Drafts are now handled in hooks (useMessageInput) with storage persistence
 }
@@ -110,5 +123,26 @@ export class ServiceRegistry {
   ): IAnimationService {
     const config = this.getConfig();
     return new config.animationService(setMessages);
+  }
+  
+  static createRegenerationService(
+    messageStateManager: any, // Using any to avoid circular dependency
+    aiApiService: IAIApiService,
+    messageService: IMessageService,
+    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+    session: Session,
+    selectedModel: string,
+    roomId: number | null
+  ): IRegenerationService {
+    const config = this.getConfig();
+    return new config.regenerationService(
+      messageStateManager,
+      aiApiService,
+      messageService,
+      setMessages,
+      session,
+      selectedModel,
+      roomId
+    );
   }
 } 

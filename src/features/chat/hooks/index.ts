@@ -6,6 +6,7 @@ export * from './useMessageInput';
 // New extracted hooks
 export * from './useModelSelection';
 export * from './useOptimisticMessages';
+export * from './useRegenerationService';
 
 // Legacy message hooks removed - using new state machine system
 

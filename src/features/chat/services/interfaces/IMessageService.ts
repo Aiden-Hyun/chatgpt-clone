@@ -23,6 +23,27 @@ export interface IMessageService {
   }): Promise<void>;
   
   /**
+   * Update assistant message by client_id (preferred when available)
+   * Returns true if an update occurred, false if not found
+   */
+  updateAssistantMessageByClientId?(args: {
+    roomId: number;
+    messageId: string;
+    newContent: string;
+    session: any;
+  }): Promise<boolean>;
+
+  /**
+   * Update assistant message by database id (supports when local id is 'db:<id>')
+   * Returns true if an update occurred, false otherwise
+   */
+  updateAssistantMessageByDbId?(args: {
+    dbId: number;
+    newContent: string;
+    session: any;
+  }): Promise<boolean>;
+  
+  /**
    * Load messages for a specific room
    */
   loadMessages(roomId: number): Promise<ChatMessage[]>;

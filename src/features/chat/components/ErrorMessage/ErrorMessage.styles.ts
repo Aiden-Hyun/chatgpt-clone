@@ -12,17 +12,17 @@ export const createErrorMessageStyles = (theme: AppTheme) => StyleSheet.create({
   },
   
   errorContent: {
-    backgroundColor: theme.colors.surface.primary,
+    backgroundColor: theme.colors.status.error.background,
     borderRadius: 12,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: '#ff4444',
+    borderLeftColor: theme.colors.status.error.primary,
   },
   
   errorText: {
     fontSize: 16,
     fontWeight: theme.fontWeights.medium as '500',
-    color: '#ff4444',
+    color: theme.colors.status.error.primary,
     marginBottom: 4,
   },
   
@@ -34,7 +34,7 @@ export const createErrorMessageStyles = (theme: AppTheme) => StyleSheet.create({
   
   retryButton: {
     alignSelf: 'flex-start',
-    backgroundColor: '#ff4444',
+    backgroundColor: theme.colors.status.error.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,

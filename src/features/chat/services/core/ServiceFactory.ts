@@ -1,4 +1,8 @@
 // src/features/chat/services/core/ServiceFactory.ts
+import { Session } from '@supabase/supabase-js';
+import { IAIApiService } from '../interfaces/IAIApiService';
+import { IMessageService } from '../interfaces/IMessageService';
+import { IRegenerationService } from '../interfaces/IRegenerationService';
 import { ChatMessage } from '../types';
 import { OpenAIResponseProcessor } from './AIResponseProcessor';
 import { MessageSenderService } from './MessageSenderService';
@@ -85,4 +89,23 @@ export class ServiceFactory {
     return ServiceRegistry.createAnimationService(setMessages);
   }
 
+  static createRegenerationService(
+    messageStateManager: any, // Using any to avoid circular dependency
+    aiApiService: IAIApiService,
+    messageService: IMessageService,
+    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+    session: Session,
+    selectedModel: string,
+    roomId: number | null
+  ): IRegenerationService {
+    return ServiceRegistry.createRegenerationService(
+      messageStateManager,
+      aiApiService,
+      messageService,
+      setMessages,
+      session,
+      selectedModel,
+      roomId
+    );
+  }
 } 

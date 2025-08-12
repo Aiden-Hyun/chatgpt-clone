@@ -1,0 +1,155 @@
+// src/features/chat/services/implementations/ReactRegenerationService.ts
+import { Session } from '@supabase/supabase-js';
+import { ChatMessage } from '../../types';
+// Import removed: import { logger } from '../../utils/logger';
+import { supabase } from '../../../../shared/lib/supabase';
+import { generateMessageId } from '../../utils/messageIdGenerator';
+import { IAIApiService } from '../interfaces/IAIApiService';
+import { IMessageService } from '../interfaces/IMessageService';
+import { IRegenerationService } from '../interfaces/IRegenerationService';
+import { MessageStateManager } from '../MessageStateManager';
+
+export class ReactRegenerationService implements IRegenerationService {
+  private regeneratingIndices: Set<number> = new Set();
+  
+  constructor(
+    private messageStateManager: MessageStateManager,
+    private aiApiService: IAIApiService,
+    private messageService: IMessageService,
+    private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+    private session: Session,
+    private selectedModel: string,
+    private roomId: number | null
+  ) {
+    
+  }
+
+  async regenerateMessage(
+    messageId: string,
+    messages: ChatMessage[],
+    userContent: string,
+    originalContent: string
+  ): Promise<void> {
+    // Resolve index from messageId for UI tracking and history slicing
+    const index = messages.findIndex(m => m.id === messageId);
+    
+
+    if (this.isRegenerating(index)) {
+      
+      return;
+    }
+
+    const messageIdForLog = generateMessageId();
+    
+
+    this.regeneratingIndices.add(index);
+
+    try {
+      // No longer need snapshot - messages are passed in directly
+
+      if (index < 0 || index >= messages.length) {
+        console.error('🔄 REGEN-SERVICE: Message not found for index:', index, 'len:', messages.length);
+        throw new Error('Message not found for regeneration');
+      }
+
+      const target = messages[index];
+      if (!target?.id) {
+        console.error('🔄 REGEN-SERVICE: Target message missing id at index:', index);
+        throw new Error('Message not found for regeneration');
+      }
+      const targetMessageId = target.id;
+      
+
+      // Set loading state (single atomic update using id)
+      this.messageStateManager.transition(targetMessageId, 'loading');
+
+      // Prepare history from the snapshot (all messages before the assistant message)
+      const messageHistory: ChatMessage[] = messages.slice(0, index);
+      
+
+      // Call AI API
+      const apiRequest = { roomId: this.roomId, messages: messageHistory, model: this.selectedModel } as any;
+      
+      
+      
+      
+      
+
+      // Determine which token to use
+      let accessToken = this.session.access_token;
+      
+      if (this.session.expires_at && Math.floor(Date.now() / 1000) > this.session.expires_at) {
+        try {
+          
+          const { data, error } = await supabase.auth.refreshSession();
+          if (!error && data.session) {
+            
+            accessToken = data.session.access_token;
+          } else {
+            console.warn('🔄 REGEN-SERVICE: Session refresh failed, proceeding with existing token');
+          }
+        } catch {
+          console.warn('🔄 REGEN-SERVICE: Session refresh threw, proceeding with existing token');
+        }
+      }
+
+      
+      
+
+      const apiResponse = await this.aiApiService.sendMessage(apiRequest, accessToken);
+      
+
+      if (!apiResponse || !apiResponse.choices || !apiResponse.choices[0]?.message?.content) {
+        console.error('🔄 REGEN-SERVICE: API response missing content');
+        throw new Error('No content in AI response');
+      }
+      const newContent = apiResponse.choices[0].message.content;
+      
+
+      // Drive UI state via state manager
+      this.messageStateManager.handleRegeneration(targetMessageId, newContent);
+
+      // Persist if room exists
+      if (this.roomId) {
+        try {
+          // Prefer updating by database id when available (ids loaded as `db:<id>`)
+          let updated = false;
+          if (targetMessageId.startsWith('db:')) {
+            const dbIdStr = targetMessageId.slice(3);
+            const dbId = Number(dbIdStr);
+            if (!Number.isNaN(dbId) && (this.messageService as any).updateAssistantMessageByDbId) {
+              updated = await (this.messageService as any).updateAssistantMessageByDbId({
+                dbId,
+                newContent,
+                session: this.session,
+              });
+            }
+          }
+          
+        } catch (dbError) {
+          console.error('🔄 REGEN-SERVICE: DB update failed', dbError);
+        }
+      }
+
+      
+    } catch (error) {
+      console.error('🔄 REGEN-SERVICE: Failed to regenerate message', { index, error });
+      // Best-effort error state using snapshot index fallback
+      this.setMessages(prev => {
+        if (index < 0 || index >= prev.length) return prev;
+        const t = prev[index];
+        if (!t?.id) return prev;
+        const updated = prev.slice();
+        updated[index] = { ...t, state: 'error' };
+        return updated;
+      });
+      throw error;
+    } finally {
+      this.regeneratingIndices.delete(index);
+    }
+  }
+
+  isRegenerating(index: number): boolean {
+    return this.regeneratingIndices.has(index);
+  }
+}

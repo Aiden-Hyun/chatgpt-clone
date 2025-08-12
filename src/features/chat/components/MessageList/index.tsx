@@ -263,7 +263,9 @@ export const MessageList: React.FC<MessageListProps> = ({
   }
 
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
-    const isRegenerating = regeneratingIndices.has(index);
+    // Find the correct index in the original messages array for regeneration check
+    const originalMessageIndex = messages.findIndex(msg => msg.id === item.id);
+    const isRegenerating = originalMessageIndex !== -1 ? regeneratingIndices.has(originalMessageIndex) : false;
     // State-based rendering: no complex animation triggers needed
     
     // Group consecutive messages from the same sender
@@ -276,15 +278,28 @@ export const MessageList: React.FC<MessageListProps> = ({
     // Debug logging removed for performance
 
     const handleRegenerate = () => {
+      
+      
+      // Find the correct index in the original messages array
+      // The FlashList index might not match the original messages array due to loading messages
+      const originalMessageIndex = messages.findIndex(msg => msg.id === item.id);
+      
+      
+      if (originalMessageIndex === -1) {
+        console.warn('Could not find message in original array for regeneration');
+        return;
+      }
+      
       // Mark this index to track regeneration completion
-      setRecentlyRegenerated(prev => new Set(prev).add(index));
-      onRegenerate(index);
+      setRecentlyRegenerated(prev => new Set(prev).add(originalMessageIndex));
+      
+      onRegenerate(originalMessageIndex);
     };
 
     return (
       <MessageItem
         message={item}
-        index={index}
+        index={originalMessageIndex !== -1 ? originalMessageIndex : index}
         isRegenerating={isRegenerating}
         onRegenerate={
           item.role === 'assistant' && !isRegenerating && !isNewMessageLoading

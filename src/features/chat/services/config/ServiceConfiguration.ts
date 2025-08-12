@@ -5,6 +5,7 @@ import {
   OpenAIAPIService,
   ReactAnimationService,
   ReactMessageStateService,
+  ReactRegenerationService,
   ReactTypingStateService,
   SupabaseChatRoomService,
   SupabaseMessageService,
@@ -20,5 +21,6 @@ export function configureServices(): void {
     messageStateService: ReactMessageStateService,
     typingStateService: ReactTypingStateService,
     animationService: ReactAnimationService,
+    regenerationService: ReactRegenerationService,
   });
 } 

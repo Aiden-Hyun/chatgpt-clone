@@ -9,5 +9,5 @@ export * from './IUIStateService';
 // New segregated interfaces
 export * from './IAnimationService';
 export * from './IMessageStateService';
+export * from './IRegenerationService';
 export * from './ITypingStateService';
-

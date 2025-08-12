@@ -13,6 +13,14 @@ export class SupabaseMessageService implements IMessageService {
   }): Promise<void> {
     // Consolidated from legacy/insertMessages.ts
     try {
+      // Build assistant row (avoid optional columns for maximum compatibility)
+      const assistantRow: any = {
+        room_id: args.roomId,
+        user_id: args.session.user.id,
+        role: 'assistant',
+        content: args.assistantMessage.content,
+      };
+
       const { error } = await supabase.from('messages').insert([
         {
           room_id: args.roomId,
@@ -20,12 +28,7 @@ export class SupabaseMessageService implements IMessageService {
           role: 'user',
           content: args.userMessage.content,
         },
-        {
-          room_id: args.roomId,
-          user_id: args.session.user.id,
-          role: 'assistant',
-          content: args.assistantMessage.content,
-        },
+        assistantRow,
       ]);
       
       if (error) {
@@ -80,6 +83,73 @@ export class SupabaseMessageService implements IMessageService {
     }
   }
 
+  /**
+   * Update assistant message by client_id if available (more robust than content matching)
+   */
+  async updateAssistantMessageByClientId(args: {
+    roomId: number;
+    messageId: string; // client_id stored with message
+    newContent: string;
+    session: Session;
+  }): Promise<boolean> {
+    try {
+      const { data: messages, error: findError } = await supabase
+        .from('messages')
+        .select('id')
+        .eq('room_id', args.roomId)
+        .eq('role', 'assistant')
+        .eq('client_id', args.messageId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (findError || !messages || messages.length === 0) {
+        return false;
+      }
+
+      const messageId = messages[0].id;
+      const { error: updateError } = await supabase
+        .from('messages')
+        .update({
+          content: args.newContent,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', messageId);
+
+      if (updateError) {
+        console.error('❌ Failed to update message by client_id:', updateError);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('❌ Error updating assistant message by client_id:', error);
+      return false;
+    }
+  }
+
+  async updateAssistantMessageByDbId(args: {
+    dbId: number;
+    newContent: string;
+    session: Session;
+  }): Promise<boolean> {
+    try {
+      const { error: updateError } = await supabase
+        .from('messages')
+        .update({
+          content: args.newContent,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', args.dbId);
+      if (updateError) {
+        console.error('❌ Failed to update message by db id:', updateError);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('❌ Error updating assistant message by db id:', error);
+      return false;
+    }
+  }
+
   async loadMessages(roomId: number): Promise<ChatMessage[]> {
     // Consolidated from legacy/loadMessages.ts
     if (!roomId) {
@@ -99,7 +169,7 @@ export class SupabaseMessageService implements IMessageService {
 
     const { data, error } = await supabase
       .from('messages')
-      .select('role, content')
+      .select('id, role, content')
       .eq('room_id', roomId)
       .order('id', { ascending: true });
 
@@ -123,7 +193,18 @@ export class SupabaseMessageService implements IMessageService {
       });
     }
 
-    return data as ChatMessage[];
+    // Map DB rows to ChatMessage with a stable identifier
+    const mapped: ChatMessage[] = (data as any[]).map((row) => {
+      const id: string | undefined = (typeof row.id === 'number' || typeof row.id === 'string')
+        ? `db:${row.id}`
+        : undefined;
+      return {
+        role: row.role,
+        content: row.content,
+        id,
+      } as ChatMessage;
+    });
+    return mapped;
   }
 
   async deleteMessages(roomId: number): Promise<void> {

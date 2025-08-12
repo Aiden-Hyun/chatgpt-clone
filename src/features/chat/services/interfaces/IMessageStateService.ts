@@ -9,6 +9,7 @@ export interface IMessageStateService {
     regenerateIndex?: number;
     userMsg: ChatMessage;
     assistantMsg: ChatMessage;
+    messageId?: string;
   }): void;
   
   /**

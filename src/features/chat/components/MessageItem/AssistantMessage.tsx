@@ -20,9 +20,13 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   isLastInGroup = true,
 }: AssistantMessageProps) {
   const theme = useAppTheme();
+  
+  // Memoize styles to prevent re-creation on every render
   const styles = React.useMemo(() => createAssistantMessageStyles(theme), [theme]);
+  
 
-  // State-based rendering: use message.state to determine behavior
+  // This component intentionally does not use useMemo for its root to allow TypewriterText to re-render
+  // when the message content stream updates.
   const useAnimation = message.state === 'animating';
   const contentToShow = message.state === 'animating' 
     ? (message.fullContent || message.content) 

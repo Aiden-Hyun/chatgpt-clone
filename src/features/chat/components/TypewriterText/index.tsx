@@ -24,6 +24,9 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
   onComplete,
   startAnimation = true,
 }: TypewriterTextProps) {
+  const renderCount = useRef(0);
+  renderCount.current++;
+  
   const [displayedText, setDisplayedText] = useState('');
   const [showCursorBlink, setShowCursorBlink] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -46,10 +49,10 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
                               
     if (isTextCompleteDiff) {
       // This is likely a regeneration - force a complete restart
-      console.log('[TypewriterText] Detected complete text change - forcing animation restart');
+      
     }
     
-    // For streaming updates, just extend the target
+    // Only restart if text has actually changed
     if (!isTextCompleteDiff && animationStartedRef.current && text && targetTextRef.current && 
         text.startsWith(targetTextRef.current)) {
       targetTextRef.current = text;
@@ -104,7 +107,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
           timeoutRef.current = setTimeout(typeNext, speed);
         } else {
           // Animation complete
-
+          
           setIsAnimating(false);
           isCompleteRef.current = true;
           animationStartedRef.current = false;
@@ -118,6 +121,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
           
           // Call completion callback
           if (onComplete) {
+            
             onComplete();
           }
         }

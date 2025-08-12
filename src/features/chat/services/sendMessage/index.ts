@@ -36,11 +36,9 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     messageId
   } = args;
 
-  // Get session
+  // Use the existing getSession function
   const session = await getSession();
-  if (!session) {
-    throw new Error('No active session found. Please log in again.');
-  }
+  console.log('🔄 SEND-MESSAGE: Session details in sendMessageHandler:', session);
 
   // Create the MessageSenderService with all dependencies injected
   const messageSender = ServiceFactory.createMessageSender(setMessages, setIsTyping, setDrafts);
