@@ -1,5 +1,6 @@
+import { FlashList } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, FlatList, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useLanguageContext } from '../../../../features/language';
 import { useAppTheme } from '../../../theme/lib/theme';
 import { ChatMessage } from '../../types';
@@ -32,7 +33,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   // if (renderCount.current % 5 === 0) {
   //   console.log(`[RENDER-COUNT] MessageList: ${renderCount.current} renders`);
   // }
-  const flatListRef = useRef<FlatList>(null);
+  const flatListRef = useRef<FlashList<ChatMessage>>(null);
   const theme = useAppTheme();
   const { t } = useLanguageContext();
   const [displayedText, setDisplayedText] = useState('');
@@ -295,26 +296,24 @@ export const MessageList: React.FC<MessageListProps> = ({
 
 
   return (
-    <FlatList
+    <FlashList
       data={messagesWithLoading}
-      keyExtractor={(item: any, index: number) => {
-        const key = item.id || `fallback_${index}`;
-        return key;
-      }}
+      keyExtractor={(item: any) => item.id}
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}
       extraData={[messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated]}
-      // 🔧 FIX: Ensure all messages are rendered, not just visible ones
-      initialNumToRender={Math.max(messagesWithLoading.length, 20)}
-      maxToRenderPerBatch={50}
-      windowSize={10}
-      removeClippedSubviews={false}
+      // 🚀 FlashList Optimization
+      estimatedItemSize={100} // Average height of a message item
       onContentSizeChange={() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
+        if (messagesWithLoading.length > 0) {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }
       }}
       onLayout={() => {
-        flatListRef.current?.scrollToEnd({ animated: false });
+        if (messagesWithLoading.length > 0) {
+          flatListRef.current?.scrollToEnd({ animated: false });
+        }
       }}
     />
   );
