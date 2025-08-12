@@ -18,38 +18,47 @@ export class ReactAnimationService implements IAnimationService {
     regenerateIndex?: number;
     messageId?: string;
   }): void {
-    if (args.messageId) {
-      this.messageStateManager.finishStreamingAndAnimate(
-        args.messageId,
-        args.fullContent
-      );
-    } else if (args.regenerateIndex !== undefined) {
+    // Case 1: Regeneration by index - uses the new unified regeneration method
+    if (args.regenerateIndex !== undefined) {
       this.setMessages((prev) => {
         const messageToUpdate = prev[args.regenerateIndex!];
         if (messageToUpdate?.id) {
-          this.messageStateManager.finishStreamingAndAnimate(
+          // Use our unified regeneration handler
+          this.messageStateManager.handleRegeneration(
             messageToUpdate.id,
             args.fullContent
           );
         }
         return prev;
       });
-    } else {
-      this.setMessages((prev) => {
-        const lastLoadingAssistant = [...prev]
-          .reverse()
-          .find(
-            (msg) => msg.role === 'assistant' && msg.state === 'loading'
-          );
-        if (lastLoadingAssistant?.id) {
-          this.messageStateManager.finishStreamingAndAnimate(
-            lastLoadingAssistant.id,
-            args.fullContent
-          );
-        }
-        return prev;
-      });
+      return;
     }
+    
+    // Case 2: Direct message ID
+    if (args.messageId) {
+      // For new messages, use regular animation
+      this.messageStateManager.finishStreamingAndAnimate(
+        args.messageId,
+        args.fullContent
+      );
+      return;
+    }
+    
+    // Case 3: Normal case for new messages (find last loading message)
+    this.setMessages((prev) => {
+      const lastLoadingAssistant = [...prev]
+        .reverse()
+        .find(
+          (msg) => msg.role === 'assistant' && msg.state === 'loading'
+        );
+      if (lastLoadingAssistant?.id) {
+        this.messageStateManager.finishStreamingAndAnimate(
+          lastLoadingAssistant.id,
+          args.fullContent
+        );
+      }
+      return prev;
+    });
   }
 
   animateResponse(args: {

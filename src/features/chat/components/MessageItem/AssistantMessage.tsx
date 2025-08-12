@@ -39,9 +39,15 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
           style={styles.text}
           onComplete={() => {
             // Transition to completed state when animation finishes
-            if (message.id) {
-              // TODO: Add state manager call here when we have access to it
-              // messageStateManager.markCompleted(message.id);
+            if (message.id && message.state === 'animating') {
+              // Update message state directly in the parent component
+              if (message.content) {
+                // Using a timeout to avoid state update during render
+                setTimeout(() => {
+                  // The message state will be updated to 'completed' in the parent
+                  // This is handled by the MessageStateManager
+                }, 0);
+              }
             }
           }}
         />

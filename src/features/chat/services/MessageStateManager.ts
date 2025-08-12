@@ -116,30 +116,31 @@ export class MessageStateManager {
   // === REGENERATION SUPPORT ===
   
   /**
-   * Start regenerating a message (set to loading state, clear content)
+   * Unified method to handle message regeneration with clear state transitions
+   * @param messageId The ID of the message to regenerate
+   * @param newContent The new content for the message
    */
-  startRegeneration(messageId: string): void {
+  handleRegeneration(messageId: string, newContent: string): void {
+    // Phase 1: Set to loading state
     this.setMessages(prev => prev.map(msg => 
       msg.id === messageId 
         ? { ...msg, content: '', fullContent: undefined, state: 'loading' }
         : msg
     ));
-  }
-  
-  /**
-   * Replace message content and animate (for regeneration)
-   */
-  regenerateWithContent(messageId: string, newContent: string): void {
-    this.setMessages(prev => prev.map(msg => 
-      msg.id === messageId 
-        ? { 
-            ...msg, 
-            content: newContent,
-            fullContent: newContent,
-            state: 'animating' 
-          }
-        : msg
-    ));
+
+    // Phase 2: After a short delay, set content and transition to animating state
+    setTimeout(() => {
+      this.setMessages(prev => prev.map(msg => 
+        msg.id === messageId 
+          ? { 
+              ...msg, 
+              content: newContent,
+              fullContent: newContent,
+              state: 'animating' 
+            }
+          : msg
+      ));
+    }, 50);
   }
   
   // === COMPLETION & ERROR HANDLING ===

@@ -54,12 +54,19 @@ export const useMessageActions = ({
   }, [roomId, messages, setMessages, setDrafts, selectedModel]);
 
   const regenerateMessage = useCallback(async (index: number) => {
-    
+    // Early returns for invalid inputs
     if (index < 0 || index >= messages.length) return;
-
+    
     const targetMessage = messages[index];
     if (targetMessage.role !== 'assistant') return;
-
+    
+    // Check if this message is already being regenerated to prevent duplicates
+    const isAlreadyRegenerating = targetMessage.state === 'loading';
+    if (isAlreadyRegenerating) {
+      logger.debug('Skipping regeneration - already in progress', { index });
+      return;
+    }
+    
     const userMessage = messages[index - 1];
     if (userMessage?.role !== 'user') {
       logger.error('Expected user message before assistant message', { index });
@@ -69,10 +76,12 @@ export const useMessageActions = ({
     // Generate message ID for regeneration
     const messageId = generateMessageId();
     logger.info('Starting message regeneration', { index, messageId, messageContent: userMessage.content });
+    
+    // Update UI state to show regenerating
     startRegenerating(index);
 
     try {
-      
+      // Send to backend with regeneration index
       await sendMessageHandler({
         userContent: userMessage.content,
         numericRoomId: roomId,
@@ -83,7 +92,7 @@ export const useMessageActions = ({
         model: selectedModel,
         regenerateIndex: index,
         originalAssistantContent: targetMessage.content,
-        messageId, // ✅ Phase 2: Pass message ID for regeneration
+        messageId,
       });
       logger.info('Message regeneration completed', { index });
       
@@ -92,8 +101,8 @@ export const useMessageActions = ({
       stopRegenerating(index);
       throw error;
     } finally {
+      // Always clean up regeneration UI state
       stopRegenerating(index);
-      
     }
   }, [roomId, messages, setMessages, startRegenerating, stopRegenerating, setDrafts, selectedModel]);
 

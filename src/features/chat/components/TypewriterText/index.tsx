@@ -38,16 +38,22 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
   const targetTextRef = useRef<string>('');
   const animationStartedRef = useRef(false);
 
-  // Reset when text changes - but prevent restarts during streaming
+  // Reset when text changes - optimized for regeneration scenarios
   useEffect(() => {
-
-
-    // If animation has already started and new text is just an extension of the current target,
-    // update the target but don't restart the animation
-    if (animationStartedRef.current && text && targetTextRef.current && text.startsWith(targetTextRef.current)) {
-
+    // Force complete reset if text is completely different (likely regeneration)
+    const isTextCompleteDiff = targetTextRef.current && text && 
+                              (text !== targetTextRef.current && !text.startsWith(targetTextRef.current));
+                              
+    if (isTextCompleteDiff) {
+      // This is likely a regeneration - force a complete restart
+      console.log('[TypewriterText] Detected complete text change - forcing animation restart');
+    }
+    
+    // For streaming updates, just extend the target
+    if (!isTextCompleteDiff && animationStartedRef.current && text && targetTextRef.current && 
+        text.startsWith(targetTextRef.current)) {
       targetTextRef.current = text;
-      return; // Don't restart animation
+      return; // Don't restart animation for streaming updates
     }
 
     // Clear any existing timeouts
@@ -136,7 +142,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
         cursorIntervalRef.current = null;
       }
     };
-  }, [text, speed, showCursor, startAnimation]); // Only depend on props, not state
+  }, [text, speed, showCursor, startAnimation]); // Only depend on props, not state - text change will trigger animation restart
   
   // Removed excessive prop change debugging that was running on every render
 

@@ -24,7 +24,12 @@ export class ReactMessageStateService implements IMessageStateService {
       this.setMessages((prev) => {
         const messageToRegenerate = prev[args.regenerateIndex!];
         if (messageToRegenerate?.id) {
-          this.messageStateManager.startRegeneration(messageToRegenerate.id);
+          // Set to loading state using setMessages directly since handleRegeneration needs content
+          this.setMessages(prev => prev.map(msg => 
+            msg.id === messageToRegenerate.id 
+              ? { ...msg, content: '', fullContent: undefined, state: 'loading' }
+              : msg
+          ));
         } else {
           const updated = [...prev];
           updated[args.regenerateIndex!] = {
