@@ -9,6 +9,8 @@ export class OpenAIAPIService implements IAIApiService {
       roomId: request.roomId,
       messages: request.messages,
       model: request.model,
+      clientMessageId: request.clientMessageId,
+      skipPersistence: request.skipPersistence === true,
     };
 
     const res = await fetch('https://twzumsgzuwguketxbdet.functions.supabase.co/openai-chat', {

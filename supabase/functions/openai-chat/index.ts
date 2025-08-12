@@ -19,6 +19,8 @@ serve(async (req) => {
   let messages;
   let roomId;
   let model;
+  let clientMessageId: string | null = null;
+  let skipPersistence = false;
 
   try {
     const body = await req.text();
@@ -27,6 +29,8 @@ serve(async (req) => {
     roomId = parsed.roomId;
     const rawModel = parsed.model;
     model = typeof rawModel === 'string' && rawModel.trim().length > 0 ? rawModel.trim() : 'gpt-3.5-turbo';
+    clientMessageId = typeof parsed.clientMessageId === 'string' && parsed.clientMessageId.trim() ? parsed.clientMessageId : null;
+    skipPersistence = !!parsed.skipPersistence;
     console.log('📩 incoming model:', rawModel, '➡️ using model:', model);
   } catch {
     return new Response("Invalid JSON body", {
@@ -139,26 +143,30 @@ serve(async (req) => {
     });
   }
 
-  // Store messages if everything succeeded
-  if (serviceClient && userId && roomId && data.choices?.[0]?.message) {
+  // Store messages if everything succeeded and not explicitly skipped (regen)
+  if (serviceClient && userId && roomId && !skipPersistence && data.choices?.[0]?.message) {
     const userMessage = messages[messages.length - 1];
     const assistantMessage = data.choices[0].message;
 
     try {
-      await serviceClient.from("messages").insert([
-        {
-          room_id: roomId,
-          user_id: userId,
-          role: userMessage.role,
-          content: userMessage.content,
-        },
-        {
-          room_id: roomId,
-          user_id: userId,
-          role: assistantMessage.role,
-          content: assistantMessage.content,
-        },
-      ]);
+      await serviceClient
+        .from("messages")
+        .upsert([
+          {
+            room_id: roomId,
+            user_id: userId,
+            role: userMessage.role,
+            content: userMessage.content,
+            client_id: clientMessageId,
+          },
+          {
+            room_id: roomId,
+            user_id: userId,
+            role: assistantMessage.role,
+            content: assistantMessage.content,
+            client_id: clientMessageId,
+          },
+        ], { onConflict: 'room_id,role,client_id' });
     } catch (dbError) {
       console.log("Database insert error:", dbError);
     }

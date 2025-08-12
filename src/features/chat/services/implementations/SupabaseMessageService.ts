@@ -1,6 +1,7 @@
 // src/features/chat/services/implementations/SupabaseMessageService.ts
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../../shared/lib/supabase';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 import { IMessageService } from '../interfaces/IMessageService';
 import { ChatMessage } from '../types';
 
@@ -19,6 +20,8 @@ export class SupabaseMessageService implements IMessageService {
         user_id: args.session.user.id,
         role: 'assistant',
         content: args.assistantMessage.content,
+        // Use assistant message id as stable client id for both rows
+        client_id: args.assistantMessage.id || null,
       };
 
       const { error } = await supabase.from('messages').insert([
@@ -27,6 +30,7 @@ export class SupabaseMessageService implements IMessageService {
           user_id: args.session.user.id,
           role: 'user',
           content: args.userMessage.content,
+          client_id: args.assistantMessage.id || null,
         },
         assistantRow,
       ]);
@@ -50,7 +54,7 @@ export class SupabaseMessageService implements IMessageService {
       // First, find the message to update
       const { data: messages, error: findError } = await supabase
         .from('messages')
-        .select('id')
+        .select('id, client_id')
         .eq('room_id', args.roomId)
         .eq('role', 'assistant')
         .eq('content', args.originalContent)
@@ -63,14 +67,20 @@ export class SupabaseMessageService implements IMessageService {
       }
 
       const messageId = messages[0].id;
+      const currentClientId: string | null = (messages[0] as any).client_id ?? null;
 
-      // Update the message
+      // Update the message (ensure assistant rows get a client_id if missing)
+      const updatePayload: any = {
+        content: args.newContent,
+        updated_at: new Date().toISOString()
+      };
+      if (!currentClientId) {
+        updatePayload.client_id = generateMessageId();
+      }
+
       const { error: updateError } = await supabase
         .from('messages')
-        .update({
-          content: args.newContent,
-          updated_at: new Date().toISOString()
-        })
+        .update(updatePayload)
         .eq('id', messageId);
 
       if (updateError) {
@@ -132,12 +142,27 @@ export class SupabaseMessageService implements IMessageService {
     session: Session;
   }): Promise<boolean> {
     try {
+      // Fetch current client_id to satisfy assistant constraint if needed
+      const { data: existing, error: fetchError } = await supabase
+        .from('messages')
+        .select('client_id, role')
+        .eq('id', args.dbId)
+        .single();
+      if (fetchError) {
+        console.error('❌ Failed to fetch existing message before db-id update:', fetchError);
+      }
+
+      const updatePayload: any = {
+        content: args.newContent,
+        updated_at: new Date().toISOString(),
+      };
+      if (existing && existing.role === 'assistant' && !existing.client_id) {
+        updatePayload.client_id = generateMessageId();
+      }
+
       const { error: updateError } = await supabase
         .from('messages')
-        .update({
-          content: args.newContent,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updatePayload)
         .eq('id', args.dbId);
       if (updateError) {
         console.error('❌ Failed to update message by db id:', updateError);
@@ -161,7 +186,7 @@ export class SupabaseMessageService implements IMessageService {
 
     if (__DEV__) {
       console.log(`📊 [DB-SERVICE] Executing SQL query for room ${roomId}`, {
-        query: 'SELECT role, content FROM messages WHERE room_id = ? ORDER BY id ASC',
+        query: 'SELECT id, role, content, client_id FROM messages WHERE room_id = ? ORDER BY id ASC',
         roomId,
         timestamp: new Date().toISOString()
       });
@@ -169,7 +194,7 @@ export class SupabaseMessageService implements IMessageService {
 
     const { data, error } = await supabase
       .from('messages')
-      .select('id, role, content')
+      .select('id, role, content, client_id')
       .eq('room_id', roomId)
       .order('id', { ascending: true });
 

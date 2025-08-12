@@ -8,6 +8,9 @@ export interface AIApiRequest {
   roomId: number;
   messages: ChatMessage[];
   model: string;
+  // Optional idempotency and control flags
+  clientMessageId?: string;
+  skipPersistence?: boolean;
 }
 
 export interface AIApiResponse {

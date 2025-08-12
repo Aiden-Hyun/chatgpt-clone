@@ -1,11 +1,11 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
-import React from 'react';
 import { AuthProvider } from '@/features/auth/context/AuthContext';
 import { UnifiedChat } from '@/features/chat/components/UnifiedChat';
 import { ChatProvider } from '@/features/chat/context/ChatContext';
 import { useChat } from '@/features/chat/hooks/useChat';
 import { LanguageProvider } from '@/features/language/LanguageContext';
 import { ThemeProvider } from '@/features/theme';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import React from 'react';
 
 // Mock the useChat hook
 jest.mock('@/features/chat/hooks/useChat');

@@ -76,8 +76,14 @@ export class ReactRegenerationService implements IRegenerationService {
       }
 
 
-      // Call AI API
-      const apiRequest = { roomId: this.roomId, messages: finalHistory, model: this.selectedModel } as any;
+      // Call AI API with idempotency and skipPersistence (server should not write on regen)
+      const apiRequest = {
+        roomId: this.roomId,
+        messages: finalHistory,
+        model: this.selectedModel,
+        clientMessageId: targetMessageId,
+        skipPersistence: true,
+      } as any;
       
       
       
@@ -132,6 +138,13 @@ export class ReactRegenerationService implements IRegenerationService {
                 session: this.session,
               });
             }
+          } else if ((this.messageService as any).updateAssistantMessageByClientId && this.roomId) {
+            await (this.messageService as any).updateAssistantMessageByClientId({
+              roomId: this.roomId,
+              messageId: targetMessageId,
+              newContent,
+              session: this.session,
+            });
           }
 
         } catch (dbError) {
