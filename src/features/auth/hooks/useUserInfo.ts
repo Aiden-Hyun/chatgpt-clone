@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../shared/lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 interface UserInfo {
   userName: string;
@@ -14,6 +15,7 @@ interface UserInfo {
  * Extracts user session data and resolves display name from metadata
  */
 export const useUserInfo = (): UserInfo => {
+  const { session } = useAuth();
   const [userName, setUserName] = useState<string>('');
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -21,8 +23,6 @@ export const useUserInfo = (): UserInfo => {
 
   const getUserInfo = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
       if (session?.user) {
         // Extract user ID
         setUserId(session.user.id);
@@ -71,7 +71,7 @@ export const useUserInfo = (): UserInfo => {
 
   useEffect(() => {
     getUserInfo();
-  }, []);
+  }, [session]);
 
   return {
     userName,

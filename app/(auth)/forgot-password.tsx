@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { useToast } from '../../src/features/alert';
 import { usePasswordReset } from '../../src/features/auth/hooks';
+import { useLanguageContext } from '../../src/features/language';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
@@ -9,6 +11,8 @@ export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [hasError, setHasError] = useState(false);
   const { resetPassword, isLoading } = usePasswordReset();
+  const { showError } = useToast();
+  const { t } = useLanguageContext();
   const styles = createForgotPasswordStyles();
 
   const validateEmail = (email: string) => {
@@ -19,12 +23,12 @@ export default function ForgotPasswordScreen() {
   const handleResetPassword = async () => {
     try {
       if (!email) {
-        Alert.alert('Error', 'Please enter your email address');
+        showError(t('auth.enter_email'));
         return;
       }
 
       if (!validateEmail(email)) {
-        Alert.alert('Error', 'Please enter a valid email address');
+        showError(t('auth.enter_valid_email'));
         return;
       }
 
@@ -44,9 +48,8 @@ export default function ForgotPasswordScreen() {
         );
       }
     } catch (error) {
-      console.error('Reset password error:', error);
       setHasError(true);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      showError(t('auth.unexpected_error'));
     }
   };
 

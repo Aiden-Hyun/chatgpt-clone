@@ -1,9 +1,8 @@
 import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     ActivityIndicator,
-    Alert,
     Keyboard,
     KeyboardAvoidingView,
     Platform,
@@ -13,16 +12,18 @@ import {
     View
 } from 'react-native';
 import { useToast } from '../../src/features/alert';
+import { useAuth } from '../../src/features/auth';
 import { useEmailSignin } from '../../src/features/auth/hooks';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { useAppTheme } from '../../src/features/theme/lib/theme';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
 import { useLoadingState } from '../../src/shared/hooks';
-import { useErrorStateCombined } from '../../src/shared/hooks/error';
+
 import { supabase } from '../../src/shared/lib/supabase';
 import { createAuthStyles } from './auth.styles';
 
 export default function AuthScreen() {
+  const { session } = useAuth();
   const [isSigninMode, setIsSigninMode] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,13 +32,8 @@ export default function AuthScreen() {
   const { signIn, isLoading: isSigningIn } = useEmailSignin();
   const { loading, setLoading, startLoading, stopLoading } = useLoadingState({ initialLoading: true });
   const { loading: signingInWithGoogle, startLoading: startSigningInWithGoogle, stopLoading: stopSigningInWithGoogle } = useLoadingState();
-  const { setNetworkError, setAuthError, clearError, currentError } = useErrorStateCombined({
-    autoClear: true,
-    autoClearDelay: 5000,
-    showAlerts: false,
-    logToConsole: true
-  });
-  const { showSuccess } = useToast();
+
+  const { showSuccess, showError } = useToast();
   
   const pathname = usePathname();
   const theme = useAppTheme();
@@ -50,20 +46,8 @@ export default function AuthScreen() {
   const passwordRef = useRef<TextInput>(null);
 
   // Session check logic
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        setNetworkError('Failed to check session status', { 
-          context: 'session-check',
-          originalError: error,
-          endpoint: 'auth.getSession'
-        });
-        stopLoading();
-        return;
-      }
-      
       if (session) {
         showSuccess(t('auth.login_successful') || 'Login successful!');
         router.replace('/');
@@ -71,19 +55,14 @@ export default function AuthScreen() {
         stopLoading();
       }
     } catch (error) {
-      setNetworkError('Failed to check session status - please check your internet connection', {
-        context: 'session-check',
-        originalError: error,
-        endpoint: 'auth.getSession',
-        isNetworkError: true
-      });
+      showError(t('auth.network_error'));
       stopLoading();
     }
-  };
+  }, [session, showSuccess, showError, t, stopLoading]);
 
   useEffect(() => {
     checkSession();
-  }, []);
+  }, [checkSession]);
 
   // Monitor pathname changes to detect navigation
   useEffect(() => {
@@ -130,12 +109,7 @@ export default function AuthScreen() {
         },
       });
     } catch (error) {
-      setAuthError('Failed to start Google login. Please try again.', {
-        context: 'google-oauth',
-        originalError: error,
-        provider: 'google',
-        redirectUrl: Constants.linkingUri
-      });
+      showError(t('auth.google_login_failed'));
       stopSigningInWithGoogle();
     }
   };
@@ -151,19 +125,36 @@ export default function AuthScreen() {
 
     try {
       const result = await signIn(email, password);
-      console.log('Signin result:', result);
+      console.log('🔍 [AUTH] Signin result:', result);
       
       if (result.success) {
-        console.log('Signin successful, navigating to home');
+        console.log('✅ [AUTH] Signin successful, navigating to home');
         showSuccess(t('auth.login_successful') || 'Login successful!');
         router.replace('/');
       } else {
-        console.error('Signin failed:', result.error);
-        Alert.alert('Sign In Failed', result.error || 'Failed to sign in. Please check your credentials and try again.');
+        console.log('❌ [AUTH] Signin failed, showing error:', result.error);
+        console.log('❌ [AUTH] Network error detected:', result.isNetworkError);
+        
+        // Show appropriate localized message based on error type
+        if (result.isNetworkError) {
+          showError(t('auth.network_error'));
+        } else {
+          showError(t('auth.check_credentials'));
+        }
       }
     } catch (error) {
-      console.error('Signin error:', error);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      // Check if this is a network error in the UI catch block
+      const isNetworkError = !navigator.onLine ||
+                            (error instanceof Error && 
+                             (error.message.toLowerCase().includes('network') ||
+                              error.message.toLowerCase().includes('fetch') ||
+                              error.message.toLowerCase().includes('connection')));
+      
+      if (isNetworkError) {
+        showError(t('auth.network_error'));
+      } else {
+        showError(t('auth.unexpected_error'));
+      }
     }
   };
 
@@ -191,13 +182,7 @@ export default function AuthScreen() {
     }
   };
 
-  const retrySessionCheck = () => {
-    clearError(currentError?.id || '');
-    startLoading();
-    checkSession().catch(error => {
-      console.error('Session check error:', error);
-    });
-  };
+
 
   if (loading) {
     return (
@@ -319,16 +304,7 @@ export default function AuthScreen() {
             <ThemedText type="link" style={styles.linkText}>{t('auth.no_account_link')}</ThemedText>
           </TouchableOpacity>
           
-          {/* Show retry button for network errors */}
-          {currentError && currentError.type === 'network' && (
-            <TouchableOpacity 
-              style={styles.retryButton}
-              onPress={retrySessionCheck}
-              activeOpacity={0.7}
-            >
-              <ThemedText style={styles.retryButtonText}>{t('auth.retry_connection')}</ThemedText>
-            </TouchableOpacity>
-          )}
+
 
           {/* Language Selector */}
           <LanguageSelector />

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { useToast } from '../../src/features/alert';
 import { useEmailSignup } from '../../src/features/auth/hooks';
 import { useLanguageContext } from '../../src/features/language';
 import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
@@ -13,6 +14,7 @@ export default function SignupScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
   const { signUp, isLoading } = useEmailSignup();
+  const { showError } = useToast();
   const styles = createSignupStyles();
 
   // Refs for form handling
@@ -89,13 +91,11 @@ export default function SignupScreen() {
           ]
         );
       } else {
-        console.error('Signup failed:', result.error);
-        // Use direct Alert.alert for error too
-        Alert.alert(t('auth.signup_failed'), result.error || t('auth.unexpected_error'));
+        // Always use localized message instead of server's English error
+        showError(t('auth.check_credentials'));
       }
     } catch (error) {
-      console.error('Signup error:', error);
-      Alert.alert(t('common.error'), t('auth.unexpected_error'));
+      showError(t('auth.unexpected_error'));
     }
   };
 

@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { supabase } from '../../../shared/lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 interface UpdateProfileData {
   display_name?: string;
@@ -13,13 +14,13 @@ interface UpdateProfileData {
  * Handles both Supabase auth metadata and profiles table updates
  */
 export const useUpdateProfile = () => {
+  const { session } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateProfile = useCallback(async (data: UpdateProfileData) => {
     try {
       setIsUpdating(true);
       
-      const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         throw new Error('No active session');
       }
@@ -70,7 +71,7 @@ export const useUpdateProfile = () => {
     } finally {
       setIsUpdating(false);
     }
-  }, []);
+  }, [session]);
 
   return {
     updateProfile,

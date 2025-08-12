@@ -1,14 +1,15 @@
 import { router } from 'expo-router';
 import { useEffect } from 'react';
+import { useAuth } from '../../src/features/auth';
 import { LoadingWrapper } from '../../src/features/ui';
-import { supabase } from '../../src/shared/lib/supabase';
 
 export default function NewChatScreen() {
+  const { session } = useAuth();
+
   useEffect(() => {
     const createNewChat = async () => {
       try {
-        // Get current session
-        const { data: { session } } = await supabase.auth.getSession();
+        // Check current session
         if (!session) {
           router.replace('/auth');
           return;
@@ -28,7 +29,7 @@ export default function NewChatScreen() {
     };
 
     createNewChat();
-  }, []);
+  }, [session]);
 
   return <LoadingWrapper loading={true} />;
 } 
