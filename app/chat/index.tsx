@@ -1,7 +1,7 @@
+import LoadingWrapper from '@/components/LoadingWrapper';
+import { useAuth } from '@/features/auth';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
-import { useAuth } from '../../src/features/auth';
-import { LoadingWrapper } from '../../src/features/ui';
 
 export default function NewChatScreen() {
   const { session } = useAuth();

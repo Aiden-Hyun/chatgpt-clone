@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { useAppTheme } from '../../../theme/lib/theme';
+import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { MessageInteractionBar } from '../MessageInteractionBar';
 import { TypewriterText } from '../TypewriterText';

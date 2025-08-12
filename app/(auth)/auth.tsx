@@ -1,3 +1,10 @@
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { useToast } from '@/features/alert';
+import { useAuth } from '@/features/auth';
+import { useEmailSignin } from '@/features/auth/hooks';
+import { LanguageSelector, useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
+import { useLoadingState } from '@/shared/hooks';
 import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -11,26 +18,18 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useToast } from '../../src/features/alert';
-import { useAuth } from '../../src/features/auth';
-import { useEmailSignin } from '../../src/features/auth/hooks';
-import { LanguageSelector, useLanguageContext } from '../../src/features/language';
-import { useAppTheme } from '../../src/features/theme/lib/theme';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
-import { useLoadingState } from '../../src/shared/hooks';
 
-import { supabase } from '../../src/shared/lib/supabase';
+import { supabase } from '@/shared/lib/supabase';
 import { createAuthStyles } from './auth.styles';
 
 export default function AuthScreen() {
   const { session } = useAuth();
-  const [isSigninMode, setIsSigninMode] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   
   const { signIn, isLoading: isSigningIn } = useEmailSignin();
-  const { loading, setLoading, startLoading, stopLoading } = useLoadingState({ initialLoading: true });
+  const { loading, stopLoading } = useLoadingState({ initialLoading: true });
   const { loading: signingInWithGoogle, startLoading: startSigningInWithGoogle, stopLoading: stopSigningInWithGoogle } = useLoadingState();
 
   const { showSuccess, showError } = useToast();
@@ -55,6 +54,7 @@ export default function AuthScreen() {
         stopLoading();
       }
     } catch (error) {
+      console.error(error);
       showError(t('auth.network_error'));
       stopLoading();
     }

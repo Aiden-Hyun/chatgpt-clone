@@ -1,6 +1,6 @@
 // src/features/chat/components/ErrorMessage/ErrorMessage.styles.ts
 import { StyleSheet } from 'react-native';
-import { useAppTheme } from '../../../theme/lib/theme';
+import { useAppTheme } from '../../../theme/theme';
 
 // Get the theme type from the hook
 type AppTheme = ReturnType<typeof useAppTheme>;

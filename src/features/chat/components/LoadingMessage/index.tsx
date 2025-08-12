@@ -1,7 +1,7 @@
+import { useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
 import React, { useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
-import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../theme/lib/theme';
 import { createLoadingMessageStyles } from './LoadingMessage.styles';
 
 interface LoadingMessageProps {

@@ -1,13 +1,13 @@
+import { LoadingWrapper } from '@/components';
+import { useLogout } from '@/features/auth';
+import { ChatHeader, UnifiedChat } from '@/features/chat/components';
+import { useChatScreen } from '@/shared/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import { useLogout } from '../../src/features/auth';
-import { ChatHeader, UnifiedChat } from '../../src/features/chat/components';
-import { LoadingWrapper } from '../../src/features/ui';
-import { useChatScreen } from '../../src/shared/hooks';
 
 // 🎯 CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
 interface ChatScreenProps {

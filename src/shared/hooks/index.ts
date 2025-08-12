@@ -1,11 +1,8 @@
 // src/shared/hooks/index.ts
 export { useBackButtonHandler } from './useBackButtonHandler';
 export { useChatScreen } from './useChatScreen';
-export { useColorScheme } from './useColorScheme';
-export { useColorScheme as useColorSchemeWeb } from './useColorScheme.web';
 export { useInputFocus } from './useInputFocus';
-export { useLoadingScreen } from './useLoadingScreen';
 export { useLoadingState } from './useLoadingState';
 export { useRefreshOnFocus } from './useRefreshOnFocus';
-export { useThemeColor } from './useThemeColor';
+// Removed deprecated/unused hooks: useLoadingScreen, useThemeColor, useColorScheme (and web variant)
 

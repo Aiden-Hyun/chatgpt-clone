@@ -1,11 +1,11 @@
 
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { useToast } from '@/features/alert';
+import { useEmailSignup } from '@/features/auth/hooks';
+import { useLanguageContext } from '@/features/language';
+import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import { useToast } from '../../src/features/alert';
-import { useEmailSignup } from '../../src/features/auth/hooks';
-import { useLanguageContext } from '../../src/features/language';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
-import { router } from 'expo-router';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {

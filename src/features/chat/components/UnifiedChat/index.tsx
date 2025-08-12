@@ -1,7 +1,7 @@
 import React from 'react';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import { createChatStyles } from '../../../../../app/chat/chat.styles';
-import { useAppTheme } from '../../../theme/lib/theme';
+import { useAppTheme } from '../../../theme/theme';
 import { useChat } from '../../hooks';
 import ChatInput from '../ChatInput';
 import MessageList from '../MessageList';

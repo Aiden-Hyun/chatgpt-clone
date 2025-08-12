@@ -2,8 +2,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { ChatSidebar, QuickActionsMenu, useSidebar } from '../../../../features/ui';
-import { useAppTheme } from '../../../theme/lib/theme';
+import { QuickActionsMenu } from '../../../../components/navigation/QuickActionsMenu';
+import { useAppTheme } from '../../../theme/theme';
+import { ChatSidebar } from '../ChatSidebar';
+import { useSidebar } from '../useSidebar';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 interface ChatHeaderProps {

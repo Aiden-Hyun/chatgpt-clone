@@ -7,7 +7,7 @@ import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert'
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { ThemeSelector } from '../../src/features/theme';
-import { useAppTheme } from '../../src/features/theme/lib/theme';
+import { useAppTheme } from '../../src/features/theme/theme';
 import { createSettingsStyles } from './settings.styles';
 
 export default function SettingsScreen() {

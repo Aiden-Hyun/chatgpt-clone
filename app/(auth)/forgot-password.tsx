@@ -1,11 +1,11 @@
 
+import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { useToast } from '@/features/alert';
+import { usePasswordReset } from '@/features/auth/hooks';
+import { useLanguageContext } from '@/features/language';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { useToast } from '../../src/features/alert';
-import { usePasswordReset } from '../../src/features/auth/hooks';
-import { useLanguageContext } from '../../src/features/language';
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '../../src/features/ui';
-import { router } from 'expo-router';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
@@ -90,7 +90,7 @@ export default function ForgotPasswordScreen() {
       <ThemedText type="title" style={styles.title}>Reset Password</ThemedText>
       
       <ThemedText style={styles.description}>
-        Enter your email address and we'll send you a link to reset your password.
+        Enter your email address and we will send you a link to reset your password.
       </ThemedText>
       
       <FormWrapper onSubmit={handleResetPassword} style={{ width: '100%' }}>

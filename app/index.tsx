@@ -1,15 +1,16 @@
+import LoadingWrapper from '@/components/LoadingWrapper';
+import { QuickActionsMenu } from '@/components/navigation/QuickActionsMenu';
+import { useToast } from '@/features/alert';
+import { useLogout, useUserInfo } from '@/features/auth';
+import { RoomListItem } from '@/features/chat/components';
+import { useChatRooms } from '@/features/chat/hooks';
+import { useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
+import { useRefreshOnFocus } from '@/shared/hooks';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, SafeAreaView, Text, TouchableOpacity } from 'react-native';
-import { useToast } from '../src/features/alert';
-import { useLogout, useUserInfo } from '../src/features/auth';
-import { RoomListItem } from '../src/features/chat/components';
-import { useChatRooms } from '../src/features/chat/hooks';
-import { useLanguageContext } from '../src/features/language';
-import { useAppTheme } from '../src/features/theme/lib/theme';
-import { LoadingWrapper, QuickActionsMenu } from '../src/features/ui';
-import { useRefreshOnFocus } from '../src/shared/hooks';
 import { createIndexStyles } from './index.styles';
 
 export default function HomeScreen() {

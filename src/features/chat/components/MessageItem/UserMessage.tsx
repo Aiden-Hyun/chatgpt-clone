@@ -1,8 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { HoverDetector } from '../../../../features/ui';
-import { useAppTheme } from '../../../theme/lib/theme';
+import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { createUserMessageStyles } from './UserMessage.styles';
 
@@ -61,9 +60,9 @@ export const UserMessage: React.FC<UserMessageProps> = ({
           </View>
         ) : (
           <>
-            <HoverDetector style={[styles.bubble, !isLastInGroup && styles.bubbleCompact]} onHoverChange={() => {}}>
+            <View style={[styles.bubble, !isLastInGroup && styles.bubbleCompact]}>
               <Text style={styles.text}>{message.content}</Text>
-            </HoverDetector>
+            </View>
             <View style={{ flexDirection: 'row', marginTop: 6, gap: 12 }}>
               <TouchableOpacity
                 onPress={() => {

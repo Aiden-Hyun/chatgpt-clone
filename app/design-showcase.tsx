@@ -1,40 +1,11 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ThemedButton } from '../src/components';
 import { CustomAlert, useCustomAlert, useToast } from '../src/features/alert';
 import { LanguageSelector, useLanguageContext } from '../src/features/language';
-import { ThemedButton } from '../src/features/ui';
-import { useAppTheme } from '../src/features/theme/lib/theme';
+import { useAppTheme } from '../src/features/theme/theme';
 // Import Lucide icons for showcase
-import {
-  AlertCircle,
-  Bookmark,
-  Check,
-  ChevronDown,
-  ChevronLeft,
-  Copy,
-  Download,
-  Edit,
-  Heart,
-  Home,
-  Info,
-  LogOut,
-  MessageSquare,
-  MoreHorizontal,
-  RotateCcw,
-  Search,
-  Send,
-  Settings,
-  Share2,
-  Star,
-  ThumbsDown,
-  ThumbsUp,
-  Trash2,
-  Upload,
-  User,
-  Volume2,
-  X
-} from 'lucide-react-native';
 
 // Import Expo Vector Icons
 import { AntDesign, Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -49,7 +20,7 @@ export default function DesignShowcaseScreen() {
   
   const [inputValue, setInputValue] = useState('');
   const [switchValue, setSwitchValue] = useState(false);
-  const [selectedButton, setSelectedButton] = useState<string | null>(null);
+  
 
   const handleBack = () => {
     router.back();
@@ -649,8 +620,8 @@ export default function DesignShowcaseScreen() {
       height: 24,
       borderRadius: 12,
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
       marginRight: theme.spacing.md,
     },
     floatingErrorToastIcon: {
@@ -681,8 +652,8 @@ export default function DesignShowcaseScreen() {
     },
     floatingAlertOverlay: {
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
       padding: theme.spacing.lg,
     },
     floatingAlertDialog: {
@@ -699,8 +670,8 @@ export default function DesignShowcaseScreen() {
       shadowRadius: 12,
     },
     floatingAlertHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
       marginBottom: theme.spacing.md,
     },
     floatingAlertIcon: {
@@ -742,8 +713,8 @@ export default function DesignShowcaseScreen() {
       marginBottom: theme.spacing.lg,
     },
     floatingAlertButtons: {
-      flexDirection: 'row',
-      justifyContent: 'center',
+      flexDirection: 'row' as const,
+      justifyContent: 'center' as const,
       gap: theme.spacing.md,
     },
     floatingMessageContainer: {
@@ -754,7 +725,7 @@ export default function DesignShowcaseScreen() {
       borderRadius: 20, // Material design rounded corners
       padding: theme.spacing.lg,
       marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-end',
+      alignSelf: 'flex-end' as const,
       maxWidth: '80%' as any,
       elevation: 3,
       shadowColor: 'rgba(99, 102, 241, 0.3)',
@@ -773,7 +744,7 @@ export default function DesignShowcaseScreen() {
       borderRadius: 20, // Material design rounded corners
       padding: theme.spacing.lg,
       marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-start',
+      alignSelf: 'flex-start' as const,
       maxWidth: '80%' as any,
       elevation: 2,
       shadowColor: 'rgba(0, 0, 0, 0.1)',
@@ -865,12 +836,12 @@ export default function DesignShowcaseScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton as any}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('showcase.title')}</Text>
         <TouchableOpacity 
-          style={[styles.backButton, { marginLeft: 'auto', marginRight: 0 }]} 
+          style={[styles.backButton as any, { marginLeft: 'auto', marginRight: 0 }]}
           onPress={handleOpenChatGPTDemo}
         >
           <Text style={styles.backButtonText}>🤖</Text>
@@ -884,7 +855,7 @@ export default function DesignShowcaseScreen() {
           
           <View style={styles.card}>
             <Text style={styles.label}>{t('showcase.primary_buttons')}</Text>
-            <View style={styles.row}>
+            <View style={styles.row as any}>
               <ThemedButton variant="primary" size="medium">
                 {t('button.primary')}
               </ThemedButton>
@@ -894,7 +865,7 @@ export default function DesignShowcaseScreen() {
             </View>
 
             <Text style={styles.label}>Secondary Buttons</Text>
-            <View style={styles.row}>
+            <View style={styles.row as any}>
               <ThemedButton variant="secondary" size="medium">
                 Secondary
               </ThemedButton>
@@ -904,7 +875,7 @@ export default function DesignShowcaseScreen() {
             </View>
 
             <Text style={styles.label}>Outline & Ghost Buttons</Text>
-            <View style={styles.row}>
+            <View style={styles.row as any}>
               <ThemedButton variant="outline" size="medium">
                 Outline
               </ThemedButton>
@@ -914,7 +885,7 @@ export default function DesignShowcaseScreen() {
             </View>
 
             <Text style={styles.label}>Status Buttons</Text>
-            <View style={styles.row}>
+            <View style={styles.row as any}>
               <ThemedButton variant="primary" size="medium" style={{ backgroundColor: theme.colors.status.success.primary }}>
                 Success
               </ThemedButton>
@@ -924,7 +895,7 @@ export default function DesignShowcaseScreen() {
             </View>
 
             <Text style={styles.label}>Button Sizes</Text>
-            <View style={styles.row}>
+            <View style={styles.row as any}>
               <ThemedButton variant="primary" size="small">
                 Small
               </ThemedButton>
@@ -973,7 +944,7 @@ export default function DesignShowcaseScreen() {
           <Text style={styles.sectionTitle}>Switches</Text>
           
           <View style={styles.card}>
-            <View style={styles.row}>
+            <View style={styles.row as any}>
               <Text style={styles.label}>Toggle Switch</Text>
               <Switch
                 value={switchValue}
@@ -1290,10 +1261,10 @@ export default function DesignShowcaseScreen() {
 
             <Text style={styles.label}>Floating Action Message Bubbles</Text>
             <View style={styles.floatingMessageContainer}>
-              <View style={styles.floatingUserMessage}>
+              <View style={styles.floatingUserMessage as any}>
                 <Text style={styles.floatingUserMessageText}>Modern user message with material design</Text>
               </View>
-              <View style={styles.floatingAssistantMessage}>
+              <View style={styles.floatingAssistantMessage as any}>
                 <Text style={styles.floatingAssistantMessageText}>Modern assistant response with elevated design</Text>
               </View>
             </View>
@@ -1307,7 +1278,7 @@ export default function DesignShowcaseScreen() {
           
           <View style={styles.articleChatContainer}>
             {/* User Message */}
-            <View style={styles.articleUserMessage}>
+            <View style={styles.articleUserMessage as any}>
               <Text style={styles.articleUserMessageText}>What can you tell me about React Native?</Text>
             </View>
 
@@ -1335,14 +1306,14 @@ export default function DesignShowcaseScreen() {
                 <Text style={styles.articleAIText}>
                   • Strong community support and regular updates
                 </Text>
-                <TouchableOpacity style={styles.articleRegenerateButton}>
-                  <Text style={styles.articleRegenerateIcon}>↻</Text>
+                <TouchableOpacity style={styles.articleRegenerateButton as any}>
+                  <Text style={styles.articleRegenerateIcon as any}>↻</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Another User Message */}
-            <View style={styles.articleUserMessage}>
+            <View style={styles.articleUserMessage as any}>
               <Text style={styles.articleUserMessageText}>How does it compare to Flutter?</Text>
             </View>
 
@@ -1373,19 +1344,19 @@ export default function DesignShowcaseScreen() {
           <View style={styles.card}>
             <Text style={styles.label}>Theme Colors</Text>
             <View style={styles.row}>
-              <View style={styles.row}>
+              <View style={styles.row as any}>
                 <View style={[styles.colorSwatch, { backgroundColor: theme.colors.primary }]} />
                 <Text style={styles.colorLabel}>Primary</Text>
               </View>
-              <View style={styles.row}>
+              <View style={styles.row as any}>
                 <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.success.primary }]} />
                 <Text style={styles.colorLabel}>Success</Text>
               </View>
-              <View style={styles.row}>
+              <View style={styles.row as any}>
                 <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.error.primary }]} />
                 <Text style={styles.colorLabel}>Error</Text>
               </View>
-              <View style={styles.row}>
+              <View style={styles.row as any}>
                 <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.warning.primary }]} />
                 <Text style={styles.colorLabel}>Warning</Text>
               </View>
@@ -1393,319 +1364,168 @@ export default function DesignShowcaseScreen() {
           </View>
         </View>
 
-                 {/* Lucide React Native Icons Section */}
+                 {/* Expo Vector Icons Section */}
          <View style={styles.section}>
-           <Text style={styles.sectionTitle}>Lucide React Native Icons</Text>
-           <Text style={styles.caption}>Demonstrating how Lucide icons can replace emoji icons throughout the app.</Text>
+           <Text style={styles.sectionTitle}>Expo Vector Icons</Text>
+           <Text style={styles.caption}>Built-in Expo icons with multiple icon families.</Text>
            
            <View style={styles.card}>
-             <Text style={styles.label}>Current Emoji vs Lucide Icons</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 20 }}>
-                 <Text style={{ fontSize: 30, marginBottom: 5 }}>💬</Text>
-                 <Text style={styles.label}>Emoji</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 20 }}>
-                                   <MessageSquare size={30} />
-                 <Text style={styles.label}>MessageSquare</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 20 }}>
-                 <Text style={{ fontSize: 30, marginBottom: 5 }}>👍</Text>
-                 <Text style={styles.label}>Emoji</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <ThumbsUp size={30} stroke={theme.colors.text.primary} />
-                 <Text style={styles.label}>ThumbsUp</Text>
-               </View>
-             </View>
-
-             <Text style={styles.label}>Message Interaction Icons</Text>
+             <Text style={styles.label}>Material Icons (Google)</Text>
              <View style={styles.row}>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <ThumbsDown size={24} stroke={theme.colors.text.primary} />
+                 <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
+               </View>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
+               </View>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <MaterialIcons name="thumb-down" size={24} color={theme.colors.text.primary} />
                  <Text style={[styles.label, { fontSize: 10 }]}>Dislike</Text>
                </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Volume2 size={24} stroke={theme.colors.text.primary} />
+                  <View style={{ alignItems: 'center' as const }}>
+                 <MaterialIcons name="volume-up" size={24} color={theme.colors.text.primary} />
                  <Text style={[styles.label, { fontSize: 10 }]}>Audio</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Copy size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Copy</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Share2 size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <ChevronDown size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>More</Text>
                </View>
              </View>
 
-             <Text style={styles.label}>Navigation Icons</Text>
+             <Text style={styles.label}>Ionicons (iOS Style)</Text>
              <View style={styles.row}>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <ChevronLeft size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Back</Text>
+                 <Ionicons name="chatbubble-outline" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
                </View>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MoreHorizontal size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Menu</Text>
+                 <Ionicons name="thumbs-up-outline" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
                </View>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <RotateCcw size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Regenerate</Text>
+                 <Ionicons name="share-outline" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
+               </View>
+                  <View style={{ alignItems: 'center' as const }}>
+                 <Ionicons name="settings-outline" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
+               </View>
+             </View>
+
+             <Text style={styles.label}>Feather Icons (Minimal)</Text>
+             <View style={styles.row}>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <Feather name="message-circle" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
+               </View>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <Feather name="thumbs-up" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
+               </View>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <Feather name="copy" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Copy</Text>
                </View>
                <View style={{ alignItems: 'center' }}>
-                 <Send size={24} stroke={theme.colors.text.primary} />
+                 <Feather name="send" size={24} color={theme.colors.text.primary} />
                  <Text style={[styles.label, { fontSize: 10 }]}>Send</Text>
                </View>
              </View>
 
-             <Text style={styles.label}>Action Icons</Text>
+             <Text style={styles.label}>Ant Design Icons</Text>
              <View style={styles.row}>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Settings size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
+                 <AntDesign name="message1" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
                </View>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <LogOut size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Logout</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <User size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>User</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <Home size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Home</Text>
-               </View>
-             </View>
-
-             <Text style={styles.label}>Utility Icons</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Search size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Search</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Heart size={24} stroke={theme.colors.text.primary} />
+                 <AntDesign name="like1" size={24} color={theme.colors.text.primary} />
                  <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
                </View>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Star size={24} stroke={theme.colors.text.primary} />
+                 <AntDesign name="setting" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
+               </View>
+               <View style={{ alignItems: 'center' }}>
+                 <AntDesign name="user" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>User</Text>
+               </View>
+             </View>
+
+             <Text style={styles.label}>Font Awesome</Text>
+             <View style={styles.row}>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <FontAwesome name="comment" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
+               </View>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <FontAwesome name="heart" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Heart</Text>
+               </View>
+               <View style={{ alignItems: 'center', marginRight: 15 }}>
+                 <FontAwesome name="star" size={24} color={theme.colors.text.primary} />
                  <Text style={[styles.label, { fontSize: 10 }]}>Star</Text>
                </View>
                <View style={{ alignItems: 'center' }}>
-                 <Bookmark size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Bookmark</Text>
+                 <FontAwesome name="home" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Home</Text>
                </View>
              </View>
+           </View>
+         </View>
 
-             <Text style={styles.label}>File & Edit Icons</Text>
+         {/* Heroicons Section - Temporarily Disabled */}
+         <View style={styles.section}>
+           <Text style={styles.sectionTitle}>Heroicons (Temporarily Disabled)</Text>
+           <Text style={styles.caption}>Heroicons package has some missing icons. Using Expo Vector Icons instead.</Text>
+           
+           <View style={styles.card}>
+             <Text style={styles.label}>Alternative: Expo Vector Icons</Text>
              <View style={styles.row}>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Download size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Download</Text>
+                 <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
                </View>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Upload size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Upload</Text>
+                 <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
                </View>
                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Edit size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Edit</Text>
+                 <MaterialIcons name="share" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
                </View>
                <View style={{ alignItems: 'center' }}>
-                 <Trash2 size={24} stroke={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Delete</Text>
+                 <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
+                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
                </View>
              </View>
+           </View>
+         </View>
 
-             <Text style={styles.label}>Status Icons</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Check size={24} stroke={theme.colors.status.success.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Success</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <X size={24} stroke={theme.colors.status.error.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Error</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <AlertCircle size={24} stroke={theme.colors.status.warning.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Warning</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <Info size={24} stroke={theme.colors.status.info.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Info</Text>
-               </View>
-             </View>
-                       </View>
-          </View>
-
-          {/* Expo Vector Icons Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Expo Vector Icons</Text>
-            <Text style={styles.caption}>Built-in Expo icons with multiple icon families.</Text>
-            
-            <View style={styles.card}>
-              <Text style={styles.label}>Material Icons (Google)</Text>
-              <View style={styles.row}>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <MaterialIcons name="thumb-down" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Dislike</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <MaterialIcons name="volume-up" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Audio</Text>
-                </View>
-              </View>
-
-              <Text style={styles.label}>Ionicons (iOS Style)</Text>
-              <View style={styles.row}>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <Ionicons name="chatbubble-outline" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <Ionicons name="thumbs-up-outline" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <Ionicons name="share-outline" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Ionicons name="settings-outline" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
-                </View>
-              </View>
-
-              <Text style={styles.label}>Feather Icons (Minimal)</Text>
-              <View style={styles.row}>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <Feather name="message-circle" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <Feather name="thumbs-up" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <Feather name="copy" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Copy</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Feather name="send" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Send</Text>
-                </View>
-              </View>
-
-              <Text style={styles.label}>Ant Design Icons</Text>
-              <View style={styles.row}>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <AntDesign name="message1" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <AntDesign name="like1" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <AntDesign name="setting" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <AntDesign name="user" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>User</Text>
-                </View>
-              </View>
-
-              <Text style={styles.label}>Font Awesome</Text>
-              <View style={styles.row}>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <FontAwesome name="comment" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <FontAwesome name="heart" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Heart</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <FontAwesome name="star" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Star</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <FontAwesome name="home" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Home</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Heroicons Section - Temporarily Disabled */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Heroicons (Temporarily Disabled)</Text>
-            <Text style={styles.caption}>Heroicons package has some missing icons. Using Expo Vector Icons instead.</Text>
-            
-            <View style={styles.card}>
-              <Text style={styles.label}>Alternative: Expo Vector Icons</Text>
-              <View style={styles.row}>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-                </View>
-                <View style={{ alignItems: 'center', marginRight: 15 }}>
-                  <MaterialIcons name="share" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                  <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
-                  <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Icon Comparison Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Icon Library Comparison</Text>
-            <Text style={styles.caption}>Side-by-side comparison of different icon libraries for the same actions.</Text>
-            
-            <View style={styles.card}>
-              <Text style={styles.label}>Chat/Message Icons</Text>
+         {/* Icon Comparison Section */}
+         <View style={styles.section}>
+           <Text style={styles.sectionTitle}>Icon Library Comparison</Text>
+           <Text style={styles.caption}>Side-by-side comparison of different icon libraries for the same actions.</Text>
+           
+           <View style={styles.card}>
+             <Text style={styles.label}>Chat/Message Icons</Text>
                              <View style={styles.row}>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Emoji</Text>
                    <Text style={{ fontSize: 24, marginBottom: 5 }}>💬</Text>
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Lucide</Text>
-                   <MessageSquare size={24} />
+                    {/* Replace unsupported icon component with MaterialIcons to avoid undefined import */}
+                    <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Material</Text>
                    <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Ionicons</Text>
                    <Ionicons name="chatbubble-outline" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center' }}>
+                  <View style={{ alignItems: 'center' as const }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Feather</Text>
                    <Feather name="message-circle" size={24} color={theme.colors.text.primary} />
                  </View>
@@ -1713,23 +1533,24 @@ export default function DesignShowcaseScreen() {
 
               <Text style={styles.label}>Like/Thumbs Up Icons</Text>
                              <View style={styles.row}>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Emoji</Text>
                    <Text style={{ fontSize: 24, marginBottom: 5 }}>👍</Text>
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Lucide</Text>
-                   <ThumbsUp size={24} />
+                    {/* Replace unsupported icon component with MaterialIcons to avoid undefined import */}
+                    <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Material</Text>
                    <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Ionicons</Text>
                    <Ionicons name="thumbs-up-outline" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center' }}>
+                  <View style={{ alignItems: 'center' as const }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Feather</Text>
                    <Feather name="thumbs-up" size={24} color={theme.colors.text.primary} />
                  </View>
@@ -1737,23 +1558,24 @@ export default function DesignShowcaseScreen() {
 
               <Text style={styles.label}>Settings Icons</Text>
                              <View style={styles.row}>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Emoji</Text>
                    <Text style={{ fontSize: 24, marginBottom: 5 }}>⚙️</Text>
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Lucide</Text>
-                   <Settings size={24} />
+                    {/* Replace unsupported icon component with MaterialIcons to avoid undefined import */}
+                    <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Material</Text>
                    <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Ionicons</Text>
                    <Ionicons name="settings-outline" size={24} color={theme.colors.text.primary} />
                  </View>
-                 <View style={{ alignItems: 'center' }}>
+                  <View style={{ alignItems: 'center' as const }}>
                    <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Feather</Text>
                    <Feather name="settings" size={24} color={theme.colors.text.primary} />
                  </View>

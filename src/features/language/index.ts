@@ -1,3 +1,4 @@
 // Language feature exports
-export { LanguageSelector } from './components/LanguageSelector';
-export { LanguageProvider, useLanguageContext } from './context/LanguageContext'; 
+export { LanguageProvider, useLanguageContext } from './LanguageContext';
+export { LanguageSelector } from './LanguageSelector';
+

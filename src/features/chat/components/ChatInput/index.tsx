@@ -1,13 +1,13 @@
 import React, { RefObject, useMemo, useState } from 'react';
 import {
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
-import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../theme/lib/theme';
+import { useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {

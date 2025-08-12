@@ -1,8 +1,8 @@
+import { useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
 import { FlashList } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { useLanguageContext } from '../../../../features/language';
-import { useAppTheme } from '../../../theme/lib/theme';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';

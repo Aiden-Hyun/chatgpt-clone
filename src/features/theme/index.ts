@@ -1,4 +1,5 @@
 // Theme feature exports
-export { ThemeSelector } from './components/ThemeSelector';
-export { ThemeProvider, useThemeContext } from './context/ThemeContext';
-export { theme, useTheme } from './lib/theme'; 
+export { theme, useTheme } from './theme';
+export { ThemeProvider, useThemeContext } from './ThemeContext';
+export { ThemeSelector } from './ThemeSelector';
+
