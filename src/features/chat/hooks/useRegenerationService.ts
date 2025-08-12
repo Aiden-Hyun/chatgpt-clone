@@ -42,7 +42,7 @@ export function useRegenerationService(
 
   // Expose regeneration functions
   const regenerateMessage = useCallback(
-    async (index: number) => {
+    async (index: number, overrideUserContent?: string) => {
       
       
       if (!regenerationService || !session) {
@@ -70,7 +70,7 @@ export function useRegenerationService(
       }
 
       // Make sure content exists
-      if (!userMessage.content || !targetMessage.content) {
+      if ((!overrideUserContent && !userMessage.content) || !targetMessage.content) {
         console.warn('🔄 REGEN-HOOK: Missing content in messages for regeneration');
         return;
       }
@@ -85,7 +85,7 @@ export function useRegenerationService(
         await regenerationService.regenerateMessage(
           targetMessage.id,
           messages,
-          userMessage.content,
+          overrideUserContent ?? userMessage.content,
           targetMessage.content
         );
         

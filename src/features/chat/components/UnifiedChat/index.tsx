@@ -56,6 +56,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     handleInputChange,
     sendMessage,
     regenerateMessage,
+    editUserAndRegenerate,
     selectedModel,
     updateModel,
   } = useChat(roomId || null);
@@ -89,7 +90,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
           regeneratingIndices={regeneratingIndices}
           onRegenerate={regenerateMessage}
           onUserEditRegenerate={async (userIndex: number, newText: string) => {
-            // Simple edit implementation - could be enhanced later
+            await editUserAndRegenerate(userIndex, newText);
           }}
           showWelcomeText={messages.length === 0 && !loading}
         />

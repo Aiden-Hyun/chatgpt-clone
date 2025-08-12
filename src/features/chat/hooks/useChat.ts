@@ -168,7 +168,7 @@ export const useChat = (numericRoomId: number | null) => {
   }, [input, numericRoomId, clearInput, sendMessageToBackend, handleInputChange]);
 
   // Wrapper for regenerateMessage
-  const regenerateMessage = useCallback(async (index: number) => {
+  const regenerateMessage = useCallback(async (index: number, overrideUserContent?: string) => {
     
     
     if (index === undefined || index === null) {
@@ -177,12 +177,30 @@ export const useChat = (numericRoomId: number | null) => {
     }
     try {
       
-      await regenerateMessageInBackend(index);
+      await regenerateMessageInBackend(index, overrideUserContent);
       
     } catch (error) {
       console.error('🔄 REGEN-HOOK: Error regenerating message:', error);
     }
   }, [regenerateMessageInBackend]);
+
+  // Edit a user message in place and regenerate the following assistant message using the edited text
+  const editUserAndRegenerate = useCallback(async (userIndex: number, newText: string) => {
+    if (typeof userIndex !== 'number' || userIndex < 0 || userIndex >= messages.length) return;
+    // Update UI bubble immediately
+    setMessages(prev => {
+      if (userIndex < 0 || userIndex >= prev.length) return prev;
+      const target = prev[userIndex];
+      if (!target || target.role !== 'user') return prev;
+      const updated = [...prev];
+      updated[userIndex] = { ...target, content: newText };
+      return updated;
+    });
+
+    // Regenerate the next assistant message with the edited text
+    const assistantIndex = userIndex + 1;
+    await regenerateMessage(assistantIndex, newText);
+  }, [messages, setMessages, regenerateMessage]);
 
   return {
     messages,
@@ -199,6 +217,7 @@ export const useChat = (numericRoomId: number | null) => {
     handleInputChange,
     sendMessage,
     regenerateMessage,
+    editUserAndRegenerate,
     selectedModel,
     updateModel,
   };

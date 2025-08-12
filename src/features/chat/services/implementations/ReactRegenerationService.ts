@@ -3,7 +3,7 @@ import { Session } from '@supabase/supabase-js';
 import { ChatMessage } from '../../types';
 // Import removed: import { logger } from '../../utils/logger';
 import { supabase } from '../../../../shared/lib/supabase';
-import { generateMessageId } from '../../utils/messageIdGenerator';
+ 
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { IRegenerationService } from '../interfaces/IRegenerationService';
@@ -39,7 +39,6 @@ export class ReactRegenerationService implements IRegenerationService {
       return;
     }
 
-    const messageIdForLog = generateMessageId();
     
 
     this.regeneratingIndices.add(index);
@@ -66,9 +65,19 @@ export class ReactRegenerationService implements IRegenerationService {
       // Prepare history from the snapshot (all messages before the assistant message)
       const messageHistory: ChatMessage[] = messages.slice(0, index);
       
+      // If caller provided an override for the immediate previous user message, apply it
+      let finalHistory: ChatMessage[] = messageHistory;
+      if (userContent && userContent.trim().length > 0) {
+        const lastIdx = messageHistory.length - 1;
+        if (lastIdx >= 0 && messageHistory[lastIdx]?.role === 'user') {
+          const overridden = { ...messageHistory[lastIdx], content: userContent };
+          finalHistory = messageHistory.slice(0, lastIdx).concat(overridden);
+        }
+      }
+
 
       // Call AI API
-      const apiRequest = { roomId: this.roomId, messages: messageHistory, model: this.selectedModel } as any;
+      const apiRequest = { roomId: this.roomId, messages: finalHistory, model: this.selectedModel } as any;
       
       
       
@@ -113,19 +122,18 @@ export class ReactRegenerationService implements IRegenerationService {
       if (this.roomId) {
         try {
           // Prefer updating by database id when available (ids loaded as `db:<id>`)
-          let updated = false;
           if (targetMessageId.startsWith('db:')) {
             const dbIdStr = targetMessageId.slice(3);
             const dbId = Number(dbIdStr);
             if (!Number.isNaN(dbId) && (this.messageService as any).updateAssistantMessageByDbId) {
-              updated = await (this.messageService as any).updateAssistantMessageByDbId({
+              await (this.messageService as any).updateAssistantMessageByDbId({
                 dbId,
                 newContent,
                 session: this.session,
               });
             }
           }
-          
+
         } catch (dbError) {
           console.error('🔄 REGEN-SERVICE: DB update failed', dbError);
         }
