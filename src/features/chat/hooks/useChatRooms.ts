@@ -158,7 +158,7 @@ export const useChatRooms = () => {
     };
   }, [fetchRooms, session]);
 
-  const deleteRoom = async (roomId: number) => {
+  const deleteRoom = useCallback(async (roomId: number) => {
     if (!session) return;
 
     try {
@@ -179,7 +179,7 @@ export const useChatRooms = () => {
       console.warn('[ROOMS] deleteRoom:exception');
       return;
     }
-  };
+  }, [session]); // Dependency on session
 
   // Use stable identity to avoid re-renders in consumers that depend on this function
   const startNewChat = useCallback(() => {

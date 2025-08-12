@@ -1,5 +1,5 @@
 // src/features/chat/context/ChatContext.tsx
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
 import { ChatMessage } from '../types';
 
 // Define the shape of the context

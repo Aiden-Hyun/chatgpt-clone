@@ -1,10 +1,14 @@
 // src/features/chat/services/config/ServiceConfiguration.ts
 import { ServiceRegistry } from '../core/ServiceRegistry';
-import { ExpoRouterNavigationService } from '../implementations/ExpoRouterNavigationService';
-import { OpenAIAPIService } from '../implementations/OpenAIAPIService';
-import { ReactUIStateService } from '../implementations/ReactUIStateService';
-import { SupabaseChatRoomService } from '../implementations/SupabaseChatRoomService';
-import { SupabaseMessageService } from '../implementations/SupabaseMessageService';
+import {
+  ExpoRouterNavigationService,
+  OpenAIAPIService,
+  ReactAnimationService,
+  ReactMessageStateService,
+  ReactTypingStateService,
+  SupabaseChatRoomService,
+  SupabaseMessageService,
+} from '../implementations';
 
 export function configureServices(): void {
   ServiceRegistry.register({
@@ -12,6 +16,9 @@ export function configureServices(): void {
     chatRoomService: SupabaseChatRoomService,
     messageService: SupabaseMessageService,
     navigationService: ExpoRouterNavigationService,
-    uiStateService: ReactUIStateService,
+    // New services
+    messageStateService: ReactMessageStateService,
+    typingStateService: ReactTypingStateService,
+    animationService: ReactAnimationService,
   });
 } 

@@ -36,7 +36,6 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
           if (flag === 'true') {
             isNewRoom = true;
             await mobileStorage.removeItem(`new_room_created_${numericRoomId}`);
-
           }
         } catch {
           /* swallow */
@@ -46,11 +45,27 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
       if (isNewRoom) {
         setInput('');
         setDrafts(prev => ({ ...prev, [roomKey]: '' }));
-
+        // Clear persisted draft for this room as well
+        mobileStorage.removeItem(`chat_draft_${roomKey}`);
       } else {
+        // Prefer in-memory draft first
         const currentDraft = draftsRef.current[roomKey] || '';
-        setInput(currentDraft);
-
+        if (currentDraft && currentDraft.length > 0) {
+          setInput(currentDraft);
+        } else {
+          // Fallback to persisted draft
+          try {
+            const saved = await mobileStorage.getItem(`chat_draft_${roomKey}`);
+            if (saved !== null) {
+              setInput(saved);
+              setDrafts(prev => ({ ...prev, [roomKey]: saved }));
+            } else {
+              setInput('');
+            }
+          } catch {
+            setInput('');
+          }
+        }
       }
     };
 
@@ -69,6 +84,8 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
     setInput(text);
     const roomKey = roomIdRef.current ? roomIdRef.current.toString() : 'new';
     setDrafts((prev) => ({ ...prev, [roomKey]: text }));
+    // Persist the draft for this room
+    mobileStorage.setItem(`chat_draft_${roomKey}`, text);
   }, []); // Empty dependency array - stable reference
 
   /**
@@ -83,6 +100,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
     // This helps with the new chatroom case where the room ID changes
     const roomKey = roomIdRef.current ? roomIdRef.current.toString() : 'new';
     setDrafts(prev => ({ ...prev, [roomKey]: '' }));
+    mobileStorage.removeItem(`chat_draft_${roomKey}`);
   }, []); // Empty dependency array - stable reference
 
   /**
@@ -91,6 +109,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
   const updateDrafts = (roomId: number | string, content: string) => {
     const roomKey = typeof roomId === 'number' ? roomId.toString() : roomId;
     setDrafts((prev) => ({ ...prev, [roomKey]: content }));
+    mobileStorage.setItem(`chat_draft_${roomKey}`, content);
   };
 
   return {

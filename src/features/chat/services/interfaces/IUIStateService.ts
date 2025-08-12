@@ -22,13 +22,7 @@ export interface IUIStateService {
    */
   addErrorMessage(message: string): void;
   
-  /**
-   * Clean up draft messages
-   */
-  cleanupDrafts(args: {
-    isNewRoom: boolean;
-    roomId: number;
-  }): void;
+  // Draft cleanup removed from UI service; handled in hooks/storage
   
   /**
    * Set message full content and transition to animating state

@@ -18,8 +18,12 @@ export class ServiceFactory {
     const messageService = ServiceRegistry.createMessageService();
     const aiApiService = ServiceRegistry.createAIApiService();
     const navigationService = ServiceRegistry.createNavigationService();
-    const uiStateService = ServiceRegistry.createUIStateService(setMessages, setIsTyping, setDrafts);
     const responseProcessor = new OpenAIResponseProcessor();
+
+    // Use the new, more focused services
+    const messageStateService = ServiceRegistry.createMessageStateService(setMessages);
+    const typingStateService = ServiceRegistry.createTypingStateService(setIsTyping);
+    const animationService = ServiceRegistry.createAnimationService(setMessages);
 
     // Create and return the orchestrator with all dependencies injected
     return new MessageSenderService(
@@ -27,8 +31,10 @@ export class ServiceFactory {
       messageService,
       aiApiService,
       navigationService,
-      uiStateService,
-      responseProcessor
+      responseProcessor,
+      messageStateService,
+      typingStateService,
+      animationService
     );
   }
 
@@ -47,12 +53,11 @@ export class ServiceFactory {
     return ServiceRegistry.createAIApiService();
   }
 
-
-
   static createNavigationService() {
     return ServiceRegistry.createNavigationService();
   }
 
+  /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */
   static createUIStateService(
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>,
@@ -60,4 +65,24 @@ export class ServiceFactory {
   ) {
     return ServiceRegistry.createUIStateService(setMessages, setIsTyping, setDrafts);
   }
+
+  // New service creators
+  static createMessageStateService(
+    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+  ) {
+    return ServiceRegistry.createMessageStateService(setMessages);
+  }
+
+  static createTypingStateService(
+    setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
+  ) {
+    return ServiceRegistry.createTypingStateService(setIsTyping);
+  }
+
+  static createAnimationService(
+    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+  ) {
+    return ServiceRegistry.createAnimationService(setMessages);
+  }
+
 } 

@@ -1,13 +1,15 @@
 // src/features/chat/services/core/MessageSenderService.ts
 import { Session } from '@supabase/supabase-js';
 import { IAIApiService } from '../interfaces/IAIApiService';
+import { IAnimationService } from '../interfaces/IAnimationService';
 import { IChatRoomService } from '../interfaces/IChatRoomService';
 import { IMessageService } from '../interfaces/IMessageService';
+import { IMessageStateService } from '../interfaces/IMessageStateService';
 import { INavigationService } from '../interfaces/INavigationService';
+import { ITypingStateService } from '../interfaces/ITypingStateService';
 
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
-import { IUIStateService } from '../interfaces/IUIStateService';
 import { AIApiRequest } from '../types';
 import { IAIResponseProcessor } from './AIResponseProcessor';
 import { LoggingService } from './LoggingService';
@@ -41,8 +43,10 @@ export class MessageSenderService {
     private messageService: IMessageService,
     private aiApiService: IAIApiService,
     private navigationService: INavigationService,
-    private uiStateService: IUIStateService,
-    private responseProcessor: IAIResponseProcessor
+    private responseProcessor: IAIResponseProcessor,
+    private messageStateService: IMessageStateService,
+    private typingStateService: ITypingStateService,
+    private animationService: IAnimationService
   ) {
     this.retryService = new RetryService({ maxRetries: 3, retryDelay: 1000, exponentialBackoff: true });
     this.loggingService = new LoggingService('MessageSenderService');
@@ -83,10 +87,10 @@ export class MessageSenderService {
         regenerateIndex, 
         messageId // ✅ Phase 2: Include message ID in logging
       });
-      this.uiStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg, messageId });
+      this.messageStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg, messageId });
       // Only set typing for new messages, not for regeneration
       if (regenerateIndex === undefined) {
-        this.uiStateService.setTyping(true);
+        this.typingStateService.setTyping(true);
       }
 
       // Step 2: Prepare for room creation (but don't create yet)
@@ -123,8 +127,8 @@ export class MessageSenderService {
       if (!this.responseProcessor.validateResponse(apiResponse)) {
         const error = 'Invalid AI response';
         this.loggingService.error(`Invalid AI response for request ${requestId}`, { error, response: apiResponse });
-        this.uiStateService.addErrorMessage('⚠️ No valid response received from AI.');
-        this.uiStateService.setTyping(false);
+        this.messageStateService.addErrorMessage('⚠️ No valid response received from AI.');
+        this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
 
@@ -132,8 +136,8 @@ export class MessageSenderService {
       if (!fullContent) {
         const error = 'No content in AI response';
         this.loggingService.error(`No content in AI response for request ${requestId}`, { error });
-        this.uiStateService.addErrorMessage('⚠️ No content received from AI.');
-        this.uiStateService.setTyping(false);
+        this.messageStateService.addErrorMessage('⚠️ No content received from AI.');
+        this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
 
@@ -154,7 +158,7 @@ export class MessageSenderService {
       // But we still need to update the message state immediately
       
       // Set full content and transition to animating state
-      this.uiStateService.setMessageFullContentAndAnimate({
+      this.animationService.setMessageFullContentAndAnimate({
         fullContent,
         regenerateIndex,
         messageId: assistantMsg.id
@@ -220,8 +224,7 @@ export class MessageSenderService {
               this.loggingService.warn(`Room update failed for request ${requestId}, but continuing`, { error });
             }
 
-            // Clean up drafts
-            this.uiStateService.cleanupDrafts({ isNewRoom, roomId });
+            // Draft cleanup is handled by useMessageInput via storage and local state
 
             // Handle navigation for new rooms
             if (isNewRoom) {
@@ -255,8 +258,8 @@ export class MessageSenderService {
         stack: error instanceof Error ? error.stack : undefined
       });
       
-      this.uiStateService.addErrorMessage('⚠️ Error contacting AI.');
-      this.uiStateService.setTyping(false);
+      this.messageStateService.addErrorMessage('⚠️ Error contacting AI.');
+      this.typingStateService.setTyping(false);
       return { success: false, error: errorMessage, duration };
     }
   }
