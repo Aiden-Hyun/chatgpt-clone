@@ -1,41 +1,28 @@
 import { useState } from 'react';
-import { useErrorStateCombined } from '../../../shared/hooks/error';
 import { supabase } from '../../../shared/lib/supabase';
 
 export const usePasswordReset = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { setAuthError } = useErrorStateCombined({
-    autoClear: true,
-    autoClearDelay: 5000,
-    showAlerts: true,
-    logToConsole: true
-  });
 
   const resetPassword = async (email: string) => {
     try {
       setIsLoading(true);
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        // This should be your app's URL to handle the password reset
+        // redirectTo: 'yourapp://auth/reset-password',
       });
 
       if (error) {
-        setAuthError(error.message, {
-          context: 'password-reset',
-          originalError: error,
-          email: email
-        });
-        return { success: false };
+        console.error('Password reset error:', error);
+        return { success: false, error: error.message };
       }
 
-      return { success: true };
+      return { success: true, error: null };
     } catch (error) {
-      setAuthError('An unexpected error occurred during password reset', {
-        context: 'password-reset',
-        originalError: error,
-        email: email
-      });
-      return { success: false };
+      console.error('Unexpected password reset error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      return { success: false, error: errorMessage };
     } finally {
       setIsLoading(false);
     }
