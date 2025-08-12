@@ -1,4 +1,4 @@
-import LoadingWrapper from '@/components/LoadingWrapper';
+import { LoadingWrapper } from '@/components/LoadingWrapper';
 import { QuickActionsMenu } from '@/components/navigation/QuickActionsMenu';
 import { useToast } from '@/features/alert';
 import { useLogout, useUserInfo } from '@/features/auth';

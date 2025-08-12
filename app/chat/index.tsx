@@ -1,4 +1,4 @@
-import LoadingWrapper from '@/components/LoadingWrapper';
+import { LoadingWrapper } from '@/components/LoadingWrapper';
 import { useAuth } from '@/features/auth';
 import { router } from 'expo-router';
 import { useEffect } from 'react';

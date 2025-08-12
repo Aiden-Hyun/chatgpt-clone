@@ -1,4 +1,4 @@
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { FormWrapper, LoadingScreen, ThemedText, ThemedTextInput, ThemedView } from '@/components';
 import { useToast } from '@/features/alert';
 import { useAuth } from '@/features/auth';
 import { useEmailSignin } from '@/features/auth/hooks';
@@ -9,7 +9,6 @@ import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -108,7 +107,7 @@ export default function AuthScreen() {
           },
         },
       });
-    } catch (error) {
+    } catch {
       showError(t('auth.google_login_failed'));
       stopSigningInWithGoogle();
     }
@@ -185,12 +184,7 @@ export default function AuthScreen() {
 
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#000000" />
-        <ThemedText style={styles.loadingText}>{t('common.loading')}...</ThemedText>
-      </View>
-    );
+    return <LoadingScreen message={t('common.loading')} />;
   }
 
   return (

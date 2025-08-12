@@ -1,7 +1,8 @@
 // app/_layout.tsx
+import { LoadingScreen } from '@/components';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, AppState, View } from 'react-native';
+import { AppState } from 'react-native';
 import { ToastContainer, ToastProvider } from '../src/features/alert';
 import { AuthProvider, useAuth } from '../src/features/auth';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
@@ -37,7 +38,7 @@ function ProtectedRoutes() {
       // Only redirect to auth if user is not on an auth route
       router.replace('/auth');
     }
-  }, [isLoading, session, pathname, isAuthRoute]);
+  }, [isLoading, session, pathname, isAuthRoute, router]);
 
   // Redirect to /chat by default for authenticated users
   useEffect(() => {
@@ -45,19 +46,10 @@ function ProtectedRoutes() {
       // Redirect to fresh new chat instead of home screen
       router.replace('/chat');
     }
-  }, [isLoading, session, pathname]);
+  }, [isLoading, session, pathname, router]);
 
   if (isLoading) {
-    return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF'
-      }}>
-        <ActivityIndicator size="large" color="#000000" />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   return (
