@@ -114,7 +114,9 @@ export class MessageSenderService {
         messages: currentMessages,
         model,
         clientMessageId: assistantMsg.id,
-        skipPersistence: regenerateIndex !== undefined, // regen should not write on server
+        // Always handle persistence on the client to avoid relying on edge upsert
+        // This prevents missing rows if the edge function cannot upsert
+        skipPersistence: true,
       };
 
       this.loggingService.debug(`Sending AI API request ${requestId}`, {
@@ -207,18 +209,17 @@ export class MessageSenderService {
               }
 
               // Only insert on client when creating a brand-new room.
-              if (isNewRoom) {
-                this.loggingService.debug(`Inserting new messages for request ${requestId}`);
-                await this.retryService.retryOperation(
-                  () => this.messageService.insertMessages({
-                    roomId,
-                    userMessage: userMsg,
-                    assistantMessage: { role: 'assistant', content: fullContent, id: assistantMsg.id },
-                    session,
-                  }),
-                  'message insertion'
-                );
-              }
+            // Insert messages on the client for both new and existing rooms
+            this.loggingService.debug(`Inserting messages for request ${requestId}`);
+            await this.retryService.retryOperation(
+              () => this.messageService.insertMessages({
+                roomId,
+                userMessage: userMsg,
+                assistantMessage: { role: 'assistant', content: fullContent, id: assistantMsg.id },
+                session,
+              }),
+              'message insertion'
+            );
             }
 
             // Update room metadata (non-critical operation)
