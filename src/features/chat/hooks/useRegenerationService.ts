@@ -28,11 +28,13 @@ export function useRegenerationService(
     const messageStateManager = new MessageStateManager(setMessages);
     const aiApiService = ServiceFactory.createAIApiService();
     const messageService = ServiceFactory.createMessageService();
+    const animationService = ServiceFactory.createAnimationService(setMessages);
 
     return ServiceFactory.createRegenerationService(
       messageStateManager,
       aiApiService,
       messageService,
+      animationService,
       setMessages,
       session,
       selectedModel,

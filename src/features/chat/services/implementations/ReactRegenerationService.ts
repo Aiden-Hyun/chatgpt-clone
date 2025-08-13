@@ -5,6 +5,7 @@ import { ChatMessage } from '../../types';
 import { supabase } from '../../../../shared/lib/supabase';
  
 import { IAIApiService } from '../interfaces/IAIApiService';
+import { IAnimationService } from '../interfaces/IAnimationService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { IRegenerationService } from '../interfaces/IRegenerationService';
 import { MessageStateManager } from '../MessageStateManager';
@@ -16,6 +17,7 @@ export class ReactRegenerationService implements IRegenerationService {
     private messageStateManager: MessageStateManager,
     private aiApiService: IAIApiService,
     private messageService: IMessageService,
+    private animationService: IAnimationService,
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     private session: Session,
     private selectedModel: string,
@@ -127,8 +129,12 @@ export class ReactRegenerationService implements IRegenerationService {
       const newContent = apiResponse.choices[0].message.content;
       
 
-      // Drive UI state via state manager
+      // Drive UI state and animation
       this.messageStateManager.handleRegeneration(targetMessageId, newContent);
+      this.animationService.setMessageFullContentAndAnimate({
+        fullContent: newContent,
+        messageId: targetMessageId,
+      });
 
       // Persist if room exists
       if (this.roomId) {
@@ -151,6 +157,30 @@ export class ReactRegenerationService implements IRegenerationService {
               newContent,
               session: this.session,
             });
+          }
+
+          // Also persist edited user message if it came from DB and content changed
+          const userIndex = index - 1;
+          if (userIndex >= 0 && messages[userIndex]?.role === 'user') {
+            const userMsg = messages[userIndex];
+            if (
+              userMsg?.id &&
+              typeof userMsg.id === 'string' &&
+              userMsg.id.startsWith('db:') &&
+              userContent &&
+              userContent.trim().length > 0 &&
+              userContent !== userMsg.content &&
+              (this.messageService as any).updateUserMessageByDbId
+            ) {
+              const userDbId = Number(userMsg.id.slice(3));
+              if (!Number.isNaN(userDbId)) {
+                await (this.messageService as any).updateUserMessageByDbId({
+                  dbId: userDbId,
+                  newContent: userContent,
+                  session: this.session,
+                });
+              }
+            }
           }
 
         } catch (dbError) {

@@ -45,6 +45,7 @@ export interface ServiceConfig {
       messageStateManager: any, // Using any to avoid circular dependency
       aiApiService: IAIApiService,
       messageService: IMessageService,
+      animationService: IAnimationService,
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
       session: Session,
       selectedModel: string,
@@ -129,6 +130,7 @@ export class ServiceRegistry {
     messageStateManager: any, // Using any to avoid circular dependency
     aiApiService: IAIApiService,
     messageService: IMessageService,
+    animationService: IAnimationService,
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     session: Session,
     selectedModel: string,
@@ -139,6 +141,7 @@ export class ServiceRegistry {
       messageStateManager,
       aiApiService,
       messageService,
+      animationService,
       setMessages,
       session,
       selectedModel,

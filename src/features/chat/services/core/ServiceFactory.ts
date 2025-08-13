@@ -93,6 +93,7 @@ export class ServiceFactory {
     messageStateManager: any, // Using any to avoid circular dependency
     aiApiService: IAIApiService,
     messageService: IMessageService,
+    animationService: any,
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     session: Session,
     selectedModel: string,
@@ -102,6 +103,7 @@ export class ServiceFactory {
       messageStateManager,
       aiApiService,
       messageService,
+      animationService,
       setMessages,
       session,
       selectedModel,

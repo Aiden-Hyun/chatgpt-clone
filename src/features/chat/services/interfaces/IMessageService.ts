@@ -44,6 +44,16 @@ export interface IMessageService {
   }): Promise<boolean>;
   
   /**
+   * Update user message by database id (used when editing and regenerating)
+   * Returns true if an update occurred, false otherwise
+   */
+  updateUserMessageByDbId?(args: {
+    dbId: number;
+    newContent: string;
+    session: any;
+  }): Promise<boolean>;
+  
+  /**
    * Load messages for a specific room
    */
   loadMessages(roomId: number): Promise<ChatMessage[]>;

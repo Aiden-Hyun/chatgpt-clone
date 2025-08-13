@@ -175,6 +175,32 @@ export class SupabaseMessageService implements IMessageService {
     }
   }
 
+  async updateUserMessageByDbId(args: {
+    dbId: number;
+    newContent: string;
+    session: Session;
+  }): Promise<boolean> {
+    try {
+      const { error: updateError } = await supabase
+        .from('messages')
+        .update({
+          content: args.newContent,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', args.dbId)
+        .eq('role', 'user')
+        .eq('user_id', args.session.user.id);
+      if (updateError) {
+        console.error('❌ Failed to update user message by db id:', updateError);
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('❌ Error updating user message by db id:', error);
+      return false;
+    }
+  }
+
   async loadMessages(roomId: number): Promise<ChatMessage[]> {
     // Consolidated from legacy/loadMessages.ts
     if (!roomId) {
