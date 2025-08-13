@@ -1,9 +1,9 @@
 import { useCallback } from 'react';
+import { useModel } from '../context/ModelContext';
 import { sendMessageHandler } from '../services/sendMessage';
 import { ChatMessage } from '../types';
 import { logger } from '../utils/logger';
 import { generateMessageId } from '../utils/messageIdGenerator';
-import { useModelSelection } from './useModelSelection';
 
 interface UseMessageActionsProps {
   roomId: number | null;
@@ -26,7 +26,7 @@ export const useMessageActions = ({
   drafts,
   setDrafts,
 }: UseMessageActionsProps) => {
-  const { selectedModel } = useModelSelection(roomId);
+  const { selectedModel } = useModel();
 
   const sendMessage = useCallback(async (userContent: string) => {
     if (!userContent.trim()) return;

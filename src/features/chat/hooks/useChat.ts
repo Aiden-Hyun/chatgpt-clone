@@ -1,12 +1,12 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
 import { useCallback, useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
+import { useModel } from '../context/ModelContext';
 import { ServiceFactory } from '../services/core';
 import { generateMessageId } from '../utils/messageIdGenerator';
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
-import { useModelSelection } from './useModelSelection';
 import { useOptimisticMessages } from './useOptimisticMessages';
 import { useRegenerationService } from './useRegenerationService';
 
@@ -119,8 +119,8 @@ export const useChat = (numericRoomId: number | null) => {
     loadMessages();
   }, [numericRoomId, optimisticMessages, setMessages, setLoading]);
 
-  // Model selection
-  const { selectedModel, updateModel } = useModelSelection(numericRoomId);
+  // Model selection now provided by parent via context
+  const { selectedModel, updateModel } = useModel();
 
   // Input management
   const {

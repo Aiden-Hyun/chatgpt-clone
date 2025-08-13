@@ -1,6 +1,8 @@
 import { LoadingWrapper } from '@/components';
 import { useLogout } from '@/features/auth';
 import { ChatHeader, UnifiedChat } from '@/features/chat/components';
+import { ModelProvider } from '@/features/chat/context/ModelContext';
+import { useModelSelection } from '@/features/chat/hooks';
 import { useChatScreen } from '@/shared/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -22,16 +24,14 @@ interface ChatScreenProps {
     theme: any;
     styles: any;
   };
-  onModelChangeBridge: (apply: any, model: any) => void;
   logout: () => void;
 }
 
 const ChatScreenPure = React.memo((props: ChatScreenProps) => {
-  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, onModelChangeBridge, logout } = props;
-  const { startNewChat, styles } = chatScreenState;
+  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState } = props;
+  const { styles } = chatScreenState;
   
-  // Local ref for model apply - this is component-specific state
-  const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
+  // No model bridge ref needed; parent owns model selection
   
   if (__DEV__) {
     // Pure component render counter
@@ -46,39 +46,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
     });
   }
 
-  // Simple event handlers for the pure component
-  const handleNewChat = () => {
-    startNewChat();
-  };
-
-  const handleChatSelect = (selectedRoomId: string) => {
-    try { 
-      console.log('🚀 [NAV] Chat selection received', { 
-        selectedRoomId, 
-        currentRoomId: roomId,
-        selectedRoomIdType: typeof selectedRoomId,
-        timestamp: new Date().toISOString() 
-      });
-      
-      // Don't navigate to the same room
-      if (selectedRoomId === roomId) {
-        console.log('⏹️ [NAV] Already in room, skipping navigation', selectedRoomId);
-        return;
-      }
-      
-      // Navigate to the selected room
-      console.log('🎯 [NAV] Navigating to room', selectedRoomId);
-      router.push(`/chat/${selectedRoomId}`);
-      
-      console.log('✅ [NAV] Navigation command sent', selectedRoomId);
-    } catch (error) {
-      console.error('❌ [NAV] Navigation error', error);
-    }
-  };
-
-  const handleBack = () => {
-    try { console.log('[NAV] back'); } catch {}
-  };
+  // Header is rendered by the parent wrapper to avoid duplication
 
   const loading = false;
 
@@ -88,25 +56,9 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
       >
-        <ChatHeader
-          onLogout={logout}
-          onSettings={() => { router.push('/settings'); }}
-          onBack={handleBack}
-          onNewChat={handleNewChat}
-          onChatSelect={handleChatSelect}
-          onModelChange={async (model: string) => {
-            if (modelApplyRef.current) {
-              try { await modelApplyRef.current(model); } catch {}
-            }
-          }}
-          showModelSelection
-        />
-        {/* 🎯 FIXED: onModelChangeBridge now memoized to prevent unnecessary remounting */}
-        
         <UnifiedChat 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}
-          onModelChangeBridge={onModelChangeBridge}
         />
       </KeyboardAvoidingView>
     </LoadingWrapper>
@@ -119,7 +71,6 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
     prev.numericRoomId === next.numericRoomId;
 
   const functionsEqual =
-    prev.onModelChangeBridge === next.onModelChangeBridge &&
     prev.logout === next.logout;
 
   // Shallow compare chatScreenState contents (allow different object wrapper if inner refs/functions unchanged)
@@ -166,17 +117,8 @@ const ChatScreen = () => {
   const { logout } = useLogout();
   
   // State and refs
-  const modelApplyRef = React.useRef<((m: string) => Promise<void>) | null>(null);
-  
-  // 🎯 MEMOIZED CALLBACK: Stable function reference
-  const onModelChangeBridge = React.useCallback((apply: any, model: any) => {
-    if (__DEV__) {
-      console.log(`🔧 [FIX] onModelChangeBridge STABLE function called`, {
-        note: "This function is now memoized - should prevent remounting!"
-      });
-    }
-    modelApplyRef.current = apply; 
-  }, []); // Empty deps = stable across all renders
+  // Parent owns model selection and provides to header + chat via context
+  const { selectedModel, updateModel } = useModelSelection(numericRoomId);
 
   // 🎯 MEMOIZED PROPS: Only recreate when actual values change
   const chatScreenProps = React.useMemo(() => ({
@@ -184,13 +126,30 @@ const ChatScreen = () => {
     isTemporaryRoom,
     numericRoomId,
     chatScreenState,
-    onModelChangeBridge,
     logout,
-  }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, onModelChangeBridge, logout]);
+  }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, logout]);
 
 
 
-  return <ChatScreenPure {...chatScreenProps} />;
+  return (
+    <ModelProvider value={{ selectedModel, updateModel }}>
+      <ChatHeader
+        onLogout={logout}
+        onSettings={() => { router.push('/settings'); }}
+        onBack={() => { try { console.log('[NAV] back'); } catch {} }}
+        onNewChat={chatScreenState.startNewChat}
+        onChatSelect={(rid: string) => {
+          try {
+            if (rid && rid !== roomId) router.push(`/chat/${rid}`);
+          } catch {}
+        }}
+        selectedModel={selectedModel}
+        onModelChange={async (m: string) => { try { await updateModel(m); } catch {} }}
+        showModelSelection
+      />
+      <ChatScreenPure {...chatScreenProps} />
+    </ModelProvider>
+  );
 };
 
 ChatScreen.displayName = 'ChatScreen';

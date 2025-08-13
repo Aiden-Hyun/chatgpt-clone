@@ -1,10 +1,10 @@
 // src/features/chat/hooks/useRegenerationService.ts
 import { useCallback, useMemo } from 'react';
 import { useAuth } from '../../auth/context';
+import { useModel } from '../context/ModelContext';
 import { ServiceFactory } from '../services/core';
 import { MessageStateManager } from '../services/MessageStateManager';
 import type { ChatMessage } from '../types';
-import { useModelSelection } from './useModelSelection';
 
 type Deps = {
   messages: ChatMessage[];
@@ -17,7 +17,7 @@ export function useRegenerationService(
   roomId: number | null,
   { messages, setMessages, startRegenerating, stopRegenerating }: Deps
 ) {
-  const { selectedModel } = useModelSelection(roomId);
+  const { selectedModel } = useModel();
   const { session } = useAuth();
   
 

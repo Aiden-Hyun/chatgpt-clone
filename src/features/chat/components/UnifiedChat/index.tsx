@@ -11,7 +11,6 @@ interface UnifiedChatProps {
   initialModel?: string;
   className?: string;
   showHeader?: boolean;
-  onModelChangeBridge?: (apply: (model: string) => Promise<void>, currentModel: string) => void;
 }
 
 /**
@@ -33,7 +32,6 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   initialModel = 'gpt-3.5-turbo',
   className,
   showHeader = true,
-  onModelChangeBridge,
 }) => {
 
   // Get proven styles - memoized to prevent excessive re-renders
@@ -57,18 +55,8 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     sendMessage,
     regenerateMessage,
     editUserAndRegenerate,
-    selectedModel,
-    updateModel,
   } = useChat(roomId || null);
-
-  // Expose model change bridge for parent components
-  React.useEffect(() => {
-    if (!onModelChangeBridge) return;
-    const apply = async (model: string) => {
-      await updateModel(model);
-    };
-    onModelChangeBridge(apply, selectedModel);
-  }, [onModelChangeBridge, updateModel, selectedModel]);
+  
 
   // Pass primitive regeneratingIndex to MessageList for stability
 
