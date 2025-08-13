@@ -70,11 +70,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     onModelChangeBridge(apply, selectedModel);
   }, [onModelChangeBridge, updateModel, selectedModel]);
 
-  // Convert regeneratingIndex to Set for MessageList compatibility
-  const regeneratingIndices = new Set<number>();
-  if (regeneratingIndex !== null) {
-    regeneratingIndices.add(regeneratingIndex);
-  }
+  // Pass primitive regeneratingIndex to MessageList for stability
 
   // Welcome text is controlled by MessageList based on messages.length === 0 && !loading
 
@@ -87,14 +83,14 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
       {React.useMemo(() => (
         <MessageList
           messages={messages}
-          regeneratingIndices={regeneratingIndices}
+          regeneratingIndex={regeneratingIndex}
           onRegenerate={regenerateMessage}
           onUserEditRegenerate={async (userIndex: number, newText: string) => {
             await editUserAndRegenerate(userIndex, newText);
           }}
           showWelcomeText={messages.length === 0 && !loading}
         />
-      ), [messages, loading, regeneratingIndices, regenerateMessage])}
+      ), [messages, loading, regeneratingIndex, regenerateMessage, editUserAndRegenerate])}
 
       {/* Input using proven ChatInput component */}
       <ChatInput

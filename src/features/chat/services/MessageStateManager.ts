@@ -60,7 +60,6 @@ export class MessageStateManager {
    * Create both user and assistant messages atomically
    */
   createMessagePair(userMessageId: string, userContent: string, assistantMessageId: string): void {
-    console.log('Creating message pair:', { userMessageId, userContent, assistantMessageId });
     this.setMessages(prev => [
       ...prev,
       {

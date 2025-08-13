@@ -1,5 +1,6 @@
 // src/features/chat/services/sendMessage/index.ts
 import { getSession } from '../../../../shared/lib/supabase/getSession';
+import { logger } from '../../utils/logger';
 import { SendMessageRequest } from '../core/MessageSenderService';
 import { ServiceFactory } from '../core/ServiceFactory';
 import { ChatMessage } from '../types';
@@ -38,7 +39,12 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
 
   // Use the existing getSession function
   const session = await getSession();
-  console.log('🔄 SEND-MESSAGE: Session details in sendMessageHandler:', session);
+  logger.debug('🔄 SEND-MESSAGE: Session fetched', { hasSession: !!session, userId: session?.user?.id });
+
+  if (!session) {
+    logger.warn('🔒 No active session. Aborting sendMessageHandler');
+    return;
+  }
 
   // Create the MessageSenderService with all dependencies injected
   const messageSender = ServiceFactory.createMessageSender(setMessages, setIsTyping, setDrafts);
@@ -59,7 +65,7 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
   const result = await messageSender.sendMessage(request);
 
   if (!result.success && result.error) {
-    console.error('Message sending failed:', result.error);
+    logger.error('Message sending failed', { error: new Error(result.error) });
     throw new Error(result.error);
   }
 };

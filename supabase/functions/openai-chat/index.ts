@@ -1,8 +1,13 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { config } from "../shared/config.ts";
 
 serve(async (req) => {
   const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
+  const DEBUG = Deno.env.get("DEBUG_LOGS") === "true";
 
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -31,38 +36,23 @@ serve(async (req) => {
     model = typeof rawModel === 'string' && rawModel.trim().length > 0 ? rawModel.trim() : 'gpt-3.5-turbo';
     clientMessageId = typeof parsed.clientMessageId === 'string' && parsed.clientMessageId.trim() ? parsed.clientMessageId : null;
     skipPersistence = !!parsed.skipPersistence;
-    console.log('📩 incoming model:', rawModel, '➡️ using model:', model);
+    if (DEBUG) console.log('📩 incoming model:', rawModel, '➡️ using model:', model);
   } catch {
     return new Response("Invalid JSON body", {
       status: 400,
       headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
     });
   }
+  if (DEBUG) console.log("📩 Received model:", model);
 
-  console.log("📩 Received model:", model);
-
-  const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
-  if (!OPENAI_API_KEY) {
-    return new Response("Missing OpenAI API key", {
-      status: 500,
-      headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
-    });
-  }
-
-  // Initialize Supabase client for JWT verification
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return new Response("Missing Supabase configuration", {
-      status: 500,
-      headers: { "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
-    });
-  }
+  // Use the new centralized config
+  const SUPABASE_URL = config.secrets.supabase.url();
+  const SUPABASE_ANON_KEY = config.secrets.supabase.anonKey();
+  const SUPABASE_SERVICE_ROLE_KEY = config.secrets.supabase.serviceRoleKey();
+  const OPENAI_API_KEY = config.secrets.openai.apiKey();
 
   // Create client for JWT verification
-  const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: { headers: { Authorization: req.headers.get("authorization") ?? "" } }
   });
 
@@ -80,7 +70,7 @@ serve(async (req) => {
 
   const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
   if (authError || !user) {
-    console.log("Auth error:", authError);
+    if (DEBUG) console.log("Auth error");
     return new Response(JSON.stringify({ error: "Invalid JWT" }), {
       status: 401,
       headers: {
@@ -91,17 +81,14 @@ serve(async (req) => {
   }
 
   const userId = user.id;
-  console.log("Authenticated user:", userId);
+  if (DEBUG) console.log("Authenticated user:", userId);
 
   // Create service role client for database operations
-  let serviceClient = null;
-  if (serviceKey) {
-    serviceClient = createClient(supabaseUrl, serviceKey);
-  }
+  const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   let data;
   try {
-    console.log('📤 Sending to OpenAI with model:', model);
+    if (DEBUG) console.log('📤 Sending to OpenAI with model:', model);
     // Prepend system message indicating the model being used
     const systemMessage = {
       role: 'system',
@@ -121,10 +108,10 @@ serve(async (req) => {
     });
 
     data = await response.json();
-    console.log('📥 OpenAI response model:', data?.model || 'unknown');
+    if (DEBUG) console.log('📥 OpenAI response model:', data?.model || 'unknown');
     if (!response.ok) {
-      console.error("OpenAI API error:", data);
-      return new Response(JSON.stringify({ error: data }), {
+      console.error("OpenAI API error", { status: response.status, error: data?.error?.message });
+      return new Response(JSON.stringify({ error: data?.error || 'OpenAI error' }), {
         status: response.status,
         headers: {
           "Content-Type": "application/json",
@@ -144,7 +131,7 @@ serve(async (req) => {
   }
 
   // Store messages if everything succeeded and not explicitly skipped (regen)
-  if (serviceClient && userId && roomId && !skipPersistence && data.choices?.[0]?.message) {
+  if (userId && roomId && !skipPersistence && data.choices?.[0]?.message) {
     const userMessage = messages[messages.length - 1];
     const assistantMessage = data.choices[0].message;
 
@@ -167,8 +154,8 @@ serve(async (req) => {
             client_id: clientMessageId,
           },
         ], { onConflict: 'room_id,role,client_id' });
-    } catch (dbError) {
-      console.log("Database insert error:", dbError);
+    } catch (_dbError) {
+      if (DEBUG) console.log("Database insert error");
     }
   }
 

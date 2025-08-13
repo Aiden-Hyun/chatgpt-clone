@@ -65,4 +65,17 @@ export class ReactMessageStateService implements IMessageStateService {
       },
     ]);
   }
+
+  markMessageErrorById(messageId: string, errorMessage?: string): void {
+    this.setMessages((prev) => prev.map(msg => {
+      if (msg.id === messageId) {
+        return {
+          ...msg,
+          content: errorMessage ?? (msg.content || 'An error occurred'),
+          state: 'error'
+        } as ChatMessage;
+      }
+      return msg;
+    }));
+  }
 }

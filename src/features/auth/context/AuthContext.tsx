@@ -27,7 +27,9 @@ export function AuthProvider({ children }: Props) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      console.log('🔄 AUTH: Initial session data:', data);
+      if (__DEV__) {
+        console.log('🔄 AUTH: Initial session data:', { hasSession: !!data.session, userId: data.session?.user?.id });
+      }
       setSession(data.session);
       setIsLoading(false);
     });
@@ -35,7 +37,9 @@ export function AuthProvider({ children }: Props) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('🔄 AUTH: Auth state changed, new session:', session);
+      if (__DEV__) {
+        console.log('🔄 AUTH: Auth state changed', { hasSession: !!session, userId: session?.user?.id });
+      }
       setSession(session);
     });
 

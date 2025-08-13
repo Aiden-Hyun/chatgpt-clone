@@ -129,7 +129,8 @@ export class MessageSenderService {
       if (!this.responseProcessor.validateResponse(apiResponse)) {
         const error = 'Invalid AI response';
         this.loggingService.error(`Invalid AI response for request ${requestId}`, { error, response: apiResponse });
-        this.messageStateService.addErrorMessage('⚠️ No valid response received from AI.');
+        // Update the existing assistant bubble instead of adding a new error message
+        this.messageStateService.markMessageErrorById(assistantMsg.id, '⚠️ No valid response received from AI.');
         this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
@@ -138,7 +139,8 @@ export class MessageSenderService {
       if (!fullContent) {
         const error = 'No content in AI response';
         this.loggingService.error(`No content in AI response for request ${requestId}`, { error });
-        this.messageStateService.addErrorMessage('⚠️ No content received from AI.');
+        // Update the existing assistant bubble instead of adding a new error message
+        this.messageStateService.markMessageErrorById(assistantMsg.id, '⚠️ No content received from AI.');
         this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
@@ -263,7 +265,10 @@ export class MessageSenderService {
         stack: error instanceof Error ? error.stack : undefined
       });
       
-      this.messageStateService.addErrorMessage('⚠️ Error contacting AI.');
+      // Update the existing assistant bubble instead of adding a new error message
+      this.messageStateService.markMessageErrorById(assistantMsg.id, error instanceof Error && (error as any).name === 'TimeoutError' 
+        ? '⚠️ Request timed out. Please try again.' 
+        : '⚠️ Error contacting AI.');
       this.typingStateService.setTyping(false);
       return { success: false, error: errorMessage, duration };
     }

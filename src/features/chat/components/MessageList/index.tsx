@@ -1,8 +1,8 @@
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';
@@ -10,7 +10,7 @@ import { MessageItem } from '../MessageItem';
 interface MessageListProps {
   messages: ChatMessage[];
   // ✅ STATE MACHINE: Remove legacy loading flag - derive from message states
-  regeneratingIndices: Set<number>;
+  regeneratingIndex: number | null;
   onRegenerate: (index: number) => void;
   onUserEditRegenerate?: (index: number, newText: string) => void;
   showWelcomeText: boolean;
@@ -18,7 +18,7 @@ interface MessageListProps {
 
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
-  regeneratingIndices,
+  regeneratingIndex,
   onRegenerate,
   onUserEditRegenerate,
   showWelcomeText,
@@ -33,7 +33,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   // if (renderCount.current % 5 === 0) {
   //   console.log(`[RENDER-COUNT] MessageList: ${renderCount.current} renders`);
   // }
-  const flatListRef = useRef<FlashList<ChatMessage>>(null);
+  const flatListRef = useRef<FlashListRef<ChatMessage>>(null);
   const theme = useAppTheme();
   const { t } = useLanguageContext();
   const [displayedText, setDisplayedText] = useState('');
@@ -42,6 +42,8 @@ export const MessageList: React.FC<MessageListProps> = ({
   // Stable IDs for messages to ensure consistent FlatList keys
   const stableIdsRef = useRef<string[]>([]);
   const placeholderIdRef = useRef<string | null>(null);
+  const autoScrollEnabledRef = useRef<boolean>(true);
+  const didInitialScrollRef = useRef<boolean>(false);
 
   // Simplified state tracking for regeneration
   const [recentlyRegenerated, setRecentlyRegenerated] = useState<Set<number>>(new Set());
@@ -100,7 +102,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   useEffect(() => {
     // Clear regeneration flags when regeneration completes
     const completedIndices = Array.from(recentlyRegenerated).filter(index => 
-      !regeneratingIndices.has(index)
+      regeneratingIndex !== index
     );
     
     if (completedIndices.length > 0) {
@@ -110,7 +112,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         return updated;
       });
     }
-  }, [regeneratingIndices, recentlyRegenerated]);
+  }, [regeneratingIndex, recentlyRegenerated]);
 
   // Select random welcome message when component mounts or welcome text should be shown
   useEffect(() => {
@@ -243,8 +245,8 @@ export const MessageList: React.FC<MessageListProps> = ({
   
   // Memoize extraData array to prevent unnecessary re-renders
   const extraDataArray = useMemo(() => 
-    [messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated],
-    [messages, isNewMessageLoading, regeneratingIndices, recentlyRegenerated]
+    [isNewMessageLoading, regeneratingIndex],
+    [isNewMessageLoading, regeneratingIndex]
   );
 
 
@@ -265,7 +267,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
     // Find the correct index in the original messages array for regeneration check
     const originalMessageIndex = messages.findIndex(msg => msg.id === item.id);
-    const isRegenerating = originalMessageIndex !== -1 ? regeneratingIndices.has(originalMessageIndex) : false;
+    const isRegenerating = originalMessageIndex !== -1 ? regeneratingIndex === originalMessageIndex : false;
     // State-based rendering: no complex animation triggers needed
     
     // Group consecutive messages from the same sender
@@ -323,16 +325,24 @@ export const MessageList: React.FC<MessageListProps> = ({
       contentContainerStyle={styles.container}
       ref={flatListRef}
       extraData={extraDataArray}
-      // 🚀 FlashList Optimization
-      estimatedItemSize={100} // Average height of a message item
+      // 🚀 FlashList Optimization (estimatedItemSize not available in this version)
+      onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const contentHeight = e.nativeEvent.contentSize.height;
+        const viewportHeight = e.nativeEvent.layoutMeasurement.height;
+        const offsetY = e.nativeEvent.contentOffset.y;
+        const distanceToBottom = contentHeight - (offsetY + viewportHeight);
+        const threshold = 120;
+        autoScrollEnabledRef.current = distanceToBottom <= threshold;
+      }}
       onContentSizeChange={() => {
-        if (messagesWithLoading.length > 0) {
+        if (messagesWithLoading.length > 0 && autoScrollEnabledRef.current) {
           flatListRef.current?.scrollToEnd({ animated: true });
         }
       }}
       onLayout={() => {
-        if (messagesWithLoading.length > 0) {
+        if (!didInitialScrollRef.current && messagesWithLoading.length > 0) {
           flatListRef.current?.scrollToEnd({ animated: false });
+          didInitialScrollRef.current = true;
         }
       }}
     />

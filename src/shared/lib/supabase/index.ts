@@ -1,9 +1,9 @@
 // src/lib/supabase/index.ts
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE } from '../constants';
+import { appConfig } from '../config';
 
-// Create and export the Supabase client with React Native compatible options
-export const supabase = createClient(SUPABASE.URL, SUPABASE.ANON_KEY, {
+// Create and export the Supabase client with our new secure config
+export const supabase = createClient(appConfig.supabaseUrl, appConfig.supabaseAnonKey, {
   auth: {
     // Enable auto refresh token for React Native
     autoRefreshToken: true,

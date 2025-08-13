@@ -16,4 +16,9 @@ export interface IMessageStateService {
    * Add error message to chat
    */
   addErrorMessage(message: string): void;
+
+  /**
+   * Mark an existing message as error by id and optionally set error content
+   */
+  markMessageErrorById(messageId: string, errorMessage?: string): void;
 } 

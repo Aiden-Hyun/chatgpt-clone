@@ -8,16 +8,18 @@ export const useEmailSignin = () => {
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      console.log('Starting signin process for:', email);
+      if (__DEV__) console.log('Starting signin process for:', email);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      console.log('Signin response:', { data, error });
-      console.log('User data:', data?.user);
-      console.log('Session data:', data?.session);
+      if (__DEV__) {
+        console.log('Signin response:', { hasUser: !!data?.user, hasSession: !!data?.session, error: !!error });
+        console.log('User:', { id: data?.user?.id });
+        console.log('Session:', { hasSession: !!data?.session, expires_at: data?.session?.expires_at });
+      }
 
       if (error) {
         // Check if this is a network error
@@ -36,8 +38,9 @@ export const useEmailSignin = () => {
       }
 
       if (data.user) {
-        console.log('Signin successful for user:', data.user.id);
-        console.log('User email confirmed:', data.user.email_confirmed_at);
+        if (__DEV__) {
+          console.log('Signin successful for user:', data.user.id);
+        }
         return { success: true, data, error: null };
       } else {
         return { success: false, data: null, error: 'No user data returned' };
