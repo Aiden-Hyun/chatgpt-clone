@@ -55,6 +55,7 @@ export class MessageSenderService {
   async sendMessage(request: SendMessageRequest): Promise<SendMessageResult> {
     const startTime = Date.now();
     const requestId = this.generateRequestId();
+    let assistantMessageIdForError: string | null = null;
     
     try {
       this.loggingService.info(`Starting message send request ${requestId}`, {
@@ -81,6 +82,7 @@ export class MessageSenderService {
         state: 'loading',           // Start in loading state
         id: messageId || generateMessageId()     // Use provided ID or generate new one
       };
+      assistantMessageIdForError = assistantMsg.id;
 
       // Step 1: Update UI state for new messages or regeneration
       this.loggingService.debug(`Updating UI state for request ${requestId}`, { 
@@ -131,7 +133,7 @@ export class MessageSenderService {
         this.loggingService.error(`Invalid AI response for request ${requestId}`, { error, response: apiResponse });
         // Update the existing assistant bubble instead of adding a new error message
         this.messageStateService.markMessageErrorById(assistantMsg.id, '⚠️ No valid response received from AI.');
-        this.typingStateService.setTyping(false);
+      this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
 
@@ -141,7 +143,7 @@ export class MessageSenderService {
         this.loggingService.error(`No content in AI response for request ${requestId}`, { error });
         // Update the existing assistant bubble instead of adding a new error message
         this.messageStateService.markMessageErrorById(assistantMsg.id, '⚠️ No content received from AI.');
-        this.typingStateService.setTyping(false);
+      this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
 
@@ -266,11 +268,25 @@ export class MessageSenderService {
       });
       
       // Update the existing assistant bubble instead of adding a new error message
-      this.messageStateService.markMessageErrorById(assistantMsg.id, error instanceof Error && (error as any).name === 'TimeoutError' 
-        ? '⚠️ Request timed out. Please try again.' 
-        : '⚠️ Error contacting AI.');
-      this.typingStateService.setTyping(false);
+      if (assistantMessageIdForError) {
+        this.messageStateService.markMessageErrorById(
+          assistantMessageIdForError,
+          error instanceof Error && (error as any).name === 'TimeoutError'
+            ? '⚠️ Request timed out. Please try again.'
+            : '⚠️ Error contacting AI.'
+        );
+      } else {
+        // Fallback: mark the last assistant loading bubble as error if id not available
+        this.messageStateService.markLastAssistantLoadingAsError(
+          error instanceof Error && (error as any).name === 'TimeoutError'
+            ? '⚠️ Request timed out. Please try again.'
+            : '⚠️ Error contacting AI.'
+        );
+      }
       return { success: false, error: errorMessage, duration };
+    } finally {
+      // Always clear typing state when operation completes or fails
+      this.typingStateService.setTyping(false);
     }
   }
 

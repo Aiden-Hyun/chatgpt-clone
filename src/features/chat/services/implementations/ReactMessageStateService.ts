@@ -78,4 +78,22 @@ export class ReactMessageStateService implements IMessageStateService {
       return msg;
     }));
   }
+
+  markLastAssistantLoadingAsError(errorMessage?: string): void {
+    this.setMessages((prev) => {
+      for (let i = prev.length - 1; i >= 0; i--) {
+        const msg = prev[i];
+        if (msg.role === 'assistant' && msg.state === 'loading') {
+          const updated = [...prev];
+          updated[i] = {
+            ...msg,
+            content: errorMessage ?? (msg.content || 'An error occurred'),
+            state: 'error',
+          } as ChatMessage;
+          return updated;
+        }
+      }
+      return prev;
+    });
+  }
 }

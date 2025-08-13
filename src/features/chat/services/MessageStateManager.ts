@@ -98,7 +98,7 @@ export class MessageStateManager {
       msg.id === messageId 
         ? { 
             ...msg, 
-            content: fullContent,
+            content: '',
             fullContent,
             state: 'animating' 
           }
@@ -142,7 +142,7 @@ export class MessageStateManager {
           msg.id === messageId 
             ? { 
                 ...msg, 
-                content: newContent,
+                content: '',
                 fullContent: newContent,
                 state: 'animating' 
               }
@@ -191,7 +191,7 @@ export class MessageStateManager {
   /**
    * Update multiple messages in a single operation (performance optimization)
    */
-  batchUpdate(updates: Array<{ messageId: string; changes: Partial<ChatMessage> }>): void {
+  batchUpdate(updates: { messageId: string; changes: Partial<ChatMessage> }[]): void {
     this.setMessages(prev => prev.map(msg => {
       const update = updates.find(u => u.messageId === msg.id);
       return update ? { ...msg, ...update.changes } : msg;

@@ -63,7 +63,13 @@ export class ReactRegenerationService implements IRegenerationService {
       this.messageStateManager.transition(targetMessageId, 'loading');
 
       // Prepare history from the snapshot (all messages before the assistant message)
-      const messageHistory: ChatMessage[] = messages.slice(0, index);
+      // Filter only role, content, id to avoid UI-only fields affecting the prompt
+      const messageHistory: ChatMessage[] = messages.slice(0, index).map(m => ({
+        role: m.role,
+        content: m.content || '',
+        id: m.id,
+        state: m.state,
+      }));
       
       // If caller provided an override for the immediate previous user message, apply it
       let finalHistory: ChatMessage[] = messageHistory;

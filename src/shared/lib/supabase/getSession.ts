@@ -1,14 +1,10 @@
 // src/lib/supabase/getSession.ts
-import { router } from 'expo-router';
+import { Session } from '@supabase/supabase-js';
 import { supabase } from './index';
 
-export const getSession = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) {
-    router.replace('/login');
-    return null;
-  }
-  
-  return session;
-};
+export async function getSession(): Promise<Session | null> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return session ?? null;
+}

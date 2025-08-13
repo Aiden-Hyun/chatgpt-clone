@@ -5,6 +5,7 @@ import { ChatMessage } from '../types';
 
 export class ReactAnimationService implements IAnimationService {
   private messageStateManager: MessageStateManager;
+  private runningJobs: Map<string, { timer: ReturnType<typeof setTimeout> | null; index: number; target: string; speedMs: number }> = new Map();
 
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
@@ -28,6 +29,8 @@ export class ReactAnimationService implements IAnimationService {
             messageToUpdate.id,
             args.fullContent
           );
+          // Start centralized typewriter job for regeneration
+          this.startTypewriterJob(messageToUpdate.id, args.fullContent);
         }
         return prev;
       });
@@ -41,6 +44,7 @@ export class ReactAnimationService implements IAnimationService {
         args.messageId,
         args.fullContent
       );
+      this.startTypewriterJob(args.messageId, args.fullContent);
       return;
     }
     
@@ -56,6 +60,7 @@ export class ReactAnimationService implements IAnimationService {
           lastLoadingAssistant.id,
           args.fullContent
         );
+        this.startTypewriterJob(lastLoadingAssistant.id, args.fullContent);
       }
       return prev;
     });
@@ -68,5 +73,39 @@ export class ReactAnimationService implements IAnimationService {
     onComplete: () => void;
   }): void {
     args.onComplete();
+  }
+
+  private startTypewriterJob(messageId: string, fullContent: string, speedMs: number = 35): void {
+    // Stop existing job if any
+    this.stopTypewriterJob(messageId);
+    this.runningJobs.set(messageId, { timer: null, index: 0, target: fullContent, speedMs });
+    const tick = () => {
+      const job = this.runningJobs.get(messageId);
+      if (!job) return;
+      if (job.index < job.target.length) {
+        const nextIndex = job.index + 1;
+        const nextSlice = job.target.slice(0, nextIndex);
+        // Throttled state update: bump only content substring
+        this.setMessages(prev => prev.map(msg => msg.id === messageId ? { ...msg, content: nextSlice, state: 'animating' } : msg));
+        job.index = nextIndex;
+        job.timer = setTimeout(tick, job.speedMs);
+      } else {
+        // Complete
+        this.messageStateManager.markCompleted(messageId);
+        this.stopTypewriterJob(messageId);
+      }
+    };
+    // Prime first tick
+    const job = this.runningJobs.get(messageId);
+    if (!job) return;
+    job.timer = setTimeout(tick, speedMs);
+  }
+
+  private stopTypewriterJob(messageId: string): void {
+    const job = this.runningJobs.get(messageId);
+    if (job?.timer) {
+      clearTimeout(job.timer);
+    }
+    this.runningJobs.delete(messageId);
   }
 }

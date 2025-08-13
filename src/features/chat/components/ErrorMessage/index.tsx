@@ -18,8 +18,12 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry, st
   return (
     <View style={[styles.container, style]}>
       <View style={styles.errorContent}>
-        <Text style={styles.errorText}>Failed to generate response</Text>
-        <Text style={styles.errorSubtext}>Something went wrong. Please try again.</Text>
+        <Text style={styles.errorText}>
+          {message?.content?.trim()?.length ? message.content : 'Failed to generate response'}
+        </Text>
+        {!message?.content?.trim()?.length && (
+          <Text style={styles.errorSubtext}>Something went wrong. Please try again.</Text>
+        )}
         
         <TouchableOpacity onPress={onRetry} style={styles.retryButton}>
           <Text style={styles.retryText}>Retry</Text>

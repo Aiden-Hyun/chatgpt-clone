@@ -11,6 +11,9 @@ export class OpenAIAPIService implements IAIApiService {
       roomId: request.roomId,
       messages: request.messages,
       model: request.model,
+      // Include idempotency and persistence control so the edge function can upsert reliably
+      clientMessageId: request.clientMessageId,
+      skipPersistence: request.skipPersistence,
     };
 
     const url = `${appConfig.edgeFunctionBaseUrl}/openai-chat`;

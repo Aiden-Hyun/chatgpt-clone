@@ -3,7 +3,6 @@ import { Text, View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { MessageInteractionBar } from '../MessageInteractionBar';
-import { TypewriterText } from '../TypewriterText';
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
 
 interface AssistantMessageProps {
@@ -25,41 +24,17 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   const styles = React.useMemo(() => createAssistantMessageStyles(theme), [theme]);
   
 
-  // This component intentionally does not use useMemo for its root to allow TypewriterText to re-render
-  // when the message content stream updates.
-  const useAnimation = message.state === 'animating';
-  const contentToShow = message.state === 'animating' 
-    ? (message.fullContent || message.content) 
-    : message.content;
+  // Row renders substring provided by central orchestrator. When animating, show cursor.
+  const isAnimating = message.state === 'animating';
+  // Prefer content for live animation; fall back to fullContent once completed/hydrated
+  const contentToShow = message.content || message.fullContent || '';
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
-      {useAnimation ? (
-        <TypewriterText
-          text={contentToShow}
-          startAnimation={true}
-          speed={35}
-          showCursor={true}
-          style={styles.text}
-          onComplete={() => {
-            // Transition to completed state when animation finishes
-            if (message.id && message.state === 'animating') {
-              // Update message state directly in the parent component
-              if (message.content) {
-                // Using a timeout to avoid state update during render
-                setTimeout(() => {
-                  // The message state will be updated to 'completed' in the parent
-                  // This is handled by the MessageStateManager
-                }, 0);
-              }
-            }
-          }}
-        />
-      ) : (
-        <Text style={styles.text}>
-          {contentToShow}
-        </Text>
-      )}
+      <Text style={styles.text}>
+        {contentToShow}
+        {isAnimating ? '|' : ''}
+      </Text>
 
       {/* Message interaction bar - always show for assistant messages */}
       {isLastInGroup && (

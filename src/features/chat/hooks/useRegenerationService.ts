@@ -69,9 +69,10 @@ export function useRegenerationService(
         return;
       }
 
-      // Make sure content exists
-      if ((!overrideUserContent && !userMessage.content) || !targetMessage.content) {
-        console.warn('🔄 REGEN-HOOK: Missing content in messages for regeneration');
+      // Ensure we have user content to condition the regen prompt
+      // Assistant content is not required for regen; we only need the target id and prior history
+      if (!overrideUserContent && !userMessage.content) {
+        console.warn('🔄 REGEN-HOOK: Missing user content for regeneration');
         return;
       }
 

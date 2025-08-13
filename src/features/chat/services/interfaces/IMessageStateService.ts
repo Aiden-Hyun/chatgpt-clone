@@ -21,4 +21,9 @@ export interface IMessageStateService {
    * Mark an existing message as error by id and optionally set error content
    */
   markMessageErrorById(messageId: string, errorMessage?: string): void;
+
+  /**
+   * Fallback: find the last assistant message in 'loading' state and mark it as error
+   */
+  markLastAssistantLoadingAsError(errorMessage?: string): void;
 } 
