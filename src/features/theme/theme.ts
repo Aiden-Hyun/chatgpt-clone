@@ -1,6 +1,7 @@
 // theme.ts - Modern Minimalist design system with clean aesthetics
 
 import { useColorScheme } from 'react-native';
+import { useThemeContext } from './ThemeContext';
 
 // Design tokens that remain consistent across themes
 export const fontSizes = {
@@ -408,14 +409,15 @@ export const theme = {
 
 // Hook to get current theme based on color scheme
 export function useTheme() {
-  const colorScheme = useColorScheme();
-  return theme[colorScheme ?? 'light'];
+  // Respect the user-selected preference from ThemeContext
+  const { currentTheme } = useThemeContext();
+  return theme[currentTheme];
 }
 
 // Hook to get current theme based on ThemeContext
 export function useAppTheme() {
-  const colorScheme = useColorScheme();
-  return theme[colorScheme ?? 'light'];
+  // Alias to useTheme for clarity; both use ThemeContext preference
+  return useTheme();
 }
 
 // Legacy exports for backward compatibility (deprecated)
