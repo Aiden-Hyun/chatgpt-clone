@@ -98,7 +98,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         onSettings={handleSettings}
         onDesignShowcase={handleDesignShowcase}
         selectedModel={selectedModel}
-        onModelChange={onModelChange}
+        onModelChange={(m) => { if (__DEV__) console.log('[Header] onModelChange', m); onModelChange?.(m); }}
         showModelSelection={showModelSelection}
       />
     </View>

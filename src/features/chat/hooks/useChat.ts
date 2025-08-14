@@ -1,7 +1,7 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
 import { useCallback, useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
-import { useModel } from '../context/ModelContext';
+// Model is now passed in from parent; this hook will accept it via options
 import { ServiceFactory } from '../services/core';
 import { generateMessageId } from '../utils/messageIdGenerator';
 import { useChatState } from './useChatState';
@@ -10,7 +10,12 @@ import { useMessageInput } from './useMessageInput';
 import { useOptimisticMessages } from './useOptimisticMessages';
 import { useRegenerationService } from './useRegenerationService';
 
-export const useChat = (numericRoomId: number | null) => {
+type UseChatOptions = {
+  selectedModel?: string;
+  setModel?: (model: string) => void | Promise<void>;
+};
+
+export const useChat = (numericRoomId: number | null, options?: UseChatOptions) => {
   const [isNewlyCreatedRoom, setIsNewlyCreatedRoom] = useState(false);
 
   // Check if this is a newly created room by looking for optimistic data
@@ -119,8 +124,10 @@ export const useChat = (numericRoomId: number | null) => {
     loadMessages();
   }, [numericRoomId, optimisticMessages, setMessages, setLoading]);
 
-  // Model selection now provided by parent via context
-  const { selectedModel, updateModel } = useModel();
+  // Model selection provided by parent via options
+  const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
+  const updateModel = options?.setModel ?? (() => {});
+  if (__DEV__) console.log('[useChat] model (from options)', { roomId: numericRoomId, selectedModel });
 
   // Input management
   const {
@@ -140,15 +147,20 @@ export const useChat = (numericRoomId: number | null) => {
     stopRegenerating,
     drafts,
     setDrafts,
+    selectedModel,
   });
 
   // Use the dedicated regeneration service, wired with the current chat state
-  const { regenerateMessage: regenerateMessageInBackend } = useRegenerationService(numericRoomId, {
-    messages,
-    setMessages,
-    startRegenerating,
-    stopRegenerating,
-  });
+  const { regenerateMessage: regenerateMessageInBackend } = useRegenerationService(
+    numericRoomId,
+    {
+      messages,
+      setMessages,
+      startRegenerating,
+      stopRegenerating,
+    },
+    selectedModel,
+  );
 
   // Wrapper for sendMessage that handles input clearing
   const sendMessage = useCallback(async () => {

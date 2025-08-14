@@ -11,6 +11,8 @@ interface UnifiedChatProps {
   initialModel?: string;
   className?: string;
   showHeader?: boolean;
+  selectedModel?: string;
+  onChangeModel?: (model: string) => void | Promise<void>;
 }
 
 /**
@@ -32,6 +34,8 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   initialModel = 'gpt-3.5-turbo',
   className,
   showHeader = true,
+  selectedModel,
+  onChangeModel,
 }) => {
 
   // Get proven styles - memoized to prevent excessive re-renders
@@ -55,7 +59,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     sendMessage,
     regenerateMessage,
     editUserAndRegenerate,
-  } = useChat(roomId || null);
+  } = useChat(roomId || null, { selectedModel, setModel: onChangeModel });
   
 
   // Pass primitive regeneratingIndex to MessageList for stability

@@ -41,6 +41,7 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   const styles = createStyles(theme);
 
   const handleModelSelect = (model: string) => {
+    if (__DEV__) console.log('[QuickActionsMenu] select model', model);
     onModelChange?.(model);
     setShowModelMenu(false);
     onClose();

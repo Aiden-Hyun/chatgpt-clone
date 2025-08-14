@@ -1,8 +1,6 @@
 import { LoadingWrapper } from '@/components';
 import { useLogout } from '@/features/auth';
 import { ChatHeader, UnifiedChat } from '@/features/chat/components';
-import { ModelProvider } from '@/features/chat/context/ModelContext';
-import { useModelSelection } from '@/features/chat/hooks';
 import { useChatScreen } from '@/shared/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
@@ -10,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useRoomModel } from '../../src/features/chat/model/useRoomModel';
 
 // 🎯 CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
 interface ChatScreenProps {
@@ -117,8 +116,8 @@ const ChatScreen = () => {
   const { logout } = useLogout();
   
   // State and refs
-  // Parent owns model selection and provides to header + chat via context
-  const { selectedModel, updateModel } = useModelSelection(numericRoomId);
+  // Parent owns per-room model via decoupled hook
+  const { model: selectedModel, setModel: updateModel } = useRoomModel(numericRoomId);
 
   // 🎯 MEMOIZED PROPS: Only recreate when actual values change
   const chatScreenProps = React.useMemo(() => ({
@@ -132,7 +131,7 @@ const ChatScreen = () => {
 
 
   return (
-    <ModelProvider value={{ selectedModel, updateModel }}>
+    <>
       <ChatHeader
         onLogout={logout}
         onSettings={() => { router.push('/settings'); }}
@@ -148,7 +147,7 @@ const ChatScreen = () => {
         showModelSelection
       />
       <ChatScreenPure {...chatScreenProps} />
-    </ModelProvider>
+    </>
   );
 };
 

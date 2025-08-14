@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useModel } from '../context/ModelContext';
 import { sendMessageHandler } from '../services/sendMessage';
 import { ChatMessage } from '../types';
 import { logger } from '../utils/logger';
@@ -14,6 +13,7 @@ interface UseMessageActionsProps {
   stopRegenerating: (index: number) => void;
   drafts: Record<string, string>;
   setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  selectedModel: string;
 }
 
 export const useMessageActions = ({
@@ -25,15 +25,16 @@ export const useMessageActions = ({
   stopRegenerating,
   drafts,
   setDrafts,
+  selectedModel,
 }: UseMessageActionsProps) => {
-  const { selectedModel } = useModel();
+  // selectedModel is provided by parent; no hook call here
 
   const sendMessage = useCallback(async (userContent: string) => {
     if (!userContent.trim()) return;
 
     // ✅ STATE MACHINE: Simplified message sending using the service layer
     const messageId = generateMessageId();
-    logger.info('Starting new message send', { messageId, contentLength: userContent.length });
+    logger.info('Starting new message send', { messageId, contentLength: userContent.length, model: selectedModel });
 
     try {
       await sendMessageHandler({
