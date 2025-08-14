@@ -1,34 +1,25 @@
 import { StyleSheet } from 'react-native';
 
-export const createAssistantMessageStyles = (theme: any) => {
-  
+export const createMarkdownRendererStyles = (theme: any) => {
   return StyleSheet.create({
-    container: {
-      marginVertical: theme.spacing.md,
-      paddingHorizontal: theme.spacing.lg,
-      marginBottom: theme.spacing.xl,
-    },
-    compact: {
-      marginVertical: theme.spacing.xxs,
-    },
-    text: {
-      fontSize: theme.fontSizes.md,
+    // Body Text
+    body: {
+      fontSize: 16,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
-      lineHeight: 24,
-      textAlign: 'left',
-      fontWeight: theme.fontWeights.regular as '400',
-      paddingTop: theme.spacing.md,
-      paddingBottom: theme.spacing.xl,
-    },
-    cursor: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.regular as '400',
+      lineHeight: 26,
+      marginBottom: theme.spacing.md,
+      fontWeight: '400',
     },
     
-    // ✨ MODERN CHATGPT-LIKE MARKDOWN STYLES ✨
+    // Paragraphs
+    paragraph: {
+      fontSize: 16,
+      color: theme.colors.text.primary,
+      lineHeight: 26,
+      marginBottom: theme.spacing.lg,
+      fontWeight: '400',
+    },
     
     // Typography Hierarchy
     heading1: {
@@ -85,26 +76,13 @@ export const createAssistantMessageStyles = (theme: any) => {
       letterSpacing: 0.5,
     },
     
-    // Body Text
-    body: {
-      fontSize: 16,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      lineHeight: 26,
-      marginBottom: theme.spacing.md,
-      fontWeight: '400',
-    },
-    
-    // Paragraphs
-    paragraph: {
+    // Text styling
+    text: {
       fontSize: 16,
       color: theme.colors.text.primary,
       lineHeight: 26,
-      marginBottom: theme.spacing.lg,
-      fontWeight: '400',
     },
     
-    // Text Styling
     strong: {
       fontWeight: '600',
       color: theme.colors.text.primary,
@@ -114,11 +92,11 @@ export const createAssistantMessageStyles = (theme: any) => {
       color: theme.colors.text.secondary,
     },
     
-    // Code Blocks - Modern ChatGPT Style
+    // Code blocks (fallback if custom renderer fails)
     code_block: {
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontSize: 14,
-      backgroundColor: theme.colors.background.tertiary,
+      backgroundColor: theme.colors.syntax.background,
       color: theme.colors.text.primary,
       padding: theme.spacing.lg,
       borderRadius: 12,
@@ -131,7 +109,7 @@ export const createAssistantMessageStyles = (theme: any) => {
     fence: {
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontSize: 14,
-      backgroundColor: theme.colors.background.tertiary,
+      backgroundColor: theme.colors.syntax.background,
       color: theme.colors.text.primary,
       padding: theme.spacing.lg,
       borderRadius: 12,
@@ -233,15 +211,5 @@ export const createAssistantMessageStyles = (theme: any) => {
       marginVertical: theme.spacing.xl,
       borderWidth: 0,
     },
-    
-    // Math/Latex (if supported)
-    math: {
-      fontSize: 16,
-      color: theme.colors.text.primary,
-      backgroundColor: theme.colors.background.secondary,
-      padding: theme.spacing.sm,
-      borderRadius: 6,
-      fontFamily: 'serif',
-    },
   });
-}; 
+};

@@ -190,6 +190,22 @@ const lightColors = {
     medium: 'rgba(26, 32, 44, 0.1)',
     dark: 'rgba(26, 32, 44, 0.16)',
   },
+
+  // Code syntax highlighting colors - VS Code Light+ inspired
+  syntax: {
+    keyword: '#0000FF',      // Blue for keywords (const, let, function, etc.)
+    string: '#A31515',       // Red for strings
+    comment: '#008000',      // Green for comments
+    number: '#098658',       // Teal for numbers
+    function: '#795E26',     // Brown for function names
+    variable: '#001080',     // Dark blue for variables
+    operator: '#000000',     // Black for operators
+    background: '#F8F8F8',   // Very light gray background for code
+    type: '#267F99',         // Teal for types (interface, type, etc.)
+    builtin: '#0000FF',      // Blue for built-in functions
+    tag: '#800000',          // Dark red for HTML tags
+    attribute: '#FF0000',    // Red for attributes
+  },
 };
 
 const darkColors = {
@@ -330,6 +346,22 @@ const darkColors = {
     light: 'rgba(0, 0, 0, 0.12)',
     medium: 'rgba(0, 0, 0, 0.2)',
     dark: 'rgba(0, 0, 0, 0.32)',
+  },
+
+  // Code syntax highlighting colors (dark theme) - VS Code Dark+ inspired
+  syntax: {
+    keyword: '#569CD6',      // Light blue for keywords (const, let, function, etc.)
+    string: '#CE9178',       // Light orange for strings
+    comment: '#6A9955',      // Green for comments
+    number: '#B5CEA8',       // Light green for numbers
+    function: '#DCDCAA',     // Light yellow for function names
+    variable: '#9CDCFE',     // Light blue for variables
+    operator: '#D4D4D4',     // Light gray for operators
+    background: '#1E1E1E',   // Dark background for code
+    type: '#4EC9B0',         // Cyan for types (interface, type, etc.)
+    builtin: '#569CD6',      // Light blue for built-in functions
+    tag: '#92C5F8',          // Light blue for HTML tags
+    attribute: '#92C5F8',    // Light blue for attributes
   },
 };
 
