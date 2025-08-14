@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { QuickActionsMenu } from '../../../../components/navigation/QuickActionsMenu';
 import { useAppTheme } from '../../../theme/theme';
@@ -111,30 +111,32 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       >
         <TouchableOpacity style={styles.modelMenuOverlay} onPress={() => setIsModelMenuVisible(false)} activeOpacity={1}>
           <View style={styles.modelMenuContainer}>
-            {AVAILABLE_MODELS.map(model => {
-              const isSelected = (selectedModel ?? DEFAULT_MODEL) === model.value;
-              return (
-                <TouchableOpacity
-                  key={model.value}
-                  style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
-                  onPress={() => {
-                    onModelChange?.(model.value);
-                    setIsModelMenuVisible(false);
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {model.provider === 'openai' && <OpenAILogo size={16} />}
-                    {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
-                    <Text style={[styles.modelMenuText, { marginLeft: 8 }, isSelected && styles.selectedModelMenuText]}>
-                      {model.label}
-                    </Text>
-                  </View>
-                  {isSelected && (
-                    <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
+            <ScrollView style={styles.modelListContainer}>
+              {AVAILABLE_MODELS.map(model => {
+                const isSelected = (selectedModel ?? DEFAULT_MODEL) === model.value;
+                return (
+                  <TouchableOpacity
+                    key={model.value}
+                    style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
+                    onPress={() => {
+                      onModelChange?.(model.value);
+                      setIsModelMenuVisible(false);
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {model.provider === 'openai' && <OpenAILogo size={16} />}
+                      {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
+                      <Text style={[styles.modelMenuText, { marginLeft: 8 }, isSelected && styles.selectedModelMenuText]}>
+                        {model.label}
+                      </Text>
+                    </View>
+                    {isSelected && (
+                      <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
         </TouchableOpacity>
       </Modal>

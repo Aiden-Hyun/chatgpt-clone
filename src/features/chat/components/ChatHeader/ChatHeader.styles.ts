@@ -97,6 +97,9 @@ export const createChatHeaderStyles = (theme: any) => {
       minWidth: 200,
       ...theme.shadows.medium,
     },
+    modelListContainer: {
+      maxHeight: 300,
+    },
     modelMenuItem: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,

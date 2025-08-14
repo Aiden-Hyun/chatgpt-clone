@@ -3,9 +3,8 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AnthropicLogo } from '../AnthropicLogo';
-import { OpenAILogo } from '../OpenAILogo';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AnthropicLogo, OpenAILogo } from '..';
 
 interface QuickActionsMenuProps {
   isVisible: boolean;
@@ -100,42 +99,44 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 <MaterialIcons name="arrow-back" size={20} color={theme.colors.text.tertiary} />
                 <Text style={styles.backMenuText}> {t('menu.back')}</Text>
               </TouchableOpacity>
-              {AVAILABLE_MODELS.map((model) => {
-                const isUnsupported = false; // All models are now supported
-                const disabled = isUnsupported;
-                return (
-                  <TouchableOpacity 
-                    key={model.value}
-                    style={[
-                      styles.menuItem,
-                      selectedModel === model.value && styles.selectedMenuItem,
-                      disabled && styles.disabledMenuItem,
-                    ]}
-                    disabled={disabled}
-                    onPress={() => !disabled && handleModelSelect(model.value)}
-                  >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {model.provider === 'openai' && <OpenAILogo size={16} />}
-                      {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
-                      <Text style={[
-                        styles.menuText,
-                        { marginLeft: 8 },
-                        selectedModel === model.value && styles.selectedMenuText,
-                        disabled && styles.disabledMenuText,
-                      ]}>
-                        {model.label}
-                      </Text>
-                    </View>
-                    {disabled ? (
-                      <MaterialIcons name="block" size={18} color={theme.colors.text.tertiary} />
-                    ) : (
-                      selectedModel === model.value && (
-                        <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
-                      )
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
+              <ScrollView style={styles.modelListContainer}>
+                {AVAILABLE_MODELS.map((model) => {
+                  const isUnsupported = false; // All models are now supported
+                  const disabled = isUnsupported;
+                  return (
+                    <TouchableOpacity 
+                      key={model.value}
+                      style={[
+                        styles.menuItem,
+                        selectedModel === model.value && styles.selectedMenuItem,
+                        disabled && styles.disabledMenuItem,
+                      ]}
+                      disabled={disabled}
+                      onPress={() => !disabled && handleModelSelect(model.value)}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {model.provider === 'openai' && <OpenAILogo size={16} />}
+                        {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
+                        <Text style={[
+                          styles.menuText,
+                          { marginLeft: 8 },
+                          selectedModel === model.value && styles.selectedMenuText,
+                          disabled && styles.disabledMenuText,
+                        ]}>
+                          {model.label}
+                        </Text>
+                      </View>
+                      {disabled ? (
+                        <MaterialIcons name="block" size={18} color={theme.colors.text.tertiary} />
+                      ) : (
+                        selectedModel === model.value && (
+                          <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
+                        )
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
             </>
           )}
         </View>
@@ -159,6 +160,9 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginRight: 16,
     minWidth: 180,
     ...theme.shadows.medium,
+  },
+  modelListContainer: {
+    maxHeight: 300, 
   },
   menuItem: {
     paddingVertical: theme.spacing.md,
