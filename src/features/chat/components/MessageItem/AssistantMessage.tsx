@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import MarkdownDisplay from 'react-native-markdown-display';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { MessageInteractionBar } from '../MessageInteractionBar';
@@ -31,10 +32,18 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
-      <Text style={styles.text}>
-        {contentToShow}
-        {isAnimating ? '|' : ''}
-      </Text>
+      <MarkdownDisplay
+        style={{
+          body: styles.text,
+          heading1: styles.heading1,
+          heading2: styles.heading2,
+          code_block: styles.code_block,
+          fence: styles.fence,
+          strong: styles.strong,
+        }}
+      >
+        {`${contentToShow}${isAnimating ? '▍' : ''}`}
+      </MarkdownDisplay>
 
       {/* Message interaction bar - always show for assistant messages */}
       {isLastInGroup && (
