@@ -62,6 +62,11 @@ export const createChatSidebarStyles = (theme: any) => StyleSheet.create({
     flex: 1,
     marginLeft: 12,
   },
+  subtitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   chatItemTitle: {
     fontSize: 14,
     fontWeight: '500',
@@ -81,6 +86,35 @@ export const createChatSidebarStyles = (theme: any) => StyleSheet.create({
     fontSize: 11,
     color: theme.colors.text.tertiary,
     fontFamily: theme.fontFamily.primary,
+  },
+  chatItemMeta: {
+    alignItems: 'flex-end',
+  },
+  draftBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    backgroundColor: theme.colors.feedback.selection.primary,
+    borderRadius: 6,
+    marginRight: 6,
+  },
+  draftBadgeText: {
+    fontSize: 10,
+    color: theme.colors.status.info.primary,
+    fontFamily: theme.fontFamily.primary,
+    fontWeight: '600',
+  },
+  draftBadgeSmall: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    backgroundColor: theme.colors.feedback.selection.primary,
+    borderRadius: 6,
+    marginBottom: 4,
+  },
+  draftBadgeTextSmall: {
+    fontSize: 9,
+    color: theme.colors.status.info.primary,
+    fontFamily: theme.fontFamily.primary,
+    fontWeight: '600',
   },
   chatItemDelete: {
     marginLeft: 8,

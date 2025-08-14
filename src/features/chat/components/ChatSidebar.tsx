@@ -4,9 +4,10 @@ import { useChatRooms } from '@/features/chat/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { createChatSidebarStyles } from './ChatSidebar.styles';
+import mobileStorage from '../../../shared/lib/mobileStorage';
 
 interface ChatSidebarProps {
   isVisible: boolean;
@@ -33,6 +34,9 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const { userName } = useUserInfo();
   const { rooms, deleteRoom, fetchRooms } = useChatRooms();
   const styles = createChatSidebarStyles(theme);
+
+  // Local state for room drafts loaded from storage
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
 
   // Animation values
   const slideAnim = useRef(new Animated.Value(-320)).current;
@@ -69,6 +73,30 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       });
     }
   }, [isVisible, slideAnim, fadeAnim]);
+
+  // Load drafts for visible rooms when sidebar opens or rooms change
+  useEffect(() => {
+    if (!isVisible) return;
+    const loadDrafts = async () => {
+      try {
+        const entries = await Promise.all(
+          rooms.map(async (r) => {
+            const key = `chat_draft_${r.id}`;
+            const value = await mobileStorage.getItem(key);
+            return [r.id.toString(), value ?? ''] as const;
+          })
+        );
+        const next: Record<string, string> = {};
+        for (const [id, val] of entries) {
+          if (val && val.trim().length > 0) next[id] = val;
+        }
+        setDrafts(next);
+      } catch (e) {
+        // noop
+      }
+    };
+    loadDrafts();
+  }, [isVisible, rooms]);
 
   const handleChatSelect = (roomId: string) => {
     console.log('🎯 [SIDEBAR] Chat selected', { 
@@ -164,9 +192,28 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                     ]}>
                       {room.name}
                     </Text>
-                    <Text style={styles.chatItemSubtitle}>
-                      {room.last_message || t('sidebar.no_messages')}
-                    </Text>
+                    {(() => {
+                      const draft = drafts[room.id.toString()];
+                      if (draft && draft.trim().length > 0) {
+                        const compact = draft.replace(/\s+/g, ' ').trim();
+                        const snippet = compact.length > 70 ? `${compact.slice(0, 70)}…` : compact;
+                        return (
+                          <View style={styles.subtitleRow}>
+                            <View style={styles.draftBadge}>
+                              <Text style={styles.draftBadgeText}>Draft</Text>
+                            </View>
+                            <Text style={styles.chatItemSubtitle} numberOfLines={1}>
+                              {snippet}
+                            </Text>
+                          </View>
+                        );
+                      }
+                      return (
+                        <Text style={styles.chatItemSubtitle}>
+                          {room.last_message || t('sidebar.no_messages')}
+                        </Text>
+                      );
+                    })()}
                   </View>
                   <Text style={styles.chatItemTime}>
                     {room.updated_at ? new Date(room.updated_at).toLocaleDateString() : ''}
