@@ -7,6 +7,7 @@ import {
   ReactMessageStateService,
   ReactRegenerationService,
   ReactTypingStateService,
+  SupabaseAuthService,
   SupabaseChatRoomService,
   SupabaseMessageService,
 } from '../implementations';
@@ -22,5 +23,6 @@ export function configureServices(): void {
     typingStateService: ReactTypingStateService,
     animationService: ReactAnimationService,
     regenerationService: ReactRegenerationService,
+    authService: SupabaseAuthService,
   });
 } 

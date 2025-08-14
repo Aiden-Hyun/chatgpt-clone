@@ -1,8 +1,8 @@
 // src/features/chat/services/sendMessage/index.ts
-import { getSession } from '../../../../shared/lib/supabase/getSession';
 import { logger } from '../../utils/logger';
 import { SendMessageRequest } from '../core/MessageSenderService';
 import { ServiceFactory } from '../core/ServiceFactory';
+import { ServiceRegistry } from '../core/ServiceRegistry';
 import { ChatMessage } from '../types';
 
 export type SendMessageArgs = {
@@ -37,8 +37,9 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     messageId
   } = args;
 
-  // Use the existing getSession function
-  const session = await getSession();
+  // Use injected auth service via ServiceRegistry
+  const authService = ServiceRegistry.createAuthService();
+  const session = await authService.getSession();
   logger.debug('🔄 SEND-MESSAGE: Session fetched', { hasSession: !!session, userId: session?.user?.id });
 
   if (!session) {

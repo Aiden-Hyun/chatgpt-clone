@@ -2,13 +2,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 
+type StorageLike = {
+  setItem(key: string, value: string): Promise<void>;
+  getItem(key: string): Promise<string | null>;
+  removeItem(key: string): Promise<void>;
+};
+
 /**
  * Hook for managing chat input and draft messages across different chat rooms
  * 
  * @param numericRoomId - The ID of the current chat room, or null for a new room
  * @param isNewlyCreatedRoom - Whether this is a newly created room (to clear input)
  */
-export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom = false) => {
+export const useMessageInput = (
+  numericRoomId: number | null,
+  isNewlyCreatedRoom = false,
+  deps?: { storage?: StorageLike }
+) => {
+  const storage = deps?.storage ?? mobileStorage;
   // Current input text in the text field
   const [input, setInput] = useState('');
   
@@ -32,10 +43,10 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
       // Detect "newly created" room via storage flag
       if (numericRoomId) {
         try {
-          const flag = await mobileStorage.getItem(`new_room_created_${numericRoomId}`);
+          const flag = await storage.getItem(`new_room_created_${numericRoomId}`);
           if (flag === 'true') {
             isNewRoom = true;
-            await mobileStorage.removeItem(`new_room_created_${numericRoomId}`);
+            await storage.removeItem(`new_room_created_${numericRoomId}`);
           }
         } catch {
           /* swallow */
@@ -46,7 +57,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
         setInput('');
         setDrafts(prev => ({ ...prev, [roomKey]: '' }));
         // Clear persisted draft for this room as well
-        mobileStorage.removeItem(`chat_draft_${roomKey}`);
+        storage.removeItem(`chat_draft_${roomKey}`);
       } else {
         // Prefer in-memory draft first
         const currentDraft = draftsRef.current[roomKey] || '';
@@ -55,7 +66,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
         } else {
           // Fallback to persisted draft
           try {
-            const saved = await mobileStorage.getItem(`chat_draft_${roomKey}`);
+            const saved = await storage.getItem(`chat_draft_${roomKey}`);
             if (saved !== null) {
               setInput(saved);
               setDrafts(prev => ({ ...prev, [roomKey]: saved }));
@@ -85,7 +96,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
     const roomKey = roomIdRef.current ? roomIdRef.current.toString() : 'new';
     setDrafts((prev) => ({ ...prev, [roomKey]: text }));
     // Persist the draft for this room
-    mobileStorage.setItem(`chat_draft_${roomKey}`, text);
+    storage.setItem(`chat_draft_${roomKey}`, text);
   }, []); // Empty dependency array - stable reference
 
   /**
@@ -100,7 +111,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
     // This helps with the new chatroom case where the room ID changes
     const roomKey = roomIdRef.current ? roomIdRef.current.toString() : 'new';
     setDrafts(prev => ({ ...prev, [roomKey]: '' }));
-    mobileStorage.removeItem(`chat_draft_${roomKey}`);
+    storage.removeItem(`chat_draft_${roomKey}`);
   }, []); // Empty dependency array - stable reference
 
   /**
@@ -109,7 +120,7 @@ export const useMessageInput = (numericRoomId: number | null, isNewlyCreatedRoom
   const updateDrafts = (roomId: number | string, content: string) => {
     const roomKey = typeof roomId === 'number' ? roomId.toString() : roomId;
     setDrafts((prev) => ({ ...prev, [roomKey]: content }));
-    mobileStorage.setItem(`chat_draft_${roomKey}`, content);
+    storage.setItem(`chat_draft_${roomKey}`, content);
   };
 
   return {
