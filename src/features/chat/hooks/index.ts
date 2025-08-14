@@ -6,6 +6,7 @@ export * from './useMessageInput';
 // New extracted hooks
 export * from './useOptimisticMessages';
 export * from './useRegenerationService';
+export * from './useMessageLoader';
 
 // Legacy message hooks removed - using new state machine system
 

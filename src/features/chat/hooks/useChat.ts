@@ -1,14 +1,12 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import { useCallback, useEffect, useState } from 'react';
-import mobileStorage from '../../../shared/lib/mobileStorage';
+import { useCallback } from 'react';
 // Model is now passed in from parent; this hook will accept it via options
-import { ServiceFactory } from '../services/core';
-import { generateMessageId } from '../utils/messageIdGenerator';
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
 import { useOptimisticMessages } from './useOptimisticMessages';
 import { useRegenerationService } from './useRegenerationService';
+import { useMessageLoader } from './useMessageLoader';
 
 type UseChatOptions = {
   selectedModel?: string;
@@ -16,26 +14,6 @@ type UseChatOptions = {
 };
 
 export const useChat = (numericRoomId: number | null, options?: UseChatOptions) => {
-  const [isNewlyCreatedRoom, setIsNewlyCreatedRoom] = useState(false);
-
-  // Check if this is a newly created room by looking for optimistic data
-  useEffect(() => {
-    const checkRoom = async () => {
-      if (numericRoomId) {
-        try {
-          const optimisticData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
-          const isNewRoom = !!optimisticData;
-          setIsNewlyCreatedRoom(isNewRoom);
-        } catch {
-          setIsNewlyCreatedRoom(false);
-        }
-      } else {
-        setIsNewlyCreatedRoom(false);
-      }
-    };
-
-    checkRoom();
-  }, [numericRoomId]);
 
   // ✅ STATE MACHINE: Use simplified chat state with state machine support
   const chatState = useChatState(numericRoomId);
@@ -53,76 +31,14 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     isRegenerating,
   } = chatState;
 
-  // Optimistic messages for new chat room loading
+  // Optimistic messages and loader
   const { optimisticMessages } = useOptimisticMessages(numericRoomId);
-
-  // Load messages when the room ID changes
-  useEffect(() => {
-    const loadMessages = async () => {
-      setLoading(true);
-
-      if (numericRoomId) {
-        try {
-          const messageService = ServiceFactory.createMessageService();
-          const history = await messageService.loadMessages(numericRoomId);
-
-          if (history.length > 0) {
-            const hydratedHistory = history.map(msg => ({
-              ...msg,
-              state: 'hydrated' as const,
-              id: msg.id || generateMessageId()
-            }));
-            setMessages(hydratedHistory);
-          } else if (optimisticMessages && optimisticMessages.length > 0) {
-            const hydratedOptimisticMessages = optimisticMessages.map(msg => ({
-              ...msg,
-              state: 'hydrated' as const,
-              id: msg.id || generateMessageId()
-            }));
-            setMessages(hydratedOptimisticMessages);
-            const pollForDatabaseSync = async () => {
-              for (let attempt = 1; attempt <= 10; attempt++) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                try {
-                  const dbMessages = await messageService.loadMessages(numericRoomId);
-                  if (dbMessages.length > 0) {
-                    const hydratedDbMessages = dbMessages.map(msg => ({
-                      ...msg,
-                      state: 'hydrated' as const,
-                      id: msg.id || generateMessageId()
-                    }));
-                    setMessages(hydratedDbMessages);
-                    break;
-                  }
-                } catch {}
-              }
-            };
-            pollForDatabaseSync();
-          } else {
-            setMessages([]);
-          }
-        } catch (error) {
-          console.error(`[MESSAGE-LOAD] Failed to load messages for room ${numericRoomId}:`, error);
-          if (optimisticMessages && optimisticMessages.length > 0) {
-            const hydratedOptimisticMessages = optimisticMessages.map(msg => ({
-              ...msg,
-              state: 'hydrated' as const,
-              id: msg.id || generateMessageId()
-            }));
-            setMessages(hydratedOptimisticMessages);
-          } else {
-            setMessages([]);
-          }
-        }
-        setLoading(false);
-      } else {
-        setMessages([]);
-        setLoading(false);
-      }
-    };
-
-    loadMessages();
-  }, [numericRoomId, optimisticMessages, setMessages, setLoading]);
+  useMessageLoader({
+    roomId: numericRoomId,
+    optimisticMessages,
+    setMessages,
+    setLoading,
+  });
 
   // Model selection provided by parent via options
   const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
@@ -136,7 +52,11 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     setDrafts,
     handleInputChange,
     clearInput
-  } = useMessageInput(numericRoomId, isNewlyCreatedRoom);
+  } = useMessageInput(
+    numericRoomId,
+    // New room if we only have optimistic messages at the time of mount
+    (optimisticMessages?.length ?? 0) > 0
+  );
 
   // ✅ STATE MACHINE: Message actions using state machine
   const { sendMessage: sendMessageToBackend } = useMessageActions({

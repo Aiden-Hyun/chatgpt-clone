@@ -3,7 +3,17 @@ import { useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { ChatMessage } from '../types';
 
-export const useOptimisticMessages = (numericRoomId: number | null) => {
+type StorageLike = {
+  setItem(key: string, value: string): Promise<void>;
+  getItem(key: string): Promise<string | null>;
+  removeItem(key: string): Promise<void>;
+};
+
+export const useOptimisticMessages = (
+  numericRoomId: number | null,
+  deps?: { storage?: StorageLike }
+) => {
+  const storage = deps?.storage ?? mobileStorage;
   const [optimisticMessages, setOptimisticMessages] = useState<ChatMessage[] | null>(null);
   const [optimisticModel, setOptimisticModel] = useState<string | null>(null);
 
@@ -17,7 +27,7 @@ export const useOptimisticMessages = (numericRoomId: number | null) => {
 
       try {
         // Check for optimistic messages (for new chat rooms)
-        const optimisticData = await mobileStorage.getItem(`chat_messages_${numericRoomId}`);
+        const optimisticData = await storage.getItem(`chat_messages_${numericRoomId}`);
         if (optimisticData) {
           const parsed = JSON.parse(optimisticData);
           
@@ -43,7 +53,7 @@ export const useOptimisticMessages = (numericRoomId: number | null) => {
                 threshold: 60000
               });
             }
-            await mobileStorage.removeItem(`chat_messages_${numericRoomId}`);
+            await storage.removeItem(`chat_messages_${numericRoomId}`);
             setOptimisticMessages(null);
           } else {
             if (__DEV__) {
@@ -55,21 +65,21 @@ export const useOptimisticMessages = (numericRoomId: number | null) => {
             setOptimisticMessages(messages);
             
             // Clear the optimistic messages immediately after reading
-            await mobileStorage.removeItem(`chat_messages_${numericRoomId}`);
+            await storage.removeItem(`chat_messages_${numericRoomId}`);
           }
         } else {
           setOptimisticMessages(null);
         }
 
         // Check for optimistic model
-        const optimisticModelData = await mobileStorage.getItem(`chat_model_${numericRoomId}`);
+        const optimisticModelData = await storage.getItem(`chat_model_${numericRoomId}`);
         if (optimisticModelData) {
           if (__DEV__) {
             console.log(`[OPTIMISTIC] Loaded optimistic model for room ${numericRoomId}:`, optimisticModelData);
           }
           setOptimisticModel(optimisticModelData);
           // Clear the optimistic model to avoid using it again on refresh
-          await mobileStorage.removeItem(`chat_model_${numericRoomId}`);
+          await storage.removeItem(`chat_model_${numericRoomId}`);
         } else {
           setOptimisticModel(null);
         }
@@ -80,8 +90,8 @@ export const useOptimisticMessages = (numericRoomId: number | null) => {
         
         // Clean up potentially corrupted data
         try {
-          await mobileStorage.removeItem(`chat_messages_${numericRoomId}`);
-          await mobileStorage.removeItem(`chat_model_${numericRoomId}`);
+          await storage.removeItem(`chat_messages_${numericRoomId}`);
+          await storage.removeItem(`chat_model_${numericRoomId}`);
           if (__DEV__) {
             console.log(`[OPTIMISTIC] Cleaned up corrupted data for room ${numericRoomId}`);
           }
@@ -92,7 +102,7 @@ export const useOptimisticMessages = (numericRoomId: number | null) => {
     };
 
     loadOptimisticData();
-  }, [numericRoomId]);
+  }, [numericRoomId, deps?.storage]);
 
   return {
     optimisticMessages,
