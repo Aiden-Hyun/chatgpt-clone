@@ -1,6 +1,6 @@
 // src/features/chat/services/implementations/index.ts
+export * from './ChatAPIService';
 export { ExpoRouterNavigationService } from './ExpoRouterNavigationService';
-export * from './OpenAIAPIService';
 export * from './ReactAnimationService';
 export * from './ReactMessageStateService';
 export * from './ReactRegenerationService';

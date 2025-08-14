@@ -1,3 +1,4 @@
+export { AnthropicLogo } from './AnthropicLogo';
 export { FormWrapper } from './FormWrapper';
 export { LoadingScreen } from './LoadingScreen';
 export { LoadingWrapper } from './LoadingWrapper';

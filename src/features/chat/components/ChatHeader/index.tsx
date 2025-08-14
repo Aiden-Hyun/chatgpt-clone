@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
-import { OpenAILogo } from '../../../../components';
+import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { QuickActionsMenu } from '../../../../components/navigation/QuickActionsMenu';
 import { useAppTheme } from '../../../theme/theme';
 import { AVAILABLE_MODELS, DEFAULT_MODEL } from '../../constants';
@@ -82,7 +82,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           onPress={() => setIsModelMenuVisible(true)}
           activeOpacity={0.8}
         >
-          <OpenAILogo size={16} />
+          {(() => {
+            const provider = AVAILABLE_MODELS.find(m => m.value === (selectedModel ?? DEFAULT_MODEL))?.provider;
+            if (provider === 'anthropic') return <AnthropicLogo size={16} />;
+            return <OpenAILogo size={16} />;
+          })()}
           <Text style={styles.modelSelectorText}>{selectedModelLabel}</Text>
           <MaterialIcons name="expand-more" size={20} color={styles.menuButtonText.color} />
         </TouchableOpacity>
@@ -119,7 +123,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                   }}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <OpenAILogo size={16} />
+                    {model.provider === 'openai' && <OpenAILogo size={16} />}
+                    {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
                     <Text style={[styles.modelMenuText, { marginLeft: 8 }, isSelected && styles.selectedModelMenuText]}>
                       {model.label}
                     </Text>

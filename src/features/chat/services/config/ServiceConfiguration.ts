@@ -1,8 +1,8 @@
 // src/features/chat/services/config/ServiceConfiguration.ts
 import { ServiceRegistry } from '../core/ServiceRegistry';
 import {
+  ChatAPIService,
   ExpoRouterNavigationService,
-  OpenAIAPIService,
   ReactAnimationService,
   ReactMessageStateService,
   ReactRegenerationService,
@@ -14,7 +14,7 @@ import {
 
 export function configureServices(): void {
   ServiceRegistry.register({
-    aiApiService: OpenAIAPIService,
+    aiApiService: ChatAPIService,
     chatRoomService: SupabaseChatRoomService,
     messageService: SupabaseMessageService,
     navigationService: ExpoRouterNavigationService,

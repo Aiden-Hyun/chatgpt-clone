@@ -1,24 +1,11 @@
+import { AVAILABLE_MODELS } from '@/features/chat/constants';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AnthropicLogo } from '../AnthropicLogo';
 import { OpenAILogo } from '../OpenAILogo';
-
-// AI Models for selection
-const AI_MODELS = [
-  { label: 'GPT-4o', value: 'gpt-4o' },
-  { label: 'GPT-4o Mini', value: 'gpt-4o-mini' },
-  { label: 'GPT-4 Turbo', value: 'gpt-4-turbo' },
-  { label: 'GPT-5', value: 'gpt-5' },
-  { label: 'GPT-5 Mini', value: 'gpt-5-mini' },
-  { label: 'GPT-5 Nano', value: 'gpt-5-nano' },
-  { label: 'GPT-4', value: 'gpt-4' },
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
-  { label: 'Claude 3', value: 'claude-3' },
-];
-// Models not available in this project (UI-only guard)
-const UNSUPPORTED_KEYS = ['claude', 'anthropic'];
 
 interface QuickActionsMenuProps {
   isVisible: boolean;
@@ -113,8 +100,8 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 <MaterialIcons name="arrow-back" size={20} color={theme.colors.text.tertiary} />
                 <Text style={styles.backMenuText}> {t('menu.back')}</Text>
               </TouchableOpacity>
-              {AI_MODELS.map((model) => {
-                const isUnsupported = UNSUPPORTED_KEYS.some(k => model.value.toLowerCase().includes(k) || model.label.toLowerCase().includes(k));
+              {AVAILABLE_MODELS.map((model) => {
+                const isUnsupported = false; // All models are now supported
                 const disabled = isUnsupported;
                 return (
                   <TouchableOpacity 
@@ -128,12 +115,11 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                     onPress={() => !disabled && handleModelSelect(model.value)}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {!isUnsupported && (
-                        <OpenAILogo size={16} />
-                      )}
+                      {model.provider === 'openai' && <OpenAILogo size={16} />}
+                      {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
                       <Text style={[
                         styles.menuText,
-                        { marginLeft: isUnsupported ? 0 : 8 },
+                        { marginLeft: 8 },
                         selectedModel === model.value && styles.selectedMenuText,
                         disabled && styles.disabledMenuText,
                       ]}>

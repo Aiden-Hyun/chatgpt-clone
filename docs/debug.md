@@ -13,7 +13,10 @@
 - **Routing/auth**
   - `app/_layout.tsx` guards routes using `AuthProvider`. Do not navigate from `getSession`; keep it pure. Use `requireSession()` for guard-style UI code only.
 - **Message orchestration (new sends)**
-  - `MessageSenderService` updates UI via `ReactMessageStateService`, calls AI via `OpenAIAPIService`, animates via `ReactAnimationService`, persists via `Supabase*Service`, then navigates.
+  - `useChat` initializes services, handles state, and exposes actions.
+  - `MessageSenderService` updates UI via `ReactMessageStateService`, calls AI via `ChatAPIService`, animates via `ReactAnimationService`, persists via `Supabase*Service`, then navigates.
+  - `AIResponseProcessor` processes the AI response stream.
+  - `handleNewRoomRedirect` creates new rooms and redirects.
 - **Regeneration flow**
   - `ReactRegenerationService` slices history up to the target assistant, optionally overrides the previous user message with edited text, calls AI, updates UI, animates, and persists assistant update (by client id or db id). Also persists the edited user message when applicable.
 - **State machine & animation**
@@ -31,5 +34,8 @@
 ### Follow-ups
 - Classify 401/403 as non‑retryable in `RetryService` and add a user-friendly expired‑session flow.
 - Align edge payloads if needed (e.g., include `clientMessageId`, `skipPersistence`) to support idempotency on the server.
+
+
+
 
 

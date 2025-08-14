@@ -1,10 +1,10 @@
-// src/features/chat/services/implementations/OpenAIAPIService.ts
+// src/features/chat/services/implementations/ChatAPIService.ts
 import { appConfig } from '@/shared/lib/config';
 import { fetchJson } from '../../lib/fetch';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { AIApiRequest, AIApiResponse } from '../types';
 
-export class OpenAIAPIService implements IAIApiService {
+export class ChatAPIService implements IAIApiService {
   async sendMessage(request: AIApiRequest, accessToken: string): Promise<AIApiResponse> {
     // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
     const payload = {
@@ -16,8 +16,10 @@ export class OpenAIAPIService implements IAIApiService {
       skipPersistence: request.skipPersistence,
     };
 
-    const url = `${appConfig.edgeFunctionBaseUrl}/openai-chat`;
-    return await fetchJson<AIApiResponse>(
+    console.log(`[ChatAPIService] Making API call for model: ${request.model}`);
+
+    const url = `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
+    const response = await fetchJson<AIApiResponse>(
       url,
       {
         method: 'POST',
@@ -28,5 +30,7 @@ export class OpenAIAPIService implements IAIApiService {
       },
       30000
     );
+    console.log(`[ChatAPIService] Received API response for model: ${request.model}`);
+    return response;
   }
 } 

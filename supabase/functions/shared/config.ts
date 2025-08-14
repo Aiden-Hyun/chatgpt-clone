@@ -19,13 +19,15 @@ function getRequiredSecret(key: string): string {
 export const config = {
   secrets: {
     supabase: {
-      dbUrl: () => getRequiredSecret("SUPABASE_DB_URL"),
       url: () => getRequiredSecret("SUPABASE_URL"),
       anonKey: () => getRequiredSecret("SUPABASE_ANON_KEY"),
       serviceRoleKey: () => getRequiredSecret("SUPABASE_SERVICE_ROLE_KEY"),
     },
     openai: {
       apiKey: () => getRequiredSecret("OPENAI_API_KEY"),
+    },
+    anthropic: {
+      apiKey: () => getRequiredSecret("ANTHROPIC_API_KEY"),
     },
   },
 };

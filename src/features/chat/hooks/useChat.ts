@@ -43,7 +43,6 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
   // Model selection provided by parent via options
   const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
   const updateModel = options?.setModel ?? (() => {});
-  if (__DEV__) console.log('[useChat] model (from options)', { roomId: numericRoomId, selectedModel });
 
   // Input management
   const {
