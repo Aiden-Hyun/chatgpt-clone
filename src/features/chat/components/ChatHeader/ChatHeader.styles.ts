@@ -122,5 +122,35 @@ export const createChatHeaderStyles = (theme: any) => {
       color: theme.colors.status.info.primary,
       fontWeight: theme.fontWeights.semibold as '600',
     },
+    quickActionsOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-end',
+    },
+    quickActionsContainer: {
+      backgroundColor: theme.colors.background.primary,
+      borderRadius: theme.borderRadius.md,
+      padding: theme.spacing.sm,
+      marginTop: 120,
+      marginRight: 16,
+      minWidth: 180,
+      ...theme.shadows.medium,
+    },
+    quickActionsMenuItem: {
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      borderRadius: theme.borderRadius.sm,
+      marginVertical: 2,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    quickActionsMenuText: {
+      fontSize: theme.fontSizes.md,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.medium as '500',
+      fontFamily: theme.fontFamily.primary,
+    },
   });
 }; 

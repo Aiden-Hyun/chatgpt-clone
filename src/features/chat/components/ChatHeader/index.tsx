@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
-import { QuickActionsMenu } from '../../../../components/navigation/QuickActionsMenu';
+import { useLanguageContext } from '../../../language';
 import { useAppTheme } from '../../../theme/theme';
 import { AVAILABLE_MODELS, DEFAULT_MODEL } from '../../constants';
 import { ChatSidebar } from '../ChatSidebar';
@@ -42,6 +42,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
   const [isModelMenuVisible, setIsModelMenuVisible] = useState(false);
   const theme = useAppTheme();
+  const { t } = useLanguageContext();
   const styles = React.useMemo(() => createChatHeaderStyles(theme), [theme]);
 
   const selectedModelLabel = useMemo(() => {
@@ -153,16 +154,37 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       />
 
       {/* Quick Actions Menu Dropdown */}
-      <QuickActionsMenu 
-        isVisible={isQuickActionsVisible} 
-        onClose={() => setIsQuickActionsVisible(false)}
-        onLogout={handleLogout}
-        onSettings={handleSettings}
-        onDesignShowcase={handleDesignShowcase}
-        selectedModel={selectedModel}
-        onModelChange={(m) => { if (__DEV__) console.log('[Header] onModelChange', m); onModelChange?.(m); }}
-        showModelSelection={false}
-      />
+      <Modal
+        visible={isQuickActionsVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsQuickActionsVisible(false)}
+      >
+        <TouchableOpacity style={styles.quickActionsOverlay} onPress={() => setIsQuickActionsVisible(false)} activeOpacity={1}>
+          <View style={styles.quickActionsContainer}>
+            <TouchableOpacity
+              style={styles.quickActionsMenuItem}
+              onPress={handleSettings}
+            >
+              <Text style={styles.quickActionsMenuText}>{t('menu.settings')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionsMenuItem}
+              onPress={handleDesignShowcase}
+            >
+              <Text style={styles.quickActionsMenuText}>{t('menu.design_showcase')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionsMenuItem}
+              onPress={handleLogout}
+            >
+              <Text style={styles.quickActionsMenuText}>{t('menu.logout')}</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
