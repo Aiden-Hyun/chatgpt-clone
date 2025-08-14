@@ -24,10 +24,13 @@ interface ChatScreenProps {
     styles: any;
   };
   logout: () => void;
+  // Pass-through model selection props from parent
+  selectedModel?: string;
+  onChangeModel?: (model: string) => void | Promise<void>;
 }
 
 const ChatScreenPure = React.memo((props: ChatScreenProps) => {
-  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState } = props;
+  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, selectedModel, onChangeModel } = props;
   const { styles } = chatScreenState;
   
   // No model bridge ref needed; parent owns model selection
@@ -58,6 +61,8 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
         <UnifiedChat 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}
+          selectedModel={selectedModel}
+          onChangeModel={onChangeModel}
         />
       </KeyboardAvoidingView>
     </LoadingWrapper>
@@ -70,7 +75,8 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
     prev.numericRoomId === next.numericRoomId;
 
   const functionsEqual =
-    prev.logout === next.logout;
+    prev.logout === next.logout &&
+    prev.onChangeModel === next.onChangeModel;
 
   // Shallow compare chatScreenState contents (allow different object wrapper if inner refs/functions unchanged)
   const a = prev.chatScreenState;
@@ -85,7 +91,10 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
       a?.styles === b?.styles
     );
 
-  const equal = primitiveEqual && functionsEqual && stateEqual;
+  // Re-render when selected model changes so UnifiedChat sees updated model
+  const modelEqual = prev.selectedModel === next.selectedModel;
+
+  const equal = primitiveEqual && functionsEqual && stateEqual && modelEqual;
 
 
 
@@ -146,7 +155,11 @@ const ChatScreen = () => {
         onModelChange={async (m: string) => { try { await updateModel(m); } catch {} }}
         showModelSelection
       />
-      <ChatScreenPure {...chatScreenProps} />
+      <ChatScreenPure 
+        {...chatScreenProps}
+        selectedModel={selectedModel}
+        onChangeModel={updateModel}
+      />
     </>
   );
 };
