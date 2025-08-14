@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Alert, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import React from 'react';
+import { Alert, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
-import { createCodeBlockStyles } from './CodeBlock.styles';
 import { SyntaxHighlighterComponent } from '../SyntaxHighlighter';
+import { createCodeBlockStyles } from './CodeBlock.styles';
 
 interface CodeBlockProps {
   code: string;
@@ -60,11 +60,30 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
 
       {/* Code content */}
       <View style={styles.codeContainer}>
-        <SyntaxHighlighterComponent
-          code={code}
-          language={language || 'text'}
-          showLineNumbers={showLineNumbers}
-        />
+        {showLineNumbers ? (
+          <View>
+            {lines.map((line, idx) => (
+              <View key={idx} style={styles.lineContainer}>
+                <Text style={styles.lineNumber}>
+                  {(idx + 1).toString()}
+                </Text>
+                <View style={styles.codeContent}>
+                  <SyntaxHighlighterComponent
+                    code={line}
+                    language={language || 'text'}
+                    showLineNumbers={false}
+                  />
+                </View>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <SyntaxHighlighterComponent
+            code={code}
+            language={language || 'text'}
+            showLineNumbers={false}
+          />
+        )}
       </View>
     </View>
   );

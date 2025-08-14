@@ -30,6 +30,6 @@ export const AVAILABLE_MODELS = [
 export const MAX_MESSAGES = 100;
 
 // Typing animation speed in milliseconds
-export const TYPING_ANIMATION_SPEED = 10;
+export const TYPING_ANIMATION_SPEED = 5;
 
 export * from './debug';

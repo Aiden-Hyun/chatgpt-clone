@@ -38,7 +38,7 @@ export const TypewriterTestScreen = () => {
             <TypewriterText
               text={message}
               startAnimation={showAnimation}
-              speed={30}
+              speed={15}
               showCursor={true}
               onComplete={() => console.log(`Message ${index + 1} animation completed`)}
             />

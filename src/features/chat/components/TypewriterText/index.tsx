@@ -18,7 +18,7 @@ interface TypewriterTextProps {
  */
 export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function TypewriterText({
   text,
-  speed = 50,
+  speed = 25,
   showCursor = true,
   cursorChar = '▍',
   style,

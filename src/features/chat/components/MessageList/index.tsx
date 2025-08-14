@@ -62,7 +62,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     'welcome.help_discover'
   ], []);
 
-  const typingSpeed = 30; // milliseconds per character
+  const typingSpeed = 15; // milliseconds per character
 
   // ✅ STATE MACHINE: Derive loading state from message states
   const isNewMessageLoading = useMemo(() => {

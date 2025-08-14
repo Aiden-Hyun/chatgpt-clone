@@ -52,6 +52,8 @@ export const createCodeBlockStyles = (theme: any) => {
     
     lineContainer: {
       flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: 0,
     },
     
     lineNumbers: {
@@ -65,9 +67,10 @@ export const createCodeBlockStyles = (theme: any) => {
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontSize: 14,
       color: theme.colors.text.quaternary,
-      lineHeight: 22,
       textAlign: 'right',
       minWidth: 24,
+      marginRight: theme.spacing.md,
+      paddingTop: 0,
     },
     
     codeContent: {
@@ -78,14 +81,12 @@ export const createCodeBlockStyles = (theme: any) => {
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontSize: 14,
       color: theme.colors.text.primary,
-      lineHeight: 22,
     },
     
     code: {
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontSize: 14,
       color: theme.colors.text.primary,
-      lineHeight: 22,
     },
   });
 };

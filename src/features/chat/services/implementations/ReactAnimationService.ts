@@ -75,7 +75,7 @@ export class ReactAnimationService implements IAnimationService {
     args.onComplete();
   }
 
-  private startTypewriterJob(messageId: string, fullContent: string, speedMs: number = 35): void {
+  private startTypewriterJob(messageId: string, fullContent: string, speedMs: number = 17): void {
     // Stop existing job if any
     this.stopTypewriterJob(messageId);
     this.runningJobs.set(messageId, { timer: null, index: 0, target: fullContent, speedMs });

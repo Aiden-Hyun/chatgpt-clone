@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import MarkdownDisplay from 'react-native-markdown-display';
+import MarkdownDisplay, { MarkdownIt } from 'react-native-markdown-display';
 import { useAppTheme } from '../../../theme/theme';
 import { CodeBlock } from '../CodeBlock';
 import { createMarkdownRendererStyles } from './MarkdownRenderer.styles';
@@ -16,6 +16,18 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = React.useMemo(() => createMarkdownRendererStyles(theme), [theme]);
+  
+  // Use MarkdownIt from react-native-markdown-display to configure parsing
+  const md = React.useMemo(
+    () =>
+      MarkdownIt({
+        html: false,
+        linkify: true,
+        typographer: true,
+        breaks: false,
+      }),
+    []
+  );
 
   // Custom rules for specific markdown elements
   const customRules = {
@@ -63,6 +75,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
   return (
     <MarkdownDisplay
+      markdownit={md}
       style={{
         // Main body text
         body: styles.body,

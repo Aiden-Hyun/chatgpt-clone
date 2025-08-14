@@ -2,8 +2,8 @@ import React from 'react';
 import { View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
-import { MessageInteractionBar } from '../MessageInteractionBar';
 import { MarkdownRenderer } from '../MarkdownRenderer';
+import { MessageInteractionBar } from '../MessageInteractionBar';
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
 
 interface AssistantMessageProps {
