@@ -1,16 +1,18 @@
 // src/features/chat/services/MessageStateManager.ts
-import React from 'react';
 import { ChatMessage, MessageState } from '../types';
+
+type StateLikeUpdater<T> = (value: T | ((prev: T) => T)) => void;
+type MessagesUpdater = StateLikeUpdater<ChatMessage[]>;
 
 /**
  * Manages message state transitions in a centralized way
  * Implements a complete state machine for message lifecycle
  */
 export class MessageStateManager {
-  private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  private update: MessagesUpdater;
   
-  constructor(setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>) {
-    this.setMessages = setMessages;
+  constructor(update: MessagesUpdater) {
+    this.update = update;
   }
   
   // === CORE STATE TRANSITIONS ===
@@ -19,7 +21,7 @@ export class MessageStateManager {
    * Transition a message to a new state
    */
   transition(messageId: string, newState: MessageState): void {
-    this.setMessages(prev => prev.map(msg => 
+    this.update(prev => prev.map(msg => 
       msg.id === messageId 
         ? { ...msg, state: newState }
         : msg
@@ -30,7 +32,7 @@ export class MessageStateManager {
    * Create a new assistant message in loading state
    */
   createLoadingMessage(messageId: string): void {
-    this.setMessages(prev => [
+    this.update(prev => [
       ...prev,
       {
         role: 'assistant',
@@ -45,7 +47,7 @@ export class MessageStateManager {
    * Create a new user message in completed state
    */
   createUserMessage(messageId: string, content: string): void {
-    this.setMessages(prev => [
+    this.update(prev => [
       ...prev,
       {
         role: 'user',
@@ -60,7 +62,7 @@ export class MessageStateManager {
    * Create both user and assistant messages atomically
    */
   createMessagePair(userMessageId: string, userContent: string, assistantMessageId: string): void {
-    this.setMessages(prev => [
+    this.update(prev => [
       ...prev,
       {
         role: 'user',
@@ -83,7 +85,7 @@ export class MessageStateManager {
    * Update message content during streaming (stays in loading state)
    */
   updateStreamingContent(messageId: string, partialContent: string): void {
-    this.setMessages(prev => prev.map(msg => 
+    this.update(prev => prev.map(msg => 
       msg.id === messageId 
         ? { ...msg, content: partialContent, state: 'loading' }
         : msg
@@ -94,7 +96,7 @@ export class MessageStateManager {
    * Finish streaming and transition to animation state
    */
   finishStreamingAndAnimate(messageId: string, fullContent: string): void {
-    this.setMessages(prev => prev.map(msg => 
+    this.update(prev => prev.map(msg => 
       msg.id === messageId 
         ? { 
             ...msg, 
@@ -124,7 +126,7 @@ export class MessageStateManager {
     
     
     // Phase 1: Set to loading state
-    this.setMessages(prev => {
+    this.update(prev => {
       
       return prev.map(msg => 
         msg.id === messageId 
@@ -136,7 +138,7 @@ export class MessageStateManager {
     // Phase 2: After a short delay, set content and transition to animating state
     
     setTimeout(() => {
-      this.setMessages(prev => {
+      this.update(prev => {
         
         return prev.map(msg => 
           msg.id === messageId 
@@ -159,7 +161,7 @@ export class MessageStateManager {
    * Mark message as completed (animation finished)
    */
   markCompleted(messageId: string): void {
-    this.setMessages(prev => prev.map(msg => 
+    this.update(prev => prev.map(msg => 
       msg.id === messageId 
         ? { 
             ...msg, 
@@ -175,7 +177,7 @@ export class MessageStateManager {
    * Mark message as error with optional error content
    */
   markError(messageId: string, errorMessage?: string): void {
-    this.setMessages(prev => prev.map(msg => 
+    this.update(prev => prev.map(msg => 
       msg.id === messageId 
         ? { 
             ...msg, 
@@ -192,7 +194,7 @@ export class MessageStateManager {
    * Update multiple messages in a single operation (performance optimization)
    */
   batchUpdate(updates: { messageId: string; changes: Partial<ChatMessage> }[]): void {
-    this.setMessages(prev => prev.map(msg => {
+    this.update(prev => prev.map(msg => {
       const update = updates.find(u => u.messageId === msg.id);
       return update ? { ...msg, ...update.changes } : msg;
     }));

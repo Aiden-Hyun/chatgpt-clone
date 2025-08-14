@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { OpenAILogo } from '../../../../components';
 import { QuickActionsMenu } from '../../../../components/navigation/QuickActionsMenu';
 import { useAppTheme } from '../../../theme/theme';
 import { AVAILABLE_MODELS, DEFAULT_MODEL } from '../../constants';
@@ -81,6 +82,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           onPress={() => setIsModelMenuVisible(true)}
           activeOpacity={0.8}
         >
+          <OpenAILogo size={16} />
           <Text style={styles.modelSelectorText}>{selectedModelLabel}</Text>
           <MaterialIcons name="expand-more" size={20} color={styles.menuButtonText.color} />
         </TouchableOpacity>
@@ -116,9 +118,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                     setIsModelMenuVisible(false);
                   }}
                 >
-                  <Text style={[styles.modelMenuText, isSelected && styles.selectedModelMenuText]}>
-                    {model.label}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <OpenAILogo size={16} />
+                    <Text style={[styles.modelMenuText, { marginLeft: 8 }, isSelected && styles.selectedModelMenuText]}>
+                      {model.label}
+                    </Text>
+                  </View>
                   {isSelected && (
                     <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
                   )}

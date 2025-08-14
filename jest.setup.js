@@ -1,19 +1,18 @@
 import '@testing-library/jest-dom';
 
 // Mock React Native
-jest.mock('react-native', () => ({
-  ...jest.requireActual('react-native'),
-  Alert: {
-    alert: jest.fn(),
-  },
-  Platform: {
-    OS: 'ios',
-    select: jest.fn((obj) => obj.ios),
-  },
-  Dimensions: {
-    get: jest.fn(() => ({ width: 375, height: 812 })),
-  },
-}));
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+
+  // Mock for DevMenu
+  RN.NativeModules.DevMenu = {
+    show: jest.fn(),
+    reload: jest.fn(),
+  };
+
+  return RN;
+});
+
 
 // Mock console methods
 global.console = {
@@ -85,14 +84,6 @@ jest.mock('./src/shared/lib/mobileStorage', () => ({
 // Mock sendMessage service
 jest.mock('./src/features/chat/services/sendMessage/index', () => ({
   sendMessageHandler: jest.fn(),
-}));
-
-// Mock useModelSelection hook
-jest.mock('./src/features/chat/hooks/useModelSelection', () => ({
-  useModelSelection: jest.fn(() => ({
-    selectedModel: 'gpt-3.5-turbo',
-    updateModel: jest.fn(),
-  })),
 }));
 
 // Mock useChatRooms hook

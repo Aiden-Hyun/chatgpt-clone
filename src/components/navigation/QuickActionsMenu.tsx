@@ -3,6 +3,7 @@ import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { OpenAILogo } from '../OpenAILogo';
 
 // AI Models for selection
 const AI_MODELS = [
@@ -126,13 +127,19 @@ export const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                     disabled={disabled}
                     onPress={() => !disabled && handleModelSelect(model.value)}
                   >
-                    <Text style={[
-                      styles.menuText,
-                      selectedModel === model.value && styles.selectedMenuText,
-                      disabled && styles.disabledMenuText,
-                    ]}>
-                      {model.label}
-                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      {!isUnsupported && (
+                        <OpenAILogo size={16} />
+                      )}
+                      <Text style={[
+                        styles.menuText,
+                        { marginLeft: isUnsupported ? 0 : 8 },
+                        selectedModel === model.value && styles.selectedMenuText,
+                        disabled && styles.disabledMenuText,
+                      ]}>
+                        {model.label}
+                      </Text>
+                    </View>
                     {disabled ? (
                       <MaterialIcons name="block" size={18} color={theme.colors.text.tertiary} />
                     ) : (

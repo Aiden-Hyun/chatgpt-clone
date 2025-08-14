@@ -4,9 +4,9 @@ import { useCallback } from 'react';
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
+import { useMessageLoader } from './useMessageLoader';
 import { useOptimisticMessages } from './useOptimisticMessages';
 import { useRegenerationService } from './useRegenerationService';
-import { useMessageLoader } from './useMessageLoader';
 
 type UseChatOptions = {
   selectedModel?: string;
