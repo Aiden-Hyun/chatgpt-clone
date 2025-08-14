@@ -19,6 +19,7 @@ export const createChatInputStyles = (isInputFocused: boolean, theme: any) => {
     },
     input: {
       flex: 1,
+      textAlignVertical: 'top',
       borderColor: isInputFocused 
         ? theme.colors.status.info.border
         : theme.colors.border.medium,

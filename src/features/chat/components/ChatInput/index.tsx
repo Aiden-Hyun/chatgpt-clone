@@ -32,6 +32,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   inputRef,
 }) => {
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [inputHeight, setInputHeight] = useState(44);
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   
@@ -42,23 +43,26 @@ const ChatInput: React.FC<ChatInputProps> = ({
   );
 
   const hasText = input.trim().length > 0;
+  const MAX_INPUT_HEIGHT = 120;
 
   return (
     <View style={styles.inputRow}>
       <TextInput
         ref={inputRef}
-        style={isInputFocused ? [styles.input, styles.inputFocused] : styles.input}
+        style={isInputFocused ? [styles.input, styles.inputFocused, { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }] : [styles.input, { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }]}
         value={input}
         onChangeText={onChangeText}
         placeholder={t('chat.placeholder')}
         placeholderTextColor={placeholderTextColor}
         onFocus={() => setIsInputFocused(true)}
         onBlur={() => setIsInputFocused(false)}
-        onKeyPress={({ nativeEvent }) => {
-          if (nativeEvent.key === 'Enter' && input.trim()) {
-            onSend();
-          }
+        multiline
+        scrollEnabled={inputHeight >= MAX_INPUT_HEIGHT}
+        onContentSizeChange={(e) => {
+          const nextHeight = e.nativeEvent.contentSize.height;
+          setInputHeight(nextHeight);
         }}
+        blurOnSubmit={false}
         autoFocus
         editable={true}
       />
