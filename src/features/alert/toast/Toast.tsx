@@ -1,10 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
-  Animated,
   StyleSheet,
   Text,
   TouchableOpacity
 } from 'react-native';
+import Reanimated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useAppTheme } from '../../theme/theme';
 
 interface ToastProps {
@@ -26,51 +31,42 @@ export const Toast: React.FC<ToastProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createStyles(theme, type);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(-100)).current;
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(-100);
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateY: translateY.value }],
+    };
+  });
 
   useEffect(() => {
     if (visible) {
-      // Show toast
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }),
-      ]).start();
-
-      // Auto hide after duration
-      const timer = setTimeout(() => {
-        hideToast();
-      }, duration);
-
-      return () => clearTimeout(timer);
-    } else {
+      showToast();
+    } else if (opacity.value > 0) { // Only hide if it was visible
       hideToast();
     }
-  }, [visible, duration]);
+  }, [visible]);
+
+  const showToast = () => {
+    opacity.value = withTiming(1, { duration: 300 });
+    translateY.value = withTiming(0, { duration: 300 });
+
+    const timer = setTimeout(() => {
+      hideToast();
+    }, duration);
+
+    return () => clearTimeout(timer);
+  };
 
   const hideToast = () => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: -100,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start(() => {
-      onHide?.();
+    opacity.value = withTiming(0, { duration: 200 });
+    translateY.value = withTiming(-100, { duration: 200 }, (isFinished) => {
+      if (isFinished) {
+        // Safely run the state update on the JS thread
+        if (onHide) runOnJS(onHide)();
+      }
     });
   };
 
@@ -89,17 +85,14 @@ export const Toast: React.FC<ToastProps> = ({
     }
   };
 
-  if (!visible) return null;
+  if (!visible && opacity.value === 0) return null;
 
   return (
-    <Animated.View
+    <Reanimated.View
       style={[
         styles.container,
         { pointerEvents: 'box-none' },
-        {
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        },
+        animatedStyle,
       ]}
     >
       <TouchableOpacity
@@ -115,7 +108,7 @@ export const Toast: React.FC<ToastProps> = ({
           <Text style={styles.closeText}>✕</Text>
         </TouchableOpacity>
       </TouchableOpacity>
-    </Animated.View>
+    </Reanimated.View>
   );
 };
 

@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 
 import { supabase } from '@/shared/lib/supabase';
-import { createAuthStyles } from './auth.styles';
+import { createAuthStyles } from '../_styles/auth/auth.styles';
 
 export default function AuthScreen() {
   const { session } = useAuth();

@@ -34,19 +34,12 @@ function ProtectedRoutes() {
   }, []);
 
   useEffect(() => {
+    console.log('[ProtectedRoutes] Checking auth state:', { isLoading, hasSession: !!session, pathname, isAuthRoute });
     if (!isLoading && !session && !isAuthRoute) {
       // Only redirect to auth if user is not on an auth route
       router.replace('/auth');
     }
   }, [isLoading, session, pathname, isAuthRoute, router]);
-
-  // Redirect to /chat by default for authenticated users
-  useEffect(() => {
-    if (!isLoading && session && pathname === '/') {
-      // Redirect to fresh new chat instead of home screen
-      router.replace('/chat');
-    }
-  }, [isLoading, session, pathname, router]);
 
   if (isLoading) {
     return <LoadingScreen />;

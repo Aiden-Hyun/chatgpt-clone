@@ -8,7 +8,7 @@ import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/aut
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { ThemeSelector } from '../../src/features/theme';
 import { useAppTheme } from '../../src/features/theme/theme';
-import { createSettingsStyles } from './settings.styles';
+import { createSettingsStyles } from '../_styles/settings/settings.styles';
 
 export default function SettingsScreen() {
   const { t } = useLanguageContext();

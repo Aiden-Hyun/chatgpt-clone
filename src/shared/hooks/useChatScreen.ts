@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { createChatStyles } from '../../../app/chat/chat.styles';
+import { createChatStyles } from '~/app/_styles/chat/chat.styles';
 import { useChatRooms } from '../../features/chat/hooks';
 import { useAppTheme } from '../../features/theme/theme';
 import { useBackButtonHandler, useInputFocus } from './index';

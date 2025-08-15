@@ -6,7 +6,7 @@ import { useLanguageContext } from '@/features/language';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import { createSignupStyles } from './signup.styles';
+import { createSignupStyles } from '../_styles/auth/signup.styles';
 
 export default function SignupScreen() {
   const { t } = useLanguageContext();

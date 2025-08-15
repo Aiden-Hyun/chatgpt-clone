@@ -1,14 +1,13 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
 import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import * as MediaLibrary from 'expo-media-library';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ActivityIndicator, Platform, Text, TouchableOpacity, View } from 'react-native';
 import MarkdownDisplay, { MarkdownIt } from 'react-native-markdown-display';
+import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import { CodeBlock } from '../CodeBlock';
 import { createMarkdownRendererStyles } from './MarkdownRenderer.styles';
-import { useToast } from '../../../alert';
 
 interface MarkdownRendererProps {
   children: string;
@@ -43,6 +42,19 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     const key = src;
     try {
       setDownloading(key, true);
+      if (Platform.OS === 'web') {
+        try { showError('Saving to Photos is only supported on iOS/Android'); } catch {}
+        return;
+      }
+
+      let MediaLibrary: any;
+      try {
+        MediaLibrary = await import('expo-media-library');
+      } catch {
+        try { showError('Media Library not available. Rebuild the native app to include expo-media-library.'); } catch {}
+        return;
+      }
+
       const permission = await MediaLibrary.requestPermissionsAsync();
       if (!permission.granted) {
         showError('Permission required to save images');

@@ -6,7 +6,7 @@ import { useLanguageContext } from '@/features/language';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { createForgotPasswordStyles } from './forgot-password.styles';
+import { createForgotPasswordStyles } from '../_styles/auth/forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -42,14 +42,17 @@ export default function ForgotPasswordScreen() {
           [{ text: 'OK', onPress: async () => {
             try {
               router.replace('/signin');
-            } catch (error) {
-              console.error('Navigation error:', error);
+            } catch {
+              console.error('Navigation error:');
               setHasError(true);
             }
           }}]
         );
+      } else {
+        setHasError(true);
+        showError(t('auth.unexpected_error'));
       }
-    } catch (error) {
+    } catch {
       setHasError(true);
       showError(t('auth.unexpected_error'));
     }
@@ -58,8 +61,8 @@ export default function ForgotPasswordScreen() {
   const handleGoBack = async () => {
     try {
       router.back();
-    } catch (error) {
-      console.error('Navigation error:', error);
+    } catch {
+      console.error('Navigation error:');
       // Fallback to signin if back navigation fails
       try {
         router.replace('/signin');

@@ -46,9 +46,34 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
     currentIndexRef.current = 0;
 
     const type = () => {
-      const currentText = text.slice(0, currentIndexRef.current + 1);
-      setDisplayedText(currentText);
-      currentIndexRef.current += 1;
+      if (currentIndexRef.current >= text.length) {
+        setIsAnimating(false);
+        setAnimationComplete(true);
+        if (onComplete) {
+          onComplete();
+        }
+        return;
+      }
+
+      let nextIndex = currentIndexRef.current;
+      // Find the end of the current block of non-whitespace characters (the "word")
+      while (nextIndex < text.length && !/\s/.test(text[nextIndex])) {
+        nextIndex++;
+      }
+
+      // If we are at a whitespace, it means the "word" was empty. We should advance at least one character.
+      if (nextIndex === currentIndexRef.current) {
+        nextIndex++;
+      }
+
+      // Now, include all subsequent whitespace characters
+      while (nextIndex < text.length && /\s/.test(text[nextIndex])) {
+        nextIndex++;
+      }
+
+      const textToDisplay = text.slice(0, nextIndex);
+      setDisplayedText(textToDisplay);
+      currentIndexRef.current = nextIndex;
 
       if (currentIndexRef.current < text.length) {
         timeoutRef.current = setTimeout(type, speed);

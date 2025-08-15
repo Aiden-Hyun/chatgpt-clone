@@ -1,5 +1,8 @@
-import { SvgTest } from '@/components/SvgTest';
+import { Redirect } from 'expo-router';
 
-export default function HomeScreen() {
-  return <SvgTest />;
-} 
+const StartPage = () => {
+  console.log('[StartPage] Rendering redirect to /chat');
+  return <Redirect href="/chat" />;
+};
+
+export default StartPage; 
