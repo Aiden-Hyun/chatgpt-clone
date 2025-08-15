@@ -1,7 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const createAssistantMessageStyles = (theme: any) => {
   
+  const webMonoStack = "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+  const codeFont = Platform.OS === 'web' ? webMonoStack : 'CascadiaMono';
+
   return StyleSheet.create({
     container: {
       marginVertical: theme.spacing.md,
@@ -116,7 +119,7 @@ export const createAssistantMessageStyles = (theme: any) => {
     
     // Code Blocks - Modern ChatGPT Style
     code_block: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: codeFont as any,
       fontSize: 14,
       backgroundColor: theme.colors.background.tertiary,
       color: theme.colors.text.primary,
@@ -129,7 +132,7 @@ export const createAssistantMessageStyles = (theme: any) => {
       overflow: 'hidden',
     },
     fence: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: codeFont as any,
       fontSize: 14,
       backgroundColor: theme.colors.background.tertiary,
       color: theme.colors.text.primary,
@@ -144,7 +147,7 @@ export const createAssistantMessageStyles = (theme: any) => {
     
     // Inline Code
     code_inline: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: codeFont as any,
       fontSize: 14,
       backgroundColor: theme.colors.background.secondary,
       color: theme.colors.status.info.primary,

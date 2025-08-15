@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
 import { useThemeContext } from '../../../theme/ThemeContext';
 import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
@@ -30,6 +30,11 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
   // Use integer pixel values to avoid sub-pixel rounding gaps between rows
   const fontSize = 14;
   const lineHeight = Math.round(fontSize * 1.6);
+
+  // Choose font per platform; on native we load 'CascadiaMono' via useFonts
+  const codeFont = Platform.OS === 'web'
+    ? "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+    : 'CascadiaMono';
 
   const normalizeLanguage = React.useCallback((lang?: string): string | undefined => {
     // Prism does not auto-detect; provide a safe default
@@ -65,11 +70,12 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
       <SyntaxHighlighter
         language={normalizedLanguage as any}
         style={prismTheme}
+        fontFamily={codeFont as any}
+        fontSize={fontSize}
         customStyle={{
           backgroundColor: 'transparent',
           padding: 0,
           margin: 0,
-          fontSize,
           lineHeight,
         }}
         highlighter="prism"
