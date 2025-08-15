@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const createMarkdownRendererStyles = (theme: any) => {
   return StyleSheet.create({
@@ -94,7 +94,9 @@ export const createMarkdownRendererStyles = (theme: any) => {
     
     // Code blocks (fallback if custom renderer fails)
     code_block: {
-      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+      fontFamily: Platform.OS === 'web'
+        ? "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+        : 'CascadiaMono',
       fontSize: 14,
       backgroundColor: theme.colors.syntax.background,
       color: theme.colors.text.primary,
@@ -107,7 +109,9 @@ export const createMarkdownRendererStyles = (theme: any) => {
       overflow: 'hidden',
     },
     fence: {
-      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+      fontFamily: Platform.OS === 'web'
+        ? "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+        : 'CascadiaMono',
       fontSize: 14,
       backgroundColor: theme.colors.syntax.background,
       color: theme.colors.text.primary,
@@ -122,7 +126,9 @@ export const createMarkdownRendererStyles = (theme: any) => {
     
     // Inline Code
     code_inline: {
-      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+      fontFamily: Platform.OS === 'web'
+        ? "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace"
+        : 'CascadiaMono',
       fontSize: 14,
       backgroundColor: theme.colors.background.secondary,
       color: theme.colors.status.info.primary,

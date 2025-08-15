@@ -1,5 +1,6 @@
 // app/_layout.tsx
 import { LoadingScreen } from '@/components';
+import { useFonts } from 'expo-font';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
@@ -62,12 +63,17 @@ function ProtectedRoutes() {
 }
 
 export default function Layout() {
+  const [fontsLoaded] = useFonts({
+    CascadiaMono: require('../assets/fonts/Cascadia/CascadiaMono.ttf'),
+    CascadiaMonoBold: require('../assets/fonts/Cascadia/CascadiaMono-Bold.otf'),
+  });
+
   return (
     <LanguageProvider>
       <ThemeProvider>
         <AuthProvider>
           <ToastProvider>
-            <ProtectedRoutes />
+            {fontsLoaded ? <ProtectedRoutes /> : <LoadingScreen />}
           </ToastProvider>
         </AuthProvider>
       </ThemeProvider>

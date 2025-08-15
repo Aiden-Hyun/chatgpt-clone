@@ -8,8 +8,8 @@ import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
 // @ts-ignore - library lacks proper types for RN env
 import SyntaxHighlighter from 'react-native-syntax-highlighter';
  
-// @ts-ignore - use ESM style bundle for Metro compatibility
-import { atomOneDark, atomOneLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+// @ts-ignore - use Prism styles for richer, IDE-like colorization
+import { nightOwl, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface SyntaxHighlighterComponentProps {
   code: string;
@@ -25,14 +25,15 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
   const { currentTheme } = useThemeContext();
   const styles = React.useMemo(() => createSyntaxHighlighterStyles(theme), [theme]);
 
-  const hljsTheme = currentTheme === 'dark' ? atomOneDark : atomOneLight;
+  const prismTheme = currentTheme === 'dark' ? nightOwl : oneLight;
 
   // Use integer pixel values to avoid sub-pixel rounding gaps between rows
   const fontSize = 14;
   const lineHeight = Math.round(fontSize * 1.6);
 
   const normalizeLanguage = React.useCallback((lang?: string): string | undefined => {
-    if (!lang) return undefined; // allow auto-detect
+    // Prism does not auto-detect; provide a safe default
+    if (!lang) return 'text';
     const l = String(lang).toLowerCase();
     const aliases: Record<string, string> = {
       js: 'javascript',
@@ -49,12 +50,11 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
       csharp: 'cs',
       objc: 'objectivec',
       'objective-c': 'objectivec',
-      plaintext: '',
-      plain: '',
-      text: '',
+      plaintext: 'text',
+      plain: 'text',
+      text: 'text',
     };
     const mapped = aliases[l] ?? l;
-    if (mapped === '') return undefined; // auto-detect
     return mapped;
   }, []);
 
@@ -64,7 +64,7 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
     <View style={styles.container}>
       <SyntaxHighlighter
         language={normalizedLanguage as any}
-        style={hljsTheme}
+        style={prismTheme}
         customStyle={{
           backgroundColor: 'transparent',
           padding: 0,
@@ -72,7 +72,7 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
           fontSize,
           lineHeight,
         }}
-        highlighter="hljs"
+        highlighter="prism"
         renderer={(rendererProps: any) => <View {...rendererProps} />}
         CodeTag={View}
         PreTag={View}
