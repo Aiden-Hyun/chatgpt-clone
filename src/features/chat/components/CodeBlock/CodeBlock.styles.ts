@@ -1,4 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+
+const monoFont = Platform.select({
+  ios: 'Menlo',
+  android: 'monospace',
+  web: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+  default: 'monospace',
+});
+const tabularNums = Platform.OS === 'ios' ? (['tabular-nums'] as any) : undefined;
 
 export const createCodeBlockStyles = (theme: any) => {
   return StyleSheet.create({
@@ -65,7 +73,7 @@ export const createCodeBlockStyles = (theme: any) => {
     },
     
     lineNumber: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: monoFont as any,
       fontSize: 14,
       color: theme.colors.text.quaternary,
       textAlign: 'right',
@@ -74,6 +82,7 @@ export const createCodeBlockStyles = (theme: any) => {
       paddingTop: 0,
       lineHeight: 22,
       includeFontPadding: false as any,
+      fontVariant: tabularNums,
     },
     
     codeContent: {
@@ -81,7 +90,7 @@ export const createCodeBlockStyles = (theme: any) => {
     },
     
     codeLine: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: monoFont as any,
       fontSize: 14,
       color: theme.colors.text.primary,
       lineHeight: 22,
@@ -89,7 +98,7 @@ export const createCodeBlockStyles = (theme: any) => {
     },
     
     code: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: monoFont as any,
       fontSize: 14,
       color: theme.colors.text.primary,
     },

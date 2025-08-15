@@ -94,7 +94,7 @@ export const createMarkdownRendererStyles = (theme: any) => {
     
     // Code blocks (fallback if custom renderer fails)
     code_block: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       fontSize: 14,
       backgroundColor: theme.colors.syntax.background,
       color: theme.colors.text.primary,
@@ -107,7 +107,7 @@ export const createMarkdownRendererStyles = (theme: any) => {
       overflow: 'hidden',
     },
     fence: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       fontSize: 14,
       backgroundColor: theme.colors.syntax.background,
       color: theme.colors.text.primary,
@@ -122,7 +122,7 @@ export const createMarkdownRendererStyles = (theme: any) => {
     
     // Inline Code
     code_inline: {
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       fontSize: 14,
       backgroundColor: theme.colors.background.secondary,
       color: theme.colors.status.info.primary,
