@@ -60,16 +60,15 @@ export default function ForgotPasswordScreen() {
 
   const handleGoBack = async () => {
     try {
-      router.back();
-    } catch {
-      console.error('Navigation error:');
-      // Fallback to signin if back navigation fails
-      try {
+      const canGoBack = (router as any).canGoBack?.() ?? false;
+      if (canGoBack) {
+        router.back();
+      } else {
         router.replace('/signin');
-      } catch (fallbackError) {
-        console.error('Fallback navigation error:', fallbackError);
-        setHasError(true);
       }
+    } catch (fallbackError) {
+      console.error('Navigation error:', fallbackError);
+      setHasError(true);
     }
   };
 

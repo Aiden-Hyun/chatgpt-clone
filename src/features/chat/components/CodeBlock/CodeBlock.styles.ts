@@ -54,6 +54,7 @@ export const createCodeBlockStyles = (theme: any) => {
       flexDirection: 'row',
       alignItems: 'flex-start',
       marginBottom: 0,
+      height: 22,
     },
     
     lineNumbers: {
@@ -71,6 +72,8 @@ export const createCodeBlockStyles = (theme: any) => {
       minWidth: 24,
       marginRight: theme.spacing.md,
       paddingTop: 0,
+      lineHeight: 22,
+      includeFontPadding: false as any,
     },
     
     codeContent: {
@@ -81,6 +84,8 @@ export const createCodeBlockStyles = (theme: any) => {
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontSize: 14,
       color: theme.colors.text.primary,
+      lineHeight: 22,
+      includeFontPadding: false as any,
     },
     
     code: {

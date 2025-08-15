@@ -23,7 +23,16 @@ export default function DesignShowcaseScreen() {
   
 
   const handleBack = () => {
-    router.back();
+    try {
+      const canGoBack = (router as any).canGoBack?.() ?? false;
+      if (canGoBack) {
+        router.back();
+      } else {
+        router.replace('/chat');
+      }
+    } catch {
+      router.replace('/chat');
+    }
   };
 
   const handleOpenChatGPTDemo = () => {

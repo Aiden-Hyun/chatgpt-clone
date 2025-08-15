@@ -27,6 +27,10 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
 
   const hljsTheme = currentTheme === 'dark' ? atomOneDark : atomOneLight;
 
+  // Use integer pixel values to avoid sub-pixel rounding gaps between rows
+  const fontSize = 14;
+  const lineHeight = Math.round(fontSize * 1.6);
+
   const normalizeLanguage = React.useCallback((lang?: string): string | undefined => {
     if (!lang) return undefined; // allow auto-detect
     const l = String(lang).toLowerCase();
@@ -65,11 +69,11 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
           backgroundColor: 'transparent',
           padding: 0,
           margin: 0,
-          lineHeight: code.includes('\n') ? 1.6 : 1.2,
-          fontSize: 14,
+          fontSize,
+          lineHeight,
         }}
         highlighter="hljs"
-        renderer={(rendererProps) => <View {...rendererProps} />}
+        renderer={(rendererProps: any) => <View {...rendererProps} />}
         CodeTag={View}
         PreTag={View}
       >

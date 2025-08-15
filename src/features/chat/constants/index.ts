@@ -33,5 +33,7 @@ export const MAX_MESSAGES = 100;
 
 // Typing animation speed in milliseconds
 export const TYPING_ANIMATION_SPEED = 8;
+// Number of characters to reveal per non-whitespace step during typewriter animation
+export const TYPING_ANIMATION_CHUNK_SIZE = 3;
 
 export * from './debug';

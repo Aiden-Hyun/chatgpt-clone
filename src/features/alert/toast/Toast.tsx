@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
   TouchableOpacity
 } from 'react-native';
 import Reanimated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { useAppTheme } from '../../theme/theme';
 
@@ -19,6 +20,10 @@ interface ToastProps {
   duration?: number;
   onHide?: () => void;
   onPress?: () => void;
+  animation?: 'slide' | 'fade' | 'scale' | 'spring' | 'none';
+  dismissAnimation?: 'slide' | 'fade' | 'scale' | 'spring' | 'none';
+  position?: 'bottom' | 'top';
+  slideDistance?: number;
 }
 
 export const Toast: React.FC<ToastProps> = ({
@@ -28,46 +33,143 @@ export const Toast: React.FC<ToastProps> = ({
   duration = 3000,
   onHide,
   onPress,
+  animation = 'fade',
+  dismissAnimation,
+  position = 'bottom',
+  slideDistance = 100,
 }) => {
   const theme = useAppTheme();
-  const styles = createStyles(theme, type);
+  const styles = createStyles(theme, type, position);
   const opacity = useSharedValue(0);
-  const translateY = useSharedValue(-100);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+  // Track mount state to avoid reading shared values during render
+  const [mounted, setMounted] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const animationIdRef = useRef(0);
+
+  const hiddenOffset = position === 'bottom' ? -Math.abs(slideDistance) : Math.abs(slideDistance);
+  const exitMode = dismissAnimation ?? animation;
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [{ translateY: translateY.value }],
+      transform: [
+        { translateY: translateY.value },
+        { scale: scale.value },
+      ],
     };
   });
 
   useEffect(() => {
     if (visible) {
-      showToast();
-    } else if (opacity.value > 0) { // Only hide if it was visible
-      hideToast();
+      const nextId = animationIdRef.current + 1;
+      animationIdRef.current = nextId;
+      if (!mounted) setMounted(true);
+      showToast(nextId);
+    } else if (mounted) {
+      // Only attempt to hide if we were mounted
+      hideToast(animationIdRef.current);
     }
-  }, [visible]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [visible, mounted, animation, exitMode, hiddenOffset, duration]);
 
-  const showToast = () => {
-    opacity.value = withTiming(1, { duration: 300 });
-    translateY.value = withTiming(0, { duration: 300 });
+  const showToast = (id: number) => {
+    switch (animation) {
+      case 'none':
+        opacity.value = 1;
+        translateY.value = 0;
+        scale.value = 1;
+        break;
+      case 'fade':
+        opacity.value = 0;
+        translateY.value = 0;
+        scale.value = 1;
+        opacity.value = withTiming(1, { duration: 250 });
+        break;
+      case 'scale':
+        opacity.value = 0;
+        translateY.value = 0;
+        scale.value = 0.96;
+        opacity.value = withTiming(1, { duration: 220 });
+        scale.value = withTiming(1, { duration: 220 });
+        break;
+      case 'spring':
+        opacity.value = 0;
+        translateY.value = hiddenOffset;
+        scale.value = 1;
+        opacity.value = withTiming(1, { duration: 180 });
+        translateY.value = withSpring(0, { damping: 14, stiffness: 140, mass: 0.9 });
+        break;
+      case 'slide':
+      default:
+        opacity.value = 0;
+        translateY.value = hiddenOffset;
+        scale.value = 1;
+        opacity.value = withTiming(1, { duration: 220 });
+        translateY.value = withTiming(0, { duration: 300 });
+        break;
+    }
 
-    const timer = setTimeout(() => {
-      hideToast();
-    }, duration);
-
-    return () => clearTimeout(timer);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    if (duration > 0) {
+      timerRef.current = setTimeout(() => {
+        hideToast(id);
+      }, duration);
+    }
   };
 
-  const hideToast = () => {
-    opacity.value = withTiming(0, { duration: 200 });
-    translateY.value = withTiming(-100, { duration: 200 }, (isFinished) => {
-      if (isFinished) {
-        // Safely run the state update on the JS thread
+  const hideToast = (id?: number) => {
+    const finalize = () => {
+      if (id === undefined || id === animationIdRef.current) {
         if (onHide) runOnJS(onHide)();
+        runOnJS(setMounted)(false);
       }
-    });
+    };
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
+    switch (exitMode) {
+      case 'none':
+        opacity.value = 0;
+        translateY.value = position === 'bottom' ? -8 : 8;
+        finalize();
+        break;
+      case 'fade':
+        opacity.value = withTiming(0, { duration: 180 }, (finished) => {
+          if (finished) finalize();
+        });
+        break;
+      case 'scale':
+        opacity.value = withTiming(0, { duration: 160 });
+        scale.value = withTiming(0.96, { duration: 160 }, (finished) => {
+          if (finished) finalize();
+        });
+        break;
+      case 'spring':
+        opacity.value = withTiming(0, { duration: 160 });
+        translateY.value = withSpring(hiddenOffset, { damping: 16, stiffness: 140, mass: 0.9 }, (finished) => {
+          if (finished) finalize();
+        });
+        break;
+      case 'slide':
+      default:
+        opacity.value = withTiming(0, { duration: 160 });
+        translateY.value = withTiming(hiddenOffset, { duration: 220 }, (finished) => {
+          if (finished) finalize();
+        });
+        break;
+    }
   };
 
   const getIcon = () => {
@@ -79,13 +181,13 @@ export const Toast: React.FC<ToastProps> = ({
       case 'warning':
         return '⚠️';
       case 'info':
-        return 'ℹ️';
       default:
         return 'ℹ️';
     }
   };
 
-  if (!visible && opacity.value === 0) return null;
+  // Do not read shared values during render
+  if (!mounted) return null;
 
   return (
     <Reanimated.View
@@ -104,7 +206,7 @@ export const Toast: React.FC<ToastProps> = ({
       >
         <Text style={styles.icon}>{getIcon()}</Text>
         <Text style={styles.message}>{message}</Text>
-        <TouchableOpacity onPress={hideToast} style={styles.closeButton}>
+        <TouchableOpacity onPress={() => hideToast(animationIdRef.current)} style={styles.closeButton}>
           <Text style={styles.closeText}>✕</Text>
         </TouchableOpacity>
       </TouchableOpacity>
@@ -112,10 +214,10 @@ export const Toast: React.FC<ToastProps> = ({
   );
 };
 
-const createStyles = (theme: any, type: string) => StyleSheet.create({
+const createStyles = (theme: any, type: string, position: 'bottom' | 'top') => StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 24,
+    ...(position === 'bottom' ? { bottom: 24 } : { top: 24 }),
     left: 20,
     right: 20,
     zIndex: 9999,

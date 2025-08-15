@@ -1,11 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
 // import * as Clipboard from 'expo-clipboard';
 import React from 'react';
-import { Alert, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import { SyntaxHighlighterComponent } from '../SyntaxHighlighter';
 import { createCodeBlockStyles } from './CodeBlock.styles';
-import { useToast } from '../../../alert';
 
 interface CodeBlockProps {
   code: string;
@@ -37,7 +37,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     }
   };
 
-  const lines = code.split('\n');
+  const lines = React.useMemo(() => code.split('\n'), [code]);
 
   return (
     <View style={styles.container}>
@@ -66,22 +66,24 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
       {/* Code content */}
       <View style={styles.codeContainer}>
         {showLineNumbers ? (
-          <View>
-            {lines.map((line, idx) => (
-              <View key={idx} style={styles.lineContainer}>
-                <Text style={styles.lineNumber}>
-                  {(idx + 1).toString()}
-                </Text>
-                <View style={styles.codeContent}>
-                  <SyntaxHighlighterComponent
-                    code={line}
-                    language={language || 'text'}
-                    showLineNumbers={false}
-                  />
+          <ScrollView horizontal bounces={false} showsHorizontalScrollIndicator={false}>
+            <View>
+              {lines.map((line, idx) => (
+                <View key={idx} style={styles.lineContainer}>
+                  <Text style={styles.lineNumber} allowFontScaling={false}>
+                    {(idx + 1).toString()}
+                  </Text>
+                  <View style={styles.codeContent}>
+                    <SyntaxHighlighterComponent
+                      code={line && line.length > 0 ? line : ' '}
+                      language={language || 'text'}
+                      showLineNumbers={false}
+                    />
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          </ScrollView>
         ) : (
           <SyntaxHighlighterComponent
             code={code}

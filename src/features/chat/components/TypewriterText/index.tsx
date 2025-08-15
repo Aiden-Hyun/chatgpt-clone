@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import MarkdownDisplay from 'react-native-markdown-display';
-import { TYPING_ANIMATION_SPEED } from '../../constants';
+import { TYPING_ANIMATION_SPEED, TYPING_ANIMATION_CHUNK_SIZE } from '../../constants';
 
 interface TypewriterTextProps {
   text: string;
@@ -56,19 +56,16 @@ export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function
       }
 
       let nextIndex = currentIndexRef.current;
-      // Find the end of the current block of non-whitespace characters (the "word")
-      while (nextIndex < text.length && !/\s/.test(text[nextIndex])) {
-        nextIndex++;
-      }
+      const currentChar = text[nextIndex];
 
-      // If we are at a whitespace, it means the "word" was empty. We should advance at least one character.
-      if (nextIndex === currentIndexRef.current) {
-        nextIndex++;
-      }
-
-      // Now, include all subsequent whitespace characters
-      while (nextIndex < text.length && /\s/.test(text[nextIndex])) {
-        nextIndex++;
+      if (/\s/.test(currentChar)) {
+        // Find the end of the whitespace block
+        while (nextIndex < text.length && /\s/.test(text[nextIndex])) {
+          nextIndex++;
+        }
+      } else {
+        // Advance by a chunk of characters to reduce re-render frequency
+        nextIndex = Math.min(text.length, nextIndex + TYPING_ANIMATION_CHUNK_SIZE);
       }
 
       const textToDisplay = text.slice(0, nextIndex);

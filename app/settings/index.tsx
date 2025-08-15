@@ -30,12 +30,21 @@ export default function SettingsScreen() {
   }, [userName]);
 
   const handleBack = () => {
-    router.back();
+    try {
+      const canGoBack = (router as any).canGoBack?.() ?? false;
+      if (canGoBack) {
+        router.back();
+      } else {
+        router.replace('/chat');
+      }
+    } catch {
+      router.replace('/chat');
+    }
   };
 
   const handleLogout = async () => {
     await logout();
-    router.replace('/login');
+    router.replace('/auth');
   };
 
   const handleNameEdit = () => {
