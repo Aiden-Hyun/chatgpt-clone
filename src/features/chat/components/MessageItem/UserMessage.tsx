@@ -1,6 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
+import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { createUserMessageStyles } from './UserMessage.styles';
@@ -20,6 +22,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   const styles = createUserMessageStyles(theme);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
+  const { showSuccess, showError } = useToast();
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
@@ -65,12 +68,13 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             </View>
             <View style={{ flexDirection: 'row', marginTop: 6, gap: 12 }}>
               <TouchableOpacity
-                onPress={() => {
+                onPress={async () => {
                   try {
-                    if (typeof navigator !== 'undefined' && navigator.clipboard && message.content) {
-                      navigator.clipboard.writeText(message.content);
-                    }
-                  } catch {}
+                    await copyToClipboard(message.content);
+                    try { showSuccess('Copied to clipboard'); } catch {}
+                  } catch {
+                    try { showError('Failed to copy'); } catch {}
+                  }
                   console.log('[USER-MSG] copy');
                 }}
                 style={{ padding: 4 }}

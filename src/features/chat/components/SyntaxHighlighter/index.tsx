@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
 import { useThemeContext } from '../../../theme/ThemeContext';
 import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
@@ -79,6 +79,8 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
           margin: 0,
         }}
         highlighter="prism"
+        PreTag={ScrollView}
+        CodeTag={ScrollView}
         
       >
         {code}

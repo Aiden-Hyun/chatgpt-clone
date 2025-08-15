@@ -53,7 +53,6 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
           style={styles.iconButton}
           onPress={() => {
             onCopy?.();
-            try { showSuccess('Copied to clipboard'); } catch {}
           }}
         >
           <MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />

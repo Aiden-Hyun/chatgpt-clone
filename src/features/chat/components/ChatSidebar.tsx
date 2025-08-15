@@ -5,7 +5,8 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { createChatSidebarStyles } from './ChatSidebar.styles';
 
@@ -34,6 +35,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const { userName } = useUserInfo();
   const { rooms, deleteRoom, fetchRooms } = useChatRooms();
   const styles = createChatSidebarStyles(theme);
+  const insets = useSafeAreaInsets();
 
   // Local state for room drafts loaded from storage
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -154,7 +156,16 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       onRequestClose={onClose}
     >
       <View style={styles.sidebarOverlay}>
-        <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
+        <Animated.View
+          style={[
+            styles.sidebar,
+            {
+              paddingTop: Platform.OS === 'ios' ? insets.top + 6 : 0,
+              paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}
+        >
           {/* Header */}
           <View style={styles.sidebarHeader}>
             <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>

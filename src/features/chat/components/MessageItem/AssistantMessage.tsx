@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
+import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
+import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
-import { TYPING_ANIMATION_SPEED, TYPING_ANIMATION_CHUNK_SIZE } from '../../constants';
+import { TYPING_ANIMATION_CHUNK_SIZE, TYPING_ANIMATION_SPEED } from '../../constants';
 import { ChatMessage } from '../../types';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { MessageInteractionBar } from '../MessageInteractionBar';
@@ -24,6 +26,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   
   // Memoize styles to prevent re-creation on every render
   const styles = React.useMemo(() => createAssistantMessageStyles(theme), [theme]);
+  const { showSuccess, showError } = useToast();
   
   const [displayedContent, setDisplayedContent] = useState('');
   const isAnimating = message.state === 'animating';
@@ -88,6 +91,15 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
       {isLastInGroup && !isAnimating && (
         <MessageInteractionBar
           onRegenerate={onRegenerate}
+          onCopy={async () => {
+            try {
+              const text = message.fullContent || message.content || '';
+              await copyToClipboard(text);
+              try { showSuccess('Copied to clipboard'); } catch {}
+            } catch {
+              try { showError('Failed to copy'); } catch {}
+            }
+          }}
         />
       )}
     </View>

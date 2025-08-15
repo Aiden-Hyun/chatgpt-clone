@@ -1,7 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 // import * as Clipboard from 'expo-clipboard';
 import React from 'react';
-import { Alert, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import { SyntaxHighlighterComponent } from '../SyntaxHighlighter';
@@ -20,20 +21,14 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = React.useMemo(() => createCodeBlockStyles(theme), [theme]);
-  const { showSuccess } = useToast();
+  const { showSuccess, showError } = useToast();
 
-  const copyToClipboard = async () => {
+  const handleCopy = async () => {
     try {
-      // Use the same pattern as the existing app for clipboard
-      if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
-        await navigator.clipboard.writeText(code);
-      } else {
-        // Clipboard.setStringAsync(code); // Commented out as per edit hint
-      }
-      Alert.alert('Copied!', 'Code copied to clipboard');
-    } catch (error) {
-      console.error('Failed to copy:', error);
-      Alert.alert('Error', 'Failed to copy code');
+      await copyToClipboard(code);
+      try { showSuccess('Copied to clipboard'); } catch {}
+    } catch {
+      try { showError('Failed to copy'); } catch {}
     }
   };
 
@@ -48,10 +43,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         </Text>
         <TouchableOpacity 
           style={styles.copyButton}
-          onPress={() => {
-            // Clipboard.setStringAsync(String(children));
-            showSuccess('Copy functionality disabled.');
-          }}
+          onPress={handleCopy}
           activeOpacity={0.7}
         >
           <MaterialIcons 
