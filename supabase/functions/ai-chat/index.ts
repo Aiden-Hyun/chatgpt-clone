@@ -5,8 +5,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { config } from "../shared/config.ts";
 import { callAnthropic } from "./providers/anthropic.ts";
-import { callOpenAI } from "./providers/openai.ts";
 import { callOpenAIImage } from "./providers/openai-image.ts";
+import { callOpenAI } from "./providers/openai.ts";
 
 serve(async (req) => {
   const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
@@ -39,10 +39,10 @@ serve(async (req) => {
 
     // --- API Routing ---
     let responseData;
-    if (model === 'gpt-image-1' || model.startsWith('gpt-image')) {
+    if (model === 'gpt-image-1' || model.startsWith('gpt-image') || model === 'dall-e-3' || model.startsWith('dall-e')) {
       console.log('[ROUTER] Routing to OpenAI Images...');
       const prompt = messages?.slice().reverse().find((m: any) => m.role === 'user')?.content ?? '';
-      responseData = await callOpenAIImage(prompt);
+      responseData = await callOpenAIImage(prompt, { model });
     } else if (model.startsWith('gpt-')) {
       console.log('[ROUTER] Routing to OpenAI...');
       responseData = await callOpenAI(model, messages);
@@ -73,8 +73,12 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error("Error processing request:", error.message);
-    return new Response(JSON.stringify({ error: error.message }), {
+    try {
+      console.error('[EDGE] Error processing request', { message: error?.message, stack: error?.stack });
+    } catch (_e) {
+      console.error('[EDGE] Error processing request (non-standard error object)');
+    }
+    return new Response(JSON.stringify({ error: error?.message || 'Unknown error' }), {
       status: 400,
       headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": ALLOWED_ORIGIN },
     });

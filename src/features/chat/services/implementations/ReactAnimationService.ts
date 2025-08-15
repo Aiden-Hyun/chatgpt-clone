@@ -15,13 +15,6 @@ export class ReactAnimationService implements IAnimationService {
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 
-  private isImageMarkdown(content: string): boolean {
-    const trimmed = (content || '').trim();
-    if (!trimmed) return false;
-    // Basic check for markdown image syntax ![alt](url)
-    return /^!\[[^\]]*\]\([^\)]+\)/.test(trimmed);
-  }
-
   setMessageFullContentAndAnimate(args: {
     fullContent: string;
     regenerateIndex?: number;
@@ -32,21 +25,13 @@ export class ReactAnimationService implements IAnimationService {
       this.setMessages((prev) => {
         const messageToUpdate = prev[args.regenerateIndex!];
         if (messageToUpdate?.id) {
-          if (this.isImageMarkdown(args.fullContent)) {
-            // Directly set image content and mark completed (skip typewriter)
-            return prev.map(msg => msg.id === messageToUpdate.id
-              ? { ...msg, content: args.fullContent, fullContent: undefined, state: 'completed' }
-              : msg
-            );
-          } else {
-            // Use our unified regeneration handler
-            this.messageStateManager.handleRegeneration(
-              messageToUpdate.id,
-              args.fullContent
-            );
-            // Start centralized typewriter job for regeneration
-            this.startTypewriterJob(messageToUpdate.id, args.fullContent);
-          }
+          // Use our unified regeneration handler
+          this.messageStateManager.handleRegeneration(
+            messageToUpdate.id,
+            args.fullContent
+          );
+          // Start centralized typewriter job for regeneration
+          this.startTypewriterJob(messageToUpdate.id, args.fullContent);
         }
         return prev;
       });
@@ -55,20 +40,12 @@ export class ReactAnimationService implements IAnimationService {
     
     // Case 2: Direct message ID
     if (args.messageId) {
-      if (this.isImageMarkdown(args.fullContent)) {
-        // Directly set image content and mark completed (skip typewriter)
-        this.setMessages(prev => prev.map(msg => msg.id === args.messageId
-          ? { ...msg, content: args.fullContent, fullContent: undefined, state: 'completed' }
-          : msg
-        ));
-      } else {
-        // For new messages, use regular animation
-        this.messageStateManager.finishStreamingAndAnimate(
-          args.messageId,
-          args.fullContent
-        );
-        this.startTypewriterJob(args.messageId, args.fullContent);
-      }
+      // For new messages, use regular animation
+      this.messageStateManager.finishStreamingAndAnimate(
+        args.messageId,
+        args.fullContent
+      );
+      this.startTypewriterJob(args.messageId, args.fullContent);
       return;
     }
     
@@ -80,19 +57,11 @@ export class ReactAnimationService implements IAnimationService {
           (msg) => msg.role === 'assistant' && msg.state === 'loading'
         );
       if (lastLoadingAssistant?.id) {
-        if (this.isImageMarkdown(args.fullContent)) {
-          // Directly set image content and mark completed (skip typewriter)
-          return prev.map(msg => msg.id === lastLoadingAssistant.id
-            ? { ...msg, content: args.fullContent, fullContent: undefined, state: 'completed' }
-            : msg
-          );
-        } else {
-          this.messageStateManager.finishStreamingAndAnimate(
-            lastLoadingAssistant.id,
-            args.fullContent
-          );
-          this.startTypewriterJob(lastLoadingAssistant.id, args.fullContent);
-        }
+        this.messageStateManager.finishStreamingAndAnimate(
+          lastLoadingAssistant.id,
+          args.fullContent
+        );
+        this.startTypewriterJob(lastLoadingAssistant.id, args.fullContent);
       }
       return prev;
     });

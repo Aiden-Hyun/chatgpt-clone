@@ -8,8 +8,8 @@ import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
 // @ts-ignore - library lacks proper types for RN env
 import SyntaxHighlighter from 'react-native-syntax-highlighter';
  
-// @ts-ignore - styles package exports CommonJS modules
-import { atomOneDark, atomOneLight } from 'react-syntax-highlighter/styles/hljs';
+// @ts-ignore - use ESM style bundle for Metro compatibility
+import { atomOneDark, atomOneLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 interface SyntaxHighlighterComponentProps {
   code: string;
