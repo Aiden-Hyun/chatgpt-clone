@@ -2,36 +2,41 @@
 // supabase/functions/ai-chat/providers/openai-image.ts
 import { config } from '../../shared/config.ts';
 
-async function tryImagesEndpoint({ prompt, size, headers, model }: { prompt: string; size: string; headers: Record<string, string>; model: string }) {
-  const res = await fetch('https://api.openai.com/v1/images', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ model, prompt, size, response_format: 'url' }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    console.error('[OpenAI Images] /v1/images error', { status: res.status, body: data });
-    throw new Error(data?.error?.message || `OpenAI /v1/images error: ${res.status}`);
-  }
-  const url = data?.data?.[0]?.url;
-  if (!url) throw new Error('OpenAI returned no image URL');
-  return url;
-}
-
 async function tryGenerationsEndpoint({ prompt, size, headers, model }: { prompt: string; size: string; headers: Record<string, string>; model: string }) {
+  // The legacy generations endpoint is primarily for DALL·E models.
+  // Some deployments reject response_format; construct body conditionally.
+  const body: Record<string, unknown> = { model, prompt, size };
+  if (model.startsWith('dall-e')) {
+    // Return base64 to avoid private Azure URLs requiring Authorization headers
+    body.response_format = 'b64_json';
+  }
+  try {
+    console.log('[OpenAI Images] /v1/images/generations request', { model, bodyKeys: Object.keys(body) });
+  } catch {}
   const res = await fetch('https://api.openai.com/v1/images/generations', {
     method: 'POST',
     headers,
-    body: JSON.stringify({ model, prompt, size, response_format: 'url' }),
+    body: JSON.stringify(body),
   });
-  const data = await res.json();
+  const raw = await res.text();
+  let data: any = null;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    console.error('[OpenAI Images] Non-JSON response from OpenAI', { status: res.status, raw: raw?.slice(0, 200) });
+    throw new Error(`OpenAI images response was not JSON (status ${res.status})`);
+  }
   if (!res.ok) {
     console.error('[OpenAI Images] /v1/images/generations error', { status: res.status, body: data });
     throw new Error(data?.error?.message || `OpenAI /v1/images/generations error: ${res.status}`);
   }
-  const url = data?.data?.[0]?.url;
-  if (!url) throw new Error('OpenAI returned no image URL');
-  return url;
+  const first = data?.data?.[0];
+  const url = first?.url as string | undefined;
+  const b64 = first?.b64_json as string | undefined;
+  // Return both so caller can choose (upload to storage or inline render)
+  if (b64) return { kind: 'b64', value: b64 } as const;
+  if (url) return { kind: 'url', value: url } as const;
+  throw new Error('OpenAI returned no image content');
 }
 
 export async function callOpenAIImage(prompt: string, opts?: { size?: '512x512' | '1024x1024' | '256x256'; model?: string }) {
@@ -48,19 +53,22 @@ export async function callOpenAIImage(prompt: string, opts?: { size?: '512x512' 
   if (org) headers['OpenAI-Organization'] = org;
   if (project) headers['OpenAI-Project'] = project;
 
-  let imageUrl: string | null = null;
+  let imageResult: { kind: 'b64' | 'url'; value: string } | null = null;
   if (model.startsWith('dall-e')) {
     // DALL·E models use generations endpoint
-    imageUrl = await tryGenerationsEndpoint({ prompt, size, headers, model });
+    console.log('[OpenAI Images] Routing: DALL·E generations');
+    imageResult = await tryGenerationsEndpoint({ prompt, size, headers, model });
+  } else if (model.startsWith('gpt-image')) {
+    // gpt-image-1 uses the generations endpoint (returns b64_json)
+    console.log('[OpenAI Images] Routing: gpt-image /v1/images/generations');
+    imageResult = await tryGenerationsEndpoint({ prompt, size, headers, model });
   } else {
-    // gpt-image models: try /v1/images first, then fallback
-    try {
-      imageUrl = await tryImagesEndpoint({ prompt, size, headers, model });
-    } catch (e1) {
-      console.warn('[OpenAI Images] /v1/images failed, trying /v1/images/generations', e1?.message);
-      imageUrl = await tryGenerationsEndpoint({ prompt, size, headers, model });
-    }
+    throw new Error(`Unsupported image model: ${model}`);
   }
+
+  const imageUrl = imageResult?.kind === 'b64'
+    ? `data:image/png;base64,${imageResult.value}`
+    : imageResult?.value ?? '';
 
   return {
     choices: [
@@ -71,7 +79,8 @@ export async function callOpenAIImage(prompt: string, opts?: { size?: '512x512' 
         },
       },
     ],
-    model: 'gpt-image-1',
+    model,
+    image: imageResult?.kind === 'b64' ? { b64: imageResult.value, contentType: 'image/png' } : undefined,
   };
 }
 

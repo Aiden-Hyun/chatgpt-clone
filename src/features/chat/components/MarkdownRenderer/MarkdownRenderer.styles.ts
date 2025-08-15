@@ -211,5 +211,31 @@ export const createMarkdownRendererStyles = (theme: any) => {
       marginVertical: theme.spacing.xl,
       borderWidth: 0,
     },
+
+    // Images
+    image: {
+      width: '100%',
+      height: 480,
+      borderRadius: theme.borderRadius.lg,
+      backgroundColor: theme.colors.background.tertiary,
+    },
+    image_container: {
+      position: 'relative',
+      width: '100%',
+      alignSelf: 'stretch',
+      borderRadius: theme.borderRadius.lg,
+      overflow: 'hidden',
+      marginVertical: theme.spacing.md,
+      backgroundColor: theme.colors.background.tertiary,
+    },
+    image_overlayButton: {
+      position: 'absolute',
+      right: 8,
+      bottom: 8,
+      backgroundColor: 'rgba(26, 32, 44, 0.6)',
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      borderRadius: theme.borderRadius.lg,
+    },
   });
 };

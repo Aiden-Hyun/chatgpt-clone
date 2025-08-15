@@ -43,6 +43,29 @@ serve(async (req) => {
       console.log('[ROUTER] Routing to OpenAI Images...');
       const prompt = messages?.slice().reverse().find((m: any) => m.role === 'user')?.content ?? '';
       responseData = await callOpenAIImage(prompt, { model });
+
+      // If we received base64 image content, upload it to Supabase Storage for a stable URL
+      try {
+        const b64 = responseData?.image?.b64 as string | undefined;
+        const contentType = responseData?.image?.contentType as string | undefined;
+        if (b64 && user?.id && roomId) {
+          const serviceClient = createClient(config.secrets.supabase.url(), config.secrets.supabase.serviceRoleKey());
+          const binary = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+          const filename = `${user.id}/${roomId}/${clientMessageId || Date.now()}.png`;
+          const uploadRes = await serviceClient.storage.from('generated-images').upload(filename, binary, {
+            contentType: contentType || 'image/png',
+            upsert: true,
+          });
+          if (uploadRes.error) throw uploadRes.error;
+          const { data: pub } = serviceClient.storage.from('generated-images').getPublicUrl(filename);
+          const publicUrl = pub?.publicUrl;
+          if (publicUrl) {
+            responseData.choices[0].message.content = `![${prompt}](${publicUrl})`;
+          }
+        }
+      } catch (e) {
+        console.error('[ROUTER] Failed to upload image to Storage; falling back to inline data URI', { message: e?.message });
+      }
     } else if (model.startsWith('gpt-')) {
       console.log('[ROUTER] Routing to OpenAI...');
       responseData = await callOpenAI(model, messages);

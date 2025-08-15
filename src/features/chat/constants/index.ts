@@ -15,6 +15,7 @@ export const AVAILABLE_MODELS = [
   { label: 'GPT-4', value: 'gpt-4', provider: 'openai' },
   { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo', provider: 'openai' },
   { label: 'GPT Image 1', value: 'gpt-image-1', provider: 'openai' },
+  { label: 'DALL·E 3', value: 'dall-e-3', provider: 'openai' },
 
   // Anthropic Models
   { label: 'Claude Opus 4.1', value: 'claude-opus-4-1-20250805', provider: 'anthropic' },

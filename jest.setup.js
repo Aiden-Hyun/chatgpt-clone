@@ -22,6 +22,25 @@ global.console = {
   warn: jest.fn(),
 };
 
+// Provide required app config env vars for tests
+process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'http://localhost:54321';
+process.env.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'test_anon_key';
+process.env.EDGE_FUNCTION_BASE_URL = process.env.EDGE_FUNCTION_BASE_URL || 'http://localhost:54321/functions/v1';
+
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+  cacheDirectory: '/tmp/',
+  writeAsStringAsync: jest.fn(() => Promise.resolve()),
+  downloadAsync: jest.fn(() => Promise.resolve({ uri: '/tmp/image.png' })),
+  EncodingType: { Base64: 'base64' },
+}));
+
+// Mock expo-media-library
+jest.mock('expo-media-library', () => ({
+  requestPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+  saveToLibraryAsync: jest.fn(() => Promise.resolve()),
+}));
+
 // Mock expo-router
 jest.mock('expo-router', () => ({
   router: {
@@ -35,6 +54,20 @@ jest.mock('expo-router', () => ({
     replace: jest.fn(),
     back: jest.fn(),
   })),
+}));
+
+// Mock expo-constants to provide expoConfig.extra for tests
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: {
+      extra: {
+        supabaseUrl: process.env.SUPABASE_URL || 'http://localhost:54321',
+        supabaseAnonKey: process.env.SUPABASE_ANON_KEY || 'test_anon_key',
+        edgeFunctionBaseUrl: process.env.EDGE_FUNCTION_BASE_URL || 'http://localhost:54321/functions/v1',
+      },
+    },
+  },
 }));
 
 // Mock @react-native-async-storage/async-storage

@@ -79,5 +79,9 @@
     <string>Light</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app saves generated images to your Photo Library.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow access to your Photo Library to save generated images.</string>
   </dict>
 </plist>

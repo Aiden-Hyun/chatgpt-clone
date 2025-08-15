@@ -1,9 +1,14 @@
+import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
-import { Text } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import { MaterialIcons } from '@expo/vector-icons';
 import MarkdownDisplay, { MarkdownIt } from 'react-native-markdown-display';
 import { useAppTheme } from '../../../theme/theme';
 import { CodeBlock } from '../CodeBlock';
 import { createMarkdownRendererStyles } from './MarkdownRenderer.styles';
+import { useToast } from '../../../alert';
 
 interface MarkdownRendererProps {
   children: string;
@@ -16,6 +21,69 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = React.useMemo(() => createMarkdownRendererStyles(theme), [theme]);
+  const { showError, showSuccess } = useToast();
+  const [downloadingMap, setDownloadingMap] = React.useState<Record<string, boolean>>({});
+  const setDownloading = React.useCallback((key: string, value: boolean) => {
+    setDownloadingMap(prev => ({ ...prev, [key]: value }));
+  }, []);
+  const sanitizeFilename = (name: string) =>
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9-_]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40) || 'image';
+  const getExtensionFromDataUrl = (src: string) => {
+    const match = src.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/);
+    if (!match) return 'png';
+    const mime = match[1];
+    const parts = mime.split('/');
+    return parts[1] || 'png';
+  };
+  const saveImageAsync = React.useCallback(async (src: string, alt: string) => {
+    const key = src;
+    try {
+      setDownloading(key, true);
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (!permission.granted) {
+        showError('Permission required to save images');
+        return;
+      }
+      let fileUri = '';
+      if (src.startsWith('data:')) {
+        const ext = getExtensionFromDataUrl(src);
+        const base64 = src.split('base64,')[1];
+        const filename = `${sanitizeFilename(alt || 'image')}-${Date.now()}.${ext}`;
+        fileUri = `${FileSystem.cacheDirectory}${filename}`;
+        await FileSystem.writeAsStringAsync(fileUri, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+      } else {
+        const urlExt = (() => {
+          try {
+            const url = new URL(src);
+            const pathname = url.pathname;
+            const maybe = pathname.split('.').pop() || '';
+            const clean = maybe.split('?')[0].split('#')[0];
+            if (clean && clean.length <= 5) return clean;
+            return 'png';
+          } catch {
+            const maybe = src.split('.').pop() || '';
+            const clean = maybe.split('?')[0].split('#')[0];
+            return clean || 'png';
+          }
+        })();
+        const filename = `${sanitizeFilename(alt || 'image')}-${Date.now()}.${urlExt}`;
+        fileUri = `${FileSystem.cacheDirectory}${filename}`;
+        await FileSystem.downloadAsync(src, fileUri);
+      }
+      await MediaLibrary.saveToLibraryAsync(fileUri);
+      try { showSuccess('Image saved to Photos'); } catch {}
+    } catch {
+      try { showError('Failed to save image'); } catch {}
+    } finally {
+      setDownloading(key, false);
+    }
+  }, [setDownloading, showError, showSuccess]);
   
   // Use MarkdownIt from react-native-markdown-display to configure parsing
   const md = React.useMemo(
@@ -32,7 +100,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   // Custom rules for specific markdown elements
   const customRules = {
     // Custom code block renderer using our CodeBlock component
-    code_block: (node: any, children: any, parent: any, styles: any) => {
+    code_block: (node: any, children: any, parent: any, _mdStyles: any) => {
       const { content } = node;
       const language = node.sourceInfo || 'text';
       
@@ -47,7 +115,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
     
     // Custom fence renderer (```code``` blocks)
-    fence: (node: any, children: any, parent: any, styles: any) => {
+    fence: (node: any, children: any, parent: any, _mdStyles: any) => {
       const { content } = node;
       const language = node.sourceInfo || 'text';
       
@@ -62,11 +130,43 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
     
     // Custom inline code renderer - simple styled text
-    code_inline: (node: any, children: any, parent: any, styles: any) => {
+    code_inline: (node: any, children: any, parent: any, _mdStyles: any) => {
       return (
         <Text key={node.key} style={styles.code_inline}>
           {node.content}
         </Text>
+      );
+    },
+    
+    // Custom image renderer to avoid key spread warnings from default implementation
+    image: (node: any, children: any, parent: any, _mdStyles: any) => {
+      const src = node?.attributes?.src || node?.attributes?.href || node?.content || '';
+      const alt = node?.attributes?.alt || node?.content || 'image';
+      if (!src) return null;
+      const isDownloading = !!downloadingMap[src];
+      return (
+        <View key={node.key} style={styles.image_container}>
+          <ExpoImage
+            source={{ uri: src }}
+            style={styles.image}
+            contentFit="contain"
+            accessibilityLabel={alt}
+          />
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Save image"
+            style={styles.image_overlayButton}
+            onPress={() => saveImageAsync(src, alt)}
+            onLongPress={() => saveImageAsync(src, alt)}
+            activeOpacity={0.8}
+          >
+            {isDownloading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <MaterialIcons name="file-download" size={20} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
       );
     },
   };
@@ -112,6 +212,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         td: styles.td,
         link: styles.link,
         hr: styles.hr,
+        image: styles.image,
       }}
       rules={customRules}
     >
