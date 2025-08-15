@@ -1,5 +1,6 @@
 // src/features/chat/model/useRoomModel.ts
 import { useCallback, useEffect, useState } from 'react';
+import { router } from 'expo-router';
 import { ModelRepository } from './ModelRepository';
 import { ModelStore, RoomKey, RoomModelState } from './ModelStore';
 
@@ -25,6 +26,7 @@ export function useRoomModel(roomId: number | null) {
           ModelStore.set(roomId, { model: fromDb, status: 'ready' });
         } else {
           ModelStore.set(roomId, { model: state.model, status: 'ready' });
+          try { router.replace('/chat'); } catch {}
         }
       } else if (!ModelStore.get('new')) {
         if (__DEV__) console.log('[useRoomModel] init pending for new room');

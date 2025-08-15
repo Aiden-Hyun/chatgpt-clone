@@ -6,8 +6,8 @@ import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { createChatSidebarStyles } from './ChatSidebar.styles';
 import mobileStorage from '../../../shared/lib/mobileStorage';
+import { createChatSidebarStyles } from './ChatSidebar.styles';
 
 interface ChatSidebarProps {
   isVisible: boolean;

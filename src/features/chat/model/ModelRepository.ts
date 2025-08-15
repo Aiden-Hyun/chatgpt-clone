@@ -9,7 +9,7 @@ export const ModelRepository = {
         .from('chatrooms')
         .select('model')
         .eq('id', roomId)
-        .single();
+        .maybeSingle();
       const model = (data as any)?.model ?? null;
       if (__DEV__) console.log('[ModelRepository.get] result', { roomId, model });
       return model;

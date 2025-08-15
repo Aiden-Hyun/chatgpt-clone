@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import MarkdownDisplay from 'react-native-markdown-display';
+import { TYPING_ANIMATION_SPEED } from '../../constants';
 
 interface TypewriterTextProps {
   text: string;
@@ -18,7 +19,7 @@ interface TypewriterTextProps {
  */
 export const TypewriterText: React.FC<TypewriterTextProps> = React.memo(function TypewriterText({
   text,
-  speed = 25,
+  speed = TYPING_ANIMATION_SPEED,
   showCursor = true,
   cursorChar = '▍',
   style,

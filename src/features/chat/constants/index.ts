@@ -14,6 +14,7 @@ export const AVAILABLE_MODELS = [
   { label: 'GPT-4 Turbo', value: 'gpt-4-turbo', provider: 'openai' },
   { label: 'GPT-4', value: 'gpt-4', provider: 'openai' },
   { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo', provider: 'openai' },
+  { label: 'GPT Image 1', value: 'gpt-image-1', provider: 'openai' },
 
   // Anthropic Models
   { label: 'Claude Opus 4.1', value: 'claude-opus-4-1-20250805', provider: 'anthropic' },
@@ -30,6 +31,6 @@ export const AVAILABLE_MODELS = [
 export const MAX_MESSAGES = 100;
 
 // Typing animation speed in milliseconds
-export const TYPING_ANIMATION_SPEED = 5;
+export const TYPING_ANIMATION_SPEED = 8;
 
 export * from './debug';

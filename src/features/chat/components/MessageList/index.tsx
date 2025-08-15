@@ -3,6 +3,7 @@ import { useAppTheme } from '@/features/theme/theme';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
+import { TYPING_ANIMATION_SPEED } from '../../constants';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';
@@ -62,7 +63,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     'welcome.help_discover'
   ], []);
 
-  const typingSpeed = 15; // milliseconds per character
+  const typingSpeed = TYPING_ANIMATION_SPEED; // milliseconds per character
 
   // ✅ STATE MACHINE: Derive loading state from message states
   const isNewMessageLoading = useMemo(() => {

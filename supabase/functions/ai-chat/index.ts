@@ -6,6 +6,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { config } from "../shared/config.ts";
 import { callAnthropic } from "./providers/anthropic.ts";
 import { callOpenAI } from "./providers/openai.ts";
+import { callOpenAIImage } from "./providers/openai-image.ts";
 
 serve(async (req) => {
   const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
@@ -38,7 +39,11 @@ serve(async (req) => {
 
     // --- API Routing ---
     let responseData;
-    if (model.startsWith('gpt-')) {
+    if (model === 'gpt-image-1' || model.startsWith('gpt-image')) {
+      console.log('[ROUTER] Routing to OpenAI Images...');
+      const prompt = messages?.slice().reverse().find((m: any) => m.role === 'user')?.content ?? '';
+      responseData = await callOpenAIImage(prompt);
+    } else if (model.startsWith('gpt-')) {
       console.log('[ROUTER] Routing to OpenAI...');
       responseData = await callOpenAI(model, messages);
     } else if (model.startsWith('claude-')) {
