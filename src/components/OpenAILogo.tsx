@@ -1,7 +1,6 @@
 import { useThemeContext } from '@/features/theme/ThemeContext';
+import { Image } from 'expo-image';
 import React from 'react';
-import BlackLogo from '../../assets/OpenAI/SVGs/OpenAI-black-monoblossom.svg';
-import WhiteLogo from '../../assets/OpenAI/SVGs/OpenAI-white-monoblossom.svg';
 
 interface OpenAILogoProps {
   size?: number;
@@ -10,10 +9,17 @@ interface OpenAILogoProps {
 
 export const OpenAILogo: React.FC<OpenAILogoProps> = ({ size = 16, variant }) => {
   const { currentTheme } = useThemeContext();
-  const effectiveTheme = variant
-    ? (variant === 'white' ? 'dark' : 'light')
-    : currentTheme;
+  const isDarkTheme = variant ? variant === 'white' : currentTheme === 'dark';
 
-  const Logo = effectiveTheme === 'dark' ? WhiteLogo : BlackLogo;
-  return <Logo width={size} height={size} />;
+  const source = isDarkTheme
+    ? require('../../assets/OpenAI/PNGs/OpenAI-white-monoblossom.png')
+    : require('../../assets/OpenAI/PNGs/OpenAI-black-monoblossom.png');
+
+  return (
+    <Image
+      source={source}
+      style={{ width: size, height: size }}
+      contentFit="contain"
+    />
+  );
 };
