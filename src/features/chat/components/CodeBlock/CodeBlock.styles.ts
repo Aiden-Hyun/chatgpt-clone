@@ -24,11 +24,13 @@ export const createCodeBlockStyles = (theme: any) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.sm,
       backgroundColor: theme.colors.background.secondary,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.light,
+      
     },
     
     languageLabel: {
@@ -56,13 +58,14 @@ export const createCodeBlockStyles = (theme: any) => {
     },
     
     codeContainer: {
+      
       padding: theme.spacing.lg,
     },
     
     lineContainer: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      marginBottom: 0,
+      //marginBottom: 0,
       height: 22,
     },
     
@@ -81,7 +84,7 @@ export const createCodeBlockStyles = (theme: any) => {
       minWidth: 24,
       marginRight: theme.spacing.md,
       paddingTop: 0,
-      lineHeight: 22,
+      //lineHeight: 22,
       includeFontPadding: false as any,
       fontVariant: tabularNums,
     },
@@ -94,7 +97,7 @@ export const createCodeBlockStyles = (theme: any) => {
       fontFamily: Platform.OS === 'web' ? (monoFont as any) : (codeFontNative as any),
       fontSize: 14,
       color: theme.colors.text.primary,
-      lineHeight: 22,
+      //lineHeight: 22,
       includeFontPadding: false as any,
     },
     

@@ -29,7 +29,8 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
 
   // Use integer pixel values to avoid sub-pixel rounding gaps between rows
   const fontSize = 14;
-  const lineHeight = Math.round(fontSize * 1.6);
+  // Keep for future alignment tuning if needed
+  // const lineHeight = Math.round(fontSize * 1.6);
 
   // Choose font per platform; on native we load 'CascadiaMono' via useFonts
   const codeFont = Platform.OS === 'web'
@@ -76,12 +77,9 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
           backgroundColor: 'transparent',
           padding: 0,
           margin: 0,
-          lineHeight,
         }}
         highlighter="prism"
-        renderer={(rendererProps: any) => <View {...rendererProps} />}
-        CodeTag={View}
-        PreTag={View}
+        
       >
         {code}
       </SyntaxHighlighter>

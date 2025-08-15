@@ -207,7 +207,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         em: styles.em,
         
         // Inline code (for fallback)
-        code_inline: styles.code_inline,
+        //code_inline: styles.code_inline,
         
         // Lists
         bullet_list: styles.bullet_list,
