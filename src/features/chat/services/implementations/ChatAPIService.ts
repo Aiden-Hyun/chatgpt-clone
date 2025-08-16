@@ -1,7 +1,6 @@
 // src/features/chat/services/implementations/ChatAPIService.ts
 import { appConfig } from '@/shared/lib/config';
 import { fetchJson } from '../../lib/fetch';
-import { NETWORK } from '@/shared/lib/constants';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { AIApiRequest, AIApiResponse } from '../types';
 
@@ -29,7 +28,6 @@ export class ChatAPIService implements IAIApiService {
         },
         body: JSON.stringify(payload),
       },
-      NETWORK.REQUEST_TIMEOUT_MS
     );
     console.log(`[ChatAPIService] Received API response for model: ${request.model}`);
     return response;

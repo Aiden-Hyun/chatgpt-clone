@@ -1,5 +1,5 @@
 // src/features/chat/lib/fetch.ts
-
+import { NETWORK } from '@/shared/lib/constants';
 /**
  * Fetch JSON from a URL with abort + timeout and proper error handling
  * - Respects an external AbortSignal if provided
@@ -9,7 +9,7 @@
 export async function fetchJson<T>(
   url: string,
   options: RequestInit = {},
-  timeoutMs = 30000
+  timeoutMs = NETWORK.REQUEST_TIMEOUT_MS,
 ): Promise<T> {
   const controller = new AbortController();
   let timedOut = false;
@@ -52,7 +52,7 @@ export async function fetchJson<T>(
     const text = await res.text();
     try {
       return JSON.parse(text) as T;
-    } catch (err) {
+    } catch {
       if (__DEV__) {
         console.error('Failed to parse JSON response:', text);
       } else {
