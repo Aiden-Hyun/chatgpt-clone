@@ -123,36 +123,19 @@ export class MessageStateManager {
    * @param newContent The new content for the message
    */
   handleRegeneration(messageId: string, newContent: string): void {
-    
-    
-    // Phase 1: Set to loading state
+    // Direct transition to animating state to avoid animation conflicts
     this.update(prev => {
-      
       return prev.map(msg => 
         msg.id === messageId 
-          ? { ...msg, content: '', fullContent: undefined, state: 'loading' }
+          ? { 
+              ...msg, 
+              content: '',
+              fullContent: newContent,
+              state: 'animating' 
+            }
           : msg
       );
     });
-
-    // Phase 2: After a short delay, set content and transition to animating state
-    
-    setTimeout(() => {
-      this.update(prev => {
-        
-        return prev.map(msg => 
-          msg.id === messageId 
-            ? { 
-                ...msg, 
-                content: '',
-                fullContent: newContent,
-                state: 'animating' 
-              }
-            : msg
-        );
-      });
-      
-    }, 50);
   }
   
   // === COMPLETION & ERROR HANDLING ===

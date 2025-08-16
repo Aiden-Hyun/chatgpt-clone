@@ -46,25 +46,26 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
     if (!showDetailedMessages) return;
 
     const interval = setInterval(() => {
-      // Fade out
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }).start(() => {
-        // Change text
-        setCurrentTextIndex((prev) => (prev + 1) % detailedLoadingTexts.length);
-        // Fade in
+      // Update text first
+      setCurrentTextIndex((prev) => (prev + 1) % detailedLoadingTexts.length);
+      
+      // Then animate fade out and in
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: false,
+        }),
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 200,
           useNativeDriver: false,
-        }).start();
-      });
+        }),
+      ]).start();
     }, LOADING_DOT_INTERVAL_MS); // Change text every 3 seconds
 
     return () => clearInterval(interval);
-  }, [fadeAnim, showDetailedMessages]);
+  }, [fadeAnim, showDetailedMessages, detailedLoadingTexts.length]);
 
   // Animate dots
   useEffect(() => {

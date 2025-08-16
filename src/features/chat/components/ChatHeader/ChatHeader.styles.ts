@@ -135,7 +135,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.background.primary,
       borderRadius: theme.borderRadius.md,
       padding: theme.spacing.sm,
-      marginTop: 120,
+      marginTop: Platform.OS === 'ios' ? 100 : 60,
       marginRight: 16,
       minWidth: 180,
       ...theme.shadows.medium,

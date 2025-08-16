@@ -11,9 +11,10 @@ export const createLoadingMessageStyles = (theme: AppTheme) => {
       fontSize: theme.fontSizes.md, // Smaller, less prominent font
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.secondary, // More subtle color
-      fontWeight: theme.fontWeights.normal as '400',
+      fontWeight: theme.fontWeights.regular as '400',
       marginBottom: theme.spacing.md,
-      lineHeight: 2, // Tighter line height
+      lineHeight: theme.fontSizes.md * 1.4, // Proper line height for iOS
+      textAlign: 'left' as const,
     },
     dotsContainer: {
       flexDirection: 'row',

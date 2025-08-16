@@ -7,7 +7,8 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, View, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
@@ -124,18 +125,55 @@ export default function SignupScreen() {
     }
   };
 
+  const handleGoBack = () => {
+    try {
+      const canGoBack = (router as any).canGoBack?.() ?? false;
+      if (canGoBack) {
+        router.back();
+      } else {
+        router.replace('/auth');
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
+      router.replace('/auth');
+    }
+  };
+
   return (
     <KeyboardAvoidingView 
       style={{ flex: 1 }} 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
+      {/* Header with Back Button */}
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: theme.spacing.md,
+        paddingVertical: theme.spacing.md,
+        paddingTop: Platform.OS === 'ios' ? theme.spacing.md + 44 : theme.spacing.md,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.border.light,
+        backgroundColor: theme.colors.background.primary,
+      }}>
+        <TouchableOpacity 
+          onPress={handleGoBack} 
+          style={{
+            padding: theme.spacing.sm,
+            marginRight: theme.spacing.md,
+          }}
+        >
+          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
+        </TouchableOpacity>
+        <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: 40 }}>
+          {t('auth.create_account')}
+        </Text>
+      </View>
+
       <ScrollView 
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.container}>
-          <Text variant="h1" weight="bold" style={styles.title}>{t('auth.create_account')}</Text>
-          
           <FormWrapper onSubmit={handleSignup} style={{ width: '100%' }}>
             <Input
               placeholder={t('auth.email')}
@@ -219,7 +257,7 @@ export default function SignupScreen() {
             disabled={isLoading}
             containerStyle={styles.linkButton}
           />
-                 </View>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
