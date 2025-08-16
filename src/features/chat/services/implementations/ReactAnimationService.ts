@@ -1,12 +1,13 @@
 // src/features/chat/services/implementations/ReactAnimationService.ts
-import { TYPING_ANIMATION_CHUNK_SIZE, TYPING_ANIMATION_SPEED } from '../../constants';
+import { TYPING_ANIMATION_CHUNK_SIZE, TYPING_ANIMATION_MIN_TICK_MS } from '../../constants';
+import { computeAnimationParams } from '../core/AnimationPolicy';
 import { IAnimationService } from '../interfaces/IAnimationService';
 import { MessageStateManager } from '../MessageStateManager';
 import { ChatMessage } from '../types';
 
 export class ReactAnimationService implements IAnimationService {
   private messageStateManager: MessageStateManager;
-  private runningJobs: Map<string, { timer: ReturnType<typeof setTimeout> | null; index: number; target: string; speedMs: number }> = new Map();
+  private runningJobs: Map<string, { timer: ReturnType<typeof setTimeout> | null; index: number; target: string; speedMs: number; chunkSize: number }> = new Map();
 
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
@@ -76,10 +77,12 @@ export class ReactAnimationService implements IAnimationService {
     args.onComplete();
   }
 
-  private startTypewriterJob(messageId: string, fullContent: string, speedMs: number = TYPING_ANIMATION_SPEED): void {
+  private startTypewriterJob(messageId: string, fullContent: string, speedMs?: number): void {
     // Stop existing job if any
     this.stopTypewriterJob(messageId);
-    this.runningJobs.set(messageId, { timer: null, index: 0, target: fullContent, speedMs });
+    const { speedMs: computedSpeed, chunkSize } = computeAnimationParams(fullContent);
+    const effectiveSpeed = Math.max(TYPING_ANIMATION_MIN_TICK_MS, speedMs ?? computedSpeed);
+    this.runningJobs.set(messageId, { timer: null, index: 0, target: fullContent, speedMs: effectiveSpeed, chunkSize });
     const tick = () => {
       const job = this.runningJobs.get(messageId);
       if (!job) return;
@@ -92,7 +95,7 @@ export class ReactAnimationService implements IAnimationService {
             nextIndex++;
           }
         } else {
-          nextIndex = Math.min(job.target.length, nextIndex + TYPING_ANIMATION_CHUNK_SIZE);
+          nextIndex = Math.min(job.target.length, nextIndex + (job.chunkSize ?? TYPING_ANIMATION_CHUNK_SIZE));
         }
 
         const nextSlice = job.target.slice(0, nextIndex);
@@ -109,7 +112,7 @@ export class ReactAnimationService implements IAnimationService {
     // Prime first tick
     const job = this.runningJobs.get(messageId);
     if (!job) return;
-    job.timer = setTimeout(tick, speedMs);
+    job.timer = setTimeout(tick, job.speedMs);
   }
 
   private stopTypewriterJob(messageId: string): void {
