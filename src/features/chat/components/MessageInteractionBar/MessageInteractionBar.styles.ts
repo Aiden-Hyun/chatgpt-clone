@@ -17,6 +17,9 @@ export const createMessageInteractionBarStyles = (theme: AppTheme) => {
     iconButton: {
       width: 32,
       height: 32,
+      paddingVertical: 0,
+      paddingHorizontal: 0,
+      minHeight: 32,
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: theme.spacing.md,

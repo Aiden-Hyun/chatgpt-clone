@@ -1,7 +1,8 @@
+import { Button } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { useLanguageContext } from '../../../language';
 import { useAppTheme } from '../../../theme/theme';
@@ -69,39 +70,41 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
     <View style={styles.header}>
       {/* Menu Button (Left) */}
-      <TouchableOpacity 
-        style={styles.menuButton} 
+      <Button
+        variant="ghost"
+        size="sm"
+        leftIcon={<MaterialIcons name="menu" size={24} color={theme.colors.text.primary} />}
         onPress={openSidebar}
-      >
-        <MaterialIcons name="menu" size={24} color={styles.menuButtonText.color} />
-      </TouchableOpacity>
+        containerStyle={styles.menuButton}
+      />
 
       {/* Inline Model Selector (Center) */}
       {showModelSelection ? (
-        <TouchableOpacity
-          style={styles.modelSelector}
-          onPress={() => setIsModelMenuVisible(true)}
-          activeOpacity={0.8}
-        >
-          {(() => {
+        <Button
+          variant="ghost"
+          size="sm"
+          label={selectedModelLabel}
+          rightIcon={<MaterialIcons name="expand-more" size={20} color={theme.colors.text.primary} />}
+          leftIcon={(() => {
             const provider = AVAILABLE_MODELS.find(m => m.value === (selectedModel ?? DEFAULT_MODEL))?.provider;
             if (provider === 'anthropic') return <AnthropicLogo size={16} />;
             return <OpenAILogo size={16} />;
           })()}
-          <Text style={styles.modelSelectorText}>{selectedModelLabel}</Text>
-          <MaterialIcons name="expand-more" size={20} color={styles.menuButtonText.color} />
-        </TouchableOpacity>
+          onPress={() => setIsModelMenuVisible(true)}
+          containerStyle={styles.modelSelector}
+        />
       ) : (
         <View style={styles.titleContainer} />
       )}
       
       {/* More Options Button (Right) */}
-      <TouchableOpacity 
-        style={styles.menuButton} 
+      <Button
+        variant="ghost"
+        size="sm"
+        leftIcon={<MaterialIcons name="more-vert" size={24} color={theme.colors.text.primary} />}
         onPress={() => setIsQuickActionsVisible(!isQuickActionsVisible)}
-      >
-        <MaterialIcons name="more-vert" size={24} color={styles.menuButtonText.color} />
-      </TouchableOpacity>
+        containerStyle={styles.menuButton}
+      />
 
       {/* Model Selection Dropdown */}
       <Modal
@@ -110,31 +113,34 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         animationType="fade"
         onRequestClose={() => setIsModelMenuVisible(false)}
       >
-        <TouchableOpacity style={styles.modelMenuOverlay} onPress={() => setIsModelMenuVisible(false)} activeOpacity={1}>
+        <TouchableOpacity 
+          style={styles.modelMenuOverlay} 
+          onPress={() => setIsModelMenuVisible(false)} 
+          activeOpacity={1}
+        >
           <View style={styles.modelMenuContainer}>
             <ScrollView style={styles.modelListContainer}>
               {AVAILABLE_MODELS.map(model => {
                 const isSelected = (selectedModel ?? DEFAULT_MODEL) === model.value;
                 return (
-                  <TouchableOpacity
+                  <Button
                     key={model.value}
-                    style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
+                    variant="ghost"
+                    size="sm"
+                    label={model.label}
+                    leftIcon={
+                      <>
+                        {model.provider === 'openai' && <OpenAILogo size={16} />}
+                        {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
+                      </>
+                    }
+                    rightIcon={isSelected ? <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} /> : undefined}
                     onPress={() => {
                       onModelChange?.(model.value);
                       setIsModelMenuVisible(false);
                     }}
-                  >
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      {model.provider === 'openai' && <OpenAILogo size={16} />}
-                      {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
-                      <Text style={[styles.modelMenuText, { marginLeft: 8 }, isSelected && styles.selectedModelMenuText]}>
-                        {model.label}
-                      </Text>
-                    </View>
-                    {isSelected && (
-                      <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} />
-                    )}
-                  </TouchableOpacity>
+                    containerStyle={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
+                  />
                 );
               })}
             </ScrollView>
@@ -160,28 +166,35 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         animationType="fade"
         onRequestClose={() => setIsQuickActionsVisible(false)}
       >
-        <TouchableOpacity style={styles.quickActionsOverlay} onPress={() => setIsQuickActionsVisible(false)} activeOpacity={1}>
+        <TouchableOpacity 
+          style={styles.quickActionsOverlay} 
+          onPress={() => setIsQuickActionsVisible(false)} 
+          activeOpacity={1}
+        >
           <View style={styles.quickActionsContainer}>
-            <TouchableOpacity
-              style={styles.quickActionsMenuItem}
+            <Button
+              variant="ghost"
+              size="sm"
+              label={t('menu.settings')}
               onPress={handleSettings}
-            >
-              <Text style={styles.quickActionsMenuText}>{t('menu.settings')}</Text>
-            </TouchableOpacity>
+              containerStyle={styles.quickActionsMenuItem}
+            />
 
-            <TouchableOpacity
-              style={styles.quickActionsMenuItem}
+            <Button
+              variant="ghost"
+              size="sm"
+              label={t('menu.design_showcase')}
               onPress={handleDesignShowcase}
-            >
-              <Text style={styles.quickActionsMenuText}>{t('menu.design_showcase')}</Text>
-            </TouchableOpacity>
+              containerStyle={styles.quickActionsMenuItem}
+            />
 
-            <TouchableOpacity
-              style={styles.quickActionsMenuItem}
+            <Button
+              variant="ghost"
+              size="sm"
+              label={t('menu.logout')}
               onPress={handleLogout}
-            >
-              <Text style={styles.quickActionsMenuText}>{t('menu.logout')}</Text>
-            </TouchableOpacity>
+              containerStyle={styles.quickActionsMenuItem}
+            />
           </View>
         </TouchableOpacity>
       </Modal>

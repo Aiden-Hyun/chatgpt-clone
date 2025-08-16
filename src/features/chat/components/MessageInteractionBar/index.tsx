@@ -1,6 +1,7 @@
+import { Button } from '@/components/ui/Button';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
@@ -33,39 +34,57 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.iconButton} onPress={handleRegeneratePress}>
-          <MaterialIcons name="refresh" size={20} color={theme.colors.text.secondary} />
-        </TouchableOpacity>
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<MaterialIcons name="refresh" size={20} color={theme.colors.text.secondary} />}
+          onPress={handleRegeneratePress}
+          containerStyle={styles.iconButton}
+        />
         
-        <TouchableOpacity style={styles.iconButton} onPress={onLike}>
-          <MaterialIcons name="thumb-up" size={20} color={theme.colors.text.secondary} />
-        </TouchableOpacity>
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<MaterialIcons name="thumb-up" size={20} color={theme.colors.text.secondary} />}
+          onPress={onLike}
+          containerStyle={styles.iconButton}
+        />
         
-        <TouchableOpacity style={styles.iconButton} onPress={onDislike}>
-          <MaterialIcons name="thumb-down" size={20} color={theme.colors.text.secondary} />
-        </TouchableOpacity>
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<MaterialIcons name="thumb-down" size={20} color={theme.colors.text.secondary} />}
+          onPress={onDislike}
+          containerStyle={styles.iconButton}
+        />
         
-        <TouchableOpacity style={styles.iconButton} onPress={onAudio}>
-          <MaterialIcons name="volume-up" size={20} color={theme.colors.text.secondary} />
-        </TouchableOpacity>
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<MaterialIcons name="volume-up" size={20} color={theme.colors.text.secondary} />}
+          onPress={onAudio}
+          containerStyle={styles.iconButton}
+        />
         
-        <TouchableOpacity
-          style={styles.iconButton}
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />}
           onPress={() => {
             onCopy?.();
           }}
-        >
-          <MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />
-        </TouchableOpacity>
+          containerStyle={styles.iconButton}
+        />
         
-        <TouchableOpacity
-          style={styles.iconButton}
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<MaterialIcons name="share" size={20} color={theme.colors.text.secondary} />}
           onPress={async () => {
             try { await onShare?.(); } catch {}
           }}
-        >
-          <MaterialIcons name="share" size={20} color={theme.colors.text.secondary} />
-        </TouchableOpacity>
+          containerStyle={styles.iconButton}
+        />
       </View>
     </View>
   );

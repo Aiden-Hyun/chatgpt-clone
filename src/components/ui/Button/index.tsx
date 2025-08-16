@@ -82,14 +82,16 @@ export const Button = ({
       );
     }
 
+    // If children are provided, render them (for custom content)
     if (children) {
       return children;
     }
 
+    // Otherwise, render label with icons
     return (
       <>
         {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
-        <Text style={buttonTextStyle}>{label}</Text>
+        {label && <Text style={buttonTextStyle}>{label}</Text>}
         {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
       </>
     );

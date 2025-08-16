@@ -32,16 +32,6 @@ export const createErrorMessageStyles = (theme: AppTheme) => {
     
     retryButton: {
       alignSelf: 'flex-start',
-      backgroundColor: theme.colors.status.error.primary,
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 8,
-    },
-    
-    retryText: {
-      color: '#ffffff',
-      fontSize: 14,
-      fontWeight: theme.fontWeights.medium as '500',
     },
   });
 };

@@ -1,6 +1,7 @@
+import { Button, ListItem } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
 import { createRoomListItemStyles } from './RoomListItem.styles';
 
@@ -22,12 +23,19 @@ const RoomListItem: React.FC<Props> = ({ room, onDelete, onPress }) => {
   
   return (
     <View style={styles.roomContainer}>
-      <TouchableOpacity style={styles.room} onPress={onPress}>
-        <Text style={styles.roomName}>{room.name}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-        <MaterialIcons name="delete" size={20} color={styles.deleteText.color} />
-      </TouchableOpacity>
+      <ListItem
+        title={room.name}
+        onPress={onPress}
+        containerStyle={styles.room}
+      />
+      <Button
+        variant="ghost"
+        size="sm"
+        status="error"
+        leftIcon={<MaterialIcons name="delete" size={20} color={theme.colors.status.error.primary} />}
+        onPress={onDelete}
+        containerStyle={styles.deleteButton}
+      />
     </View>
   );
 };

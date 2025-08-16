@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { ThemedButton } from '../src/components';
+import { Button } from '../src/components/ui/Button';
 import { CustomAlert, useCustomAlert, useToast } from '../src/features/alert';
 import { LanguageSelector, useLanguageContext } from '../src/features/language';
 import { useAppTheme } from '../src/features/theme/theme';
@@ -864,57 +864,35 @@ export default function DesignShowcaseScreen() {
           
           <View style={styles.card}>
             <Text style={styles.label}>{t('showcase.primary_buttons')}</Text>
-            <View style={styles.row as any}>
-              <ThemedButton variant="primary" size="medium">
-                {t('button.primary')}
-              </ThemedButton>
-              <ThemedButton variant="primary" size="medium" disabled>
-                {t('button.disabled')}
-              </ThemedButton>
-            </View>
+                          <View style={styles.row as any}>
+                <Button variant="primary" size="md" label={t('button.primary')} />
+                <Button variant="primary" size="md" label={t('button.disabled')} disabled />
+              </View>
 
-            <Text style={styles.label}>Secondary Buttons</Text>
-            <View style={styles.row as any}>
-              <ThemedButton variant="secondary" size="medium">
-                Secondary
-              </ThemedButton>
-              <ThemedButton variant="secondary" size="medium" disabled>
-                Disabled
-              </ThemedButton>
-            </View>
+              <Text style={styles.label}>Secondary Buttons</Text>
+              <View style={styles.row as any}>
+                <Button variant="secondary" size="md" label="Secondary" />
+                <Button variant="secondary" size="md" label="Disabled" disabled />
+              </View>
 
-            <Text style={styles.label}>Outline & Ghost Buttons</Text>
-            <View style={styles.row as any}>
-              <ThemedButton variant="outline" size="medium">
-                Outline
-              </ThemedButton>
-              <ThemedButton variant="ghost" size="medium">
-                Ghost
-              </ThemedButton>
-            </View>
+              <Text style={styles.label}>Outline & Ghost Buttons</Text>
+              <View style={styles.row as any}>
+                <Button variant="outline" size="md" label="Outline" />
+                <Button variant="ghost" size="md" label="Ghost" />
+              </View>
 
-            <Text style={styles.label}>Status Buttons</Text>
-            <View style={styles.row as any}>
-              <ThemedButton variant="primary" size="medium" style={{ backgroundColor: theme.colors.status.success.primary }}>
-                Success
-              </ThemedButton>
-              <ThemedButton variant="danger" size="medium">
-                Danger
-              </ThemedButton>
-            </View>
+              <Text style={styles.label}>Status Buttons</Text>
+              <View style={styles.row as any}>
+                <Button variant="primary" size="md" status="success" label="Success" />
+                <Button variant="primary" size="md" status="error" label="Danger" />
+              </View>
 
-            <Text style={styles.label}>Button Sizes</Text>
-            <View style={styles.row as any}>
-              <ThemedButton variant="primary" size="small">
-                Small
-              </ThemedButton>
-              <ThemedButton variant="primary" size="medium">
-                Medium
-              </ThemedButton>
-              <ThemedButton variant="primary" size="large">
-                Large
-              </ThemedButton>
-            </View>
+              <Text style={styles.label}>Button Sizes</Text>
+              <View style={styles.row as any}>
+                <Button variant="primary" size="sm" label="Small" />
+                <Button variant="primary" size="md" label="Medium" />
+                <Button variant="primary" size="lg" label="Large" />
+              </View>
           </View>
         </View>
 

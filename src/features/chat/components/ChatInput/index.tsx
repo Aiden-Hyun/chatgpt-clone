@@ -1,13 +1,8 @@
-import React, { RefObject, useMemo, useState } from 'react';
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
-
+import { Button, Input } from '@/components/ui';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import React, { RefObject, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {
@@ -16,7 +11,7 @@ interface ChatInputProps {
   onSend: () => void;
   sending?: boolean;
   isTyping?: boolean;
-  inputRef: RefObject<TextInput | null>;
+  inputRef: RefObject<any>;
 }
 
 /**
@@ -37,7 +32,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const theme = useAppTheme();
   
   // CRITICAL FIX: Memoize styles to prevent expensive re-creation
-  const { styles, placeholderTextColor } = useMemo(
+  const { styles } = useMemo(
     () => createChatInputStyles(isInputFocused, theme),
     [isInputFocused, theme]
   );
@@ -47,15 +42,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <View style={styles.inputRow}>
-      <TextInput
-        ref={inputRef}
-        style={isInputFocused ? [styles.input, styles.inputFocused, { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }] : [styles.input, { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }]}
+      <Input
         value={input}
         onChangeText={onChangeText}
         placeholder={t('chat.placeholder')}
-        placeholderTextColor={placeholderTextColor}
-        onFocus={() => setIsInputFocused(true)}
-        onBlur={() => setIsInputFocused(false)}
+        variant="filled"
         multiline
         scrollEnabled={inputHeight >= MAX_INPUT_HEIGHT}
         onContentSizeChange={(e) => {
@@ -65,21 +56,27 @@ const ChatInput: React.FC<ChatInputProps> = ({
         blurOnSubmit={false}
         autoFocus
         editable={true}
+        onFocus={() => setIsInputFocused(true)}
+        onBlur={() => setIsInputFocused(false)}
+        containerStyle={styles.inputContainer}
+        inputStyle={[
+          styles.input,
+          { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }
+        ]}
       />
-      <TouchableOpacity
-        style={hasText ? styles.sendButton : [styles.sendButton, styles.disabledButton]}
+      <Button
+        label={t('chat.send')}
+        variant="primary"
+        status="success"
+        size="md"
         onPress={() => {
           if (hasText) {
             onSend();
           }
         }}
         disabled={!hasText}
-        activeOpacity={0.8}
-      >
-        <Text style={hasText ? styles.sendButtonText : [styles.sendButtonText, styles.disabledButtonText]}>
-          {t('chat.send')}
-        </Text>
-      </TouchableOpacity>
+        containerStyle={styles.sendButton}
+      />
     </View>
   );
 };

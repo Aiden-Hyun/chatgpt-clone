@@ -7,42 +7,22 @@ export const createForgotPasswordStyles = (theme: AppTheme) => {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 24,
+      padding: theme.spacing.lg,
     },
     title: {
-      marginBottom: 20,
-      fontFamily: 'System',
-      fontWeight: '600',
+      marginBottom: theme.spacing.lg,
     },
     description: {
       textAlign: 'center',
-      marginBottom: 24,
-      paddingHorizontal: 20,
+      marginBottom: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.lg,
       lineHeight: 20,
     },
     button: {
-      width: '100%',
-      height: 50,
-      backgroundColor: '#000000',
-      borderRadius: 8,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 12,
-    },
-    buttonDisabled: {
-      opacity: 0.6,
-    },
-    buttonText: {
-      color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: '600',
+      marginTop: theme.spacing.md,
     },
     linkButton: {
-      marginTop: 16,
-    },
-    linkText: {
-      fontSize: 14,
-      textDecorationLine: 'underline',
+      marginTop: theme.spacing.md,
     },
   });
 };

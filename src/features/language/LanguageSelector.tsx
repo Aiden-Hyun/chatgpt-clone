@@ -1,6 +1,8 @@
+import { Button } from '@/components/ui/Button';
 import { useToast } from '@/features/alert';
+import { useAppTheme } from '@/features/theme/theme';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useLanguageContext } from './LanguageContext';
 
 interface LanguageSelectorProps {
@@ -10,6 +12,7 @@ interface LanguageSelectorProps {
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
   const { currentLanguage, setLanguage, t } = useLanguageContext();
   const { showSuccess } = useToast();
+  const theme = useAppTheme();
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -51,54 +54,33 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
     console.log('🌍 Toast showSuccess called');
   };
 
+  const styles = createLanguageSelectorStyles(theme);
+
   return (
     <View style={[styles.container, style]}>
       {languages.map((lang) => (
-        <TouchableOpacity
+        <Button
           key={lang.code}
-          style={[
-            styles.languageButton,
-            currentLanguage === lang.code && styles.activeLanguageButton
-          ]}
+          label={lang.name}
+          variant={currentLanguage === lang.code ? 'primary' : 'outline'}
+          size="sm"
           onPress={() => handleLanguageChange(lang.code)}
-        >
-          <Text style={[
-            styles.languageText,
-            currentLanguage === lang.code && styles.activeLanguageText
-          ]}>
-            {lang.name}
-          </Text>
-        </TouchableOpacity>
+          containerStyle={styles.languageButton}
+        />
       ))}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const createLanguageSelectorStyles = (theme: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    gap: 10,
+    marginTop: theme.spacing.lg,
+    gap: theme.spacing.sm,
   },
   languageButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f5f5f5',
-  },
-  activeLanguageButton: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  languageText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  activeLanguageText: {
-    color: '#fff',
+    minWidth: 80,
   },
 }); 

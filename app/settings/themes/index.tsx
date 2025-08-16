@@ -1,7 +1,8 @@
+import { Button, Card, Text } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import { useAppTheme, useThemeMode, useThemeStyle } from '../../../src/features/theme';
 import { ThemeMode } from '../../../src/features/theme/theme.types';
@@ -35,18 +36,21 @@ export default function ThemeSettingsScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Theme & Appearance</Text>
+        <Button 
+          variant="ghost"
+          onPress={handleBack}
+          containerStyle={styles.backButton}
+          leftIcon={<MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />}
+        />
+        <Text variant="h2" weight="semibold" style={styles.headerTitle}>Theme & Appearance</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Current Theme Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Current Theme</Text>
-          <View style={styles.currentThemeCard}>
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>Current Theme</Text>
+          <Card variant="default" padding="lg" containerStyle={styles.currentThemeCard}>
             <View style={styles.currentThemePreview}>
               <View style={styles.previewContent}>
                 <View style={styles.previewButton} />
@@ -54,22 +58,22 @@ export default function ThemeSettingsScreen() {
               </View>
             </View>
             <View style={styles.currentThemeInfo}>
-              <Text style={styles.currentThemeName}>{currentTheme?.name || 'Default'}</Text>
-              <Text style={styles.currentThemeDescription}>
+              <Text variant="title" weight="semibold" style={styles.currentThemeName}>{currentTheme?.name || 'Default'}</Text>
+              <Text variant="body" style={styles.currentThemeDescription}>
                 {currentTheme?.description || 'Clean and modern design'}
               </Text>
               <View style={styles.currentModeBadge}>
-                <Text style={styles.currentModeText}>
+                <Text variant="caption" weight="medium" style={styles.currentModeText}>
                   {themeMode === 'system' ? 'System' : themeMode === 'light' ? 'Light' : 'Dark'}
                 </Text>
               </View>
             </View>
-          </View>
+          </Card>
         </View>
 
         {/* Theme Selection Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Choose Theme</Text>
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>Choose Theme</Text>
           <View style={styles.themeGrid}>
             {availableThemes.map((themeOption) => {
               const isSelected = themeOption.id === themeStyle;
@@ -81,6 +85,7 @@ export default function ThemeSettingsScreen() {
                     isSelected && styles.themeCardSelected
                   ]}
                   onPress={() => handleThemeSelect(themeOption.id)}
+                  activeOpacity={0.7}
                 >
                   <View style={styles.themePreview}>
                     <View style={styles.previewElements}>
@@ -88,7 +93,7 @@ export default function ThemeSettingsScreen() {
                       <View style={[styles.previewCard, { backgroundColor: themeOption.theme.light.colors.background.secondary }]} />
                     </View>
                   </View>
-                  <Text style={styles.themeName}>{themeOption.name}</Text>
+                  <Text variant="body" weight="medium" style={styles.themeName}>{themeOption.name}</Text>
                   {isSelected && (
                     <View style={styles.selectedIndicator}>
                       <MaterialIcons name="check-circle" size={20} color={theme.colors.primary} />
@@ -102,7 +107,7 @@ export default function ThemeSettingsScreen() {
 
         {/* Appearance Mode Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>Appearance</Text>
           <View style={styles.modeSelector}>
             {[
               { value: 'light' as ThemeMode, label: 'Light', icon: 'light-mode' },
@@ -111,26 +116,23 @@ export default function ThemeSettingsScreen() {
             ].map((mode) => {
               const isSelected = mode.value === themeMode;
               return (
-                <TouchableOpacity
+                <Button
                   key={mode.value}
-                  style={[
+                  variant={isSelected ? 'primary' : 'outline'}
+                  onPress={() => handleModeSelect(mode.value)}
+                  containerStyle={[
                     styles.modeButton,
                     isSelected && styles.modeButtonSelected
                   ]}
-                  onPress={() => handleModeSelect(mode.value)}
-                >
-                  <MaterialIcons 
-                    name={mode.icon as any} 
-                    size={20} 
-                    color={isSelected ? theme.colors.text.inverted : theme.colors.text.primary} 
-                  />
-                  <Text style={[
-                    styles.modeText,
-                    isSelected && styles.modeTextSelected
-                  ]}>
-                    {mode.label}
-                  </Text>
-                </TouchableOpacity>
+                  leftIcon={
+                    <MaterialIcons 
+                      name={mode.icon as any} 
+                      size={20} 
+                      color={isSelected ? theme.colors.text.inverted : theme.colors.text.primary} 
+                    />
+                  }
+                  label={mode.label}
+                />
               );
             })}
           </View>

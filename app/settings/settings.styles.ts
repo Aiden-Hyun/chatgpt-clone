@@ -22,16 +22,8 @@ export const createSettingsStyles = (theme: AppTheme) => {
       padding: theme.spacing.sm,
       borderRadius: theme.borderRadius.md,
     },
-    backButtonText: {
-      fontSize: theme.fontSizes.xl,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.bold as '700',
-    },
     headerTitle: {
-      fontSize: theme.fontSizes.xl,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+      marginBottom: 0, // Remove margin since Text component handles spacing
     },
     headerSpacer: {
       width: 44, // Same width as back button for centering
@@ -44,135 +36,31 @@ export const createSettingsStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.xl,
     },
     sectionTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.text.primary,
       marginBottom: theme.spacing.md,
-      fontFamily: theme.fontFamily.primary,
     },
     card: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.md,
-      ...theme.shadows.light,
+      // Card component handles its own styling
     },
-    settingItem: {
+    editContainer: {
+      flexDirection: 'column',
+      gap: theme.spacing.md,
+    },
+    editButtons: {
       flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      gap: theme.spacing.sm,
     },
-    settingLabel: {
-      fontSize: theme.fontSizes.md,
-      color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+    saveButton: {
       flex: 1,
     },
-    settingValue: {
-      fontSize: theme.fontSizes.md,
-      color: theme.colors.text.secondary,
-      fontFamily: theme.fontFamily.primary,
-    },
-    settingValueContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
+    cancelButton: {
+      flex: 1,
     },
     languageSelector: {
       marginVertical: 0,
     },
-    themeSelector: {
-      marginVertical: 0,
-    },
-    editableValue: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    editIcon: {
-      fontSize: theme.fontSizes.sm,
-    },
-    editContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    nameContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-    nameInput: {
-      borderWidth: 1,
-      borderColor: theme.colors.border.medium,
-      borderRadius: theme.borderRadius.md,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      fontSize: theme.fontSizes.md,
-      color: theme.colors.text.primary,
-      backgroundColor: theme.colors.background.primary,
-      minWidth: 120,
-      fontFamily: theme.fontFamily.primary,
-    },
-    saveButton: {
-      backgroundColor: theme.colors.status.success.primary,
-      borderRadius: theme.borderRadius.sm,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-    },
-    saveButtonDisabled: {
-      backgroundColor: theme.colors.interactive.disabled.primary,
-      opacity: 0.6,
-    },
-    saveButtonText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.medium as '500',
-      fontFamily: theme.fontFamily.primary,
-    },
-    editButton: {
-      backgroundColor: 'transparent',
-      borderRadius: theme.borderRadius.sm,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderWidth: 1,
-      borderColor: theme.colors.primary,
-    },
-    editButtonText: {
-      color: theme.colors.primary,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.medium as '500',
-      fontFamily: theme.fontFamily.primary,
-    },
-    cancelButton: {
-      backgroundColor: theme.colors.status.error.primary,
-      borderRadius: theme.borderRadius.sm,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-    },
-    cancelButtonText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.medium as '500',
-      fontFamily: theme.fontFamily.primary,
-    },
     logoutButton: {
-      backgroundColor: theme.colors.status.error.primary,
-      borderRadius: theme.borderRadius.lg,
-      paddingVertical: theme.spacing.lg,
-      paddingHorizontal: theme.spacing.xl,
-      marginTop: theme.spacing.xxl,
-      marginBottom: theme.spacing.xl,
-      alignItems: 'center',
-      ...theme.shadows.medium,
-    },
-    logoutText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.medium as '500',
-      fontFamily: theme.fontFamily.primary,
+      marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.xxl,
     },
   });
 };

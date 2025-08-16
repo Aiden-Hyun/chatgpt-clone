@@ -22,10 +22,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       borderRadius: theme.borderRadius.md,
     },
     headerTitle: {
-      fontSize: theme.fontSizes.xl,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+      marginBottom: 0, // Remove margin since Text component handles spacing
     },
     headerSpacer: {
       width: 44, // Same width as back button for centering
@@ -38,21 +35,13 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.xl,
     },
     sectionTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.text.primary,
       marginBottom: theme.spacing.md,
-      fontFamily: theme.fontFamily.primary,
     },
     
     // Current Theme Section
     currentThemeCard: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.lg,
       flexDirection: 'row',
       alignItems: 'center',
-      ...theme.shadows.light,
     },
     currentThemePreview: {
       width: 80,
@@ -84,66 +73,51 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       flex: 1,
     },
     currentThemeName: {
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
-      fontFamily: theme.fontFamily.primary,
     },
     currentThemeDescription: {
-      fontSize: theme.fontSizes.sm,
-      color: theme.colors.text.secondary,
       marginBottom: theme.spacing.sm,
-      fontFamily: theme.fontFamily.primary,
     },
     currentModeBadge: {
       alignSelf: 'flex-start',
       backgroundColor: theme.colors.primary,
       paddingHorizontal: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borderRadius.round,
     },
     currentModeText: {
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.medium as '500',
       color: theme.colors.text.inverted,
-      fontFamily: theme.fontFamily.primary,
     },
-
-    // Theme Grid Section
+    
+    // Theme Selection Section
     themeGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      marginHorizontal: -theme.spacing.xs,
+      gap: theme.spacing.md,
     },
     themeCard: {
       width: '48%',
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
+      alignItems: 'center',
       padding: theme.spacing.md,
-      marginBottom: theme.spacing.md,
-      marginHorizontal: theme.spacing.xs,
-      borderWidth: 2,
-      borderColor: 'transparent',
-      ...theme.shadows.light,
+      borderRadius: theme.borderRadius.lg,
+      borderWidth: 1,
+      borderColor: theme.colors.border.light,
+      backgroundColor: theme.colors.background.secondary,
+      minHeight: 120,
     },
     themeCardSelected: {
       borderColor: theme.colors.primary,
-      ...theme.shadows.medium,
+      backgroundColor: theme.colors.interactive.hover.primary,
     },
     themePreview: {
-      height: 120,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.background.primary,
       marginBottom: theme.spacing.sm,
+      height: 60,
       justifyContent: 'center',
       alignItems: 'center',
-      overflow: 'hidden',
     },
     previewElements: {
       alignItems: 'center',
-      gap: theme.spacing.sm,
+      gap: theme.spacing.xs,
     },
     previewCard: {
       width: 40,
@@ -151,50 +125,24 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       borderRadius: theme.borderRadius.sm,
     },
     themeName: {
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium as '500',
-      color: theme.colors.text.primary,
       textAlign: 'center',
-      fontFamily: theme.fontFamily.primary,
     },
     selectedIndicator: {
       position: 'absolute',
       top: theme.spacing.sm,
       right: theme.spacing.sm,
-      backgroundColor: theme.colors.background.primary,
-      borderRadius: theme.borderRadius.full,
     },
-
-    // Mode Selector Section
+    
+    // Appearance Mode Section
     modeSelector: {
       flexDirection: 'row',
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.xs,
-      ...theme.shadows.light,
+      gap: theme.spacing.sm,
     },
     modeButton: {
       flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: theme.spacing.md,
-      paddingHorizontal: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
-      marginHorizontal: theme.spacing.xs,
-      gap: theme.spacing.xs,
     },
     modeButtonSelected: {
-      backgroundColor: theme.colors.primary,
-    },
-    modeText: {
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium as '500',
-      color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
-    },
-    modeTextSelected: {
-      color: theme.colors.text.inverted,
+      // Button component handles selected state
     },
   });
 };

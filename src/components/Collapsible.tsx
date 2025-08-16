@@ -1,33 +1,30 @@
+import { Ionicons } from '@expo/vector-icons';
 import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { useAppTheme } from '../../../theme/lib/theme';
-import { ThemedText } from '../core/ThemedText';
-import { ThemedView } from '../core/ThemedView';
-import { IconSymbol } from '../icons/IconSymbol';
+import { useAppTheme } from '../features/theme/theme';
+import { Text } from './ui/Text';
 
 export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useAppTheme();
 
   return (
-    <ThemedView>
+    <View>
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
         activeOpacity={0.8}>
-        <IconSymbol
-          name="chevron.right"
+        <Ionicons
+          name={isOpen ? "chevron-down" : "chevron-forward"}
           size={18}
-          weight="medium"
           color={theme.colors.text.tertiary}
-          style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}
         />
 
-        <ThemedText type="defaultSemiBold">{title}</ThemedText>
+        <Text variant="body" weight="semibold">{title}</Text>
       </TouchableOpacity>
-      {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
-    </ThemedView>
+      {isOpen && <View style={styles.content}>{children}</View>}
+    </View>
   );
 }
 

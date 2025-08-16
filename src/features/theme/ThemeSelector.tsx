@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { ThemedText } from '../../components';
+import { Text } from '../../components/ui/Text';
 import { useThemeContext } from './context/ThemeContext';
 import { useAppTheme } from './theme';
 
@@ -41,7 +41,8 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
           onPress={() => handleThemeChange(themeOption.value)}
           activeOpacity={0.7}
         >
-          <ThemedText
+          <Text
+            variant="body"
             style={[
               styles.themeButtonText,
               {
@@ -54,7 +55,7 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
             ]}
           >
             {themeOption.label}
-          </ThemedText>
+          </Text>
         </TouchableOpacity>
       ))}
     </View>

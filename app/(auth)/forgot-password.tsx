@@ -1,12 +1,13 @@
 
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { FormWrapper } from '@/components';
+import { Button, Input, Text } from '@/components/ui';
 import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
@@ -78,27 +79,26 @@ export default function ForgotPasswordScreen() {
   if (hasError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ fontSize: 18, marginBottom: 20 }}>Something went wrong</Text>
-        <TouchableOpacity 
-          style={{ backgroundColor: '#007AFF', padding: 15, borderRadius: 8 }}
+        <Text variant="h2" weight="semibold" style={{ marginBottom: 20 }}>Something went wrong</Text>
+        <Button 
+          label="Try Again"
           onPress={() => setHasError(false)}
-        >
-          <Text style={{ color: 'white' }}>Try Again</Text>
-        </TouchableOpacity>
+          variant="primary"
+        />
       </View>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Reset Password</ThemedText>
+    <View style={styles.container}>
+      <Text variant="h1" weight="bold" style={styles.title}>Reset Password</Text>
       
-      <ThemedText style={styles.description}>
+      <Text variant="body" style={styles.description}>
         Enter your email address and we will send you a link to reset your password.
-      </ThemedText>
+      </Text>
       
       <FormWrapper onSubmit={handleResetPassword} style={{ width: '100%' }}>
-        <ThemedTextInput
+        <Input
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
@@ -112,23 +112,22 @@ export default function ForgotPasswordScreen() {
         />
       </FormWrapper>
       
-      <TouchableOpacity 
-        style={[styles.button, isLoading && styles.buttonDisabled]}
+      <Button 
+        label={isLoading ? 'Sending...' : 'Send Reset Link'}
         onPress={handleResetPassword}
         disabled={isLoading}
-      >
-        <ThemedText style={styles.buttonText}>
-          {isLoading ? 'Sending...' : 'Send Reset Link'}
-        </ThemedText>
-      </TouchableOpacity>
+        isLoading={isLoading}
+        fullWidth
+        containerStyle={styles.button}
+      />
       
-      <TouchableOpacity 
-        style={styles.linkButton}
+      <Button 
+        variant="link"
+        label="Back to Sign In"
         onPress={handleGoBack}
         disabled={isLoading}
-      >
-        <ThemedText type="link" style={styles.linkText}>Back to Sign In</ThemedText>
-      </TouchableOpacity>
-    </ThemedView>
+        containerStyle={styles.linkButton}
+      />
+    </View>
   );
 } 

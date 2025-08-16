@@ -1,12 +1,13 @@
 
-import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { FormWrapper } from '@/components';
+import { Button, Input, Text } from '@/components/ui';
 import { useToast } from '@/features/alert';
 import { useEmailSignup } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
@@ -132,12 +133,11 @@ export default function SignupScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <ThemedView style={styles.container}>
-          <ThemedText type="title" style={styles.title}>{t('auth.create_account')}</ThemedText>
+        <View style={styles.container}>
+          <Text variant="h1" weight="bold" style={styles.title}>{t('auth.create_account')}</Text>
           
           <FormWrapper onSubmit={handleSignup} style={{ width: '100%' }}>
-            <ThemedTextInput
-              ref={emailRef}
+            <Input
               placeholder={t('auth.email')}
               value={email}
               onChangeText={(text) => {
@@ -156,15 +156,11 @@ export default function SignupScreen() {
               blurOnSubmit={false}
               onFocus={() => console.log('Email input focused on signup')}
               onBlur={() => console.log('Email input blurred on signup')}
+              status={errors.email ? 'error' : 'default'}
+              errorText={errors.email}
             />
-            {errors.email && (
-              <ThemedText style={{ color: 'red', fontSize: 12, marginTop: -8, marginBottom: 8 }}>
-                {errors.email}
-              </ThemedText>
-            )}
             
-            <ThemedTextInput
-              ref={passwordRef}
+            <Input
               placeholder={t('auth.password')}
               value={password}
               onChangeText={(text) => {
@@ -180,15 +176,11 @@ export default function SignupScreen() {
               returnKeyType="next"
               onSubmitEditing={handlePasswordSubmit}
               blurOnSubmit={false}
+              status={errors.password ? 'error' : 'default'}
+              errorText={errors.password}
             />
-            {errors.password && (
-              <ThemedText style={{ color: 'red', fontSize: 12, marginTop: -8, marginBottom: 8 }}>
-                {errors.password}
-              </ThemedText>
-            )}
             
-            <ThemedTextInput
-              ref={confirmPasswordRef}
+            <Input
               placeholder={t('auth.confirm_password')}
               value={confirmPassword}
               onChangeText={(text) => {
@@ -203,37 +195,31 @@ export default function SignupScreen() {
               variant="filled"
               returnKeyType="done"
               onSubmitEditing={handleConfirmPasswordSubmit}
+              status={errors.confirmPassword ? 'error' : 'default'}
+              errorText={errors.confirmPassword}
             />
-            {errors.confirmPassword && (
-              <ThemedText style={{ color: 'red', fontSize: 12, marginTop: -8, marginBottom: 8 }}>
-                {errors.confirmPassword}
-              </ThemedText>
-            )}
           </FormWrapper>
           
-          <TouchableOpacity 
-            style={[styles.button, isLoading && styles.buttonDisabled]}
+          <Button 
+            label={isLoading ? t('auth.signing_up') : t('auth.sign_up')}
             onPress={() => {
               console.log('Signup button pressed');
               handleSignup();
             }}
             disabled={isLoading}
-            activeOpacity={0.7}
-          >
-            <ThemedText style={styles.buttonText}>
-              {isLoading ? t('auth.signing_up') : t('auth.sign_up')}
-            </ThemedText>
-          </TouchableOpacity>
+            isLoading={isLoading}
+            fullWidth
+            containerStyle={styles.button}
+          />
           
-          <TouchableOpacity 
-            style={styles.linkButton}
+          <Button 
+            variant="link"
+            label={t('auth.have_account_link')}
             onPress={handleGoToSignin}
             disabled={isLoading}
-            activeOpacity={0.7}
-          >
-            <ThemedText type="link" style={styles.linkText}>{t('auth.have_account_link')}</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
+            containerStyle={styles.linkButton}
+          />
+                 </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

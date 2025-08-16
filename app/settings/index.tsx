@@ -1,8 +1,8 @@
+import { Button, Card, Input, ListItem, Text } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
-
 import { router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, Switch, View } from 'react-native';
 import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert';
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
@@ -14,7 +14,7 @@ export default function SettingsScreen() {
   const theme = useAppTheme();
   const { themeMode, setThemeMode } = useThemeMode();
   const { themeStyle, setThemeStyle } = useThemeStyle();
-  const { userName, userEmail, refresh } = useUserInfo();
+  const { userName, email, refresh } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
   const { updateProfile, isUpdating } = useUpdateProfile();
   const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
@@ -84,158 +84,179 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={styles.backButtonText.color} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
+        <Button 
+          variant="ghost"
+          onPress={handleBack}
+          containerStyle={styles.backButton}
+          leftIcon={<MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />}
+        />
+        <Text variant="h2" weight="semibold" style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Account Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.account')}</Text>
-          <View style={styles.card}>
-            <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.name')}</Text>
-              {isEditingName ? (
-                <View style={styles.editContainer}>
-                  <TextInput
-                    style={styles.nameInput}
-                    value={editedName}
-                    onChangeText={setEditedName}
-                    placeholder={t('settings.name')}
-                    placeholderTextColor={theme.colors.text.tertiary}
-                    autoFocus
-                    onBlur={() => {
-                      console.log('👁️ TextInput blurred');
-                      // Don't cancel on blur - let user press save button
-                    }}
-                  />
-                  <TouchableOpacity 
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>{t('settings.account')}</Text>
+          <Card variant="default" padding="md" containerStyle={styles.card}>
+            {isEditingName ? (
+              <View style={styles.editContainer}>
+                <Input
+                  value={editedName}
+                  onChangeText={setEditedName}
+                  placeholder={t('settings.name')}
+                  variant="filled"
+                  autoFocus
+                  onBlur={() => {
+                    console.log('👁️ TextInput blurred');
+                    // Don't cancel on blur - let user press save button
+                  }}
+                />
+                <View style={styles.editButtons}>
+                  <Button 
+                    label={isUpdating ? t('common.loading') : t('common.save')}
                     onPress={handleNameSave}
-                    style={[styles.saveButton, isUpdating && styles.saveButtonDisabled]}
                     disabled={isUpdating}
-                  >
-                    <Text style={styles.saveButtonText}>
-                      {isUpdating ? t('common.loading') : t('common.save')}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleNameCancel} style={styles.cancelButton}>
-                    <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
-                  </TouchableOpacity>
+                    isLoading={isUpdating}
+                    size="sm"
+                    containerStyle={styles.saveButton}
+                  />
+                  <Button 
+                    variant="outline"
+                    label={t('common.cancel')}
+                    onPress={handleNameCancel}
+                    size="sm"
+                    containerStyle={styles.cancelButton}
+                  />
                 </View>
-              ) : (
-                <View style={styles.nameContainer}>
-                  <Text style={styles.settingValue}>{userName || t('settings.not_set')}</Text>
-                  <TouchableOpacity onPress={handleNameEdit} style={styles.editButton}>
-                    <Text style={styles.editButtonText}>{t('common.edit')}</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-            <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.email')}</Text>
-              <Text style={styles.settingValue}>{userEmail || t('settings.not_set')}</Text>
-            </View>
-          </View>
+              </View>
+            ) : (
+              <ListItem
+                variant="settings"
+                title={t('settings.name')}
+                subtitle={userName || t('settings.not_set')}
+                rightElement={
+                  <Button 
+                    variant="ghost"
+                    label={t('common.edit')}
+                    onPress={handleNameEdit}
+                    size="sm"
+                  />
+                }
+              />
+            )}
+            
+            <ListItem
+              variant="settings"
+              title={t('settings.email')}
+              subtitle={email || t('settings.not_set')}
+            />
+          </Card>
         </View>
 
         {/* Preferences Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.preferences')}</Text>
-          <View style={styles.card}>
-            <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.language')}</Text>
-              <LanguageSelector style={styles.languageSelector} />
-            </View>
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>{t('settings.preferences')}</Text>
+          <Card variant="default" padding="md" containerStyle={styles.card}>
+            <ListItem
+              variant="settings"
+              title={t('settings.language')}
+              rightElement={<LanguageSelector style={styles.languageSelector} />}
+            />
             
-            <TouchableOpacity 
-              style={styles.settingItem}
+            <ListItem
+              variant="settings"
+              title={t('settings.theme')}
+              subtitle={`${themeStyle === 'default' ? 'Default' : themeStyle === 'glassmorphism' ? 'Glassmorphism' : 'Claymorphism'} • ${themeMode === 'system' ? 'System' : themeMode === 'light' ? 'Light' : 'Dark'}`}
+              rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
               onPress={() => router.push('/settings/themes')}
-            >
-              <Text style={styles.settingLabel}>{t('settings.theme')}</Text>
-              <View style={styles.settingValueContainer}>
-                <Text style={styles.settingValue}>
-                  {themeStyle === 'default' ? 'Default' : themeStyle === 'glassmorphism' ? 'Glassmorphism' : 'Claymorphism'} • {themeMode === 'system' ? 'System' : themeMode === 'light' ? 'Light' : 'Dark'}
-                </Text>
-                <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
-              </View>
-            </TouchableOpacity>
+            />
             
             {/* Test Toast Button */}
-            <TouchableOpacity 
-              style={styles.settingItem}
+            <ListItem
+              variant="settings"
+              title="Test Toast"
+              subtitle="Tap to test"
               onPress={() => {
                 console.log('🧪 Test toast button pressed');
                 showSuccess('Test toast message!', 5000);
               }}
-            >
-              <Text style={styles.settingLabel}>Test Toast</Text>
-              <Text style={styles.settingValue}>Tap to test</Text>
-            </TouchableOpacity>
+            />
             
-            <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.notifications')}</Text>
-              <Switch
-                value={notificationsEnabled}
-                onValueChange={setNotificationsEnabled}
-                trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
-                thumbColor={notificationsEnabled ? theme.colors.button.text : theme.colors.text.secondary}
-              />
-            </View>
-
-          </View>
+            <ListItem
+              variant="settings"
+              title={t('settings.notifications')}
+              rightElement={
+                <Switch
+                  value={notificationsEnabled}
+                  onValueChange={setNotificationsEnabled}
+                  trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
+                  thumbColor={notificationsEnabled ? theme.colors.button.text : theme.colors.text.secondary}
+                />
+              }
+            />
+          </Card>
         </View>
 
         {/* Data & Privacy Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.data_privacy')}</Text>
-          <View style={styles.card}>
-            <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.export_data')}</Text>
-              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.clear_conversations')}</Text>
-              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.privacy_policy')}</Text>
-              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
-            </TouchableOpacity>
-          </View>
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>{t('settings.data_privacy')}</Text>
+          <Card variant="default" padding="md" containerStyle={styles.card}>
+            <ListItem
+              variant="settings"
+              title={t('settings.export_data')}
+              rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+              onPress={() => {}}
+            />
+            <ListItem
+              variant="settings"
+              title={t('settings.clear_conversations')}
+              rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+              onPress={() => {}}
+            />
+            <ListItem
+              variant="settings"
+              title={t('settings.privacy_policy')}
+              rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+              onPress={() => {}}
+            />
+          </Card>
         </View>
 
         {/* About Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('settings.about')}</Text>
-          <View style={styles.card}>
-            <View style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.version')}</Text>
-              <Text style={styles.settingValue}>1.0.0</Text>
-            </View>
-            <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.terms_of_service')}</Text>
-              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.settingItem}>
-              <Text style={styles.settingLabel}>{t('settings.support')}</Text>
-              <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
-            </TouchableOpacity>
-          </View>
+          <Text variant="h3" weight="semibold" style={styles.sectionTitle}>{t('settings.about')}</Text>
+          <Card variant="default" padding="md" containerStyle={styles.card}>
+            <ListItem
+              variant="settings"
+              title={t('settings.version')}
+              subtitle="1.0.0"
+            />
+            <ListItem
+              variant="settings"
+              title={t('settings.terms_of_service')}
+              rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+              onPress={() => {}}
+            />
+            <ListItem
+              variant="settings"
+              title={t('settings.support')}
+              rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+              onPress={() => {}}
+            />
+          </Card>
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity
-          style={styles.logoutButton}
+        <Button
+          label={isLoggingOut ? t('home.logging_out') : t('home.logout')}
           onPress={handleLogout}
           disabled={isLoggingOut}
-        >
-          <Text style={styles.logoutText}>
-            {isLoggingOut ? t('home.logging_out') : t('home.logout')}
-          </Text>
-        </TouchableOpacity>
+          isLoading={isLoggingOut}
+          status="error"
+          fullWidth
+          containerStyle={styles.logoutButton}
+        />
       </ScrollView>
       
       {/* Custom Alert */}
@@ -255,9 +276,6 @@ export default function SettingsScreen() {
           hideAlert();
         }}
       />
-
-      {/* Toast Notification */}
-      {/* The Toast component is now handled globally, so this section is removed */}
     </SafeAreaView>
   );
 } 

@@ -20,9 +20,9 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       ...theme.shadows.light,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      minWidth: 44,
+      minHeight: 44,
+      borderRadius: 22,
       backgroundColor: theme.colors.background.secondary,
       justifyContent: 'center',
       alignItems: 'center',
@@ -30,11 +30,12 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       ...theme.shadows.light,
       borderWidth: 1,
       borderColor: theme.colors.border.light,
+      padding: 0, // Override Button's default padding
     },
     backButtonText: {
       fontSize: theme.fontSizes.xl,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semiBold as '600',
+      fontWeight: theme.fontWeights.semibold as '600',
       textAlign: 'center',
       lineHeight: 24,
     },
@@ -46,18 +47,19 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       fontSize: theme.fontSizes.lg,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semiBold as '600',
+      fontWeight: theme.fontWeights.semibold as '600',
     },
     menuButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      minWidth: 44,
+      minHeight: 44,
+      borderRadius: 22,
       backgroundColor: theme.colors.background.secondary,
       justifyContent: 'center',
       alignItems: 'center',
       ...theme.shadows.light,
       borderWidth: 1,
       borderColor: theme.colors.border.light,
+      padding: 0, // Override Button's default padding
     },
     menuButtonText: {
       fontSize: theme.fontSizes.xl,
@@ -86,7 +88,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     },
     modelMenuOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: theme.colors.feedback.overlay.medium,
       justifyContent: 'flex-start',
       alignItems: 'center',
     },
@@ -125,7 +127,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     },
     quickActionsOverlay: {
       flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: theme.colors.feedback.overlay.medium,
       justifyContent: 'flex-start',
       alignItems: 'flex-end',
     },

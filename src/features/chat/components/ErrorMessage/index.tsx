@@ -1,6 +1,7 @@
 // src/features/chat/components/ErrorMessage/index.tsx
+import { Button, Text } from '@/components/ui';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { createErrorMessageStyles } from './ErrorMessage.styles';
@@ -25,9 +26,14 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry, st
           <Text style={styles.errorSubtext}>Something went wrong. Please try again.</Text>
         )}
         
-        <TouchableOpacity onPress={onRetry} style={styles.retryButton}>
-          <Text style={styles.retryText}>Retry</Text>
-        </TouchableOpacity>
+        <Button
+          label="Retry"
+          variant="primary"
+          status="error"
+          size="sm"
+          onPress={onRetry}
+          containerStyle={styles.retryButton}
+        />
       </View>
     </View>
   );

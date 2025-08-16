@@ -1,6 +1,7 @@
+import { Button } from '@/components/ui/Button';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
@@ -45,20 +46,20 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               }}
             />
             <View style={styles.actionRow}>
-              <TouchableOpacity
+              <Button
+                label="Send"
+                variant="primary"
+                size="sm"
                 onPress={() => { console.log('[EDIT] send', draft); onSendEdited?.(draft); setIsEditing(false); }}
-                style={[styles.actionButton, { borderColor: '#FFFFFF' }]}
-                accessibilityRole="button"
-              >
-                <Text style={{ color: '#FFFFFF' }}>Send</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+                containerStyle={styles.actionButton}
+              />
+              <Button
+                label="Cancel"
+                variant="outline"
+                size="sm"
                 onPress={() => { setDraft(message.content); setIsEditing(false); }}
-                style={[styles.actionButton, { borderColor: theme.colors.text.secondary }]}
-                accessibilityRole="button"
-              >
-                <Text style={{ color: theme.colors.text.secondary }}>Cancel</Text>
-              </TouchableOpacity>
+                containerStyle={styles.actionButton}
+              />
             </View>
           </View>
         ) : (
@@ -67,7 +68,10 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               <Text style={styles.text}>{message.content}</Text>
             </View>
             <View style={{ flexDirection: 'row', marginTop: 6, gap: 12 }}>
-              <TouchableOpacity
+              <Button
+                variant="ghost"
+                size="sm"
+                leftIcon={<MaterialIcons name="content-copy" size={18} color={theme.colors.text.secondary} />}
                 onPress={async () => {
                   try {
                     await copyToClipboard(message.content);
@@ -77,18 +81,15 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                   }
                   console.log('[USER-MSG] copy');
                 }}
-                style={{ padding: 4 }}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <MaterialIcons name="content-copy" size={18} color={theme.colors.text.secondary} />
-              </TouchableOpacity>
-              <TouchableOpacity
+                containerStyle={{ padding: 4 }}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                leftIcon={<MaterialIcons name="edit" size={18} color={theme.colors.text.secondary} />}
                 onPress={() => { console.log('[USER-MSG] edit'); setIsEditing(true); setDraft(message.content); }}
-                style={{ padding: 4 }}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <MaterialIcons name="edit" size={18} color={theme.colors.text.secondary} />
-              </TouchableOpacity>
+                containerStyle={{ padding: 4 }}
+              />
             </View>
           </>
         )}
