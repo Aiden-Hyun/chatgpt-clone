@@ -3,10 +3,11 @@ import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/componen
 import { useToast } from '@/features/alert';
 import { useEmailSignup } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import { createSignupStyles } from '../_styles/auth/signup.styles';
+import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
   const { t } = useLanguageContext();
@@ -17,7 +18,8 @@ export default function SignupScreen() {
   const { signUp, isLoading } = useEmailSignup();
   const { showError } = useToast();
 
-  const styles = createSignupStyles();
+  const theme = useAppTheme();
+  const styles = createSignupStyles(theme);
 
   // Refs for form handling
   const emailRef = useRef<TextInput>(null);

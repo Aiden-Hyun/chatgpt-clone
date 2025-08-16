@@ -1,3 +1,4 @@
+import { Button, ListItem, Text } from '@/components';
 import { useToast } from '@/features/alert';
 import { useUserInfo } from '@/features/auth';
 import { useChatRooms } from '@/features/chat/hooks';
@@ -5,7 +6,7 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Modal, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../constants';
@@ -94,7 +95,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
           if (val && val.trim().length > 0) next[id] = val;
         }
         setDrafts(next);
-      } catch (e) {
+      } catch {
         // noop
       }
     };
@@ -149,6 +150,32 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
     }
   };
 
+  // Render the draft badge and snippet if a draft exists
+  const renderDraftContent = (roomId: string) => {
+    const draft = drafts[roomId];
+    if (draft && draft.trim().length > 0) {
+      const compact = draft.replace(/\s+/g, ' ').trim();
+      const snippet = compact.length > SIDEBAR_SNIPPET_MAX_LENGTH 
+        ? `${compact.slice(0, SIDEBAR_SNIPPET_MAX_LENGTH)}…` 
+        : compact;
+      
+      return (
+        <View style={styles.subtitleRow}>
+          <View style={styles.draftBadge}>
+            <Text variant="caption" size="xs" weight="semibold" color={theme.colors.status.info.primary}>
+              Draft
+            </Text>
+          </View>
+          <Text variant="caption" numberOfLines={1}>
+            {snippet}
+          </Text>
+        </View>
+      );
+    }
+    
+    return null;
+  };
+
   return (
     <Modal
       visible={isVisible}
@@ -169,68 +196,34 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
         >
           {/* Header */}
           <View style={styles.sidebarHeader}>
-            <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
-              <MaterialIcons name="add" size={20} color={theme.colors.text.primary} />
-              <Text style={styles.newChatText}>{t('sidebar.new_chat')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onClose}>
-              <MaterialIcons name="close" size={24} color={theme.colors.text.secondary} />
-            </TouchableOpacity>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<MaterialIcons name="add" size={20} color={theme.colors.text.primary} />}
+              label={t('sidebar.new_chat')}
+              onPress={handleNewChat}
+              containerStyle={styles.newChatButton}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={onClose}
+              leftIcon={<MaterialIcons name="close" size={24} color={theme.colors.text.secondary} />}
+            />
           </View>
 
           {/* Chat History */}
           <ScrollView style={styles.chatHistory} showsVerticalScrollIndicator={false}>
-            {rooms.map((room) => (
-              <View
-                key={room.id}
-                style={[
-                  styles.chatItem,
-                  selectedChatId === room.id.toString() && styles.selectedChatItem
-                ]}
-              >
-                <TouchableOpacity
-                  style={styles.chatItemMain}
-                  onPress={() => handleChatSelect(room.id.toString())}
-                >
-                  <MaterialIcons 
-                    name="chat" 
-                    size={16} 
-                    color={selectedChatId === room.id.toString() ? theme.colors.primary : theme.colors.text.secondary} 
-                  />
-                  <View style={styles.chatItemContent}>
-                    <Text style={[
-                      styles.chatItemTitle,
-                      selectedChatId === room.id.toString() && styles.selectedChatItemTitle
-                    ]}>
-                      {room.name}
-                    </Text>
-                    {(() => {
-                      const draft = drafts[room.id.toString()];
-                      if (draft && draft.trim().length > 0) {
-                        const compact = draft.replace(/\s+/g, ' ').trim();
-                        const snippet = compact.length > SIDEBAR_SNIPPET_MAX_LENGTH ? `${compact.slice(0, SIDEBAR_SNIPPET_MAX_LENGTH)}…` : compact;
-                        return (
-                          <View style={styles.subtitleRow}>
-                            <View style={styles.draftBadge}>
-                              <Text style={styles.draftBadgeText}>Draft</Text>
-                            </View>
-                            <Text style={styles.chatItemSubtitle} numberOfLines={1}>
-                              {snippet}
-                            </Text>
-                          </View>
-                        );
-                      }
-                      return (
-                        <Text style={styles.chatItemSubtitle}>
-                          {room.last_message || t('sidebar.no_messages')}
-                        </Text>
-                      );
-                    })()}
-                  </View>
-                  <Text style={styles.chatItemTime}>
-                    {room.updated_at ? new Date(room.updated_at).toLocaleDateString() : ''}
-                  </Text>
-                </TouchableOpacity>
+            {rooms.map((room) => {
+              const isSelected = selectedChatId === room.id.toString();
+              const draft = drafts[room.id.toString()];
+              const hasDraft = draft && draft.trim().length > 0;
+              
+              // Prepare subtitle content
+              let subtitle = room.last_message || t('sidebar.no_messages');
+              
+              // Prepare right element (delete button)
+              const rightElement = (
                 <TouchableOpacity
                   style={styles.chatItemDelete}
                   onPress={() => handleDelete(room.id)}
@@ -238,19 +231,51 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 >
                   <MaterialIcons name="delete" size={18} color={theme.colors.status.error.primary} />
                 </TouchableOpacity>
-              </View>
-            ))}
+              );
+              
+              // Prepare left element (chat icon)
+              const leftElement = (
+                <MaterialIcons 
+                  name="chat" 
+                  size={16} 
+                  color={isSelected ? theme.colors.primary : theme.colors.text.secondary} 
+                />
+              );
+
+              return (
+                <ListItem
+                  key={room.id}
+                  variant="chat"
+                  title={room.name}
+                  subtitle={hasDraft ? undefined : subtitle}
+                  description={room.updated_at ? new Date(room.updated_at).toLocaleDateString() : undefined}
+                  leftElement={leftElement}
+                  rightElement={rightElement}
+                  selected={isSelected}
+                  onPress={() => handleChatSelect(room.id.toString())}
+                  containerStyle={styles.chatItem}
+                >
+                  {hasDraft && renderDraftContent(room.id.toString())}
+                </ListItem>
+              );
+            })}
           </ScrollView>
 
           {/* User Profile */}
           <View style={styles.userProfile}>
             <View style={styles.userInfo}>
               <MaterialIcons name="account-circle" size={32} color={theme.colors.text.secondary} />
-              <Text style={styles.userName}>{userName || t('sidebar.user')}</Text>
+              <Text variant="body" weight="medium" style={styles.userName}>
+                {userName || t('sidebar.user')}
+              </Text>
             </View>
-            <TouchableOpacity style={styles.settingsButton} onPress={handleSettings}>
-              <MaterialIcons name="settings" size={20} color={theme.colors.text.secondary} />
-            </TouchableOpacity>
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={handleSettings}
+              leftIcon={<MaterialIcons name="settings" size={20} color={theme.colors.text.secondary} />}
+              containerStyle={styles.settingsButton}
+            />
           </View>
         </Animated.View>
         <Animated.View 
@@ -268,4 +293,4 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </View>
     </Modal>
   );
-}; 
+};

@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../../theme/theme.types';
 
 /**
  * RoomListItem Styles
  * Dedicated style file for RoomListItem component
  */
-export const createRoomListItemStyles = (theme: any) => {
+export const createRoomListItemStyles = (theme: AppTheme) => {
   
   return StyleSheet.create({
     roomContainer: {

@@ -6,13 +6,14 @@ import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, Vi
 import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert';
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
-import { ThemeSelector } from '../../src/features/theme';
-import { useAppTheme } from '../../src/features/theme/theme';
-import { createSettingsStyles } from '../_styles/settings/settings.styles';
+import { useAppTheme, useThemeMode, useThemeStyle } from '../../src/features/theme';
+import { createSettingsStyles } from './settings.styles';
 
 export default function SettingsScreen() {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
+  const { themeMode, setThemeMode } = useThemeMode();
+  const { themeStyle, setThemeStyle } = useThemeStyle();
   const { userName, userEmail, refresh } = useUserInfo();
   const { logout, isLoggingOut } = useLogout();
   const { updateProfile, isUpdating } = useUpdateProfile();
@@ -149,10 +150,18 @@ export default function SettingsScreen() {
               <LanguageSelector style={styles.languageSelector} />
             </View>
             
-            <View style={styles.settingItem}>
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => router.push('/settings/themes')}
+            >
               <Text style={styles.settingLabel}>{t('settings.theme')}</Text>
-              <ThemeSelector style={styles.themeSelector} />
-            </View>
+              <View style={styles.settingValueContainer}>
+                <Text style={styles.settingValue}>
+                  {themeStyle === 'default' ? 'Default' : themeStyle === 'glassmorphism' ? 'Glassmorphism' : 'Claymorphism'} • {themeMode === 'system' ? 'System' : themeMode === 'light' ? 'Light' : 'Dark'}
+                </Text>
+                <MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />
+              </View>
+            </TouchableOpacity>
             
             {/* Test Toast Button */}
             <TouchableOpacity 

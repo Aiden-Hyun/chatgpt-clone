@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { createChatStyles } from '~/app/_styles/chat/chat.styles';
 import { useChatRooms } from '../../features/chat/hooks';
 import { useAppTheme } from '../../features/theme/theme';
 import { useBackButtonHandler, useInputFocus } from './index';
@@ -23,10 +22,6 @@ export function useChatScreen() {
 
   // Memoize the entire result to prevent recreation
   const chatScreenState = useMemo(() => {
-    const styles = createChatStyles(theme);
-    
-
-
     return {
       // Input focus state
       inputRef: inputFocus.inputRef,
@@ -38,9 +33,8 @@ export function useChatScreen() {
       // Chat rooms state
       startNewChat: chatRooms.startNewChat,
       
-      // Theme and styles
+      // Theme for component usage
       theme,
-      styles,
     };
   }, [
     inputFocus.inputRef,

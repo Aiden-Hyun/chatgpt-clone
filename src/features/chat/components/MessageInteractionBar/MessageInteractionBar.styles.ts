@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../../theme/theme.types';
 
-export const createMessageInteractionBarStyles = (theme: any) => {
+export const createMessageInteractionBarStyles = (theme: AppTheme) => {
   
   return StyleSheet.create({
     container: {

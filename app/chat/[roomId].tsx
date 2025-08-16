@@ -1,14 +1,16 @@
 import { LoadingWrapper } from '@/components';
 import { useLogout } from '@/features/auth';
 import { ChatHeader, UnifiedChat } from '@/features/chat/components';
+import { useAppTheme } from '@/features/theme/theme';
 import { useChatScreen } from '@/shared/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
 import { useRoomModel } from '../../src/features/chat/model/useRoomModel';
+import { createChatStyles } from './chat.styles';
 
 // 🎯 CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
 interface ChatScreenProps {
@@ -21,7 +23,6 @@ interface ChatScreenProps {
     disableBackButton: any;
     startNewChat: () => void;
     theme: any;
-    styles: any;
   };
   logout: () => void;
   // Pass-through model selection props from parent
@@ -31,7 +32,8 @@ interface ChatScreenProps {
 
 const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, selectedModel, onChangeModel } = props;
-  const { styles } = chatScreenState;
+  const theme = useAppTheme();
+  const styles = createChatStyles(theme);
   
   // No model bridge ref needed; parent owns model selection
   
@@ -87,8 +89,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
       a?.maintainFocus === b?.maintainFocus &&
       a?.disableBackButton === b?.disableBackButton &&
       a?.startNewChat === b?.startNewChat &&
-      a?.theme === b?.theme &&
-      a?.styles === b?.styles
+      a?.theme === b?.theme
     );
 
   // Re-render when selected model changes so UnifiedChat sees updated model

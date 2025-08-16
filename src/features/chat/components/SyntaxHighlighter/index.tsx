@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
-import { useThemeContext } from '../../../theme/ThemeContext';
+import { useThemeContext } from '../../../theme';
 import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
 
  
@@ -22,10 +22,12 @@ export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProp
   language,
 }) => {
   const theme = useAppTheme();
-  const { currentTheme } = useThemeContext();
+  const { themeMode } = useThemeContext();
   const styles = React.useMemo(() => createSyntaxHighlighterStyles(theme), [theme]);
 
-  const prismTheme = currentTheme === 'dark' ? nightOwl : oneLight;
+  const prismTheme = themeMode === 'dark' || 
+    (themeMode === 'system' && theme.colors.background.primary === '#1A202C') 
+    ? nightOwl : oneLight;
 
   // Use integer pixel values to avoid sub-pixel rounding gaps between rows
   const fontSize = 14;

@@ -1,4 +1,4 @@
-import { FormWrapper, LoadingScreen, ThemedText, ThemedTextInput, ThemedView } from '@/components';
+import { Button, Card, FormWrapper, Input, LoadingScreen, Text } from '@/components';
 import { useToast } from '@/features/alert';
 import { useAuth } from '@/features/auth';
 import { useEmailSignin } from '@/features/auth/hooks';
@@ -13,13 +13,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  TextInput,
-  TouchableOpacity,
   View
 } from 'react-native';
 
 import { supabase } from '@/shared/lib/supabase';
-import { createAuthStyles } from '../_styles/auth/auth.styles';
+import { createAuthStyles } from './auth.styles';
 
 export default function AuthScreen() {
   const { session } = useAuth();
@@ -39,9 +37,7 @@ export default function AuthScreen() {
   const navigationAttempted = useRef(false);
   const { t } = useLanguageContext();
   
-  // Refs for form handling
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  // Note: We're no longer using refs with our new Input component
 
   // Session check logic
   const checkSession = useCallback(async () => {
@@ -158,7 +154,8 @@ export default function AuthScreen() {
   };
 
   const handleEmailSubmit = () => {
-    passwordRef.current?.focus();
+    // We're no longer using refs to focus
+    // Focus is handled automatically by the Input component
   };
 
   const handlePasswordSubmit = () => {
@@ -181,8 +178,6 @@ export default function AuthScreen() {
     }
   };
 
-
-
   if (loading) {
     return <LoadingScreen message={t('common.loading')} />;
   }
@@ -196,114 +191,110 @@ export default function AuthScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <ThemedView style={styles.container}>
-          <ThemedText type="title" style={styles.title}>{t('auth.welcome')}</ThemedText>
-          
-          {/* Google Login Button */}
-          <TouchableOpacity 
-            style={[styles.googleButton, signingInWithGoogle && styles.buttonDisabled]}
-            onPress={handleGoogleLogin}
-            disabled={signingInWithGoogle}
-            activeOpacity={0.7}
-          >
-            <ThemedText style={styles.googleButtonText}>
-              {signingInWithGoogle ? t('auth.redirecting') : `🔍 ${t('auth.login_with_google')}`}
-            </ThemedText>
-          </TouchableOpacity>
-          
-          {/* Divider */}
-          <View style={styles.divider}>
-            <ThemedText style={styles.dividerText}>{t('auth.or')}</ThemedText>
-          </View>
-          
-          {/* Email/Password Form */}
-          <FormWrapper onSubmit={handleEmailSignin} style={{ width: '100%' }}>
-            <ThemedTextInput
-              ref={emailRef}
-              placeholder={t('auth.email')}
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (errors.email) {
-                  setErrors(prev => ({ ...prev, email: undefined }));
-                }
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              editable={!isSigningIn}
-              variant="filled"
-              returnKeyType="next"
-              onSubmitEditing={handleEmailSubmit}
-              blurOnSubmit={false}
-            />
-            {errors.email && (
-              <ThemedText style={styles.errorText}>
-                {errors.email}
-              </ThemedText>
-            )}
+        <View style={styles.container}>
+          <Card variant="flat" padding="lg" containerStyle={{ width: '100%', maxWidth: 400 }}>
+            <Text variant="h1" center>{t('auth.welcome')}</Text>
             
-            <ThemedTextInput
-              ref={passwordRef}
-              placeholder={t('auth.password')}
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                if (errors.password) {
-                  setErrors(prev => ({ ...prev, password: undefined }));
-                }
-              }}
-              secureTextEntry
-              autoCapitalize="none"
-              editable={!isSigningIn}
-              variant="filled"
-              returnKeyType="done"
-              onSubmitEditing={handlePasswordSubmit}
+            {/* Google Login Button */}
+            <Button
+              variant="primary"
+              size="lg"
+              label={signingInWithGoogle ? t('auth.redirecting') : `🔍 ${t('auth.login_with_google')}`}
+              onPress={handleGoogleLogin}
+              disabled={signingInWithGoogle}
+              isLoading={signingInWithGoogle}
+              fullWidth
+              containerStyle={{ marginTop: theme.spacing.lg }}
             />
-            {errors.password && (
-              <ThemedText style={styles.errorText}>
-                {errors.password}
-              </ThemedText>
-            )}
-          </FormWrapper>
-          
-          {/* Sign In Button */}
-          <TouchableOpacity 
-            style={[styles.button, isSigningIn && styles.buttonDisabled]}
-            onPress={handleEmailSignin}
-            disabled={isSigningIn}
-            activeOpacity={0.7}
-          >
-            <ThemedText style={styles.buttonText}>
-              {isSigningIn ? t('auth.signing_in') : t('auth.sign_in_with_email')}
-            </ThemedText>
-          </TouchableOpacity>
-          
-          {/* Links */}
-          <TouchableOpacity 
-            style={styles.linkButton}
-            onPress={handleForgotPassword}
-            disabled={isSigningIn}
-            activeOpacity={0.7}
-          >
-            <ThemedText type="link" style={styles.linkText}>{t('auth.forgot_password')}</ThemedText>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.linkButton}
-            onPress={handleGoToSignup}
-            disabled={isSigningIn}
-            activeOpacity={0.7}
-          >
-            <ThemedText type="link" style={styles.linkText}>{t('auth.no_account_link')}</ThemedText>
-          </TouchableOpacity>
-          
-
-
-          {/* Language Selector */}
-          <LanguageSelector />
-        </ThemedView>
+            
+            {/* Divider */}
+            <View style={styles.divider}>
+              <Text variant="caption" color={theme.colors.text.tertiary}>{t('auth.or')}</Text>
+            </View>
+            
+            {/* Email/Password Form */}
+            <FormWrapper onSubmit={handleEmailSignin} style={{ width: '100%' }}>
+              <Input
+                label={t('auth.email')}
+                placeholder={t('auth.email')}
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (errors.email) {
+                    setErrors(prev => ({ ...prev, email: undefined }));
+                  }
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isSigningIn}
+                variant="filled"
+                returnKeyType="next"
+                onSubmitEditing={handleEmailSubmit}
+                blurOnSubmit={false}
+                errorText={errors.email}
+                status={errors.email ? 'error' : 'default'}
+              />
+              
+              <Input
+                label={t('auth.password')}
+                placeholder={t('auth.password')}
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  if (errors.password) {
+                    setErrors(prev => ({ ...prev, password: undefined }));
+                  }
+                }}
+                secureTextEntry
+                autoCapitalize="none"
+                editable={!isSigningIn}
+                variant="filled"
+                returnKeyType="done"
+                onSubmitEditing={handlePasswordSubmit}
+                errorText={errors.password}
+                status={errors.password ? 'error' : 'default'}
+              />
+            </FormWrapper>
+            
+            {/* Sign In Button */}
+            <Button
+              variant="primary"
+              size="lg"
+              label={isSigningIn ? t('auth.signing_in') : t('auth.sign_in_with_email')}
+              onPress={handleEmailSignin}
+              disabled={isSigningIn}
+              isLoading={isSigningIn}
+              fullWidth
+              containerStyle={{ marginTop: theme.spacing.md }}
+            />
+            
+            {/* Links */}
+            <Button
+              variant="link"
+              size="md"
+              label={t('auth.forgot_password')}
+              onPress={handleForgotPassword}
+              disabled={isSigningIn}
+              containerStyle={{ marginTop: theme.spacing.sm }}
+            />
+            
+            <Button
+              variant="link"
+              size="md"
+              label={t('auth.no_account_link')}
+              onPress={handleGoToSignup}
+              disabled={isSigningIn}
+              containerStyle={{ marginTop: theme.spacing.sm }}
+            />
+            
+            {/* Language Selector */}
+            <View style={{ marginTop: theme.spacing.xl, alignItems: 'center' }}>
+              <LanguageSelector />
+            </View>
+          </Card>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
-} 
+}

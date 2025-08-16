@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../src/features/theme/theme.types';
 
-export const createForgotPasswordStyles = () => {
+export const createForgotPasswordStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -46,4 +47,4 @@ export const createForgotPasswordStyles = () => {
   });
 };
 
-export default createForgotPasswordStyles; 
+export default createForgotPasswordStyles;

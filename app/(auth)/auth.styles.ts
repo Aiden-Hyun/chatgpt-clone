@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../src/features/theme/theme.types';
 
-export const createAuthStyles = (theme: any) => {
+export const createAuthStyles = (theme: AppTheme) => {
   
   return StyleSheet.create({
     loadingContainer: {
@@ -103,4 +104,4 @@ export const createAuthStyles = (theme: any) => {
   });
 };
 
-export default createAuthStyles; 
+export default createAuthStyles;

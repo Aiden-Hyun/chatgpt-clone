@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../src/features/theme/theme.types';
 
-export const createSettingsStyles = (theme: any) => {
+export const createSettingsStyles = (theme: AppTheme) => {
   
   return StyleSheet.create({
     container: {
@@ -73,6 +74,11 @@ export const createSettingsStyles = (theme: any) => {
       fontSize: theme.fontSizes.md,
       color: theme.colors.text.secondary,
       fontFamily: theme.fontFamily.primary,
+    },
+    settingValueContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
     },
     languageSelector: {
       marginVertical: 0,
@@ -171,4 +177,4 @@ export const createSettingsStyles = (theme: any) => {
   });
 };
 
-export default createSettingsStyles; 
+export default createSettingsStyles;

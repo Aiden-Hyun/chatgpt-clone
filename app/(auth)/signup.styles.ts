@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../src/features/theme/theme.types';
 
-export const createSignupStyles = () => {
+export const createSignupStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -40,4 +41,4 @@ export const createSignupStyles = () => {
   });
 };
 
-export default createSignupStyles; 
+export default createSignupStyles;

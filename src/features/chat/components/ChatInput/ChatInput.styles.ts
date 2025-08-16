@@ -1,10 +1,11 @@
 import { Platform, StyleSheet } from 'react-native';
+import { AppTheme } from '../../../theme/theme.types';
 
 /**
  * ChatInput Styles
  * Dedicated style file for ChatInput component
  */
-export const createChatInputStyles = (isInputFocused: boolean, theme: any) => {
+export const createChatInputStyles = (isInputFocused: boolean, theme: AppTheme) => {
   
   const styles = StyleSheet.create({
     inputRow: {

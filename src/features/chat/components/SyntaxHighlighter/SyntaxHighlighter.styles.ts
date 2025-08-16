@@ -1,4 +1,5 @@
 import { Platform, StyleSheet } from 'react-native';
+import { AppTheme } from '../../../theme/theme.types';
 
 const monoFont = Platform.select({
   ios: 'Menlo',
@@ -8,7 +9,7 @@ const monoFont = Platform.select({
 });
 const codeFontNative = 'CascadiaMono';
 
-export const createSyntaxHighlighterStyles = (theme: any) => {
+export const createSyntaxHighlighterStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       backgroundColor: 'transparent',

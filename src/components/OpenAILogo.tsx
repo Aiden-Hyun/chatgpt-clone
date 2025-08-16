@@ -1,4 +1,4 @@
-import { useThemeContext } from '@/features/theme/ThemeContext';
+import { useThemeContext } from '@/features/theme';
 import { Image } from 'expo-image';
 import React from 'react';
 
@@ -8,8 +8,9 @@ interface OpenAILogoProps {
 }
 
 export const OpenAILogo: React.FC<OpenAILogoProps> = ({ size = 16, variant }) => {
-  const { currentTheme } = useThemeContext();
-  const isDarkTheme = variant ? variant === 'white' : currentTheme === 'dark';
+  const { themeMode, currentTheme } = useThemeContext();
+  const isDarkTheme = variant ? variant === 'white' : 
+    (themeMode === 'system' ? currentTheme.colors.background.primary === '#1A202C' : themeMode === 'dark');
 
   const source = isDarkTheme
     ? require('../../assets/OpenAI/PNGs/OpenAI-white-monoblossom.png')

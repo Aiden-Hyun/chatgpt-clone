@@ -1,6 +1,7 @@
 import { Platform, StyleSheet } from 'react-native';
+import { AppTheme } from '../../../theme/theme.types';
 
-export const createAssistantMessageStyles = (theme: any) => {
+export const createAssistantMessageStyles = (theme: AppTheme) => {
   
   const webMonoStack = "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
   const codeFont = Platform.OS === 'web' ? webMonoStack : 'CascadiaMono';

@@ -1,468 +1,58 @@
-// theme.ts - Modern Minimalist design system with clean aesthetics
+// theme.ts - Main theme file with enhanced theme switching support
 
-import { useColorScheme } from 'react-native';
-import { useThemeContext } from './ThemeContext';
+import { useThemeContext } from './context/ThemeContext';
+import { AppTheme } from './theme.types';
+import themeRegistry from './themeRegistry';
 
-// Design tokens that remain consistent across themes
-export const fontSizes = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 20,
-  xxl: 24,
-};
+// Re-export design tokens for convenience
+export { borderRadius, fontFamily, fontSizes, fontWeights, letterSpacing, spacing } from './themes/tokens';
 
-export const fontWeights = {
-  regular: '400',
-  medium: '500',
-  semibold: '600',
-  bold: '700',
-} as const;
+// Re-export theme types
+export * from './theme.types';
 
-export const fontFamily = {
-  primary: 'System', // Uses San Francisco on iOS and Roboto on Android
-};
+// Re-export ThemeContext and provider
+export { ThemeProvider, useThemeContext } from './context/ThemeContext';
 
-export const spacing = {
-  xxs: 2,
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
-};
+// Re-export theme registry
+export { themeRegistry };
 
-export const borderRadius = {
-  xs: 2,      // Very slight rounding for Sharp Corners design
-  sm: 2,      // Very slight rounding for Sharp Corners design
-  md: 2,      // Very slight rounding for Sharp Corners design
-  lg: 4,      // Slightly more rounding for larger elements
-  xl: 4,      // Slightly more rounding for larger elements
-  round: 9999, // For circular elements (avatars, etc.)
-};
-
-export const letterSpacing = {
-  tight: 0,
-  normal: 0.2,
-  wide: 0.5,
-};
-
-// Sharp Corners Design - Professional, business-like appearance with clean, structured components
-const lightColors = {
-  // Primary colors - Minimal palette
-  primary: '#2D3748',      // Dark gray-blue
-  secondary: '#4A5568',    // Medium gray
-  
-  // Background colors - Clean whites and grays
-  background: {
-    primary: '#FFFFFF',    // Pure white
-    secondary: '#F7FAFC',  // Very light gray
-    tertiary: '#EDF2F7',   // Light gray
-    avatar: '#E2E8F0',     // Subtle gray
-  },
-  
-  // Text colors - High contrast for readability
-  text: {
-    primary: '#1A202C',    // Almost black
-    secondary: '#4A5568',  // Dark gray
-    tertiary: '#718096',   // Medium gray
-    quaternary: '#A0AEC0', // Light gray
-    inverted: '#FFFFFF',   // White
-  },
-  
-  // Border colors - Subtle and minimal
-  border: {
-    light: '#E2E8F0',      // Very light gray
-    medium: '#CBD5E0',     // Light gray
-    dark: '#A0AEC0',       // Medium gray
-  },
-  
-  // Status colors - Muted and professional
-  status: {
-    success: {
-      primary: '#38A169',   // Muted green
-      secondary: '#48BB78',
-      tertiary: '#68D391',
-      background: '#F0FFF4',
-      border: '#C6F6D5',
-    },
-    error: {
-      primary: '#E53E3E',   // Muted red
-      secondary: '#F56565',
-      tertiary: '#FC8181',
-      background: '#FFF5F5',
-      border: '#FED7D7',
-    },
-    warning: {
-      primary: '#D69E2E',   // Muted yellow
-      secondary: '#ECC94B',
-      tertiary: '#F6E05E',
-      background: '#FFFBEB',
-      border: '#FEEBC8',
-    },
-    info: {
-      primary: '#3182CE',   // Muted blue
-      secondary: '#4299E1',
-      tertiary: '#63B3ED',
-      background: '#EBF8FF',
-      border: '#BEE3F8',
-    },
-    neutral: {
-      primary: '#718096',   // Gray
-      secondary: '#A0AEC0',
-      tertiary: '#CBD5E0',
-      background: '#F7FAFC',
-      border: '#E2E8F0',
-    },
-  },
-  
-  // Interactive States - Subtle feedback
-  interactive: {
-    hover: {
-      primary: 'rgba(45, 55, 72, 0.04)',
-      secondary: 'rgba(45, 55, 72, 0.08)',
-      tertiary: 'rgba(45, 55, 72, 0.12)',
-    },
-    pressed: {
-      primary: 'rgba(45, 55, 72, 0.08)',
-      secondary: 'rgba(45, 55, 72, 0.12)',
-      tertiary: 'rgba(45, 55, 72, 0.16)',
-    },
-    focus: {
-      primary: 'rgba(49, 130, 206, 0.15)',
-      secondary: 'rgba(49, 130, 206, 0.1)',
-      tertiary: 'rgba(49, 130, 206, 0.05)',
-    },
-    disabled: {
-      primary: 'rgba(160, 174, 192, 0.4)',
-      secondary: 'rgba(160, 174, 192, 0.3)',
-      tertiary: 'rgba(160, 174, 192, 0.2)',
-    },
-  },
-  
-  // Feedback Colors - Minimal and clean
-  feedback: {
-    loading: {
-      primary: '#A0AEC0',
-      secondary: '#CBD5E0',
-      pulse: 'rgba(160, 174, 192, 0.2)',
-    },
-    highlight: {
-      primary: '#FEF5E7',
-      secondary: '#FED7AA',
-      tertiary: '#F6AD55',
-    },
-    selection: {
-      primary: 'rgba(49, 130, 206, 0.08)',
-      secondary: 'rgba(49, 130, 206, 0.04)',
-    },
-    overlay: {
-      light: 'rgba(26, 32, 44, 0.08)',
-      medium: 'rgba(26, 32, 44, 0.16)',
-      dark: 'rgba(26, 32, 44, 0.32)',
-    },
-  },
-  
-  // Button colors - Clean and minimal
-  button: {
-    primary: '#2D3748',     // Dark gray-blue
-    secondary: '#F7FAFC',   // Light gray
-    text: '#FFFFFF',        // White text
-    secondaryText: '#2D3748', // Dark text
-    disabled: '#E2E8F0',    // Light gray
-    disabledText: '#A0AEC0', // Medium gray
-  },
-  
-  // Message bubbles - Clean and minimal
-  message: {
-    user: '#2D3748',        // Dark gray-blue
-    assistant: '#F7FAFC',   // Light gray
-    userText: '#FFFFFF',    // White text
-    assistantText: '#2D3748', // Dark text
-  },
-
-  // Shadow colors - Very subtle
-  shadow: {
-    light: 'rgba(26, 32, 44, 0.06)',
-    medium: 'rgba(26, 32, 44, 0.1)',
-    dark: 'rgba(26, 32, 44, 0.16)',
-  },
-
-  // Code syntax highlighting colors - VS Code Light+ inspired
-  syntax: {
-    keyword: '#0000FF',      // Blue for keywords (const, let, function, etc.)
-    string: '#A31515',       // Red for strings
-    comment: '#008000',      // Green for comments
-    number: '#098658',       // Teal for numbers
-    function: '#795E26',     // Brown for function names
-    variable: '#001080',     // Dark blue for variables
-    operator: '#000000',     // Black for operators
-    background: '#F8F8F8',   // Very light gray background for code
-    type: '#267F99',         // Teal for types (interface, type, etc.)
-    builtin: '#0000FF',      // Blue for built-in functions
-    tag: '#800000',          // Dark red for HTML tags
-    attribute: '#FF0000',    // Red for attributes
-  },
-};
-
-const darkColors = {
-  // Primary colors - Minimal dark palette
-  primary: '#F7FAFC',      // Light gray
-  secondary: '#E2E8F0',    // Medium light gray
-  
-  // Background colors - Clean dark grays
-  background: {
-    primary: '#1A202C',    // Dark gray
-    secondary: '#2D3748',  // Medium dark gray
-    tertiary: '#4A5568',   // Medium gray
-    avatar: '#718096',     // Light gray
-  },
-  
-  // Text colors - High contrast for readability
-  text: {
-    primary: '#F7FAFC',    // Almost white
-    secondary: '#E2E8F0',  // Light gray
-    tertiary: '#CBD5E0',   // Medium light gray
-    quaternary: '#A0AEC0', // Medium gray
-    inverted: '#1A202C',   // Dark text
-  },
-  
-  // Border colors - Subtle dark borders
-  border: {
-    light: '#4A5568',      // Medium gray
-    medium: '#718096',     // Light gray
-    dark: '#A0AEC0',       // Medium light gray
-  },
-  
-  // Status colors - Muted dark variants
-  status: {
-    success: {
-      primary: '#48BB78',
-      secondary: '#68D391',
-      tertiary: '#9AE6B4',
-      background: '#0F1419',
-      border: '#2F3E2B',
-    },
-    error: {
-      primary: '#F56565',
-      secondary: '#FC8181',
-      tertiary: '#FEB2B2',
-      background: '#1A0F0F',
-      border: '#3E2B2B',
-    },
-    warning: {
-      primary: '#ECC94B',
-      secondary: '#F6E05E',
-      tertiary: '#FAF089',
-      background: '#1A150F',
-      border: '#3E352B',
-    },
-    info: {
-      primary: '#4299E1',
-      secondary: '#63B3ED',
-      tertiary: '#90CDF4',
-      background: '#0F1419',
-      border: '#2B3E3E',
-    },
-    neutral: {
-      primary: '#A0AEC0',
-      secondary: '#CBD5E0',
-      tertiary: '#E2E8F0',
-      background: '#2D3748',
-      border: '#4A5568',
-    },
-  },
-  
-  // Interactive States - Dark mode variants
-  interactive: {
-    hover: {
-      primary: 'rgba(247, 250, 252, 0.04)',
-      secondary: 'rgba(247, 250, 252, 0.08)',
-      tertiary: 'rgba(247, 250, 252, 0.12)',
-    },
-    pressed: {
-      primary: 'rgba(247, 250, 252, 0.08)',
-      secondary: 'rgba(247, 250, 252, 0.12)',
-      tertiary: 'rgba(247, 250, 252, 0.16)',
-    },
-    focus: {
-      primary: 'rgba(66, 153, 225, 0.15)',
-      secondary: 'rgba(66, 153, 225, 0.1)',
-      tertiary: 'rgba(66, 153, 225, 0.05)',
-    },
-    disabled: {
-      primary: 'rgba(160, 174, 192, 0.4)',
-      secondary: 'rgba(160, 174, 192, 0.3)',
-      tertiary: 'rgba(160, 174, 192, 0.2)',
-    },
-  },
-  
-  // Feedback Colors - Dark mode variants
-  feedback: {
-    loading: {
-      primary: '#A0AEC0',
-      secondary: '#CBD5E0',
-      pulse: 'rgba(160, 174, 192, 0.2)',
-    },
-    highlight: {
-      primary: '#744210',
-      secondary: '#975A16',
-      tertiary: '#B7791F',
-    },
-    selection: {
-      primary: 'rgba(66, 153, 225, 0.08)',
-      secondary: 'rgba(66, 153, 225, 0.04)',
-    },
-    overlay: {
-      light: 'rgba(26, 32, 44, 0.16)',
-      medium: 'rgba(26, 32, 44, 0.32)',
-      dark: 'rgba(26, 32, 44, 0.48)',
-    },
-  },
-  
-  // Button colors - Clean dark variants
-  button: {
-    primary: '#F7FAFC',    // Light button on dark background
-    secondary: '#4A5568',  // Dark secondary button
-    text: '#1A202C',       // Dark text on light button
-    secondaryText: '#F7FAFC', // Light text on dark button
-    disabled: '#4A5568',   // Muted disabled state
-    disabledText: '#718096', // Muted disabled text
-  },
-  
-  // Message bubbles - Clean dark variants
-  message: {
-    user: '#4A5568',       // Dark user message background
-    assistant: '#2D3748',  // Darker assistant background
-    userText: '#F7FAFC',   // Light text on dark user bubble
-    assistantText: '#F7FAFC', // Light text on dark assistant bubble
-  },
-
-  // Shadow colors - Subtle dark shadows
-  shadow: {
-    light: 'rgba(0, 0, 0, 0.12)',
-    medium: 'rgba(0, 0, 0, 0.2)',
-    dark: 'rgba(0, 0, 0, 0.32)',
-  },
-
-  // Code syntax highlighting colors (dark theme) - VS Code Dark+ inspired
-  syntax: {
-    keyword: '#569CD6',      // Light blue for keywords (const, let, function, etc.)
-    string: '#CE9178',       // Light orange for strings
-    comment: '#6A9955',      // Green for comments
-    number: '#B5CEA8',       // Light green for numbers
-    function: '#DCDCAA',     // Light yellow for function names
-    variable: '#9CDCFE',     // Light blue for variables
-    operator: '#D4D4D4',     // Light gray for operators
-    background: '#1E1E1E',   // Dark background for code
-    type: '#4EC9B0',         // Cyan for types (interface, type, etc.)
-    builtin: '#569CD6',      // Light blue for built-in functions
-    tag: '#92C5F8',          // Light blue for HTML tags
-    attribute: '#92C5F8',    // Light blue for attributes
-  },
-};
-
-// Sharp Corners Shadows - Professional and subtle
-export const shadows = {
-  light: {
-    shadowColor: 'rgba(26, 32, 44, 0.08)',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  medium: {
-    shadowColor: 'rgba(26, 32, 44, 0.12)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  heavy: {
-    shadowColor: 'rgba(26, 32, 44, 0.2)',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-};
-
-// Dark mode shadows - Professional and subtle
-export const darkShadows = {
-  light: {
-    shadowColor: 'rgba(0, 0, 0, 0.15)',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  medium: {
-    shadowColor: 'rgba(0, 0, 0, 0.25)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  heavy: {
-    shadowColor: 'rgba(0, 0, 0, 0.4)',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-};
-
-// Theme object with both light and dark variants
-export const theme = {
-  light: {
-    colors: lightColors,
-    fontSizes,
-    fontWeights,
-    fontFamily,
-    spacing,
-    borderRadius,
-    shadows,
-    letterSpacing,
-  },
-  dark: {
-    colors: darkColors,
-    fontSizes,
-    fontWeights,
-    fontFamily,
-    spacing,
-    borderRadius,
-    shadows: darkShadows,
-    letterSpacing,
-  },
-};
-
-// Hook to get current theme based on color scheme
-export function useTheme() {
-  // Respect the user-selected preference from ThemeContext
+/**
+ * Hook to get the current theme based on user preferences
+ * @returns The current theme object
+ */
+export function useTheme(): AppTheme {
   const { currentTheme } = useThemeContext();
-  return theme[currentTheme];
+  return currentTheme;
 }
 
-// Hook to get current theme based on ThemeContext
-export function useAppTheme() {
-  // Alias to useTheme for clarity; both use ThemeContext preference
+/**
+ * Alias for useTheme for clarity and backward compatibility
+ * @returns The current theme object
+ */
+export function useAppTheme(): AppTheme {
   return useTheme();
 }
 
-// Legacy exports for backward compatibility (deprecated)
-export const colors = lightColors;
+/**
+ * Hook to get and set theme style (which theme set to use)
+ * @returns Object with theme style and setter
+ */
+export function useThemeStyle() {
+  const { themeStyle, setThemeStyle, availableThemes } = useThemeContext();
+  return { themeStyle, setThemeStyle, availableThemes };
+}
 
-// Export all theme elements as a single default object (deprecated)
-export default {
-  colors: lightColors,
-  fontSizes,
-  fontWeights,
-  fontFamily,
-  spacing,
-  borderRadius,
-  shadows,
-  letterSpacing,
+/**
+ * Hook to get and set theme mode (light, dark, system)
+ * @returns Object with theme mode and setter
+ */
+export function useThemeMode() {
+  const { themeMode, setThemeMode } = useThemeContext();
+  return { themeMode, setThemeMode };
+}
+
+// For backward compatibility, export the default theme
+export const theme = {
+  light: themeRegistry.getTheme('default')?.theme.light,
+  dark: themeRegistry.getTheme('default')?.theme.dark,
 };

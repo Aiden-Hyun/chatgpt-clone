@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../../theme/theme.types';
 
-export const createUserMessageStyles = (theme: any) => {
+export const createUserMessageStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',

@@ -3,10 +3,11 @@ import { FormWrapper, ThemedText, ThemedTextInput, ThemedView } from '@/componen
 import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { createForgotPasswordStyles } from '../_styles/auth/forgot-password.styles';
+import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -15,7 +16,8 @@ export default function ForgotPasswordScreen() {
   const { showError } = useToast();
   const { t } = useLanguageContext();
 
-  const styles = createForgotPasswordStyles();
+  const theme = useAppTheme();
+  const styles = createForgotPasswordStyles(theme);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
