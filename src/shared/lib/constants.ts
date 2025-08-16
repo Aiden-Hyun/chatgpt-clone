@@ -16,3 +16,9 @@ export const APP = {
 
 // NOTE: All secrets and keys have been moved to a secure configuration file.
 // This file is for non-sensitive, app-wide constants only.
+
+// Network configuration
+export const NETWORK = {
+  // Default request timeout for API calls (in milliseconds)
+  REQUEST_TIMEOUT_MS: 120000,
+};
