@@ -15,21 +15,18 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       backgroundColor: theme.colors.background.primary,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomWidth: 0, // Borderless header
       ...theme.shadows.light,
     },
     backButton: {
       minWidth: 44,
       minHeight: 44,
       borderRadius: 22,
-      backgroundColor: theme.colors.background.secondary,
+      backgroundColor: 'transparent', // Transparent background for cleaner look
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: theme.spacing.md,
-      ...theme.shadows.light,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderWidth: 0, // Borderless
       padding: 0, // Override Button's default padding
     },
     backButtonText: {
@@ -53,12 +50,10 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       minWidth: 44,
       minHeight: 44,
       borderRadius: 22,
-      backgroundColor: theme.colors.background.secondary,
+      backgroundColor: 'transparent', // Transparent background for cleaner look
       justifyContent: 'center',
       alignItems: 'center',
-      ...theme.shadows.light,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderWidth: 0, // Borderless
       padding: 0, // Override Button's default padding
     },
     menuButtonText: {
@@ -72,12 +67,11 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.md,
-      backgroundColor: theme.colors.background.secondary,
+      paddingHorizontal: theme.spacing.sm, // Reduced padding for more compact look
+      backgroundColor: 'transparent', // Transparent background
       borderRadius: theme.borderRadius.lg,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
-      ...theme.shadows.light,
+      borderWidth: 0, // Borderless model selector
+      // Removed shadow for cleaner look
     },
     modelSelectorText: {
       fontSize: theme.fontSizes.md,
