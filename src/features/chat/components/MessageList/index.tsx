@@ -19,6 +19,9 @@ interface MessageListProps {
   onRegenerate: (index: number) => void;
   onUserEditRegenerate?: (index: number, newText: string) => void;
   showWelcomeText: boolean;
+  // Like/dislike handlers
+  onLike?: (messageId: string) => void;
+  onDislike?: (messageId: string) => void;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
@@ -27,6 +30,8 @@ export const MessageList: React.FC<MessageListProps> = ({
   onRegenerate,
   onUserEditRegenerate,
   showWelcomeText,
+  onLike,
+  onDislike,
 }) => {
   // Add render counting for performance monitoring
   const renderCount = useRef(0);
@@ -316,6 +321,8 @@ export const MessageList: React.FC<MessageListProps> = ({
         onUserEditRegenerate={onUserEditRegenerate}
         showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
+        onLike={onLike}
+        onDislike={onDislike}
       />
     );
   };

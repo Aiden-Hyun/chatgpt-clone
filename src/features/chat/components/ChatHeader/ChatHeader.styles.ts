@@ -97,11 +97,15 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       borderRadius: theme.borderRadius.md,
       padding: theme.spacing.sm,
       marginTop: Platform.OS === 'ios' ? 100 : 80,
-      minWidth: 200,
+      minWidth: 320, // Increased width to accommodate capability icons
+      maxWidth: 400,
       ...theme.shadows.medium,
     },
     modelListContainer: {
-      maxHeight: 300,
+      maxHeight: 400, // Increased height for more models
+    },
+    modelMenuItemContainer: {
+      marginBottom: 4,
     },
     modelMenuItem: {
       paddingVertical: theme.spacing.md,
@@ -115,6 +119,19 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     selectedModelMenuItem: {
       backgroundColor: theme.colors.background.secondary,
     },
+    modelItemLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    providerLogo: {
+      marginRight: theme.spacing.sm,
+      width: 20,
+      alignItems: 'center',
+    },
+    modelInfo: {
+      flex: 1,
+    },
     modelMenuText: {
       fontSize: theme.fontSizes.md,
       color: theme.colors.text.primary,
@@ -124,6 +141,24 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     selectedModelMenuText: {
       color: theme.colors.status.info.primary,
       fontWeight: theme.fontWeights.semibold as '600',
+    },
+    modelDescription: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      fontFamily: theme.fontFamily.primary,
+      marginTop: 2,
+      fontStyle: 'italic',
+    },
+    modelItemRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: theme.spacing.sm,
+    },
+    capabilityIcons: {
+      marginRight: theme.spacing.xs,
+    },
+    checkIcon: {
+      marginLeft: theme.spacing.xs,
     },
     quickActionsOverlay: {
       flex: 1,

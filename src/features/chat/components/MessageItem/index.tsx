@@ -14,6 +14,9 @@ interface MessageItemProps {
   onUserEditRegenerate?: (index: number, newText: string) => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
+  // Like/dislike handlers
+  onLike?: (messageId: string) => void;
+  onDislike?: (messageId: string) => void;
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({
@@ -24,6 +27,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   onUserEditRegenerate,
   showAvatar = true,
   isLastInGroup = true,
+  onLike,
+  onDislike,
   }) => {
     // ✅ STATE MACHINE: Use message state for all rendering decisions
     if (message.role === 'assistant') {
@@ -72,6 +77,8 @@ export const MessageItem: React.FC<MessageItemProps> = ({
         onRegenerate={onRegenerate}
         showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
+        onLike={onLike}
+        onDislike={onDislike}
       />
     );
   }

@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { AppTheme } from '../../../features/theme/theme.types';
 import { InputStatus, InputVariant } from './Input.types';
 
@@ -102,12 +103,18 @@ export const createInputStyles = (theme: AppTheme) => {
         };
       case 'chat':
         return {
-          backgroundColor: theme.colors.background.secondary,
-          borderWidth: 1,
-          borderColor: status !== 'default' ? colors.border : theme.colors.border.light,
-          borderRadius: theme.borderRadius.lg,
-          minHeight: 44,
-          maxHeight: 100,
+          backgroundColor: 'transparent', // Let the bubble handle background
+          borderWidth: 0, // No border - bubble handles styling
+          borderRadius: 0, // No border radius - bubble handles it
+          minHeight: 36, // iOS Messages height
+          maxHeight: 120,
+          // Web-specific: Remove focus outline using proper React Native properties
+          ...(Platform.OS === 'web' && {
+            outlineWidth: 0,
+            outlineColor: 'transparent',
+            borderWidth: 0,
+            boxShadow: 'none',
+          }),
         };
       default:
         return {};

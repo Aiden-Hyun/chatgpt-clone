@@ -2,12 +2,13 @@ import { Button } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Modal, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { useLanguageContext } from '../../../language';
 import { useAppTheme } from '../../../theme/theme';
-import { AVAILABLE_MODELS, DEFAULT_MODEL } from '../../constants';
+import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../constants';
 import { ChatSidebar } from '../ChatSidebar';
+import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
 import { useSidebar } from '../useSidebar';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
@@ -46,11 +47,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const { t } = useLanguageContext();
   const styles = React.useMemo(() => createChatHeaderStyles(theme), [theme]);
 
-  const selectedModelLabel = useMemo(() => {
+  const selectedModelInfo = useMemo(() => {
     const current = selectedModel ?? DEFAULT_MODEL;
-    const found = AVAILABLE_MODELS.find(m => m.value === current);
-    return found?.label ?? current;
+    return getModelInfo(current);
   }, [selectedModel]);
+
+  const selectedModelLabel = selectedModelInfo?.label ?? selectedModel ?? DEFAULT_MODEL;
 
   const handleSettings = () => {
     setIsQuickActionsVisible(false);
@@ -86,7 +88,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           label={selectedModelLabel}
           rightIcon={<MaterialIcons name="expand-more" size={20} color={theme.colors.text.primary} />}
           leftIcon={(() => {
-            const provider = AVAILABLE_MODELS.find(m => m.value === (selectedModel ?? DEFAULT_MODEL))?.provider;
+            const provider = selectedModelInfo?.provider;
             if (provider === 'anthropic') return <AnthropicLogo size={16} />;
             return <OpenAILogo size={16} />;
           })()}
@@ -123,24 +125,54 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
               {AVAILABLE_MODELS.map(model => {
                 const isSelected = (selectedModel ?? DEFAULT_MODEL) === model.value;
                 return (
-                  <Button
-                    key={model.value}
-                    variant="ghost"
-                    size="sm"
-                    label={model.label}
-                    leftIcon={
-                      <>
-                        {model.provider === 'openai' && <OpenAILogo size={16} />}
-                        {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
-                      </>
-                    }
-                    rightIcon={isSelected ? <MaterialIcons name="check" size={20} color={theme.colors.status.info.primary} /> : undefined}
-                    onPress={() => {
-                      onModelChange?.(model.value);
-                      setIsModelMenuVisible(false);
-                    }}
-                    containerStyle={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
-                  />
+                  <View key={model.value} style={styles.modelMenuItemContainer}>
+                    <TouchableOpacity
+                      style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
+                      onPress={() => {
+                        onModelChange?.(model.value);
+                        setIsModelMenuVisible(false);
+                      }}
+                    >
+                      <View style={styles.modelItemLeft}>
+                        {/* Provider Logo */}
+                        <View style={styles.providerLogo}>
+                          {model.provider === 'openai' && <OpenAILogo size={16} />}
+                          {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
+                        </View>
+                        
+                        {/* Model Name */}
+                        <View style={styles.modelInfo}>
+                          <Text style={[styles.modelMenuText, isSelected && styles.selectedModelMenuText]}>
+                            {model.label}
+                          </Text>
+                          {model.description && (
+                            <Text style={styles.modelDescription}>
+                              {model.description}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                      
+                      <View style={styles.modelItemRight}>
+                        {/* Capability Icons */}
+                        <ModelCapabilityIcons
+                          capabilities={model.capabilities}
+                          size={14}
+                          containerStyle={styles.capabilityIcons}
+                        />
+                        
+                        {/* Selection Check */}
+                        {isSelected && (
+                          <MaterialIcons 
+                            name="check" 
+                            size={20} 
+                            color={theme.colors.status.info.primary} 
+                            style={styles.checkIcon}
+                          />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  </View>
                 );
               })}
             </ScrollView>

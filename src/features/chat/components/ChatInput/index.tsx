@@ -1,8 +1,9 @@
-import { Button, Input } from '@/components/ui';
+import { Input } from '@/components/ui';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {
@@ -15,8 +16,12 @@ interface ChatInputProps {
 }
 
 /**
- * ChatInput
- * Simple chat input component - reverted to basic implementation to fix re-render issues
+ * ChatInput - iOS Messages Style
+ * Features:
+ * - Sleek bubble-shaped input container
+ * - Circular send button with proper MaterialIcons
+ * - Clean iOS-like design with no focus borders
+ * - Smooth animations for state changes
  */
 const ChatInput: React.FC<ChatInputProps> = ({
   input,
@@ -26,57 +31,98 @@ const ChatInput: React.FC<ChatInputProps> = ({
   isTyping,
   inputRef,
 }) => {
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const [inputHeight, setInputHeight] = useState(44);
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   
   // CRITICAL FIX: Memoize styles to prevent expensive re-creation
   const { styles } = useMemo(
-    () => createChatInputStyles(isInputFocused, theme),
-    [isInputFocused, theme]
+    () => createChatInputStyles(theme),
+    [theme]
   );
 
   const hasText = input.trim().length > 0;
   const MAX_INPUT_HEIGHT = 120;
 
+  // Custom send button icon component with dynamic states
+  const SendButtonIcon = () => {
+    if (sending) {
+      // Stop icon for stop generation
+      return (
+        <MaterialIcons 
+          name="stop" 
+          size={20} 
+          color={theme.colors.text.inverted} 
+        />
+      );
+    }
+
+    // Send icon for both states (inactive and active)
+    return (
+      <MaterialIcons 
+        name="send" 
+        size={20} 
+        color={hasText ? theme.colors.text.inverted : theme.colors.primary} 
+      />
+    );
+  };
+
   return (
-    <View style={styles.inputRow}>
-      <Input
-        value={input}
-        onChangeText={onChangeText}
-        placeholder={t('chat.placeholder')}
-        variant="filled"
-        multiline
-        scrollEnabled={inputHeight >= MAX_INPUT_HEIGHT}
-        onContentSizeChange={(e) => {
-          const nextHeight = e.nativeEvent.contentSize.height;
-          setInputHeight(nextHeight);
-        }}
-        blurOnSubmit={false}
-        autoFocus
-        editable={true}
-        onFocus={() => setIsInputFocused(true)}
-        onBlur={() => setIsInputFocused(false)}
-        containerStyle={styles.inputContainer}
-        inputStyle={[
-          styles.input,
-          { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }
-        ]}
-      />
-      <Button
-        label={t('chat.send')}
-        variant="primary"
-        status="success"
-        size="md"
-        onPress={() => {
-          if (hasText) {
-            onSend();
-          }
-        }}
-        disabled={!hasText}
-        containerStyle={styles.sendButton}
-      />
+    <View style={styles.container}>
+      {/* Main input row */}
+      <View style={styles.inputRow}>
+        {/* Bubble-shaped input container - no focus styling */}
+        <View style={styles.inputBubble}>
+          <Input
+            ref={inputRef}
+            value={input}
+            onChangeText={onChangeText}
+            placeholder={t('chat.placeholder')}
+            variant="chat"
+            multiline
+            scrollEnabled={inputHeight >= MAX_INPUT_HEIGHT}
+            onContentSizeChange={(e) => {
+              const nextHeight = e.nativeEvent.contentSize.height;
+              setInputHeight(nextHeight);
+            }}
+            blurOnSubmit={false}
+            autoFocus
+            editable={!sending}
+            containerStyle={styles.inputContainer}
+            inputStyle={[
+              styles.input,
+              { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }
+            ]}
+          />
+        </View>
+
+        {/* iOS-style send button */}
+        <View style={styles.sendButtonContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              if (hasText && !sending) {
+                onSend();
+              }
+            }}
+            disabled={!hasText && !sending}
+            style={[
+              styles.sendButton,
+              hasText && styles.sendButtonActive,
+              sending && styles.sendButtonSending
+            ]}
+            activeOpacity={0.7}
+          >
+            <SendButtonIcon />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Optional: Typing indicator */}
+      {isTyping && (
+        <View style={styles.typingIndicator}>
+          <Text style={styles.typingText}>{t('chat.typing')}</Text>
+        </View>
+      )}
     </View>
   );
 };

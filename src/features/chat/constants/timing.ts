@@ -9,12 +9,12 @@ export const MESSAGE_FETCH_DELAY_MS = 500;
 /**
  * Delay before the loading dots animation starts, preventing flickering for fast responses.
  */
-export const LOADING_ANIMATION_START_DELAY_MS = 300;
+export const LOADING_ANIMATION_START_DELAY_MS = 1500;
 
 /**
  * Interval for the animation of the loading dots in a loading message.
  */
-export const LOADING_DOT_INTERVAL_MS = 500;
+export const LOADING_DOT_INTERVAL_MS = 2000;
 
 /**
  * Duration for one cycle (fade in or fade out) of the blinking cursor animation

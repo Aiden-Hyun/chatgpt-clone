@@ -13,6 +13,9 @@ interface AssistantMessageProps {
   onRegenerate?: () => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
+  // Like/dislike handlers
+  onLike?: (messageId: string) => void;
+  onDislike?: (messageId: string) => void;
 }
 
 export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(function AssistantMessage({
@@ -20,6 +23,8 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   onRegenerate,
   showAvatar = true, // (kept for future use)
   isLastInGroup = true,
+  onLike,
+  onDislike,
 }: AssistantMessageProps) {
   const theme = useAppTheme();
   
@@ -31,6 +36,18 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   // After completion, prefer message.content; fall back to fullContent for hydration.
   const contentToShow = isAnimating ? (message.content || '') : (message.content || message.fullContent || '');
 
+  const handleLike = () => {
+    if (message.id && onLike) {
+      onLike(message.id);
+    }
+  };
+
+  const handleDislike = () => {
+    if (message.id && onDislike) {
+      onDislike(message.id);
+    }
+  };
+
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
       <MarkdownRenderer isAnimating={isAnimating}>
@@ -41,6 +58,10 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
       {isLastInGroup && !isAnimating && (
         <MessageInteractionBar
           onRegenerate={onRegenerate}
+          onLike={handleLike}
+          onDislike={handleDislike}
+          isLiked={message.isLiked}
+          isDisliked={message.isDisliked}
           onCopy={async () => {
             try {
               const text = message.fullContent || message.content || '';

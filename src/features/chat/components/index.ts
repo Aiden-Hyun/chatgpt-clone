@@ -17,4 +17,7 @@ export { UnifiedChat } from './UnifiedChat';
 // Isolated animation components
 export { TypewriterText } from './TypewriterText';
 
+// Model capability components
+export { ModelCapabilityIcons } from './ModelCapabilityIcons';
+
 

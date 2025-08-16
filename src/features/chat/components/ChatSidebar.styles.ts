@@ -12,7 +12,7 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.feedback.overlay.medium,
     },
     sidebar: {
-      width: 320,
+      width: 360,
       backgroundColor: theme.colors.background.primary,
       borderRightWidth: 1,
       borderRightColor: theme.colors.border.light,

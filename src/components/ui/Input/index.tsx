@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { useAppTheme } from '../../../features/theme/theme';
 import createInputStyles from './Input.styles';
@@ -31,7 +31,7 @@ import { InputProps } from './Input.types';
  *   errorText={isValid ? '' : 'Password must be at least 8 characters'}
  * />
  */
-export const Input = ({
+export const Input = forwardRef<TextInput, InputProps>(({
   variant = 'default',
   size = 'md',
   status = 'default',
@@ -47,7 +47,7 @@ export const Input = ({
   helperTextStyle,
   editable = true,
   ...rest
-}: InputProps) => {
+}, ref) => {
   const theme = useAppTheme();
   const styles = createInputStyles(theme);
 
@@ -90,6 +90,7 @@ export const Input = ({
         )}
         
         <TextInput
+          ref={ref}
           style={inputStyles}
           placeholderTextColor={theme.colors.text.quaternary}
           editable={editable}
@@ -115,6 +116,8 @@ export const Input = ({
       )}
     </View>
   );
-};
+});
+
+Input.displayName = 'Input';
 
 export default Input;

@@ -148,5 +148,6 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     editUserAndRegenerate,
     selectedModel,
     updateModel,
+    setMessages,
   };
 };

@@ -13,6 +13,9 @@ interface MessageInteractionBarProps {
   onShare?: () => void;
   onCopy?: () => void;
   onAudio?: () => void;
+  // Like/dislike state
+  isLiked?: boolean;
+  isDisliked?: boolean;
 }
 
 export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
@@ -22,6 +25,8 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
   onShare,
   onCopy,
   onAudio,
+  isLiked = false,
+  isDisliked = false,
 }) => {
   const theme = useAppTheme();
   const styles = createMessageInteractionBarStyles(theme);
@@ -45,7 +50,13 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<MaterialIcons name="thumb-up" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={
+            <MaterialIcons 
+              name="thumb-up" 
+              size={20} 
+              color={isLiked ? theme.colors.primary : theme.colors.text.secondary} 
+            />
+          }
           onPress={onLike}
           containerStyle={styles.iconButton}
         />
@@ -53,7 +64,13 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<MaterialIcons name="thumb-down" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={
+            <MaterialIcons 
+              name="thumb-down" 
+              size={20} 
+              color={isDisliked ? theme.colors.status.error.primary : theme.colors.text.secondary} 
+            />
+          }
           onPress={onDislike}
           containerStyle={styles.iconButton}
         />

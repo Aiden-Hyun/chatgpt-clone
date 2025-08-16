@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform } from 'react-native';
 import { createChatStyles } from '~/app/chat/chat.styles';
 import { useAppTheme } from '../../../theme/theme';
 import { useChat } from '../../hooks';
+import { ChatMessage } from '../../types';
 import ChatInput from '../ChatInput';
 import MessageList from '../MessageList';
 
@@ -59,8 +60,38 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     sendMessage,
     regenerateMessage,
     editUserAndRegenerate,
+    setMessages,
   } = useChat(roomId || null, { selectedModel, setModel: onChangeModel });
   
+
+  // Like/dislike handlers
+  const handleLike = React.useCallback((messageId: string) => {
+    setMessages((prev: ChatMessage[]) => 
+      prev.map((msg: ChatMessage) => 
+        msg.id === messageId 
+          ? { 
+              ...msg, 
+              isLiked: msg.isLiked ? false : true, 
+              isDisliked: false 
+            }
+          : msg
+      )
+    );
+  }, [setMessages]);
+
+  const handleDislike = React.useCallback((messageId: string) => {
+    setMessages((prev: ChatMessage[]) => 
+      prev.map((msg: ChatMessage) => 
+        msg.id === messageId 
+          ? { 
+              ...msg, 
+              isLiked: false, 
+              isDisliked: msg.isDisliked ? false : true 
+            }
+          : msg
+      )
+    );
+  }, [setMessages]);
 
   // Pass primitive regeneratingIndex to MessageList for stability
 
@@ -81,8 +112,10 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
             await editUserAndRegenerate(userIndex, newText);
           }}
           showWelcomeText={messages.length === 0 && !loading}
+          onLike={handleLike}
+          onDislike={handleDislike}
         />
-      ), [messages, loading, regeneratingIndex, regenerateMessage, editUserAndRegenerate])}
+      ), [messages, loading, regeneratingIndex, regenerateMessage, editUserAndRegenerate, handleLike, handleDislike])}
 
       {/* Input using proven ChatInput component */}
       <ChatInput

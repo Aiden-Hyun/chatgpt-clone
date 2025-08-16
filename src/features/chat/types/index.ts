@@ -13,4 +13,7 @@ export type ChatMessage = {
   state?: MessageState;     // Add optional state
   fullContent?: string;     // Add full content for loading state
   id?: string;             // Add unique identifier
+  // Like/dislike feedback state
+  isLiked?: boolean;
+  isDisliked?: boolean;
 };
