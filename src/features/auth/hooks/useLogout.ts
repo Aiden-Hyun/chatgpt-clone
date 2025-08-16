@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
 import { supabase } from '../../../shared/lib/supabase';
 
 /**
@@ -12,6 +13,27 @@ export const useLogout = () => {
   const logout = useCallback(async () => {
     try {
       setIsLoggingOut(true);
+      
+      // On web, clear localStorage first to prevent race conditions
+      if (Platform.OS === 'web') {
+        try {
+          // Clear all Supabase-related localStorage items
+          const keysToRemove: string[] = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(key => localStorage.removeItem(key));
+          
+          if (__DEV__) {
+            console.log('🧹 [LOGOUT] Cleared Supabase localStorage items:', keysToRemove);
+          }
+        } catch (error) {
+          console.warn('Failed to clear localStorage:', error);
+        }
+      }
       
       // Sign out from Supabase
       await supabase.auth.signOut();

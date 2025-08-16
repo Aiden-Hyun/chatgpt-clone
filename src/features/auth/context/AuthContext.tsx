@@ -26,24 +26,50 @@ export function AuthProvider({ children }: Props) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (__DEV__) {
-        console.log('🔄 AUTH: Initial session data:', { hasSession: !!data.session, userId: data.session?.user?.id });
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (mounted) {
+          if (__DEV__) {
+            console.log('🔄 AUTH: Initial session data:', { hasSession: !!data.session, userId: data.session?.user?.id });
+          }
+          setSession(data.session);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+        if (mounted) {
+          setSession(null);
+          setIsLoading(false);
+        }
       }
-      setSession(data.session);
-      setIsLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (__DEV__) {
-        console.log('🔄 AUTH: Auth state changed', { hasSession: !!session, userId: session?.user?.id });
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (mounted) {
+        if (__DEV__) {
+          console.log('🔄 AUTH: Auth state changed', { event, hasSession: !!session, userId: session?.user?.id });
+        }
+        
+        // Handle logout events more explicitly
+        if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setIsLoading(false);
+        } else {
+          setSession(session);
+          setIsLoading(false);
+        }
       }
-      setSession(session);
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);

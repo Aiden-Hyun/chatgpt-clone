@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
-import { useAppTheme } from '../../../theme/theme';
 import { useThemeContext } from '../../../theme';
+import { useAppTheme } from '../../../theme/theme';
 import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
 
  
