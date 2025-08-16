@@ -5,7 +5,6 @@ import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
 import { useMessageLoader } from './useMessageLoader';
-import { useOptimisticMessages } from './useOptimisticMessages';
 import { useRegenerationService } from './useRegenerationService';
 
 type UseChatOptions = {
@@ -31,11 +30,10 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     isRegenerating,
   } = chatState;
 
-  // Optimistic messages and loader
-  const { optimisticMessages } = useOptimisticMessages(numericRoomId);
+  // Load messages for this room (no optimistic path)
   useMessageLoader({
     roomId: numericRoomId,
-    optimisticMessages,
+    optimisticMessages: null,
     setMessages,
     setLoading,
   });
@@ -53,8 +51,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     clearInput
   } = useMessageInput(
     numericRoomId,
-    // New room if we only have optimistic messages at the time of mount
-    (optimisticMessages?.length ?? 0) > 0
+    false
   );
 
   // ✅ STATE MACHINE: Message actions using state machine

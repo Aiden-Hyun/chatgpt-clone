@@ -127,13 +127,7 @@ jest.mock('./src/features/chat/hooks/useChatRooms', () => ({
   })),
 }));
 
-// Mock useOptimisticMessages hook
-jest.mock('./src/features/chat/hooks/useOptimisticMessages', () => ({
-  useOptimisticMessages: jest.fn(() => ({
-    optimisticMessages: null,
-    optimisticModel: null,
-  })),
-}));
+// (removed) useOptimisticMessages is no longer used
 
 // Mock useMessageInput hook
 jest.mock('./src/features/chat/hooks/useMessageInput', () => ({

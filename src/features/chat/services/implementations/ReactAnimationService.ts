@@ -1,5 +1,5 @@
 // src/features/chat/services/implementations/ReactAnimationService.ts
-import { TYPING_ANIMATION_SPEED } from '../../constants';
+import { TYPING_ANIMATION_CHUNK_SIZE, TYPING_ANIMATION_SPEED } from '../../constants';
 import { IAnimationService } from '../interfaces/IAnimationService';
 import { MessageStateManager } from '../MessageStateManager';
 import { ChatMessage } from '../types';
@@ -84,7 +84,17 @@ export class ReactAnimationService implements IAnimationService {
       const job = this.runningJobs.get(messageId);
       if (!job) return;
       if (job.index < job.target.length) {
-        const nextIndex = job.index + 1;
+        let nextIndex = job.index;
+        const currentChar = job.target[nextIndex];
+
+        if (/\s/.test(currentChar)) {
+          while (nextIndex < job.target.length && /\s/.test(job.target[nextIndex])) {
+            nextIndex++;
+          }
+        } else {
+          nextIndex = Math.min(job.target.length, nextIndex + TYPING_ANIMATION_CHUNK_SIZE);
+        }
+
         const nextSlice = job.target.slice(0, nextIndex);
         // Throttled state update: bump only content substring
         this.setMessages(prev => prev.map(msg => msg.id === messageId ? { ...msg, content: nextSlice, state: 'animating' } : msg));

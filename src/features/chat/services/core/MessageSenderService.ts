@@ -82,7 +82,7 @@ export class MessageSenderService {
         state: 'loading',           // Start in loading state
         id: messageId || generateMessageId()     // Use provided ID or generate new one
       };
-      assistantMessageIdForError = assistantMsg.id;
+      assistantMessageIdForError = assistantMsg.id ?? null;
 
       // Step 1: Update UI state for new messages or regeneration
       this.loggingService.debug(`Updating UI state for request ${requestId}`, { 
@@ -95,13 +95,21 @@ export class MessageSenderService {
         this.typingStateService.setTyping(true);
       }
 
-      // Step 2: Prepare for room creation (but don't create yet)
+      // Step 2: Ensure room exists up front (no optimistic temp room)
       let roomId = numericRoomId;
       let isNewRoom = false;
-      
       if (!roomId) {
-        this.loggingService.info(`Will create new room after successful AI response for request ${requestId}`, { model });
+        this.loggingService.info(`Creating new room up front for request ${requestId}`, { model });
+        const newRoomId = await this.retryService.retryOperation(
+          () => this.chatRoomService.createRoom(session.user.id, model),
+          'room creation'
+        );
+        if (!newRoomId) {
+          throw new Error('Failed to create chat room');
+        }
+        roomId = newRoomId;
         isNewRoom = true;
+        this.loggingService.info(`Room created successfully for request ${requestId}`, { roomId });
       }
 
       // Step 3: Prepare messages for AI API
@@ -134,7 +142,7 @@ export class MessageSenderService {
         const error = 'Invalid AI response';
         this.loggingService.error(`Invalid AI response for request ${requestId}`, { error, response: apiResponse });
         // Update the existing assistant bubble instead of adding a new error message
-        this.messageStateService.markMessageErrorById(assistantMsg.id, '⚠️ No valid response received from AI.');
+        this.messageStateService.markMessageErrorById(assistantMsg.id || generateMessageId(), '⚠️ No valid response received from AI.');
       this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
@@ -144,7 +152,7 @@ export class MessageSenderService {
         const error = 'No content in AI response';
         this.loggingService.error(`No content in AI response for request ${requestId}`, { error });
         // Update the existing assistant bubble instead of adding a new error message
-        this.messageStateService.markMessageErrorById(assistantMsg.id, '⚠️ No content received from AI.');
+        this.messageStateService.markMessageErrorById(assistantMsg.id || generateMessageId(), '⚠️ No content received from AI.');
       this.typingStateService.setTyping(false);
         return { success: false, error, duration: Date.now() - startTime };
       }
@@ -192,34 +200,17 @@ export class MessageSenderService {
                 );
               }
             } else {
-              // For new messages, create room first if it's a new room
-              if (isNewRoom) {
-                this.loggingService.debug(`Creating new room for request ${requestId}`, { model });
-                const newRoomId = await this.retryService.retryOperation(
-                  () => this.chatRoomService.createRoom(session.user.id, model),
-                  'room creation'
-                );
-                
-                if (!newRoomId) {
-                  throw new Error('Failed to create chat room');
-                }
-                
-                roomId = newRoomId;
-                this.loggingService.info(`Room created successfully for request ${requestId}`, { roomId });
-              }
-
-              // Only insert on client when creating a brand-new room.
-            // Insert messages on the client for both new and existing rooms
-            this.loggingService.debug(`Inserting messages for request ${requestId}`);
-            await this.retryService.retryOperation(
-              () => this.messageService.insertMessages({
-                roomId,
-                userMessage: userMsg,
-                assistantMessage: { role: 'assistant', content: fullContent, id: assistantMsg.id },
-                session,
-              }),
-              'message insertion'
-            );
+              // Insert messages on the client for both new and existing rooms
+              this.loggingService.debug(`Inserting messages for request ${requestId}`);
+              await this.retryService.retryOperation(
+                () => this.messageService.insertMessages({
+                  roomId,
+                  userMessage: userMsg,
+                  assistantMessage: { role: 'assistant', content: fullContent, id: assistantMsg.id },
+                  session,
+                }),
+                'message insertion'
+              );
             }
 
             // Update room metadata (non-critical operation)
@@ -235,12 +226,7 @@ export class MessageSenderService {
             }
 
             // Draft cleanup is handled by useMessageInput via storage and local state
-
-            // Handle navigation for new rooms
-            if (isNewRoom) {
-              this.loggingService.info(`Handling navigation for new room ${requestId}`, { roomId });
-              await this.navigationService.handleNewRoomNavigation(roomId, userMsg, fullContent, model);
-            }
+            // No additional navigation is required; room was created up front and user is already on the room screen
 
             this.loggingService.info(`Post-animation operations completed for request ${requestId}`);
           } catch (error) {

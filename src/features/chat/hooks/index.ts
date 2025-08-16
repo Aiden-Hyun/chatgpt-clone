@@ -4,7 +4,6 @@ export * from './useChatRooms';
 export * from './useMessageInput';
 
 // New extracted hooks
-export * from './useOptimisticMessages';
 export * from './useRegenerationService';
 export * from './useMessageLoader';
 

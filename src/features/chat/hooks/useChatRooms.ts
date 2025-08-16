@@ -97,22 +97,8 @@ export const useChatRooms = () => {
 
   useEffect(() => {
     fetchRooms();
-    // Local event fallback if Realtime is not emitting
-    const off = GlobalEvents.on(GLOBAL_EVENT_TYPES.ROOMS_CREATED, async (payload: any) => {
-      const roomId = payload?.roomId as number | undefined;
-      const name = payload?.name as string | undefined;
-      if (!roomId) return;
-      chatDebugLog('[ROOMS] global-created', { roomId });
-      const { data: roomRow } = await supabase
-        .from('chatrooms')
-        .select('id, name, updated_at')
-        .eq('id', roomId)
-        .maybeSingle();
-      setRooms(prev => {
-        const filtered = prev.filter(r => r.id !== roomId);
-        return [{ id: roomId, name: name || roomRow?.name || 'New Chat', updated_at: roomRow?.updated_at }, ...filtered];
-      });
-    });
+    // Local event fallback removed to avoid adding empty rooms; rely on Realtime message inserts
+    const off = () => {};
     // Realtime: listen for message inserts to reflect new rooms instantly
     let channel: any;
     (async () => {

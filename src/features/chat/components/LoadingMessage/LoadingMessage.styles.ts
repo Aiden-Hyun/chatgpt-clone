@@ -11,7 +11,7 @@ export const createLoadingMessageStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.text.secondary, // More subtle color
     fontWeight: theme.fontWeights.normal as '400',
     marginBottom: theme.spacing.md,
-    lineHeight: 24, // Tighter line height
+    lineHeight: 2, // Tighter line height
   },
   dotsContainer: {
     flexDirection: 'row',

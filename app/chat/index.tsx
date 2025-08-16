@@ -1,5 +1,7 @@
 import { LoadingWrapper } from '@/components/LoadingWrapper';
 import { useAuth } from '@/features/auth';
+import { DEFAULT_MODEL } from '@/features/chat/constants';
+import { ServiceFactory } from '@/features/chat/services/core';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -16,13 +18,15 @@ export default function NewChatScreen() {
           return;
         }
 
-        // Generate a temporary room ID for new chat
-        // This will be replaced with a real database ID when first message is sent
-        const tempRoomId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        // Navigate to the temporary chat room
-        // The actual database room will be created when the first message is sent
-        router.replace(`/chat/${tempRoomId}`);
+        // Create a real room up front and navigate directly to it
+        const chatRoomService = ServiceFactory.createChatRoomService();
+        const newRoomId = await chatRoomService.createRoom(session.user.id, DEFAULT_MODEL);
+
+        if (!newRoomId) {
+          throw new Error('Failed to create new chat room');
+        }
+
+        router.replace(`/chat/${newRoomId}`);
       } catch (error) {
         console.error('Error in createNewChat:', error);
         router.replace('/');
@@ -32,5 +36,9 @@ export default function NewChatScreen() {
     createNewChat();
   }, [session]);
 
-  return <LoadingWrapper loading={true} />;
+  return (
+    <LoadingWrapper loading={true}>
+      <></>
+    </LoadingWrapper>
+  );
 } 
