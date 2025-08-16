@@ -14,8 +14,6 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
     sidebar: {
       width: 360,
       backgroundColor: theme.colors.background.primary,
-      borderRightWidth: 1,
-      borderRightColor: theme.colors.border.light,
     },
     sidebarHeader: {
       flexDirection: 'row',
@@ -23,8 +21,6 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
     },
     newChatButton: {
       flexDirection: 'row',
@@ -49,8 +45,6 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
     },
     chatItemMain: {
       flexDirection: 'row',
@@ -129,8 +123,6 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.border.light,
     },
     userInfo: {
       flexDirection: 'row',

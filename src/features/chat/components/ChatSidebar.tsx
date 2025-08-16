@@ -252,6 +252,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                   leftElement={leftElement}
                   rightElement={rightElement}
                   selected={isSelected}
+                  showBorder={false}
                   onPress={() => handleChatSelect(room.id.toString())}
                   containerStyle={styles.chatItem}
                 >
