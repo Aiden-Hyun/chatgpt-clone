@@ -6,6 +6,7 @@ import {
   View,
 } from 'react-native';
 import { useAppTheme } from '../../theme/theme';
+import { DEFAULT_TOAST_DURATION_MS } from '../constants';
 
 interface ToastProps {
   visible: boolean;
@@ -21,7 +22,7 @@ export const Toast: React.FC<ToastProps> = ({
   visible,
   message,
   type = 'info',
-  duration = 3000,
+  duration = DEFAULT_TOAST_DURATION_MS,
   onHide,
   onPress,
   position = 'bottom',

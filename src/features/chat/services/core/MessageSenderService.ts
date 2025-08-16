@@ -1,5 +1,12 @@
 // src/features/chat/services/core/MessageSenderService.ts
 import { Session } from '@supabase/supabase-js';
+import {
+    DEFAULT_RETRY_DELAY_MS,
+    MESSAGE_SEND_MAX_RETRIES,
+    ROOM_NAME_MAX_LENGTH,
+} from '../../constants';
+import { ChatMessage } from '../../types';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { IAnimationService } from '../interfaces/IAnimationService';
 import { IChatRoomService } from '../interfaces/IChatRoomService';
@@ -7,9 +14,6 @@ import { IMessageService } from '../interfaces/IMessageService';
 import { IMessageStateService } from '../interfaces/IMessageStateService';
 import { INavigationService } from '../interfaces/INavigationService';
 import { ITypingStateService } from '../interfaces/ITypingStateService';
-
-import { ChatMessage } from '../../types';
-import { generateMessageId } from '../../utils/messageIdGenerator';
 import { AIApiRequest } from '../types';
 import { IAIResponseProcessor } from './AIResponseProcessor';
 import { LoggingService } from './LoggingService';
@@ -48,7 +52,11 @@ export class MessageSenderService {
     private typingStateService: ITypingStateService,
     private animationService: IAnimationService
   ) {
-    this.retryService = new RetryService({ maxRetries: 3, retryDelay: 1000, exponentialBackoff: true });
+    this.retryService = new RetryService({
+      maxRetries: MESSAGE_SEND_MAX_RETRIES,
+      retryDelay: DEFAULT_RETRY_DELAY_MS,
+      exponentialBackoff: true,
+    });
     this.loggingService = new LoggingService('MessageSenderService');
   }
 
@@ -217,7 +225,7 @@ export class MessageSenderService {
             this.loggingService.debug(`Updating room metadata for request ${requestId}`, { roomId });
             try {
               await this.chatRoomService.updateRoom(roomId, {
-                name: userMsg.content.slice(0, 100),
+                name: userMsg.content.slice(0, ROOM_NAME_MAX_LENGTH),
                 updatedAt: new Date().toISOString(),
               });
             } catch (error) {

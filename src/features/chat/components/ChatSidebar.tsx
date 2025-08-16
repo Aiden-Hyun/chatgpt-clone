@@ -8,6 +8,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import mobileStorage from '../../../shared/lib/mobileStorage';
+import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../constants';
 import { createChatSidebarStyles } from './ChatSidebar.styles';
 
 interface ChatSidebarProps {
@@ -207,7 +208,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                       const draft = drafts[room.id.toString()];
                       if (draft && draft.trim().length > 0) {
                         const compact = draft.replace(/\s+/g, ' ').trim();
-                        const snippet = compact.length > 70 ? `${compact.slice(0, 70)}…` : compact;
+                        const snippet = compact.length > SIDEBAR_SNIPPET_MAX_LENGTH ? `${compact.slice(0, SIDEBAR_SNIPPET_MAX_LENGTH)}…` : compact;
                         return (
                           <View style={styles.subtitleRow}>
                             <View style={styles.draftBadge}>

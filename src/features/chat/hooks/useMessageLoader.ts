@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { DB_MESSAGE_POLL_ATTEMPTS, MESSAGE_FETCH_DELAY_MS } from '../constants';
 import { ServiceFactory } from '../services/core';
-import { generateMessageId } from '../utils/messageIdGenerator';
 import type { ChatMessage } from '../types';
+import { generateMessageId } from '../utils/messageIdGenerator';
 
 type UseMessageLoaderDeps = {
   roomId: number | null;
@@ -48,8 +49,8 @@ export function useMessageLoader({
           setMessages(hydratedOptimisticMessages);
 
           const pollForDatabaseSync = async () => {
-            for (let attempt = 1; attempt <= 10; attempt++) {
-              await new Promise(resolve => setTimeout(resolve, 500));
+            for (let attempt = 1; attempt <= DB_MESSAGE_POLL_ATTEMPTS; attempt++) {
+              await new Promise(resolve => setTimeout(resolve, MESSAGE_FETCH_DELAY_MS));
               try {
                 const dbMessages = await messageService.loadMessages(roomId);
                 if (dbMessages.length > 0) {

@@ -1,6 +1,7 @@
 // src/features/chat/hooks/useOptimisticMessages.ts
 import { useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
+import { STALE_MESSAGE_THRESHOLD_MS } from '../constants';
 import { ChatMessage } from '../types';
 
 export const useOptimisticMessages = (numericRoomId: number | null) => {
@@ -36,11 +37,11 @@ export const useOptimisticMessages = (numericRoomId: number | null) => {
           
           // Ignore very old optimistic messages (over 1 minute old)
           // This prevents stale data from being used if something went wrong
-          if (timestamp > 0 && Date.now() - timestamp > 60000) {
+          if (timestamp > 0 && Date.now() - timestamp > STALE_MESSAGE_THRESHOLD_MS) {
             if (__DEV__) {
               console.log(`[OPTIMISTIC] Ignoring stale optimistic messages for room ${numericRoomId}`, {
                 age: Date.now() - timestamp,
-                threshold: 60000
+                threshold: STALE_MESSAGE_THRESHOLD_MS
               });
             }
             await mobileStorage.removeItem(`chat_messages_${numericRoomId}`);

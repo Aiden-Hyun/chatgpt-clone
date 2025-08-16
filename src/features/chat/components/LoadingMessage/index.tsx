@@ -2,6 +2,10 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import React, { useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
+import {
+    LOADING_ANIMATION_START_DELAY_MS,
+    LOADING_DOT_INTERVAL_MS,
+} from '../../constants';
 import { createLoadingMessageStyles } from './LoadingMessage.styles';
 
 interface LoadingMessageProps {
@@ -32,7 +36,7 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowDetailedMessages(true);
-    }, 3000);
+    }, LOADING_ANIMATION_START_DELAY_MS);
 
     return () => clearTimeout(timer);
   }, []);
@@ -57,7 +61,7 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
           useNativeDriver: false,
         }).start();
       });
-    }, 3000); // Change text every 3 seconds
+    }, LOADING_DOT_INTERVAL_MS); // Change text every 3 seconds
 
     return () => clearInterval(interval);
   }, [fadeAnim, showDetailedMessages]);

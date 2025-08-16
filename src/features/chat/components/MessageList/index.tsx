@@ -3,7 +3,11 @@ import { useAppTheme } from '@/features/theme/theme';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
-import { TYPING_ANIMATION_SPEED } from '../../constants';
+import {
+    AUTOSCROLL_THRESHOLD_PX,
+    CURSOR_BLINK_DURATION_MS,
+    TYPING_ANIMATION_SPEED,
+} from '../../constants';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';
@@ -184,12 +188,12 @@ export const MessageList: React.FC<MessageListProps> = ({
         Animated.sequence([
           Animated.timing(cursorOpacity, {
             toValue: 0,
-            duration: 500,
+            duration: CURSOR_BLINK_DURATION_MS,
             useNativeDriver: false,
           }),
           Animated.timing(cursorOpacity, {
             toValue: 1,
-            duration: 500,
+            duration: CURSOR_BLINK_DURATION_MS,
             useNativeDriver: false,
           }),
         ])
@@ -332,8 +336,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         const viewportHeight = e.nativeEvent.layoutMeasurement.height;
         const offsetY = e.nativeEvent.contentOffset.y;
         const distanceToBottom = contentHeight - (offsetY + viewportHeight);
-        const threshold = 120;
-        autoScrollEnabledRef.current = distanceToBottom <= threshold;
+        autoScrollEnabledRef.current = distanceToBottom <= AUTOSCROLL_THRESHOLD_PX;
       }}
       onContentSizeChange={() => {
         if (messagesWithLoading.length > 0 && autoScrollEnabledRef.current) {

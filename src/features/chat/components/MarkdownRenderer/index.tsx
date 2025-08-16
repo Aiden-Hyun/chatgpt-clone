@@ -6,6 +6,10 @@ import { ActivityIndicator, Platform, Text, TouchableOpacity, View } from 'react
 import MarkdownDisplay, { MarkdownIt } from 'react-native-markdown-display';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
+import {
+  MARKDOWN_IMAGE_FILENAME_MAX_LENGTH,
+  SHORT_CODE_SNIPPET_THRESHOLD,
+} from '../../constants';
 import { CodeBlock } from '../CodeBlock';
 import { createMarkdownRendererStyles } from './MarkdownRenderer.styles';
 
@@ -30,7 +34,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       .toLowerCase()
       .replace(/[^a-z0-9-_]+/g, '-')
       .replace(/^-+|-+$/g, '')
-      .slice(0, 40) || 'image';
+      .slice(0, MARKDOWN_IMAGE_FILENAME_MAX_LENGTH) || 'image';
   const getExtensionFromDataUrl = (src: string) => {
     const match = src.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/);
     if (!match) return 'png';
@@ -76,7 +80,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             const pathname = url.pathname;
             const maybe = pathname.split('.').pop() || '';
             const clean = maybe.split('?')[0].split('#')[0];
-            if (clean && clean.length <= 5) return clean;
+            if (clean && clean.length <= SHORT_CODE_SNIPPET_THRESHOLD) return clean;
             return 'png';
           } catch {
             const maybe = src.split('.').pop() || '';

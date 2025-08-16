@@ -1,5 +1,6 @@
 // src/features/chat/services/core/AnimationPolicy.ts
 import {
+    LARGE_CODE_BLOCK_THRESHOLD_CHARS,
     LONG_RESPONSE_THRESHOLD_CHARS,
     TYPING_ANIMATION_CHUNK_SIZE,
     TYPING_ANIMATION_MAX_CHUNK,
@@ -24,7 +25,7 @@ function containsLargeCodeBlock(text: string): boolean {
   const fenceMatches = text.match(/```[\s\S]*?```/g);
   if (!fenceMatches) return false;
   const totalCodeLen = fenceMatches.reduce((sum, block) => sum + block.length, 0);
-  return totalCodeLen >= 300; // arbitrary heuristic threshold
+  return totalCodeLen >= LARGE_CODE_BLOCK_THRESHOLD_CHARS; // arbitrary heuristic threshold
 }
 
 /**
