@@ -55,7 +55,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               />
               <Button
                 label="Cancel"
-                variant="outline"
+                variant="primary"
                 size="sm"
                 onPress={() => { setDraft(message.content); setIsEditing(false); }}
                 containerStyle={styles.actionButton}
