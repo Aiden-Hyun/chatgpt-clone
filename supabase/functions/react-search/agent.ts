@@ -11,7 +11,7 @@ const SYNTH_MODEL = Deno.env.get("OPENAI_SYNTH_MODEL") ?? "gpt-4o";
 
 export interface ReActResult {
   final_answer_md: string;
-  citations: Array<{ url: string; title?: string; published_date?: string }>;
+  citations: { url: string; title?: string; published_date?: string }[];
   trace?: any;
   time_warning?: string;
 }
@@ -28,6 +28,7 @@ export interface ReActAgentConfig {
   fetchService: FetchService;
   rerankService: RerankService;
   debug?: boolean;
+  model?: string; // Add model parameter
 }
 
 export class ReActAgent {
@@ -35,6 +36,7 @@ export class ReActAgent {
   private cfg: ReActAgentConfig;
   private trace: any[] = [];
   private currentDateTime: string;
+  private selectedModel: string; // Store the selected model
 
   constructor(cfg: ReActAgentConfig) {
     this.cfg = cfg;
@@ -42,6 +44,73 @@ export class ReActAgent {
       apiKey: appConfig.secrets.openai.apiKey(),
     });
     this.currentDateTime = new Date().toISOString();
+    
+    // Use provided model or fall back to defaults
+    this.selectedModel = cfg.model || 'gpt-4o';
+    console.log(`[ReActAgent] Initialized with model: ${this.selectedModel}`);
+  }
+
+  // Helper method to determine which API to use based on model
+  private isAnthropicModel(model: string): boolean {
+    return model.startsWith('claude-');
+  }
+
+  // Helper method to make API calls with proper routing
+  private async makeApiCall(messages: any[], model?: string): Promise<any> {
+    const targetModel = model || this.selectedModel;
+    
+    if (this.isAnthropicModel(targetModel)) {
+      console.log(`[ReActAgent] Using Anthropic API with model: ${targetModel}`);
+      
+      // Filter out system messages and prepare for Anthropic
+      const userMessages = messages
+        .filter(m => m.role !== 'system')
+        .map(({ role, content }) => ({ role, content }));
+      
+      const systemPrompt = messages.find(m => m.role === 'system')?.content || "You are a helpful assistant.";
+      
+      const requestBody = {
+        model: targetModel,
+        max_tokens: 2000,
+        system: systemPrompt,
+        messages: userMessages,
+      };
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": appConfig.secrets.anthropic.apiKey(),
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data?.error?.message || data?.error?.type || 'Anthropic API error');
+      }
+
+      // Standardize the response to look like OpenAI's
+      return {
+        choices: [{
+          message: {
+            role: 'assistant',
+            content: data.content[0].text
+          }
+        }]
+      };
+    } else {
+      console.log(`[ReActAgent] Using OpenAI API with model: ${targetModel}`);
+      const response = await this.openai.chat.completions.create({
+        model: targetModel,
+        messages: messages,
+        temperature: 0.1,
+        max_tokens: 2000,
+      });
+      return response;
+    }
   }
 
   async run(question: string): Promise<ReActResult> {
@@ -63,8 +132,8 @@ export class ReActAgent {
     const isTimeSensitive = this.isTimeSensitiveQuery(question);
     console.log(`[ReAct] Time sensitivity check: ${isTimeSensitive ? 'TIME-SENSITIVE' : 'NOT time-sensitive'}`);
 
-    const passages: Array<{ id: string; text: string; url: string; title?: string; published_date?: string }> = [];
-    const citations: Array<{ url: string; title?: string; published_date?: string }> = [];
+    const passages: { id: string; text: string; url: string; title?: string; published_date?: string }[] = [];
+    const citations: { url: string; title?: string; published_date?: string }[] = [];
     let loopCount = 0;
     const maxLoops = 4;
 
@@ -237,7 +306,7 @@ export class ReActAgent {
 
   private async reason(
     question: string, 
-    passages: Array<{ id: string; text: string; url: string; title?: string; published_date?: string }>, 
+    passages: { id: string; text: string; url: string; title?: string; published_date?: string }[], 
     loopCount: number
   ): Promise<{ action: any; reasoning: string }> {
     const systemPrompt = `You are a ReAct agent that helps answer questions by searching the web and analyzing information.
@@ -278,15 +347,10 @@ Respond with:
 Thought: <your reasoning>
 Action: <ACTION_TYPE>(<arguments>)`;
 
-    const response = await this.openai.chat.completions.create({
-      model: REASONING_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      temperature: 0.1,
-      max_tokens: 500,
-    });
+    const response = await this.makeApiCall([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
+    ], this.selectedModel);
 
     const content = response.choices[0]?.message?.content || '';
     const action = this.parseAction(content);
@@ -319,7 +383,7 @@ Action: <ACTION_TYPE>(<arguments>)`;
 
   private async executeRerank(
     query: string, 
-    passages: Array<{ id: string; text: string; url: string; title?: string; published_date?: string }>, 
+    passages: { id: string; text: string; url: string; title?: string; published_date?: string }[], 
     top_n: number = 6
   ): Promise<any> {
     console.log(`[ReAct] executeRerank: Query="${query}", ${passages.length} passages, top_n=${top_n}`);
@@ -330,7 +394,7 @@ Action: <ACTION_TYPE>(<arguments>)`;
 
   private async synthesize(
     question: string, 
-    passages: Array<{ id: string; text: string; url: string; title?: string; published_date?: string }>
+    passages: { id: string; text: string; url: string; title?: string; published_date?: string }[]
   ): Promise<string> {
     const topPassages = passages.slice(0, 6);
     const context = topPassages.map(p => 
@@ -363,20 +427,15 @@ ${context}
 
 Please provide a comprehensive answer with inline citations. Include published dates when available.`;
 
-    const response = await this.openai.chat.completions.create({
-      model: SYNTH_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      temperature: 0.1,
-      max_tokens: 2000,
-    });
+    const response = await this.makeApiCall([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt }
+    ], this.selectedModel);
 
     return response.choices[0]?.message?.content || 'Unable to synthesize answer.';
   }
 
-  private hasSufficientEvidence(question: string, passages: Array<{ id: string; text: string; url: string; title?: string; published_date?: string }>): boolean {
+  private hasSufficientEvidence(question: string, passages: { id: string; text: string; url: string; title?: string; published_date?: string }[]): boolean {
     if (passages.length < 3) {
       console.log(`[ReAct] Evidence check: Insufficient passages (${passages.length} < 3)`);
       return false;
@@ -436,7 +495,7 @@ Please provide a comprehensive answer with inline citations. Include published d
     const actionType = actionMatch[1];
     const args = actionMatch[2];
 
-        try {
+    try {
       let result: any;
       switch (actionType) {
         case 'SEARCH':
@@ -476,11 +535,11 @@ Please provide a comprehensive answer with inline citations. Include published d
       
       console.log(`[ReAct] parseAction: Successfully parsed action: ${JSON.stringify(result)}`);
       return result;
-  } catch (error) {
-    console.warn(`[ReAct] Error parsing action: ${error.message}, using SEARCH fallback`);
-    return { type: 'SEARCH', query: 'site:gov latest ' + Date.now(), k: 8 };
+    } catch (error) {
+      console.warn(`[ReAct] Error parsing action: ${error.message}, using SEARCH fallback`);
+      return { type: 'SEARCH', query: 'site:gov latest ' + Date.now(), k: 8 };
+    }
   }
-}
 
   private extractThought(content: string): string {
     const thoughtMatch = content.match(/Thought:\s*(.+?)(?=\n|$)/);
@@ -505,7 +564,7 @@ Please provide a comprehensive answer with inline citations. Include published d
     return observation;
   }
 
-  private filterSearchResults(results: Array<{ url: string; title: string; snippet: string }>): Array<{ url: string; title: string; snippet: string }> {
+  private filterSearchResults(results: { url: string; title: string; snippet: string }[]): { url: string; title: string; snippet: string }[] {
     console.log(`[ReAct] filterSearchResults: Input ${results.length} results`);
     const blockedPatterns = [
       /\/tag\//,
@@ -624,7 +683,7 @@ Please provide a comprehensive answer with inline citations. Include published d
     return undefined;
   }
 
-  private checkContentFreshness(passages: Array<{ id: string; text: string; url: string; title?: string; published_date?: string }>): string | undefined {
+  private checkContentFreshness(passages: { id: string; text: string; url: string; title?: string; published_date?: string }[]): string | undefined {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     

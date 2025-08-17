@@ -10,6 +10,7 @@ export class ChatAPIService implements IAIApiService {
     const payload = isSearchMode 
       ? {
           question: request.messages[request.messages.length - 1]?.content || '',
+          model: request.model, // Include the user's selected model
         }
       : {
           roomId: request.roomId,
@@ -21,7 +22,10 @@ export class ChatAPIService implements IAIApiService {
         };
 
     console.log(`[ChatAPIService] Making API call for ${isSearchMode ? 'search' : 'chat'} mode`);
-    console.log(`[ChatAPIService] Request payload:`, isSearchMode ? { question: payload.question } : {
+    console.log(`[ChatAPIService] Request payload:`, isSearchMode ? { 
+      question: payload.question,
+      model: payload.model 
+    } : {
       model: request.model,
       messageCount: request.messages.length,
     });
@@ -46,7 +50,7 @@ export class ChatAPIService implements IAIApiService {
       const searchResponse = response as { final_answer_md: string; citations: any[]; time_warning?: string };
       return {
         content: searchResponse.final_answer_md,
-        model: 'react-search',
+        model: request.model, // Use the actual model instead of hardcoded 'react-search'
         citations: searchResponse.citations,
         time_warning: searchResponse.time_warning,
       } as AIApiResponse;

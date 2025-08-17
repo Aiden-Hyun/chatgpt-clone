@@ -3,7 +3,7 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {
@@ -48,6 +48,16 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const hasText = input.trim().length > 0;
   const MAX_INPUT_HEIGHT = 120;
 
+  // Platform-specific scrolling logic
+  const shouldEnableScrolling = Platform.OS === 'web' 
+    ? inputHeight >= MAX_INPUT_HEIGHT 
+    : true; // Always enable scrolling on mobile for multiline inputs
+
+  // Platform-specific height calculation
+  const inputHeightStyle = Platform.OS === 'web' 
+    ? { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }
+    : { minHeight: 36, maxHeight: MAX_INPUT_HEIGHT }; // Let content determine height on mobile
+
   // Custom send button icon component with dynamic states
   const SendButtonIcon = () => {
     if (sending) {
@@ -84,7 +94,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             placeholder={t('chat.placeholder')}
             variant="chat"
             multiline
-            scrollEnabled={inputHeight >= MAX_INPUT_HEIGHT}
+            scrollEnabled={shouldEnableScrolling}
             onContentSizeChange={(e) => {
               const nextHeight = e.nativeEvent.contentSize.height;
               setInputHeight(nextHeight);
@@ -95,7 +105,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             containerStyle={styles.inputContainer}
             inputStyle={[
               styles.input,
-              { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }
+              inputHeightStyle
             ]}
           />
         </View>

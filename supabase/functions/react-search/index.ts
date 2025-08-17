@@ -27,11 +27,15 @@ serve(async (req) => {
   try {
     const body = await req.json();
     console.log(`[REACT-SEARCH] Request body keys: ${Object.keys(body)}`);
-    const { question } = body;
+    const { question, model } = body;
 
     if (!question || typeof question !== 'string') {
       throw new Error("Missing or invalid 'question' parameter");
     }
+
+    // Use provided model or fall back to default
+    const selectedModel = model || 'gpt-4o';
+    console.log(`[REACT-SEARCH] Using model: ${selectedModel}`);
 
     // --- Authentication ---
     const authHeader = req.headers.get("authorization");
@@ -58,6 +62,7 @@ serve(async (req) => {
       fetchService,
       rerankService,
       debug: DEBUG,
+      model: selectedModel, // Pass the selected model to the agent
     });
 
     const result = await agent.run(question);
