@@ -11,6 +11,8 @@ export interface AIApiRequest {
   // Optional idempotency and control flags
   clientMessageId?: string;
   skipPersistence?: boolean;
+  // Search functionality
+  searchQuery?: string;
 }
 
 export interface AIApiResponse {

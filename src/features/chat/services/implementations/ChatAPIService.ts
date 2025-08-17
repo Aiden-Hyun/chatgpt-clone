@@ -14,9 +14,15 @@ export class ChatAPIService implements IAIApiService {
       // Include idempotency and persistence control so the edge function can upsert reliably
       clientMessageId: request.clientMessageId,
       skipPersistence: request.skipPersistence,
+      // Include search query for server-side search
+      searchQuery: request.searchQuery,
     };
 
     console.log(`[ChatAPIService] Making API call for model: ${request.model}`);
+    console.log(`[ChatAPIService] Request payload:`, {
+      model: request.model,
+      messageCount: request.messages.length,
+    });
 
     const url = `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
     const response = await fetchJson<AIApiResponse>(

@@ -8,6 +8,7 @@ import { IMessageService } from '../interfaces/IMessageService';
 import { IMessageStateService } from '../interfaces/IMessageStateService';
 import { INavigationService } from '../interfaces/INavigationService';
 import { IRegenerationService } from '../interfaces/IRegenerationService';
+import { ISearchService } from '../interfaces/ISearchService';
 import { ITypingStateService } from '../interfaces/ITypingStateService';
 import { IUIStateService } from '../interfaces/IUIStateService';
 import { ChatMessage } from '../types';
@@ -54,6 +55,7 @@ export interface ServiceConfig {
     ): IRegenerationService;
   };
   authService: { new (): IAuthService };
+  searchService: { new (): ISearchService };
   // Drafts are now handled in hooks (useMessageInput) with storage persistence
 }
 
@@ -154,5 +156,10 @@ export class ServiceRegistry {
   static createAuthService(): IAuthService {
     const config = this.getConfig();
     return new config.authService();
+  }
+
+  static createSearchService(): ISearchService {
+    const config = this.getConfig();
+    return new config.searchService();
   }
 } 

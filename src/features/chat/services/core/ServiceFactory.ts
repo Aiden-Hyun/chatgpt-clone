@@ -29,6 +29,10 @@ export class ServiceFactory {
     const typingStateService = ServiceRegistry.createTypingStateService(setIsTyping);
     const animationService = ServiceRegistry.createAnimationService(setMessages);
 
+    // Create search service
+    const searchService = ServiceRegistry.createSearchService();
+    console.log('🔍 [ServiceFactory] Created search service:', searchService.getProviderName());
+
     // Create and return the orchestrator with all dependencies injected
     return new MessageSenderService(
       chatRoomService,
@@ -38,7 +42,8 @@ export class ServiceFactory {
       responseProcessor,
       messageStateService,
       typingStateService,
-      animationService
+      animationService,
+      searchService
     );
   }
 

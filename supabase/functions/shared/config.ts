@@ -29,5 +29,8 @@ export const config = {
     anthropic: {
       apiKey: () => getRequiredSecret("ANTHROPIC_API_KEY"),
     },
+    google: {
+      apiKey: () => getRequiredSecret("GOOGLE_CLOUD_API_KEY"),
+    },
   },
 };

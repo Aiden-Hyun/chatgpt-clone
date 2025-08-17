@@ -13,3 +13,6 @@ export * from './IMessageStateService';
 export * from './IRegenerationService';
 export * from './ITypingStateService';
 
+// Search service interface
+export * from './ISearchService';
+

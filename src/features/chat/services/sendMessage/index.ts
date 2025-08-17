@@ -17,6 +17,8 @@ export type SendMessageArgs = {
   originalAssistantContent?: string;
   // ✅ Phase 2: Add message ID support
   messageId?: string;
+  // ✅ Phase 3: Add search functionality
+  enableSearch?: boolean;
 };
 
 /**
@@ -34,8 +36,11 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     model,
     regenerateIndex,
     originalAssistantContent,
-    messageId
+    messageId,
+    enableSearch
   } = args;
+  
+  console.log('🔍 [sendMessageHandler] Received request with enableSearch:', enableSearch);
 
   // Use injected auth service via ServiceRegistry
   const authService = ServiceRegistry.createAuthService();
@@ -60,7 +65,10 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     originalAssistantContent,
     session,
     messageId, // ✅ Phase 2: Pass message ID to service
+    enableSearch, // ✅ Phase 3: Pass search flag to service
   };
+  
+  console.log('🔍 [sendMessageHandler] Prepared request with enableSearch:', request.enableSearch);
 
   // Send the message using the SOLID architecture
   const result = await messageSender.sendMessage(request);

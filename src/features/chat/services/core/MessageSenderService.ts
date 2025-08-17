@@ -13,6 +13,7 @@ import { IChatRoomService } from '../interfaces/IChatRoomService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { IMessageStateService } from '../interfaces/IMessageStateService';
 import { INavigationService } from '../interfaces/INavigationService';
+import { ISearchService } from '../interfaces/ISearchService';
 import { ITypingStateService } from '../interfaces/ITypingStateService';
 import { AIApiRequest } from '../types';
 import { IAIResponseProcessor } from './AIResponseProcessor';
@@ -29,6 +30,8 @@ export interface SendMessageRequest {
   session: Session;
   // ✅ Phase 2: Add message ID tracking
   messageId?: string;
+  // ✅ Phase 3: Add search functionality
+  enableSearch?: boolean;
 }
 
 export interface SendMessageResult {
@@ -50,7 +53,8 @@ export class MessageSenderService {
     private responseProcessor: IAIResponseProcessor,
     private messageStateService: IMessageStateService,
     private typingStateService: ITypingStateService,
-    private animationService: IAnimationService
+    private animationService: IAnimationService,
+    private searchService?: ISearchService
   ) {
     this.retryService = new RetryService({
       maxRetries: MESSAGE_SEND_MAX_RETRIES,
@@ -66,13 +70,15 @@ export class MessageSenderService {
     let assistantMessageIdForError: string | null = null;
     
     try {
+      console.log('🔍 [MessageSenderService] Starting message send with enableSearch:', request.enableSearch);
       this.loggingService.info(`Starting message send request ${requestId}`, {
         requestId,
         messageId: request.messageId, // ✅ Phase 2: Log message ID
         roomId: request.numericRoomId,
         model: request.model,
         regenerateIndex: request.regenerateIndex,
-        messageCount: request.messages.length
+        messageCount: request.messages.length,
+        enableSearch: request.enableSearch // ✅ Phase 3: Log search flag
       });
 
       const { userContent, numericRoomId, messages, model, regenerateIndex, originalAssistantContent, session, messageId } = request;
@@ -97,7 +103,13 @@ export class MessageSenderService {
         regenerateIndex, 
         messageId // ✅ Phase 2: Include message ID in logging
       });
-      this.messageStateService.updateMessageState({ regenerateIndex, userMsg, assistantMsg, messageId });
+      
+      this.messageStateService.updateMessageState({ 
+        regenerateIndex, 
+        userMsg, 
+        assistantMsg, 
+        messageId
+      });
       // Only set typing for new messages, not for regeneration
       if (regenerateIndex === undefined) {
         this.typingStateService.setTyping(true);
@@ -120,27 +132,45 @@ export class MessageSenderService {
         this.loggingService.info(`Room created successfully for request ${requestId}`, { roomId });
       }
 
-      // Step 3: Prepare messages for AI API
-      const currentMessages = regenerateIndex !== undefined 
+      // Step 3: Log search status (search will be performed on server-side)
+      if (request.enableSearch) {
+        console.log('🔍 [MessageSenderService] Search enabled, will be performed on server-side');
+        console.log('🔍 [MessageSenderService] Search query:', userContent);
+        this.loggingService.info(`Search requested for request ${requestId}`, { query: userContent });
+      } else {
+        console.log('🔍 [MessageSenderService] Search not enabled');
+      }
+
+      // Step 4: Prepare messages for AI API (search will be handled on server-side)
+      const messagesWithSearch = regenerateIndex !== undefined 
         ? messages 
         : [...messages, userMsg];
       
+      console.log('🔍 [MessageSenderService] Preparing AI request:', {
+        hasSearchResults: request.enableSearch,
+        messageCount: messagesWithSearch.length,
+        enableSearch: request.enableSearch
+      });
+      
       const apiRequest: AIApiRequest = {
         roomId,
-        messages: currentMessages,
+        messages: messagesWithSearch,
         model,
         clientMessageId: assistantMsg.id,
         // Always handle persistence on the client to avoid relying on edge upsert
         // This prevents missing rows if the edge function cannot upsert
         skipPersistence: true,
+        // Pass search query to edge function for server-side search
+        searchQuery: request.enableSearch ? userContent : undefined,
       };
 
       this.loggingService.debug(`Sending AI API request ${requestId}`, {
-        messageCount: currentMessages.length,
-        model
+        messageCount: messagesWithSearch.length,
+        model,
+        hasSearchResults: request.enableSearch
       });
 
-      // Step 4: Get response from AI API with retry
+      // Step 5: Get response from AI API with retry
       const apiResponse = await this.retryService.retryOperation(
         () => this.aiApiService.sendMessage(apiRequest, session.access_token),
         'AI API call'
@@ -170,7 +200,7 @@ export class MessageSenderService {
         model: apiResponse.model
       });
 
-      // Step 5: Animate the response and handle database operations after completion
+      // Step 6: Animate the response and handle database operations after completion
       this.loggingService.debug(`Starting animation for request ${requestId}`, { 
         messageId, 
         regenerateIndex,

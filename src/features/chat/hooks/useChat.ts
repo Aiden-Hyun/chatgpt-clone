@@ -1,5 +1,5 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 // Model is now passed in from parent; this hook will accept it via options
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
@@ -10,6 +10,8 @@ import { useRegenerationService } from './useRegenerationService';
 type UseChatOptions = {
   selectedModel?: string;
   setModel?: (model: string) => void | Promise<void>;
+  // ✅ Phase 3: Add search functionality
+  enableSearch?: boolean;
 };
 
 export const useChat = (numericRoomId: number | null, options?: UseChatOptions) => {
@@ -41,6 +43,12 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
   // Model selection provided by parent via options
   const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
   const updateModel = options?.setModel ?? (() => {});
+  const enableSearch = options?.enableSearch ?? false;
+  
+  // Debug logging for search state in useChat
+  React.useEffect(() => {
+    console.log('🔍 [useChat] Search state received:', enableSearch);
+  }, [enableSearch]);
 
   // Input management
   const {
@@ -64,6 +72,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     drafts,
     setDrafts,
     selectedModel,
+    enableSearch,
   });
 
   // Use the dedicated regeneration service, wired with the current chat state

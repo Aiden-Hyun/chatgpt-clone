@@ -14,6 +14,8 @@ interface UseMessageActionsProps {
   drafts: Record<string, string>;
   setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   selectedModel: string;
+  // ✅ Phase 3: Add search functionality
+  enableSearch?: boolean;
 }
 
 export const useMessageActions = ({
@@ -26,6 +28,7 @@ export const useMessageActions = ({
   drafts,
   setDrafts,
   selectedModel,
+  enableSearch = false,
 }: UseMessageActionsProps) => {
   // selectedModel is provided by parent; no hook call here
 
@@ -34,9 +37,10 @@ export const useMessageActions = ({
 
     // ✅ STATE MACHINE: Simplified message sending using the service layer
     const messageId = generateMessageId();
-    logger.info('Starting new message send', { messageId, contentLength: userContent.length, model: selectedModel });
+    logger.info('Starting new message send', { messageId, contentLength: userContent.length, model: selectedModel, enableSearch });
 
     try {
+      console.log('🔍 [useMessageActions] Sending message with search enabled:', enableSearch);
       await sendMessageHandler({
         userContent: userContent.trim(),
         numericRoomId: roomId,
@@ -46,13 +50,14 @@ export const useMessageActions = ({
         setDrafts,
         model: selectedModel,
         messageId,
+        enableSearch,
       });
       logger.debug('Message handler completed', { messageId });
     } catch (error) {
       logger.error('Failed to send message', { messageId, error: error as Error });
       throw error;
     }
-  }, [roomId, messages, setMessages, setDrafts, selectedModel]);
+  }, [roomId, messages, setMessages, setDrafts, selectedModel, enableSearch]);
 
   // Regeneration logic moved to ReactRegenerationService
 

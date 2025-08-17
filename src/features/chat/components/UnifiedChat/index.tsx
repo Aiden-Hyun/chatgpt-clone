@@ -46,6 +46,14 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   // Create stable inputRef to prevent ChatInput re-renders
   const inputRef = React.useRef<any>(null);
   
+  // Search state
+  const [enableSearch, setEnableSearch] = React.useState(false);
+  
+  // Debug logging for search state
+  React.useEffect(() => {
+    console.log('🔍 [UnifiedChat] Search state changed:', enableSearch);
+  }, [enableSearch]);
+  
 
   
   // Use the existing proven chat hook
@@ -61,7 +69,12 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     regenerateMessage,
     editUserAndRegenerate,
     setMessages,
-  } = useChat(roomId || null, { selectedModel, setModel: onChangeModel });
+  } = useChat(roomId || null, { selectedModel, setModel: onChangeModel, enableSearch });
+  
+  // Debug logging for search state passed to useChat
+  React.useEffect(() => {
+    console.log('🔍 [UnifiedChat] Passing enableSearch to useChat:', enableSearch);
+  }, [enableSearch]);
   
 
   // Like/dislike handlers
@@ -125,6 +138,8 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
         sending={sending}
         isTyping={isTyping}
         inputRef={inputRef}
+        enableSearch={enableSearch}
+        onToggleSearch={setEnableSearch}
       />
     </KeyboardAvoidingView>
   );

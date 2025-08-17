@@ -1,7 +1,7 @@
 import { Platform, StyleSheet } from 'react-native';
 import { AppTheme } from '../../../theme/theme.types';
 
-export const createMarkdownRendererStyles = (theme: AppTheme) => {
+export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean = false) => {
   return StyleSheet.create({
     // Body Text
     body: {
@@ -173,14 +173,18 @@ export const createMarkdownRendererStyles = (theme: AppTheme) => {
       borderRadius: 8,
       fontStyle: 'italic',
     },
-    
-    // Tables - Clean Modern Look
+
+    // Tables - Clean Modern Look with Responsive Support
     table: {
       borderWidth: 1,
       borderColor: theme.colors.border.light,
       borderRadius: 8,
       marginVertical: theme.spacing.lg,
       overflow: 'hidden',
+      // On mobile, ensure table can be scrolled horizontally
+      ...(isMobile && {
+        minWidth: 0, // Ensure table is wide enough to trigger horizontal scroll
+      }),
     },
     thead: {
       backgroundColor: theme.colors.background.secondary,
@@ -188,21 +192,99 @@ export const createMarkdownRendererStyles = (theme: AppTheme) => {
     tbody: {
       backgroundColor: theme.colors.background.primary,
     },
+    tr: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border.light,
+      maxHeight: 130,
+    },
+    scrollContainer: {
+      width: "100%",
+    },
     th: {
+      flex: 0,        // Don't use flex: 1 (which makes all columns equal)
+      flexGrow: 0.5,    // Allow growing based on content
+      flexShrink: 0.5,  // Allow shrinking
+      flexBasis: '0%',
       padding: theme.spacing.md,
+      paddingVertical: theme.spacing.lg,
       fontWeight: '600',
       fontSize: 14,
       color: theme.colors.text.secondary,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderRightWidth: 1,
+      borderRightColor: theme.colors.border.light,
+      minWidth: 0,
+      // On mobile, prevent text wrapping and ensure minimum width
+      ...(isMobile && {
+        minWidth: 0,
+      }),
     },
     td: {
+      flex: 0,        // Don't use flex: 1 (which makes all columns equal)
+      flexGrow: 0.5,    // Allow growing based on content
+      flexShrink: 0.5,  // Allow shrinking
       padding: theme.spacing.md,
+      paddingVertical: theme.spacing.lg,
       fontSize: 14,
       color: theme.colors.text.primary,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderRightWidth: 1,
+      borderRightColor: theme.colors.border.light,
+      maxWidth: 250,
+      minWidth: 0,
+      // On mobile, prevent text wrapping and ensure minimum width
+      ...(isMobile && {
+        minWidth: 0,
+      }),
     },
+    cellScrollView: {
+      maxHeight: 130, // Limit cell height and enable scrolling
+    },
+    scrollBar: {
+      backgroundColor: theme.colors.background.secondary,
+    },
+    
+    
+    // Tables - Clean Modern Look with Responsive Support
+    // table: {
+    //   borderWidth: 1,
+    //   borderColor: theme.colors.border.light,
+    //   borderRadius: 8,
+    //   marginVertical: theme.spacing.lg,
+    //   overflow: 'hidden',
+    //   // On mobile, ensure table can be scrolled horizontally
+    //   ...(isMobile && {
+    //     minWidth: 600, // Ensure table is wide enough to trigger horizontal scroll
+    //   }),
+    // },
+    // thead: {
+    //   backgroundColor: theme.colors.background.secondary,
+    // },
+    // tbody: {
+    //   backgroundColor: theme.colors.background.primary,
+    // },
+    // th: {
+    //   padding: theme.spacing.md,
+    //   fontWeight: '600',
+    //   fontSize: 14,
+    //   color: theme.colors.text.secondary,
+    //   borderBottomWidth: 1,
+    //   borderBottomColor: theme.colors.border.light,
+    //   // On mobile, prevent text wrapping and ensure minimum width
+    //   ...(isMobile && {
+    //     minWidth: 120,
+    //   }),
+    // },
+    // td: {
+    //   padding: theme.spacing.md,
+    //   fontSize: 14,
+    //   color: theme.colors.text.primary,
+    //   borderBottomWidth: 1,
+    //   borderBottomColor: theme.colors.border.light,
+    //   // On mobile, prevent text wrapping and ensure minimum width
+    //   ...(isMobile && {
+    //     minWidth: 120,
+    //   }),
+    // },
     
     // Links - Styled Like ChatGPT
     link: {

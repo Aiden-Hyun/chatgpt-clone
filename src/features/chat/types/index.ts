@@ -1,4 +1,5 @@
 // src/features/chat/types/index.ts
+import { SearchResult } from '../services/interfaces/ISearchService';
 
 export type MessageState = 
   | 'loading'      // AI generating response (show LoadingMessage)
@@ -8,7 +9,7 @@ export type MessageState =
   | 'error';       // Error state
 
 export type ChatMessage = {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'search-results';
   content: string;
   state?: MessageState;     // Add optional state
   fullContent?: string;     // Add full content for loading state
@@ -16,4 +17,7 @@ export type ChatMessage = {
   // Like/dislike feedback state
   isLiked?: boolean;
   isDisliked?: boolean;
+  // Search-related fields
+  searchResults?: SearchResult[];
+  searchQuery?: string;
 };

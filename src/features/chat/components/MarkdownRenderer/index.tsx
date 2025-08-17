@@ -2,8 +2,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
-import { ActivityIndicator, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MarkdownDisplay, { MarkdownIt } from 'react-native-markdown-display';
+import { useResponsive } from '../../../../shared/hooks/useResponsive';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import {
@@ -23,7 +24,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   isAnimating = false 
 }) => {
   const theme = useAppTheme();
-  const styles = React.useMemo(() => createMarkdownRendererStyles(theme), [theme]);
+  const { isMobile } = useResponsive();
+  const styles = React.useMemo(() => createMarkdownRendererStyles(theme, isMobile), [theme, isMobile]);
   const { showError, showSuccess } = useToast();
   const [downloadingMap, setDownloadingMap] = React.useState<Record<string, boolean>>({});
   const setDownloading = React.useCallback((key: string, value: boolean) => {
@@ -115,6 +117,86 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
   // Custom rules for specific markdown elements
   const customRules = {
+    // Custom table renderer with horizontal scroll on mobile
+    table: (node: any, children: any, parent: any, _mdStyles: any) => {
+      if (isMobile) {
+        return (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginVertical: theme.spacing.lg }}
+          >
+            <View style={styles.table}>
+              {children}
+            </View>
+          </ScrollView>
+        );
+      }
+      return (
+        <View style={styles.table}>
+          {children}
+        </View>
+      );
+    },
+    
+    // Custom table header renderer
+    thead: (node: any, children: any, parent: any, _mdStyles: any) => {
+      return (
+        <View style={styles.thead}>
+          {children}
+        </View>
+      );
+    },
+    
+    // Custom table body renderer
+    tbody: (node: any, children: any, parent: any, _mdStyles: any) => {
+      return (
+        <View style={styles.tbody}>
+          {children}
+        </View>
+      );
+    },
+    
+    // Custom table row renderer - this is crucial for proper column separation
+    tr: (node: any, children: any, parent: any, _mdStyles: any) => {
+      return (
+        <View style={styles.tr}>
+          {children}
+        </View>
+      );
+    },
+    
+    th: (node: any, children: any, parent: any, _mdStyles: any) => {
+      return (
+        <View style={styles.th}>
+          <ScrollView 
+            showsVerticalScrollIndicator={true}
+            showsHorizontalScrollIndicator={true}
+            //indicatorStyle={styles.scrollBar}
+            style={styles.cellScrollView}
+          >
+            {children}
+          </ScrollView>
+        </View>
+      );
+    },
+
+    // Custom table data cell renderer
+    td: (node: any, children: any, parent: any, _mdStyles: any) => {
+      return (
+        <View style={styles.td}>
+          <ScrollView 
+            showsVerticalScrollIndicator={true}
+            showsHorizontalScrollIndicator={true}
+            //indicatorStyle={styles.scrollBar}
+            style={styles.cellScrollView}
+          >
+            {children}
+          </ScrollView>
+        </View>
+      );
+    },
+    
     // Custom code block renderer using our CodeBlock component
     code_block: (node: any, children: any, parent: any, _mdStyles: any) => {
       const { content } = node;
@@ -221,11 +303,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         
         // Other elements
         blockquote: styles.blockquote,
-        table: styles.table,
-        thead: styles.thead,
-        tbody: styles.tbody,
-        th: styles.th,
-        td: styles.td,
+        // Table styles handled by custom rule
         link: styles.link,
         hr: styles.hr,
         image: styles.image,
