@@ -235,6 +235,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         </Text>
       );
     },
+
     
     // Custom image renderer to avoid key spread warnings from default implementation
     image: (node: any, children: any, parent: any, _mdStyles: any) => {

@@ -82,6 +82,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       fontSize: 16,
       color: theme.colors.text.primary,
       lineHeight: 26,
+      
     },
     
     strong: {
@@ -244,53 +245,11 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     },
     
     
-    // Tables - Clean Modern Look with Responsive Support
-    // table: {
-    //   borderWidth: 1,
-    //   borderColor: theme.colors.border.light,
-    //   borderRadius: 8,
-    //   marginVertical: theme.spacing.lg,
-    //   overflow: 'hidden',
-    //   // On mobile, ensure table can be scrolled horizontally
-    //   ...(isMobile && {
-    //     minWidth: 600, // Ensure table is wide enough to trigger horizontal scroll
-    //   }),
-    // },
-    // thead: {
-    //   backgroundColor: theme.colors.background.secondary,
-    // },
-    // tbody: {
-    //   backgroundColor: theme.colors.background.primary,
-    // },
-    // th: {
-    //   padding: theme.spacing.md,
-    //   fontWeight: '600',
-    //   fontSize: 14,
-    //   color: theme.colors.text.secondary,
-    //   borderBottomWidth: 1,
-    //   borderBottomColor: theme.colors.border.light,
-    //   // On mobile, prevent text wrapping and ensure minimum width
-    //   ...(isMobile && {
-    //     minWidth: 120,
-    //   }),
-    // },
-    // td: {
-    //   padding: theme.spacing.md,
-    //   fontSize: 14,
-    //   color: theme.colors.text.primary,
-    //   borderBottomWidth: 1,
-    //   borderBottomColor: theme.colors.border.light,
-    //   // On mobile, prevent text wrapping and ensure minimum width
-    //   ...(isMobile && {
-    //     minWidth: 120,
-    //   }),
-    // },
-    
     // Links - Styled Like ChatGPT
     link: {
-      color: theme.colors.status.info.primary,
-      textDecorationLine: 'underline',
-      fontWeight: '500',
+      textDecorationLine: 'none',
+      fontWeight: '100',
+      //color: 'blue' as any,
     },
     
     // Horizontal Rules
