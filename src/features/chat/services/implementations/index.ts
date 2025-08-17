@@ -11,6 +11,6 @@ export * from './SupabaseMessageService';
 
 // Search service implementations
 export * from './DuckDuckGoSearchService';
-export * from './GoogleCustomSearchService';
+
 export * from './WebSearchService';
 

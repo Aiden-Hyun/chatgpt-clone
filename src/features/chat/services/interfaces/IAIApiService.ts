@@ -5,5 +5,5 @@ export interface IAIApiService {
   /**
    * Send a request to the AI API and get a response
    */
-  sendMessage(request: AIApiRequest, accessToken: string): Promise<AIApiResponse>;
+  sendMessage(request: AIApiRequest, accessToken: string, isSearchMode?: boolean): Promise<AIApiResponse>;
 } 

@@ -11,7 +11,7 @@ import {
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { MessageItem } from '../MessageItem';
-import SearchResultsMessage from '../SearchResultsMessage';
+
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -277,22 +277,7 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
     // Handle search results messages
-    if (item.role === 'search-results' && item.searchResults && item.searchQuery) {
-      console.log('🔍 [MessageList] Rendering search results message:', {
-        query: item.searchQuery,
-        resultCount: item.searchResults.length
-      });
-      return (
-        <SearchResultsMessage
-          searchQuery={item.searchQuery}
-          searchResults={item.searchResults}
-          onResultPress={(result) => {
-            // Handle search result press - could open URL or copy to clipboard
-            console.log('🔍 [MessageList] Search result pressed:', result);
-          }}
-        />
-      );
-    }
+
 
     // Find the correct index in the original messages array for regeneration check
     const originalMessageIndex = messages.findIndex(msg => msg.id === item.id);

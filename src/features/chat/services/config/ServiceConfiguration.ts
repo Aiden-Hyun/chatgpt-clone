@@ -3,7 +3,6 @@ import { ServiceRegistry } from '../core/ServiceRegistry';
 import {
     ChatAPIService,
     ExpoRouterNavigationService,
-    GoogleCustomSearchService,
     ReactAnimationService,
     ReactMessageStateService,
     ReactRegenerationService,
@@ -25,6 +24,6 @@ export function configureServices(): void {
     animationService: ReactAnimationService,
     regenerationService: ReactRegenerationService,
     authService: SupabaseAuthService,
-    searchService: GoogleCustomSearchService,
+
   });
 } 

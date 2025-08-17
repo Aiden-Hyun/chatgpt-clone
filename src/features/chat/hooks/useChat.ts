@@ -1,5 +1,6 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import React, { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import mobileStorage from '../../../shared/lib/mobileStorage';
 // Model is now passed in from parent; this hook will accept it via options
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
@@ -10,8 +11,8 @@ import { useRegenerationService } from './useRegenerationService';
 type UseChatOptions = {
   selectedModel?: string;
   setModel?: (model: string) => void | Promise<void>;
-  // ✅ Phase 3: Add search functionality
-  enableSearch?: boolean;
+  isSearchMode?: boolean;
+  onSearchToggle?: () => void;
 };
 
 export const useChat = (numericRoomId: number | null, options?: UseChatOptions) => {
@@ -43,12 +44,36 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
   // Model selection provided by parent via options
   const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
   const updateModel = options?.setModel ?? (() => {});
-  const enableSearch = options?.enableSearch ?? false;
   
-  // Debug logging for search state in useChat
-  React.useEffect(() => {
-    console.log('🔍 [useChat] Search state received:', enableSearch);
-  }, [enableSearch]);
+  // Search mode state - persist across room changes
+  const [isSearchMode, setIsSearchMode] = useState(false);
+  
+  // Load search mode from storage on mount
+  useEffect(() => {
+    const loadSearchMode = async () => {
+      try {
+        const saved = await mobileStorage.getItem('chat_search_mode');
+        if (saved === 'true') {
+          setIsSearchMode(true);
+        }
+      } catch {
+        // Ignore storage errors
+      }
+    };
+    loadSearchMode();
+  }, []);
+  
+  const handleSearchToggle = useCallback(() => {
+    setIsSearchMode(prev => {
+      const newValue = !prev;
+      // Persist to mobile storage
+      mobileStorage.setItem('chat_search_mode', newValue.toString()).catch(() => {
+        // Ignore storage errors
+      });
+      return newValue;
+    });
+  }, []);
+
 
   // Input management
   const {
@@ -72,7 +97,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     drafts,
     setDrafts,
     selectedModel,
-    enableSearch,
+    isSearchMode,
   });
 
   // Use the dedicated regeneration service, wired with the current chat state
@@ -158,5 +183,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     selectedModel,
     updateModel,
     setMessages,
+    isSearchMode,
+    onSearchToggle: handleSearchToggle,
   };
 };

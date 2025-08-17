@@ -5,27 +5,31 @@ import { IAIApiService } from '../interfaces/IAIApiService';
 import { AIApiRequest, AIApiResponse } from '../types';
 
 export class ChatAPIService implements IAIApiService {
-  async sendMessage(request: AIApiRequest, accessToken: string): Promise<AIApiResponse> {
+  async sendMessage(request: AIApiRequest, accessToken: string, isSearchMode?: boolean): Promise<AIApiResponse> {
     // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
-    const payload = {
-      roomId: request.roomId,
-      messages: request.messages,
-      model: request.model,
-      // Include idempotency and persistence control so the edge function can upsert reliably
-      clientMessageId: request.clientMessageId,
-      skipPersistence: request.skipPersistence,
-      // Include search query for server-side search
-      searchQuery: request.searchQuery,
-    };
+    const payload = isSearchMode 
+      ? {
+          question: request.messages[request.messages.length - 1]?.content || '',
+        }
+      : {
+          roomId: request.roomId,
+          messages: request.messages,
+          model: request.model,
+          // Include idempotency and persistence control so the edge function can upsert reliably
+          clientMessageId: request.clientMessageId,
+          skipPersistence: request.skipPersistence,
+        };
 
-    console.log(`[ChatAPIService] Making API call for model: ${request.model}`);
-    console.log(`[ChatAPIService] Request payload:`, {
+    console.log(`[ChatAPIService] Making API call for ${isSearchMode ? 'search' : 'chat'} mode`);
+    console.log(`[ChatAPIService] Request payload:`, isSearchMode ? { question: payload.question } : {
       model: request.model,
       messageCount: request.messages.length,
     });
 
-    const url = `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
-    const response = await fetchJson<AIApiResponse>(
+    const url = isSearchMode 
+      ? `${appConfig.edgeFunctionBaseUrl}/react-search`
+      : `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
+    const response = await fetchJson<any>(
       url,
       {
         method: 'POST',
@@ -35,7 +39,19 @@ export class ChatAPIService implements IAIApiService {
         body: JSON.stringify(payload),
       },
     );
-    console.log(`[ChatAPIService] Received API response for model: ${request.model}`);
-    return response;
+    console.log(`[ChatAPIService] Received API response for ${isSearchMode ? 'search' : 'chat'} mode`);
+    
+    // Transform search response to match AIApiResponse format
+    if (isSearchMode) {
+      const searchResponse = response as { final_answer_md: string; citations: any[]; time_warning?: string };
+      return {
+        content: searchResponse.final_answer_md,
+        model: 'react-search',
+        citations: searchResponse.citations,
+        time_warning: searchResponse.time_warning,
+      } as AIApiResponse;
+    }
+    
+    return response as AIApiResponse;
   }
 } 

@@ -70,45 +70,7 @@ export const createChatInputStyles = (theme: AppTheme) => {
       }),
     },
 
-    // Search button container
-    searchButtonContainer: {
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      marginBottom: 2, // Slight adjustment for visual alignment
-    },
 
-    // Search button styling - Similar to send button
-    searchButton: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      padding: 0,
-      backgroundColor: theme.colors.background.secondary,
-      borderWidth: 0,
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'visible',
-      shadowColor: theme.colors.text.primary,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 1,
-      elevation: 1,
-      // Web-specific: Remove focus outline
-      ...(Platform.OS === 'web' && {
-        outlineWidth: 0,
-        outlineColor: 'transparent',
-        borderWidth: 0,
-        boxShadow: 'none',
-      }),
-    },
-
-    // Active search button (when search mode is enabled)
-    searchButtonActive: {
-      backgroundColor: theme.colors.primary,
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 2,
-    },
 
     // Send button container
     sendButtonContainer: {
@@ -169,6 +131,46 @@ export const createChatInputStyles = (theme: AppTheme) => {
       fontSize: 13, // iOS Messages secondary text size
       color: theme.colors.text.secondary,
       fontStyle: 'italic',
+    },
+
+    // Search button container
+    searchButtonContainer: {
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginBottom: 2, // Slight adjustment for visual alignment
+    },
+
+    // Search button styling - Perfect circle
+    searchButton: {
+      width: 36, // Slightly larger for better visibility
+      height: 36, // Perfect square for circle
+      borderRadius: 18, // Exactly half of width/height for perfect circle
+      padding: 0,
+      backgroundColor: theme.colors.background.secondary, // Use theme background
+      borderWidth: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'visible', // Ensure icons aren't clipped
+      shadowColor: theme.colors.text.primary,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 1,
+      elevation: 1,
+      // Web-specific: Remove focus outline using proper React Native properties
+      ...(Platform.OS === 'web' && {
+        outlineWidth: 0,
+        outlineColor: 'transparent',
+        borderWidth: 0,
+        boxShadow: 'none',
+      }),
+    },
+
+    // Search button active state
+    searchButtonActive: {
+      backgroundColor: theme.colors.primary,
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 2,
     },
   });
 

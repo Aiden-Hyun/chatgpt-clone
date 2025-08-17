@@ -27,9 +27,7 @@ serve(async (req) => {
   try {
     const body = await req.json();
     console.log(`[EDGE] Request body keys: ${Object.keys(body)}`);
-    console.log(`[EDGE] Search query received: ${body.searchQuery || 'NOT PROVIDED'}`);
-    
-    const { model, messages, roomId, clientMessageId, skipPersistence, searchQuery } = body;
+    const { model, messages, roomId, clientMessageId, skipPersistence } = body;
 
     // --- Authentication ---
     const authHeader = req.headers.get("authorization");
@@ -43,34 +41,7 @@ serve(async (req) => {
 
     console.log(`[ROUTER] Received model: ${model}`);
 
-    // --- Search Functionality ---
-    let searchResults = null;
-    if (searchQuery) {
-      console.log(`[ROUTER] Performing search for: "${searchQuery}"`);
-      try {
-        searchResults = await performGoogleSearch(searchQuery);
-        console.log(`[ROUTER] Search completed with ${searchResults?.length || 0} results`);
-        
-        // Log detailed search results
-        if (searchResults && searchResults.length > 0) {
-          console.log(`[ROUTER] === SEARCH RESULTS DETAILS ===`);
-          searchResults.forEach((result, index) => {
-            console.log(`[ROUTER] Result ${index + 1}:`);
-            console.log(`[ROUTER]   Title: ${result.title}`);
-            console.log(`[ROUTER]   Snippet: ${result.snippet}`);
-            console.log(`[ROUTER]   Source: ${result.source}`);
-            console.log(`[ROUTER]   URL: ${result.url}`);
-            console.log(`[ROUTER]   ---`);
-          });
-          console.log(`[ROUTER] === END SEARCH RESULTS ===`);
-        } else {
-          console.log(`[ROUTER] No search results returned`);
-        }
-      } catch (searchError) {
-        console.error('[ROUTER] Search failed:', searchError);
-        // Continue without search results
-      }
-    }
+
 
     // --- API Routing ---
     let responseData;
@@ -103,37 +74,10 @@ serve(async (req) => {
       }
     } else if (model.startsWith('gpt-')) {
       console.log('[ROUTER] Routing to OpenAI...');
-      const enhancedMessages = searchResults ? enhanceMessagesWithSearch(messages, searchResults, searchQuery) : messages;
-      
-      // Log the final message that will be sent to AI
-      console.log('[ROUTER] === FINAL MESSAGE TO AI ===');
-      const lastUserMessage = enhancedMessages.find(msg => msg.role === 'user');
-      if (lastUserMessage) {
-        console.log('[ROUTER] User message content:');
-        console.log(lastUserMessage.content);
-        console.log('[ROUTER] Message length:', lastUserMessage.content.length);
-      }
-      console.log('[ROUTER] === END FINAL MESSAGE ===');
-      console.log("Enhanced Messages:", enhancedMessages );
-      
-      
-      responseData = await callOpenAI(model, enhancedMessages);
-      console.log("responseData:", responseData);
+      responseData = await callOpenAI(model, messages);
     } else if (model.startsWith('claude-')) {
       console.log('[ROUTER] Routing to Anthropic...');
-      const enhancedMessages = searchResults ? enhanceMessagesWithSearch(messages, searchResults, searchQuery) : messages;
-      
-      // Log the final message that will be sent to AI
-      console.log('[ROUTER] === FINAL MESSAGE TO AI ===');
-      const lastUserMessage = enhancedMessages.find(msg => msg.role === 'user');
-      if (lastUserMessage) {
-        console.log('[ROUTER] User message content:');
-        console.log(lastUserMessage.content);
-        console.log('[ROUTER] Message length:', lastUserMessage.content.length);
-      }
-      console.log('[ROUTER] === END FINAL MESSAGE ===');
-      
-      responseData = await callAnthropic(model, enhancedMessages);
+      responseData = await callAnthropic(model, messages);
     } else {
       console.error(`[ROUTER] Unsupported model: ${model}`);
       throw new Error(`Unsupported model: ${model}`);
@@ -170,101 +114,4 @@ serve(async (req) => {
   }
 });
 
-// Helper function to perform Google Custom Search
-async function performGoogleSearch(query: string) {
-  console.log(`[GoogleSearch] Starting search for: "${query}"`);
-  
-  const apiKey = config.secrets.google.apiKey();
-  const searchEngineId = '4415b473618724a6b';
-  
-  console.log(`[GoogleSearch] API Key available: ${!!apiKey}`);
-  console.log(`[GoogleSearch] Search Engine ID: ${searchEngineId}`);
-  
-  if (!apiKey) {
-    throw new Error('Google Cloud API key not found');
-  }
 
-  const params = new URLSearchParams({
-    key: apiKey,
-    cx: searchEngineId,
-    q: query,
-    num: '5', // Limit to 5 results
-  });
-
-  const url = `https://www.googleapis.com/customsearch/v1?${params.toString()}`;
-  console.log(`[GoogleSearch] Making request to: ${url.replace(apiKey, '***HIDDEN***')}`);
-
-  const response = await fetch(url);
-  
-  console.log(`[GoogleSearch] Response status: ${response.status}`);
-  
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`[GoogleSearch] API error response: ${errorText}`);
-    throw new Error(`Google Search API error: ${response.status} - ${errorText}`);
-  }
-
-  const data = await response.json();
-  console.log(`[GoogleSearch] Response data keys: ${Object.keys(data)}`);
-  
-  if (!data.items || !Array.isArray(data.items)) {
-    console.log(`[GoogleSearch] No items in response or items is not an array`);
-    console.log(`[GoogleSearch] Response structure:`, JSON.stringify(data, null, 2));
-    return [];
-  }
-
-  console.log(`[GoogleSearch] Found ${data.items.length} items`);
-  
-  const results = data.items.map((item: any) => ({
-    title: item.title,
-    snippet: item.snippet,
-    url: item.link,
-    source: item.displayLink || 'Google Search',
-    timestamp: new Date().toISOString(),
-  }));
-  
-  console.log(`[GoogleSearch] Processed ${results.length} results`);
-  return results;
-}
-
-// Helper function to enhance messages with search results
-function enhanceMessagesWithSearch(messages: any[], searchResults: any[], searchQuery: string) {
-  console.log(`[MessageEnhancement] Starting message enhancement`);
-  console.log(`[MessageEnhancement] Search results count: ${searchResults?.length || 0}`);
-  console.log(`[MessageEnhancement] Search query: "${searchQuery}"`);
-  
-  if (!searchResults || searchResults.length === 0) {
-    console.log(`[MessageEnhancement] No search results, returning original messages`);
-    return messages;
-  }
-
-  // Find the last user message and enhance it
-  const enhancedMessages = [...messages];
-  const lastUserMessageIndex = enhancedMessages.findIndex(msg => msg.role === 'user');
-  
-  console.log(`[MessageEnhancement] Last user message index: ${lastUserMessageIndex}`);
-  
-  if (lastUserMessageIndex !== -1) {
-    const searchContext = `Search Results for "${searchQuery}":\n${searchResults.map((result, index) => 
-      `${index + 1}. ${result.title}\n   ${result.snippet}\n   Source: ${result.source}\n   URL: ${result.url}\n`
-    ).join('\n')}`;
-
-    const originalContent = enhancedMessages[lastUserMessageIndex].content;
-    const enhancedContent = `${originalContent}\n\n🔍 Search Results Found:\n${searchResults.length} results from ${searchResults[0]?.source || 'web search'}\n\n${searchContext}`;
-    
-    console.log(`[MessageEnhancement] Original content length: ${originalContent.length}`);
-    console.log(`[MessageEnhancement] Enhanced content length: ${enhancedContent.length}`);
-    console.log(`[MessageEnhancement] Enhanced content preview: ${enhancedContent.substring(0, 200)}...`);
-
-    enhancedMessages[lastUserMessageIndex] = {
-      ...enhancedMessages[lastUserMessageIndex],
-      content: enhancedContent
-    };
-    
-    console.log(`[MessageEnhancement] Message enhanced successfully`);
-  } else {
-    console.log(`[MessageEnhancement] No user message found to enhance`);
-  }
-
-  return enhancedMessages;
-}

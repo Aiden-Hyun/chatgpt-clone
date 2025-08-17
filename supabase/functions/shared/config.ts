@@ -15,6 +15,11 @@ function getRequiredSecret(key: string): string {
   return secret;
 }
 
+// Helper function for optional secrets
+function getOptionalSecret(key: string): string | undefined {
+  return Deno.env.get(key);
+}
+
 // Centralized configuration for all Edge Functions
 export const config = {
   secrets: {
@@ -26,11 +31,27 @@ export const config = {
     openai: {
       apiKey: () => getRequiredSecret("OPENAI_API_KEY"),
     },
+    // Made anthropic optional since it's not used in react-search
     anthropic: {
-      apiKey: () => getRequiredSecret("ANTHROPIC_API_KEY"),
+      apiKey: () => getOptionalSecret("ANTHROPIC_API_KEY"),
     },
-    google: {
-      apiKey: () => getRequiredSecret("GOOGLE_CLOUD_API_KEY"),
+    tavily: {
+      apiKey: () => getOptionalSecret("TAVILY_API_KEY"),
+    },
+    cohere: {
+      apiKey: () => getOptionalSecret("COHERE_API_KEY"),
+    },
+    microlink: {
+      apiKey: () => getOptionalSecret("MICROLINK_API_KEY"),
+    },
+    bing: {
+      apiKey: () => getOptionalSecret("BING_API_KEY"),
+    },
+    serpapi: {
+      apiKey: () => getOptionalSecret("SERPAPI_API_KEY"),
+    },
+    jina: {
+      apiKey: () => getOptionalSecret("JINA_API_KEY"),
     },
   },
 };

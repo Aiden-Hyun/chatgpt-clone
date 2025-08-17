@@ -11,17 +11,20 @@ export interface AIApiRequest {
   // Optional idempotency and control flags
   clientMessageId?: string;
   skipPersistence?: boolean;
-  // Search functionality
-  searchQuery?: string;
+
 }
 
 export interface AIApiResponse {
-  choices: {
+  choices?: {
     message: {
       content: string;
       role: string;
     };
   }[];
+  content?: string;
   model?: string;
   error?: any;
+  // Search-specific fields
+  citations?: any[];
+  time_warning?: string;
 } 

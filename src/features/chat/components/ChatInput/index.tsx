@@ -13,9 +13,8 @@ interface ChatInputProps {
   sending?: boolean;
   isTyping?: boolean;
   inputRef: RefObject<any>;
-  // Search-related props
-  enableSearch?: boolean;
-  onToggleSearch?: (enabled: boolean) => void;
+  isSearchMode?: boolean;
+  onSearchToggle?: () => void;
 }
 
 /**
@@ -33,8 +32,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   sending,
   isTyping,
   inputRef,
-  enableSearch = false,
-  onToggleSearch,
+  isSearchMode = false,
+  onSearchToggle,
 }) => {
   const [inputHeight, setInputHeight] = useState(44);
   const { t } = useLanguageContext();
@@ -102,23 +101,20 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </View>
 
         {/* Search toggle button */}
-        {onToggleSearch && (
+        {onSearchToggle && (
           <View style={styles.searchButtonContainer}>
             <TouchableOpacity
-              onPress={() => {
-                console.log('🔍 [ChatInput] Search toggle pressed, current state:', enableSearch);
-                onToggleSearch(!enableSearch);
-              }}
+              onPress={onSearchToggle}
               style={[
                 styles.searchButton,
-                enableSearch && styles.searchButtonActive
+                isSearchMode && styles.searchButtonActive
               ]}
               activeOpacity={0.7}
             >
               <MaterialIcons 
                 name="search" 
                 size={20} 
-                color={enableSearch ? theme.colors.text.inverted : theme.colors.primary} 
+                color={isSearchMode ? theme.colors.text.inverted : theme.colors.primary} 
               />
             </TouchableOpacity>
           </View>
