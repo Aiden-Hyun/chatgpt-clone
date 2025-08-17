@@ -6,8 +6,7 @@ import { useChatScreen } from '@/shared/hooks';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
+  KeyboardAvoidingView
 } from 'react-native';
 import { useRoomModel } from '../../src/features/chat/model/useRoomModel';
 import { createChatStyles } from './chat.styles';
@@ -57,7 +56,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   return (
           <LoadingWrapper loading={loading}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior="padding"
           style={styles.container}
         >
         <UnifiedChat 
