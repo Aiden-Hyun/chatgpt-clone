@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { AppTheme } from '../../src/features/theme/theme.types';
 
 export const createSettingsStyles = (theme: AppTheme) => {
@@ -14,6 +14,10 @@ export const createSettingsStyles = (theme: AppTheme) => {
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
+      // Android-specific: Add extra padding for status bar
+      paddingTop: Platform.OS === 'android' 
+        ? theme.spacing.md + 24  // Android status bar height
+        : theme.spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.light,
       backgroundColor: theme.colors.background.primary,
@@ -21,6 +25,13 @@ export const createSettingsStyles = (theme: AppTheme) => {
     backButton: {
       padding: theme.spacing.sm,
       borderRadius: theme.borderRadius.md,
+      // Android-specific: Increase touch area for better accessibility
+      ...(Platform.OS === 'android' && {
+        minWidth: 48,
+        minHeight: 48,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }),
     },
     headerTitle: {
       marginBottom: 0, // Remove margin since Text component handles spacing

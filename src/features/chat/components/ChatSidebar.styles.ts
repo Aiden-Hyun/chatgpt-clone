@@ -1,30 +1,36 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../theme/theme.types';
+import { StyleSheet } from "react-native";
+import { AppTheme } from "../../theme/theme.types";
 
 export const createChatSidebarStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     sidebarOverlay: {
       flex: 1,
-      flexDirection: 'row',
+      flexDirection: "row",
     },
     sidebarBackdrop: {
       flex: 1,
-      backgroundColor: theme.colors.feedback.overlay.medium,
+      //backgroundColor: theme.colors.feedback.overlay.medium,
+      backgroundColor: "transparent",
     },
     sidebar: {
       width: 360,
       backgroundColor: theme.colors.background.primary,
+      shadowColor: "#000000",
+      shadowOffset: { width: 0, height: 30 },
+      shadowOpacity: 0.3,
+      shadowRadius: 16,
+      elevation: 25,
     },
     sidebarHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
     },
     newChatButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
       borderRadius: theme.borderRadius.sm,
@@ -33,7 +39,7 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
     newChatText: {
       marginLeft: theme.spacing.sm,
       fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.fontWeights.medium as "500",
       color: theme.colors.text.primary,
       fontFamily: theme.fontFamily.primary,
     },
@@ -41,14 +47,14 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       flex: 1,
     },
     chatItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
     },
     chatItemMain: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       flex: 1,
     },
     selectedChatItem: {
@@ -59,13 +65,13 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       marginLeft: theme.spacing.md,
     },
     subtitleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: theme.spacing.xs,
     },
     chatItemTitle: {
       fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.fontWeights.medium as "500",
       color: theme.colors.text.primary,
       marginBottom: 2,
       fontFamily: theme.fontFamily.primary,
@@ -84,7 +90,7 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       fontFamily: theme.fontFamily.primary,
     },
     chatItemMeta: {
-      alignItems: 'flex-end',
+      alignItems: "flex-end",
     },
     draftBadge: {
       paddingHorizontal: theme.spacing.xs,
@@ -97,7 +103,7 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       fontSize: theme.fontSizes.xs,
       color: theme.colors.status.info.primary,
       fontFamily: theme.fontFamily.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontWeight: theme.fontWeights.semibold as "600",
     },
     draftBadgeSmall: {
       paddingHorizontal: theme.spacing.xs,
@@ -110,7 +116,7 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       fontSize: theme.fontSizes.xs,
       color: theme.colors.status.info.primary,
       fontFamily: theme.fontFamily.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontWeight: theme.fontWeights.semibold as "600",
     },
     chatItemDelete: {
       marginLeft: theme.spacing.sm,
@@ -118,20 +124,20 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       borderRadius: theme.borderRadius.xs,
     },
     userProfile: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
     },
     userInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
     },
     userName: {
       marginLeft: theme.spacing.sm,
       fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.fontWeights.medium as "500",
       color: theme.colors.text.primary,
       fontFamily: theme.fontFamily.primary,
     },
@@ -139,4 +145,4 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       padding: theme.spacing.sm,
     },
   });
-}; 
+};

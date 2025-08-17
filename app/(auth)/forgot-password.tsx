@@ -3,12 +3,12 @@ import { FormWrapper } from '@/components';
 import { Button, Input, Text } from '@/components/ui';
 import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
-import { LanguageSelector, useLanguageContext } from '@/features/language';
+import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, View, TouchableOpacity, Platform } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Alert, Platform, TouchableOpacity, View } from 'react-native';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
@@ -98,7 +98,11 @@ export default function ForgotPasswordScreen() {
         alignItems: 'center',
         paddingHorizontal: theme.spacing.md,
         paddingVertical: theme.spacing.md,
-        paddingTop: Platform.OS === 'ios' ? theme.spacing.md + 44 : theme.spacing.md,
+        paddingTop: Platform.OS === 'ios' 
+          ? theme.spacing.md + 44 
+          : Platform.OS === 'android' 
+            ? theme.spacing.md + 24  // Android status bar height
+            : theme.spacing.md,
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.border.light,
         backgroundColor: theme.colors.background.primary,
@@ -108,6 +112,13 @@ export default function ForgotPasswordScreen() {
           style={{
             padding: theme.spacing.sm,
             marginRight: theme.spacing.md,
+            // Android-specific: Increase touch area for better accessibility
+            ...(Platform.OS === 'android' && {
+              minWidth: 48,
+              minHeight: 48,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }),
           }}
         >
           <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
