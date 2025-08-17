@@ -100,7 +100,8 @@ export class ServiceFactory {
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     session: Session,
     selectedModel: string,
-    roomId: number | null
+    roomId: number | null,
+    isSearchMode: boolean = false
   ): IRegenerationService {
     return ServiceRegistry.createRegenerationService(
       messageStateManager,
@@ -110,7 +111,8 @@ export class ServiceFactory {
       setMessages,
       session,
       selectedModel,
-      roomId
+      roomId,
+      isSearchMode
     );
   }
 } 

@@ -9,11 +9,11 @@ import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    View
 } from 'react-native';
 
 import { supabase } from '@/shared/lib/supabase';

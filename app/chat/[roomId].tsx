@@ -55,11 +55,11 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   const loading = false;
 
   return (
-    <LoadingWrapper loading={loading}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-      >
+          <LoadingWrapper loading={loading}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.container}
+        >
         <UnifiedChat 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}

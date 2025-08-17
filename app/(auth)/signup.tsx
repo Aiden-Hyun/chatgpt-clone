@@ -5,10 +5,10 @@ import { useToast } from '@/features/alert';
 import { useEmailSignup } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, View, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {

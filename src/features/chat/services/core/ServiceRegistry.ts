@@ -51,7 +51,8 @@ export interface ServiceConfig {
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
       session: Session,
       selectedModel: string,
-      roomId: number | null
+      roomId: number | null,
+      isSearchMode: boolean
     ): IRegenerationService;
   };
   authService: { new (): IAuthService };
@@ -138,7 +139,8 @@ export class ServiceRegistry {
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     session: Session,
     selectedModel: string,
-    roomId: number | null
+    roomId: number | null,
+    isSearchMode: boolean
   ): IRegenerationService {
     const config = this.getConfig();
     return new config.regenerationService(
@@ -149,7 +151,8 @@ export class ServiceRegistry {
       setMessages,
       session,
       selectedModel,
-      roomId
+      roomId,
+      isSearchMode
     );
   }
 

@@ -110,6 +110,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
       stopRegenerating,
     },
     selectedModel,
+    isSearchMode
   );
 
   // Wrapper for sendMessage that handles input clearing

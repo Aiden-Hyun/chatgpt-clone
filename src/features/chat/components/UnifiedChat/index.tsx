@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { View } from 'react-native';
 import { createChatStyles } from '~/app/chat/chat.styles';
 import { useAppTheme } from '../../../theme/theme';
 import { useChat } from '../../hooks';
@@ -101,11 +101,8 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
 
   // Welcome text is controlled by MessageList based on messages.length === 0 && !loading
 
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}
-    >
+      return (
+    <View style={styles.container}>
       {/* Messages using proven MessageList component - memoized to prevent input-related re-renders */}
       {React.useMemo(() => (
         <MessageList
@@ -132,7 +129,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
         isSearchMode={isSearchMode}
         onSearchToggle={onSearchToggle}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

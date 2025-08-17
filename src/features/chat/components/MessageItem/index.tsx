@@ -72,7 +72,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
     return (
       <AssistantMessage
-        key={`assistant-${index}`}
         message={message}
         onRegenerate={onRegenerate}
         showAvatar={showAvatar}

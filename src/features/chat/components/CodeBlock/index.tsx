@@ -61,7 +61,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           <ScrollView horizontal bounces={false} showsHorizontalScrollIndicator={false}>
             <View>
               {lines.map((line, idx) => (
-                <View key={idx} style={styles.lineContainer}>
+                <View key={`line-${idx}-${line.length}-${line.substring(0, 10).replace(/\s/g, '')}`} style={styles.lineContainer}>
                   <Text style={styles.lineNumber} allowFontScaling={false}>
                     {(idx + 1).toString()}
                   </Text>

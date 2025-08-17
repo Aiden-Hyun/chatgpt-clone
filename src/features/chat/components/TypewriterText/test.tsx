@@ -34,7 +34,7 @@ export const TypewriterTestScreen = () => {
       
       <View style={{ marginTop: 20, flex: 1 }}>
         {messages.map((message, index) => (
-          <View key={index} style={{ marginBottom: 10, padding: 10, backgroundColor: '#f0f0f0' }}>
+          <View key={`message-${index}-${message.length}-${message.substring(0, 20).replace(/\s/g, '')}`} style={{ marginBottom: 10, padding: 10, backgroundColor: '#f0f0f0' }}>
             <TypewriterText
               text={message}
               startAnimation={showAnimation}

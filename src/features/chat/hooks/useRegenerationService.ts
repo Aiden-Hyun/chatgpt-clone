@@ -15,7 +15,8 @@ type Deps = {
 export function useRegenerationService(
   roomId: number | null,
   { messages, setMessages, startRegenerating, stopRegenerating }: Deps,
-  selectedModel: string
+  selectedModel: string,
+  isSearchMode: boolean = false
 ) {
   // model is provided by parent
   const { session } = useAuth();
@@ -38,9 +39,10 @@ export function useRegenerationService(
       setMessages,
       session,
       selectedModel,
-      roomId
+      roomId,
+      isSearchMode
     );
-  }, [setMessages, session, selectedModel, roomId]);
+  }, [setMessages, session, selectedModel, roomId, isSearchMode]);
 
   // Expose regeneration functions
   const regenerateMessage = useCallback(
