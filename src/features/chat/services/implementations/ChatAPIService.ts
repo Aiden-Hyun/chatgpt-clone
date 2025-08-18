@@ -1,21 +1,35 @@
 // src/features/chat/services/implementations/ChatAPIService.ts
 import { appConfig } from '@/shared/lib/config';
+import { getModelInfo } from '../../constants/models';
 import { fetchJson } from '../../lib/fetch';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { AIApiRequest, AIApiResponse } from '../types';
 
 export class ChatAPIService implements IAIApiService {
   async sendMessage(request: AIApiRequest, accessToken: string, isSearchMode?: boolean): Promise<AIApiResponse> {
+    // Get model configuration from client-side models
+    const modelInfo = getModelInfo(request.model);
+    
     // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
     const payload = isSearchMode 
       ? {
           question: request.messages[request.messages.length - 1]?.content || '',
-          model: request.model, // Include the user's selected model
+          model: request.model,
+          modelConfig: {
+            tokenParameter: modelInfo?.tokenParameter || 'max_tokens',
+            supportsCustomTemperature: modelInfo?.supportsCustomTemperature ?? true,
+            defaultTemperature: modelInfo?.defaultTemperature || 0.7
+          }
         }
       : {
           roomId: request.roomId,
           messages: request.messages,
           model: request.model,
+          modelConfig: {
+            tokenParameter: modelInfo?.tokenParameter || 'max_tokens',
+            supportsCustomTemperature: modelInfo?.supportsCustomTemperature ?? true,
+            defaultTemperature: modelInfo?.defaultTemperature || 0.7
+          },
           // Include idempotency and persistence control so the edge function can upsert reliably
           clientMessageId: request.clientMessageId,
           skipPersistence: request.skipPersistence,
@@ -24,10 +38,12 @@ export class ChatAPIService implements IAIApiService {
     console.log(`[ChatAPIService] Making API call for ${isSearchMode ? 'search' : 'chat'} mode`);
     console.log(`[ChatAPIService] Request payload:`, isSearchMode ? { 
       question: payload.question,
-      model: payload.model 
+      model: payload.model,
+      modelConfig: payload.modelConfig
     } : {
       model: request.model,
       messageCount: request.messages.length,
+      modelConfig: payload.modelConfig
     });
 
     const url = isSearchMode 
@@ -58,4 +74,4 @@ export class ChatAPIService implements IAIApiService {
     
     return response as AIApiResponse;
   }
-} 
+}

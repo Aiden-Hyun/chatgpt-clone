@@ -1,23 +1,34 @@
 // supabase/functions/ai-chat/providers/anthropic.ts
 import { config } from '../../shared/config.ts';
 
-export async function callAnthropic(model: string, messages: any[]) {
+export async function callAnthropic(model: string, messages: any[], modelConfig?: any) {
   const ANTHROPIC_API_KEY = config.secrets.anthropic.apiKey();
   console.log("ANTHROPIC_API_KEY retrieved:", ANTHROPIC_API_KEY ? `...${ANTHROPIC_API_KEY.slice(-4)}` : "Not found");
 
-  const systemPrompt = "You are a helpful assistant.";
+  // Extract system message if present, or use default
+  const systemMessages = messages.filter(m => m.role === 'system');
+  const systemPrompt = systemMessages.length > 0 
+    ? systemMessages[0].content 
+    : "You are a helpful assistant.";
   
-  // Anthropic's API does not accept an 'id' field in the message objects.
-  // We need to map over the messages and remove the 'id' before sending.
+  // Anthropic's API does not accept an 'id' field in the message objects or system messages.
+  // We need to filter out system messages and map over the rest to remove any extra fields.
   const userMessages = messages
     .filter(m => m.role !== 'system')
     .map(({ role, content }) => ({ role, content }));
 
+  // Use the passed modelConfig instead of trying to determine it
+  const tokenParameter = modelConfig?.tokenParameter || 'max_tokens';
+  const tempConfig = modelConfig?.supportsCustomTemperature !== false 
+    ? { temperature: modelConfig?.defaultTemperature || 0.7 }
+    : {};
+
   const requestBody = {
     model: model,
-    max_tokens: 1024,
+    [tokenParameter]: 1024,
     system: systemPrompt,
     messages: userMessages,
+    ...tempConfig, // Only include temperature if the model supports it
   };
 
   console.log("Anthropic Request Body:", JSON.stringify(requestBody, null, 2));
@@ -26,7 +37,7 @@ export async function callAnthropic(model: string, messages: any[]) {
     method: "POST",
     headers: {
       "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
+      "anthropic-version": "2023-06-01", // This is a stable API version that works with all Claude models
       "content-type": "application/json",
     },
     body: JSON.stringify(requestBody),

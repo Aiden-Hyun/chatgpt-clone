@@ -31,9 +31,9 @@ export const config = {
     openai: {
       apiKey: () => getRequiredSecret("OPENAI_API_KEY"),
     },
-    // Made anthropic optional since it's not used in react-search
+    // Anthropic is now used in react-search for Claude models
     anthropic: {
-      apiKey: () => getOptionalSecret("ANTHROPIC_API_KEY"),
+      apiKey: () => getRequiredSecret("ANTHROPIC_API_KEY"),
     },
     tavily: {
       apiKey: () => getOptionalSecret("TAVILY_API_KEY"),

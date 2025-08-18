@@ -27,7 +27,7 @@ serve(async (req) => {
   try {
     const body = await req.json();
     console.log(`[REACT-SEARCH] Request body keys: ${Object.keys(body)}`);
-    const { question, model } = body;
+    const { question, model, modelConfig } = body;
 
     if (!question || typeof question !== 'string') {
       throw new Error("Missing or invalid 'question' parameter");
@@ -50,19 +50,51 @@ serve(async (req) => {
     console.log(`[REACT-SEARCH] Processing question: ${question.substring(0, 100)}...`);
 
     // --- Initialize Services ---
-    const cacheManager = new CacheManager(supabaseClient);
+    // Create a service role client specifically for cache operations that require elevated permissions
+    const supabaseServiceClient = createClient(
+      config.secrets.supabase.url(),
+      config.secrets.supabase.serviceRoleKey()
+    );
+    
+    // Use service role client for cache operations with improved configuration
+    const cacheManager = new CacheManager(supabaseServiceClient, {
+      debug: DEBUG,
+      cacheEnabled: true,
+      memCacheEnabled: true,
+      tableName: 'agent_cache' // Use the new consolidated cache table
+    });
+    
+    // Log cache initialization
+    console.log(`[REACT-SEARCH] Cache manager initialized with debug=${DEBUG}`);
+    
     const searchService = new SearchService(cacheManager);
     const fetchService = new FetchService(cacheManager);
     const rerankService = new RerankService();
 
     // --- Create and Run ReAct Agent ---
+    // Determine model provider based on model name
+    const getModelProvider = (model: string) => {
+      if (model.startsWith('claude')) {
+        return 'anthropic';
+      }
+      return 'openai';
+    };
+    
+    const modelProvider = getModelProvider(selectedModel);
+    console.log(`[REACT-SEARCH] Using model provider: ${modelProvider}`);
+    
     const agent = new ReActAgent({
       cacheManager,
       searchService,
       fetchService,
       rerankService,
       debug: DEBUG,
-      model: selectedModel, // Pass the selected model to the agent
+      model: selectedModel,
+      modelConfig: modelConfig || {
+        tokenParameter: 'max_tokens',
+        supportsCustomTemperature: true,
+        defaultTemperature: modelProvider === 'anthropic' ? 0.7 : 0.1
+      },
     });
 
     const result = await agent.run(question);
@@ -81,13 +113,14 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('[REACT-SEARCH] Error processing request', { 
-      message: error?.message, 
-      stack: error?.stack 
+      message: typeof error === "object" && error !== null && "message" in error ? (error as any).message : String(error),
+      stack: typeof error === "object" && error !== null && "stack" in error ? (error as any).stack : undefined
     });
     
     return new Response(JSON.stringify({ 
-      error: error?.message || 'Unknown error',
-      trace: error?.stack 
+      message: typeof error === "object" && error !== null && "message" in error ? (error as any).message : String(error),
+      stack: typeof error === "object" && error !== null && "stack" in error ? (error as any).stack : undefined
+
     }), {
       status: 400,
       headers: { 

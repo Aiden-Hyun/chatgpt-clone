@@ -1,11 +1,11 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-nocheck
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { config } from "../shared/config.ts";
-import { callAnthropic } from "./providers/anthropic.ts";
-import { callOpenAI } from "./providers/openai.ts";
+import { config } from "../shared/config";
+import { callAnthropic } from "./providers/anthropic";
+import { callOpenAI } from "./providers/openai";
 
 serve(async (req) => {
   const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
