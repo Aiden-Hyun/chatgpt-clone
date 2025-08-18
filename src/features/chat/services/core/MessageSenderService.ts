@@ -5,6 +5,7 @@ import {
   MESSAGE_SEND_MAX_RETRIES,
   ROOM_NAME_MAX_LENGTH,
 } from '../../constants';
+import { getModelInfo } from '../../constants/models';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
 import { IAIApiService } from '../interfaces/IAIApiService';
@@ -82,6 +83,16 @@ export class MessageSenderService {
       });
 
       const { userContent, numericRoomId, messages, model, regenerateIndex, originalAssistantContent, session, messageId, isSearchMode } = request;
+
+      // Validate search mode is supported for this model
+      if (isSearchMode) {
+        const modelInfo = getModelInfo(model);
+        if (!modelInfo?.capabilities.search) {
+          const error = `Search is not supported for model: ${model}`;
+          this.loggingService.error(`Search validation failed for request ${requestId}`, { error, model });
+          return { success: false, error, duration: Date.now() - startTime };
+        }
+      }
 
       // Create user and assistant message objects
       const userMsg: ChatMessage = { 

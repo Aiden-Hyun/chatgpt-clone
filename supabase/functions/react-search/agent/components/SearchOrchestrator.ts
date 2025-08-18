@@ -1,7 +1,7 @@
-import type { Passage, TimeRange } from "../types/AgentTypes.ts";
-import { eTLDplus1 } from "../utils/url-utils.ts";
-import { domainAuthorityScore, getTechnicalSourceBonus, getRecencyBonus } from "../utils/scoring-utils.ts";
 import { SearchService } from "../../services/search.ts";
+import type { Passage, TimeRange } from "../types/AgentTypes.ts";
+import { domainAuthorityScore, getRecencyBonus, getTechnicalSourceBonus } from "../utils/scoring-utils.ts";
+import { eTLDplus1 } from "../utils/url-utils.ts";
 
 function distinct<T>(arr: T[]): T[] {
   return [...new Set(arr)];
@@ -65,11 +65,21 @@ export class SearchOrchestrator {
     console.log(`[Agent:multiQuerySearch] Expanded to ${qs.length} diverse queries: ${qs.join(' | ')}`);
 
     const all: any[] = [];
-    for (const q of qs) {
-      const res = await this.searchService.search(q, Math.ceil(k / qs.length) * 2, timeRange);
-      all.push(...(res.results || []));
-      await sleep(60);
-    }
+    const concurrency = Math.min(4, qs.length);
+    let index = 0;
+    const worker = async () => {
+      while (index < qs.length) {
+        const q = qs[index++];
+        try {
+          const res = await this.searchService.search(q, Math.ceil(k / qs.length) * 2, timeRange);
+          all.push(...(res.results || []));
+        } catch (_e) {
+          // ignore individual query failures
+        }
+        await sleep(30);
+      }
+    };
+    await Promise.all(new Array(concurrency).fill(0).map(() => worker()));
 
     const seen = new Set<string>();
     const uniq: any[] = [];

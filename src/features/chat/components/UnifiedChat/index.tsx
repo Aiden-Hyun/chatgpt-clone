@@ -128,6 +128,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
         inputRef={inputRef}
         isSearchMode={isSearchMode}
         onSearchToggle={onSearchToggle}
+        selectedModel={selectedModel}
       />
     </View>
   );

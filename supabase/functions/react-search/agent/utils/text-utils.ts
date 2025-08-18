@@ -40,4 +40,8 @@ export function sha1(str: string): string {
   return Math.abs(h).toString(36);
 }
 
+export function distinct<T>(arr: T[]): T[] {
+  return [...new Set(arr)];
+}
+
 

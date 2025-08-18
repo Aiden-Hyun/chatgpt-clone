@@ -25,7 +25,7 @@ export async function callAnthropic(model: string, messages: any[], modelConfig?
 
   const requestBody = {
     model: model,
-    [tokenParameter]: 1024,
+    [tokenParameter]: modelConfig?.max_tokens || 1024, // FIX: Use modelConfig.max_tokens
     system: systemPrompt,
     messages: userMessages,
     ...tempConfig, // Only include temperature if the model supports it

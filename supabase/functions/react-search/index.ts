@@ -90,6 +90,8 @@ serve(async (req) => {
       rerankService,
       debug: DEBUG,
       model: selectedModel,
+      reasoningModelProvider: modelProvider, // Add explicit provider
+      synthesisModelProvider: modelProvider, // Add explicit provider
       modelConfig: modelConfig || {
         tokenParameter: 'max_tokens',
         supportsCustomTemperature: true,

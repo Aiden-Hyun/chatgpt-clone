@@ -4,6 +4,7 @@ import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import { getModelInfo } from '../../constants/models';
 import { createChatInputStyles } from './ChatInput.styles';
 
 interface ChatInputProps {
@@ -15,6 +16,7 @@ interface ChatInputProps {
   inputRef: RefObject<any>;
   isSearchMode?: boolean;
   onSearchToggle?: () => void;
+  selectedModel?: string;
 }
 
 /**
@@ -34,10 +36,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
   inputRef,
   isSearchMode = false,
   onSearchToggle,
+  selectedModel,
 }) => {
   const [inputHeight, setInputHeight] = useState(44);
   const { t } = useLanguageContext();
   const theme = useAppTheme();
+  
+  // Check if the current model supports search
+  const modelInfo = getModelInfo(selectedModel || 'gpt-3.5-turbo');
+  const supportsSearch = modelInfo?.capabilities.search ?? false;
   
   // CRITICAL FIX: Memoize styles to prevent expensive re-creation
   const { styles } = useMemo(
@@ -110,8 +117,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           />
         </View>
 
-        {/* Search toggle button */}
-        {onSearchToggle && (
+        {/* Search toggle button - only show if model supports search */}
+        {onSearchToggle && supportsSearch && (
           <View style={styles.searchButtonContainer}>
             <TouchableOpacity
               onPress={onSearchToggle}

@@ -10,6 +10,11 @@ export class ChatAPIService implements IAIApiService {
     // Get model configuration from client-side models
     const modelInfo = getModelInfo(request.model);
     
+    // Validate search mode is supported for this model
+    if (isSearchMode && !modelInfo?.capabilities.search) {
+      throw new Error(`Search is not supported for model: ${request.model}`);
+    }
+    
     // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
     const payload = isSearchMode 
       ? {

@@ -1,9 +1,51 @@
+import { callAnthropic } from "../../../ai-chat/providers/anthropic.ts";
 import type { Facet, Passage } from "../types/AgentTypes.ts";
 import { eTLDplus1 } from "../utils/url-utils.ts";
 
 function distinct<T>(arr: T[]): T[] { return [...new Set(arr)]; }
 
 export class FacetManager {
+  async extractFacets(question: string, opts: {
+    reasoningModelProvider: 'openai' | 'anthropic';
+    openai: any | null;
+    reasoningModel: string;
+    modelConfig: any;
+  }): Promise<Facet[]> {
+    const sys = `List 2–5 required factual facets (sub-questions) to fully answer the user's query.
+Return ONLY minified JSON: {"facets":[{"name":"...","required":true}]}`;
+
+    const messages = [
+      { role: "system", content: sys },
+      { role: "user", content: question }
+    ];
+
+    let response: any;
+    if (opts.reasoningModelProvider === 'anthropic') {
+      response = await callAnthropic(opts.reasoningModel, messages, opts.modelConfig);
+    } else {
+      if (!opts.openai) throw new Error('OpenAI client not initialized but trying to use OpenAI model');
+      response = await opts.openai.chat.completions.create({
+        model: opts.reasoningModel,
+        messages,
+        temperature: opts.modelConfig.defaultTemperature || 0.1,
+        [opts.modelConfig.tokenParameter || 'max_tokens']: opts.modelConfig.max_tokens || 200
+      });
+    }
+
+    try {
+      const rawResponse = response.choices[0]?.message?.content ?? "{}";
+      const obj = JSON.parse(rawResponse);
+      const facets: Facet[] = (obj.facets || []).slice(0, 5).map((f: any) => ({
+        name: String(f.name || "").slice(0, 120),
+        required: !!(f.required ?? true),
+        sources: new Set<string>(),
+        covered: false
+      }));
+      return facets;
+    } catch {
+      return [{ name: "Core answer", required: true, sources: new Set<string>(), covered: false }];
+    }
+  }
   updateFacetCoverage(facets: Facet[], passages: Passage[]): Facet[] {
     return facets.map(f => {
       const hits = passages.filter(p => this.passageMatchesFacet(p, f));

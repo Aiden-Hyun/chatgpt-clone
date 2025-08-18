@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 // Model is now passed in from parent; this hook will accept it via options
+import { getModelInfo } from '../constants/models';
 import { useChatState } from './useChatState';
 import { useMessageActions } from './useMessageActions';
 import { useMessageInput } from './useMessageInput';
@@ -63,7 +64,28 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     loadSearchMode();
   }, []);
   
+  // Auto-disable search mode when switching to a model that doesn't support search
+  useEffect(() => {
+    const modelInfo = getModelInfo(selectedModel);
+    if (isSearchMode && !modelInfo?.capabilities.search) {
+      console.log(`Auto-disabling search mode for model: ${selectedModel}`);
+      setIsSearchMode(false);
+      // Update storage
+      mobileStorage.setItem('chat_search_mode', 'false').catch(() => {
+        // Ignore storage errors
+      });
+    }
+  }, [selectedModel, isSearchMode]);
+  
   const handleSearchToggle = useCallback(() => {
+    // Check if the selected model supports search
+    const modelInfo = getModelInfo(selectedModel);
+    if (!modelInfo?.capabilities.search) {
+      // Search is not supported for this model - could add toast notification here
+      console.log(`Search is not supported for model: ${selectedModel}`);
+      return;
+    }
+    
     setIsSearchMode(prev => {
       const newValue = !prev;
       // Persist to mobile storage
@@ -72,7 +94,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
       });
       return newValue;
     });
-  }, []);
+  }, [selectedModel]);
 
 
   // Input management

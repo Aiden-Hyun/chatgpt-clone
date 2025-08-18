@@ -25,29 +25,6 @@ export interface ModelInfo {
   defaultTemperature?: number; // Default temperature for models that don't support custom values
 }
 
-// Helper function to determine the correct token parameter for a model
-export const getTokenParameter = (model: string): 'max_tokens' | 'max_completion_tokens' => {
-  // GPT-5 models use max_completion_tokens
-  if (model.startsWith('gpt-5')) {
-    return 'max_completion_tokens';
-  }
-  // Claude 3.5 models use max_completion_tokens
-  if (model.startsWith('claude-3-5')) {
-    return 'max_completion_tokens';
-  }
-  // All other models (including Claude Opus 4.x) use max_tokens
-  return 'max_tokens';
-};
-
-// Helper function to determine if a model supports custom temperature
-export const supportsCustomTemperature = (model: string): boolean => {
-  // GPT-5 models don't support custom temperature
-  if (model.startsWith('gpt-5')) {
-    return false;
-  }
-  // Most other models support custom temperature
-  return true;
-};
 
 // Available models for chat with capabilities
 export const AVAILABLE_MODELS: ModelInfo[] = [
@@ -59,12 +36,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: true,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Most capable model for complex reasoning',
+    description: 'Most advanced AI model with superior reasoning, analysis, and creative capabilities. Best for complex problem-solving and high-stakes tasks.',
     tokenParameter: 'max_completion_tokens',
     supportsCustomTemperature: false,
     defaultTemperature: 1
@@ -76,12 +53,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: true,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Fast and efficient for most tasks',
+    description: 'High-performance model with excellent reasoning and analysis. Great balance of capability and speed for demanding tasks.',
     tokenParameter: 'max_completion_tokens',
     supportsCustomTemperature: false,
     defaultTemperature: 1
@@ -93,12 +70,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: true, // Enabled for cheaper model
       vision: false,
       code: true,
       analysis: false
     },
-    description: 'Lightning fast for simple tasks',
+    description: 'Lightning-fast model perfect for quick responses, simple tasks, and everyday conversations with search capability.',
     tokenParameter: 'max_completion_tokens',
     supportsCustomTemperature: false,
     defaultTemperature: 1
@@ -110,12 +87,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: true,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Balanced performance and speed',
+    description: 'Versatile model with strong reasoning, coding, and analysis skills. Excellent for professional work and creative projects.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -126,12 +103,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: true, // Enabled for cheaper model
       vision: true,
       code: true,
       analysis: false
     },
-    description: 'Fast and cost-effective',
+    description: 'Fast model with vision capabilities. Great for image analysis, coding, and general tasks with search enabled.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -142,12 +119,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Advanced reasoning capabilities',
+    description: 'Advanced reasoning and analysis capabilities. Ideal for complex problem-solving, research, and detailed analysis.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -158,12 +135,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Reliable and well-tested',
+    description: 'Reliable and well-tested model with strong reasoning abilities. Perfect for professional work and detailed analysis.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -174,12 +151,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: true, // Enabled for cheaper model
       vision: false,
       code: true,
       analysis: false
     },
-    description: 'Fast and reliable for everyday use',
+    description: 'Fast and reliable model excellent for everyday conversations, quick coding, and general tasks with search capability.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -195,7 +172,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
       code: false,
       analysis: false
     },
-    description: 'Specialized for image generation',
+    description: 'Specialized for high-quality image generation. Creates detailed, creative images from text descriptions.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -211,7 +188,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
       code: false,
       analysis: false
     },
-    description: 'High-quality image generation',
+    description: 'Advanced image generation with exceptional detail and artistic quality. Perfect for creative projects and visual content.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -224,12 +201,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: true,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Most capable Claude model',
+    description: 'Most capable Claude model with superior reasoning and analysis. Best for complex research, coding, and creative writing.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -240,12 +217,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Advanced reasoning and analysis',
+    description: 'Advanced reasoning and analysis capabilities. Excellent for research, complex problem-solving, and detailed analysis.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -256,12 +233,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Balanced performance and capabilities',
+    description: 'Balanced performance with strong reasoning and coding abilities. Great for professional work and creative projects.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -272,12 +249,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Reliable and well-rounded',
+    description: 'Reliable and well-rounded model with good reasoning and coding skills. Perfect for everyday professional tasks.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -288,12 +265,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: true, // Enabled for cheaper model
       vision: true,
       code: true,
       analysis: false
     },
-    description: 'Fast and efficient',
+    description: 'Fast and efficient with vision capabilities. Great for quick responses, image analysis, and coding with search enabled.',
     tokenParameter: 'max_completion_tokens',
     supportsCustomTemperature: true
   },
@@ -304,12 +281,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Powerful reasoning capabilities',
+    description: 'Powerful reasoning and analysis capabilities. Ideal for complex research, coding, and creative writing projects.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -320,12 +297,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: false, // Disabled for expensive model
       vision: true,
       code: true,
       analysis: true
     },
-    description: 'Balanced performance',
+    description: 'Balanced performance with strong reasoning abilities. Great for professional work and creative projects.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },
@@ -336,12 +313,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: false,
+      search: true, // Enabled for cheaper model
       vision: true,
       code: true,
       analysis: false
     },
-    description: 'Fast and lightweight',
+    description: 'Fast and lightweight with vision capabilities. Perfect for quick responses, image analysis, and everyday tasks with search.',
     tokenParameter: 'max_tokens',
     supportsCustomTemperature: true
   },

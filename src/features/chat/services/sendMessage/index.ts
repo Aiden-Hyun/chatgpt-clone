@@ -1,5 +1,6 @@
 // src/features/chat/services/sendMessage/index.ts
 import { logger } from '../../utils/logger';
+import { getModelInfo } from '../../constants/models';
 import { SendMessageRequest } from '../core/MessageSenderService';
 import { ServiceFactory } from '../core/ServiceFactory';
 import { ServiceRegistry } from '../core/ServiceRegistry';
@@ -40,7 +41,15 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     isSearchMode = false,
   } = args;
   
-
+  // Validate search mode is supported for this model
+  if (isSearchMode) {
+    const modelInfo = getModelInfo(model);
+    if (!modelInfo?.capabilities.search) {
+      const error = `Search is not supported for model: ${model}`;
+      logger.error('Search validation failed', { error: new Error(error), model });
+      throw new Error(error);
+    }
+  }
 
   // Use injected auth service via ServiceRegistry
   const authService = ServiceRegistry.createAuthService();
