@@ -9,10 +9,10 @@ import { RerankService } from "./services/rerank.ts";
 import { SearchService } from "./services/search.ts";
 // We're only using callAnthropic directly, OpenAI is used via the client
 import { BudgetManager } from "./agent/components/BudgetManager.ts";
+import { FacetManager } from "./agent/components/FacetManager.ts";
 import { QueryDecomposer } from "./agent/components/QueryDecomposer.ts";
 import { SearchOrchestrator } from "./agent/components/SearchOrchestrator.ts";
 import { SynthesisEngine } from "./agent/components/SynthesisEngine.ts";
-import { FacetManager } from "./agent/components/FacetManager.ts";
 
 // === Models ==================================================================
 
@@ -416,11 +416,11 @@ export class ReActAgent {
         // Convert to passages using snippets; FETCH later refines content
         for (const r of processedResults) {
           passages.push({
-            id: `search_${sha1(r.url)}`,
+            id: `search_${sha1(String(r.url))}`,
             text: r.snippet || r.title || r.url,
-            url: r.url,
+            url: String(r.url),
             title: r.title,
-            source_domain: eTLDplus1(r.url),
+            source_domain: eTLDplus1(String(r.url)),
           });
         }
         if (this.cfg.debug) this.trace.push({ event: "search", added: filtered.length });
@@ -504,11 +504,11 @@ export class ReActAgent {
             const filtered = this.searchOrchestrator.filterAndScoreResults(results);
             for (const r of filtered) {
               passages.push({
-                id: `search_${sha1(r.url)}`,
+                id: `search_${sha1(String(r.url))}`,
                 text: r.snippet || r.title || r.url,
-                url: r.url,
+                url: String(r.url),
                 title: r.title,
-                source_domain: eTLDplus1(r.url),
+                source_domain: eTLDplus1(String(r.url)),
               });
             }
             budget.searches--;
@@ -856,40 +856,8 @@ Respond in JSON only.`;
   }
 
   private filterAndScoreResults(results: { url: string; title: string; snippet: string }[]) {
-    console.log(`[Agent:filterAndScore] Filtering and scoring ${results.length} results`);
-    
-    // Less restrictive blocked patterns - only block obvious low-quality content
-    const blocked = [
-      /\/tag\//, /\/category\//, /\/author\//, /\/page\/\d+/, /\/feed\//,
-      /\.docx?$/i, /\.pdf$/i, /facebook\.com/, /twitter\.com/, /x\.com/, /instagram\.com/, /youtube\.com\/watch/
-    ];
-    const cleaned = results.filter(r => !blocked.some(re => re.test((r.url || "").toLowerCase())));
-    
-    console.log(`[Agent:filterAndScore] After filtering: ${cleaned.length} results`);
-    
-    return cleaned
-      .map(r => {
-        const domain = eTLDplus1(r.url);
-        const auth = domainAuthorityScore(domain);
-        
-        // Improved scoring algorithm with better weights
-        const snippetLength = r.snippet?.length || 0;
-        const len = Math.min(1, snippetLength / 200); // Reduced threshold from 300 to 200
-        
-        // Bonus for technical/academic sources
-        const technicalBonus = this.getTechnicalSourceBonus(domain, r.title, r.snippet);
-        
-        // Bonus for recent content (if URL contains year)
-        const recencyBonus = this.getRecencyBonus(r.url, r.title);
-        
-        // More balanced scoring
-        const score = 0.5 * auth + 0.2 * len + 0.2 * technicalBonus + 0.1 * recencyBonus;
-        
-        return { ...r, score, domain, technicalBonus, recencyBonus };
-      })
-      // Promote diversity: sort by score, then stable
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 35); // Increased from 20 to 35
+    // Deprecated: now handled by SearchOrchestrator
+    return this.searchOrchestrator.filterAndScoreResults(results);
   }
 
   private async safeFetchWithRetries(url: string, attempts = 3) {
@@ -968,54 +936,13 @@ Respond in JSON only.`;
   }
 
   private getTechnicalSourceBonus(domain: string | undefined, title: string, snippet: string): number {
-    let bonus = 0;
-    
-    // Technical/academic domains
-    const technicalDomains = [
-      'nature.com', 'sciencedirect.com', 'ieee.org', 'arxiv.org', 'researchgate.net',
-      'springer.com', 'wiley.com', 'tandfonline.com', 'sage.com', 'academia.edu',
-      'mit.edu', 'stanford.edu', 'harvard.edu', 'berkeley.edu', 'cmu.edu'
-    ];
-    
-    if (domain && technicalDomains.some(d => domain.includes(d))) {
-      bonus += 0.3;
-    }
-    
-    // Technical keywords in title/snippet
-    const technicalKeywords = [
-      'research', 'study', 'analysis', 'report', 'paper', 'journal', 'conference',
-      'technical', 'scientific', 'academic', 'peer-reviewed', 'data', 'statistics',
-      'methodology', 'findings', 'conclusions', 'abstract', 'doi'
-    ];
-    
-    const text = `${title} ${snippet}`.toLowerCase();
-    const keywordMatches = technicalKeywords.filter(keyword => text.includes(keyword));
-    bonus += (keywordMatches.length * 0.05); // 0.05 bonus per technical keyword
-    
-    return Math.min(bonus, 0.5); // Cap at 0.5
+    // Deprecated: now handled by SearchOrchestrator.scoring-utils
+    return 0;
   }
 
   private getRecencyBonus(url: string, title: string): number {
-    let bonus = 0;
-    
-    // Check for recent years in URL or title
-    const currentYear = new Date().getFullYear();
-    const recentYears = [currentYear, currentYear - 1, currentYear - 2];
-    
-    const text = `${url} ${title}`.toLowerCase();
-    for (const year of recentYears) {
-      if (text.includes(year.toString())) {
-        bonus += 0.2;
-        break; // Only count the most recent year found
-      }
-    }
-    
-    // Check for "latest", "recent", "new" keywords
-    const recencyKeywords = ['latest', 'recent', 'new', 'updated', 'current', '2024', '2025'];
-    const keywordMatches = recencyKeywords.filter(keyword => text.includes(keyword));
-    bonus += (keywordMatches.length * 0.05);
-    
-    return Math.min(bonus, 0.3); // Cap at 0.3
+    // Deprecated: now handled by SearchOrchestrator.scoring-utils
+    return 0;
   }
 
   private validateAndReplaceQuery(query: string, originalQuestion: string, decomposedQueries: string[]): string {
@@ -1311,44 +1238,8 @@ Respond in JSON only.`;
   }
 
   private retainDiverseSources(filteredResults: any[], existingPassages: Passage[]): any[] {
-    // Get existing domains to avoid duplicates
-    const existingDomains = new Set(existingPassages.map(p => p.source_domain).filter(Boolean));
-    
-    const diverseResults: any[] = [];
-    const domainCounts: Record<string, number> = {};
-    
-    // First pass: add high-scoring results with domain diversity
-    for (const result of filteredResults) {
-      const domain = result.domain || eTLDplus1(result.url) || 'unknown';
-      const currentCount = domainCounts[domain] || 0;
-      
-      // Allow up to 3 results per domain for diversity
-      if (currentCount < 3) {
-        diverseResults.push(result);
-        domainCounts[domain] = currentCount + 1;
-      }
-      
-      // Stop if we have enough diverse results
-      if (diverseResults.length >= 25) {
-        break;
-      }
-    }
-    
-    // Second pass: add lower-scoring results from new domains if we have room
-    if (diverseResults.length < 20) {
-      for (const result of filteredResults) {
-        const domain = result.domain || eTLDplus1(result.url) || 'unknown';
-        
-        // Add if it's a new domain and we have room
-        if (!domainCounts[domain] && diverseResults.length < 25) {
-          diverseResults.push(result);
-          domainCounts[domain] = 1;
-        }
-      }
-    }
-    
-    console.log(`[Agent:diversity] Selected ${diverseResults.length} results from ${Object.keys(domainCounts).length} domains`);
-    return diverseResults;
+    // Deprecated: now handled by SearchOrchestrator
+    return this.searchOrchestrator.retainDiverseSources(filteredResults, existingPassages);
   }
 
   // --- Facets ----------------------------------------------------------------
