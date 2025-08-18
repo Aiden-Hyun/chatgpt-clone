@@ -10,6 +10,7 @@ import { SearchService } from "./services/search.ts";
 // We're only using callAnthropic directly, OpenAI is used via the client
 import { BudgetManager } from "./agent/components/BudgetManager.ts";
 import { FacetManager } from "./agent/components/FacetManager.ts";
+import { Planner } from "./agent/components/Planner.ts";
 import { QueryDecomposer } from "./agent/components/QueryDecomposer.ts";
 import { SearchOrchestrator } from "./agent/components/SearchOrchestrator.ts";
 import { SynthesisEngine } from "./agent/components/SynthesisEngine.ts";
@@ -239,6 +240,7 @@ export class ReActAgent {
   private searchOrchestrator: SearchOrchestrator;
   private synthesisEngine: SynthesisEngine;
   private facetManager: FacetManager;
+  private planner: Planner;
   
   // Helper method to get standardized model configuration
   private getModelConfig(isReasoning: boolean): any {
@@ -262,6 +264,12 @@ export class ReActAgent {
     this.searchOrchestrator = new SearchOrchestrator(cfg.searchService);
     this.synthesisEngine = new SynthesisEngine();
     this.facetManager = new FacetManager();
+    this.planner = new Planner({
+      getModelConfig: (isReasoning: boolean) => this.getModelConfig(isReasoning),
+      reasoningModel: this.reasoningModel,
+      reasoningModelProvider: this.reasoningModelProvider,
+      openai: this.openai,
+    });
     
     // If a single model is provided, use it for both reasoning and synthesis
     if (cfg.model) {
@@ -341,7 +349,23 @@ export class ReActAgent {
       console.log(`[Agent:Debug] Budget - Time: ${Math.round((Date.now() - budget.startedMs) / 1000)}s/${Math.round(budget.timeMs / 1000)}s, Searches: ${budget.searches}, Fetches: ${budget.fetches}`);
       console.log(`[Agent:Debug] Search History: ${this.searchHistory.slice(-3).join(' | ')}`);
       
-      const action = await this.decideActionJSON(question, passages, facets, budget);
+      const action = await this.planner.decideActionJSON({
+        question,
+        passages,
+        facets,
+        budget,
+        currentDateTime: this.currentDateTime,
+        decomposeComplexQuery: (q: string, f: any) => this.decomposeComplexQuery(q, f),
+        createFocusedQuery: (q: string, f: string) => this.createFocusedQuery(q, f),
+        isTimeSensitive,
+        iterationsWithoutProgress: this.iterationsWithoutProgress,
+        tracePush: (obj: any) => { if (this.cfg.debug) this.trace.push(obj); },
+        debug: !!this.cfg.debug,
+        searchHistory: this.searchHistory,
+        getUsedDecomposedQueries: () => this.usedDecomposedQueries,
+        getDecomposedSession: () => this.decomposedQueriesForSession,
+        setDecomposedSession: (qs: string[]) => { this.decomposedQueriesForSession = qs; },
+      });
       console.log(`[Agent] Decided action: ${action.type}${action.query ? ` - Query: "${action.query.substring(0, 30)}..."` : ''}${action.url ? ` - URL: ${action.url}` : ''}`);
       if (this.cfg.debug) this.trace.push({ loop: iterations, action });
       
@@ -600,191 +624,7 @@ export class ReActAgent {
 
   // --- Planning --------------------------------------------------------------
 
-  private async decideActionJSON(
-    question: string,
-    passages: Passage[],
-    facets: Facet[],
-    budget: Budget
-  ): Promise<{ type: "SEARCH" | "FETCH" | "RERANK" | "STOP"; query?: string; k?: number; url?: string; top_n?: number; timeRange?: TimeRange; }> {
-    console.log(`[Agent:decideAction] Deciding next action with ${passages.length} passages`);
-
-    // Decompose complex query if needed
-    const decomposedQueries = await this.decomposeComplexQuery(question, facets);
-    console.log(`[Agent:decideAction] Decomposed into ${decomposedQueries.length} focused queries`);
-    
-    // Store decomposed queries for the session if this is the first iteration
-    if (this.decomposedQueriesForSession.length === 0) {
-      this.decomposedQueriesForSession = [...decomposedQueries];
-      console.log(`[Agent:decideAction] Stored ${decomposedQueries.length} decomposed queries for session`);
-    }
-    
-    // Log available decomposed queries for debugging
-    const availableQueries = decomposedQueries.filter(q => !this.usedDecomposedQueries.has(q));
-    console.log(`[Agent:decideAction] Available decomposed queries: ${availableQueries.length}/${decomposedQueries.length}`);
-    if (availableQueries.length > 0) {
-      console.log(`[Agent:decideAction] Available: ${availableQueries.map(q => `"${q}"`).join(', ')}`);
-    }
-    if (this.usedDecomposedQueries.size > 0) {
-      console.log(`[Agent:decideAction] Used: ${Array.from(this.usedDecomposedQueries).map(q => `"${q}"`).join(', ')}`);
-    }
-
-    const topSources = distinct(passages.map(p => p.url)).slice(0, 3).join(", ");
-    
-    // Get recent action history for context
-    const recentActions = this.trace
-      .filter(t => t.action?.type)
-      .slice(-3)
-      .map(t => `${t.action.type}: ${t.action.query || t.action.url || 'N/A'}`);
-    
-    // Check for repeated searches using search history
-    const repeatedSearches = this.searchHistory.filter((q, i) => this.searchHistory.indexOf(q) !== i);
-    
-    // Get search patterns to avoid
-    const searchPatterns = this.searchHistory.slice(-5).map(q => q.toLowerCase());
-    
-    const system = `Reply ONLY with minified JSON. Do not include markdown.
-
-CRITICAL: For complex questions, you MUST use the provided decomposed queries instead of the full question.
-
-{"thought":"...","action":{"type":"SEARCH|FETCH|RERANK|STOP","query":"...","k":12,"url":"https://...","top_n":6,"timeRange":"d|w|m|y"}}`;
-
-    const needFacets = facets.filter(f => f.required && !f.covered).map(f => f.name);
-    const coveredFacets = facets.filter(f => f.required && f.covered).map(f => f.name);
-    const facetCoverageRatio = facets.filter(f => f.required && f.covered).length / facets.filter(f => f.required).length;
-    
-    // Create specific guidance for each uncovered facet
-    const uncoveredFacetGuidance = needFacets.map(facet => {
-      const facetQuery = this.createFocusedQuery(question, facet);
-      return `${facet}: ${facetQuery}`;
-    }).join(" | ");
-    
-    const user = `
-Current time: ${this.currentDateTime}
-Question: ${question}
-
-*** DECOMPOSED QUERIES (MANDATORY TO USE): ***
-${decomposedQueries.map((q, i) => `${i + 1}. "${q}"`).join('\n')}
-
-*** DECOMPOSED QUERY STATUS: ***
-Used: ${this.usedDecomposedQueries.size}/${decomposedQueries.length}
-Available: ${decomposedQueries.filter(q => !this.usedDecomposedQueries.has(q)).map(q => `"${q}"`).join(', ') || 'none'}
-
-Budget left: {timeMs:${budget.timeMs - (Date.now() - budget.startedMs)}, searches:${budget.searches}, fetches:${budget.fetches}}
-Passages: ${passages.length}
-Top sources: ${topSources || "none"}
-Facet coverage: ${coveredFacets.length}/${facets.filter(f => f.required).length} (${Math.round(facetCoverageRatio * 100)}%)
-Covered facets: ${coveredFacets.join(", ") || "none"}
-Uncovered required facets: ${needFacets.join(", ") || "none"}
-Specific queries for uncovered facets: ${uncoveredFacetGuidance || "none"}
-Recent actions: ${recentActions.join(", ") || "none"}
-Repeated searches detected: ${repeatedSearches.length > 0 ? repeatedSearches.join(", ") : "none"}
-Search patterns to avoid: ${searchPatterns.join(", ") || "none"}
-Iterations without progress: ${this.iterationsWithoutProgress}/3
-
-Rules:
-- MANDATORY: For SEARCH actions, you MUST use decomposed queries when available. NEVER use the full complex question.
-- GOOD EXAMPLE: Use "NVIDIA market position 2024" instead of the full question about AI chips.
-- BAD EXAMPLE: Do NOT use "What are the current trends in AI chip manufacturing, including NVIDIA's market position, recent developments..." (too long).
-- PRIORITY: Facet coverage is the most important factor. If coverage < 60%, SEARCH is mandatory.
-- If facet coverage < 60%: SEARCH using specific queries for uncovered facets (see above).
-- If < 3 quality passages: SEARCH with focused sub-queries from the decomposed list.
-- If you have promising URLs from search snippets: FETCH one high-authority URL we haven't fetched yet.
-- Periodically RERANK to keep top 8–10 diverse, recent passages.
-- STOP only when facet coverage ≥ 60% AND all required facets have ≥1 independent source AND domain diversity ≥ 2.
-- CRITICAL: Avoid repeating the same search query. If a query was already searched, try a different approach.
-- If repeated searches detected or no progress for 2+ iterations, prefer RERANK or STOP over SEARCH.
-- Avoid search patterns that have been used recently (see "Search patterns to avoid").
-- REQUIRED: Choose from the decomposed queries list above, do NOT create new queries.
-
-Respond in JSON only.`;
-
-    const messages = [
-      { role: "system", content: system },
-      { role: "user", content: user }
-    ];
-    
-    let response;
-    
-    if (this.reasoningModelProvider === 'anthropic') {
-      // Use Anthropic API
-      const modelConfig = this.getModelConfig(true); // true for reasoning model
-      response = await callAnthropic(this.reasoningModel, messages, modelConfig);
-    } else {
-      // Use OpenAI API
-      if (!this.openai) {
-        throw new Error('OpenAI client not initialized but trying to use OpenAI model');
-      }
-      const modelConfig = this.getModelConfig(true); // true for reasoning model
-      response = await this.openai.chat.completions.create({
-        model: this.reasoningModel,
-        messages,
-        temperature: modelConfig.defaultTemperature,
-        [modelConfig.tokenParameter]: modelConfig.max_tokens
-      });
-    }
-
-    const raw = response.choices[0]?.message?.content?.trim() || "{}";
-    console.log(`[Agent:decideAction] Raw AI response: ${raw.substring(0, 100)}${raw.length > 100 ? '...' : ''}`);
-    let parsed: any;
-    try { parsed = JSON.parse(raw); }
-    catch {
-      console.log(`[Agent:decideAction] Failed to parse JSON response`);
-      // Fallback: if not JSON, do a conservative RERANK → SEARCH approach
-      if (this.cfg.debug) this.trace.push({ warn: "non_json_action", raw });
-      return passages.length < 6
-        ? { type: "SEARCH", query: `${question} latest`, k: 10, timeRange: isTimeSensitive(question) ? "w" : undefined }
-        : { type: "RERANK", top_n: 10 };
-    }
-    
-    // Log AI's query choice for debugging
-    const aiQuery = parsed?.action?.query || '';
-    if (aiQuery && aiQuery !== question) {
-      console.log(`[Agent:decideAction] AI chose query: "${aiQuery.substring(0, 80)}${aiQuery.length > 80 ? '...' : ''}"`);
-      
-      // Check if AI ignored decomposed queries
-      if (decomposedQueries.length > 0 && !decomposedQueries.includes(aiQuery)) {
-        console.log(`[Agent:decideAction] WARNING: AI ignored decomposed queries and chose: "${aiQuery}"`);
-        console.log(`[Agent:decideAction] Recommended decomposed queries were: ${decomposedQueries.map(q => `"${q}"`).join(', ')}`);
-      }
-    }
-
-    const act = parsed?.action || {};
-    // Sanitize and add proper type checking
-    if (act.type === "SEARCH") {
-      // Ensure query is a string, fallback to decomposed queries if available, then original question
-      let query = typeof act.query === 'string' && act.query.trim() ? act.query : '';
-      
-      console.log(`[Agent:decideAction] Original AI query: "${query.substring(0, 80)}${query.length > 80 ? '...' : ''}"`);
-      
-      // Validate and potentially replace the query with a decomposed query
-      const originalQuery = query;
-      query = this.validateAndReplaceQuery(query, question, decomposedQueries);
-      
-      // Log query validation results
-      if (originalQuery !== query) {
-        console.log(`[Agent:decideAction] Query REPLACED: "${originalQuery.substring(0, 50)}..." → "${query}"`);
-      } else {
-        console.log(`[Agent:decideAction] Query VALIDATED: "${query}"`);
-      }
-      
-      // Ensure k is a positive number
-      const k = typeof act.k === 'number' && act.k > 0 ? act.k : 12;
-      // Validate timeRange is one of the allowed values
-      const validTimeRanges: TimeRange[] = ['d', 'w', 'm', 'y'];
-      const timeRange = act.timeRange && validTimeRanges.includes(act.timeRange) ? act.timeRange : undefined;
-      
-      return { type: "SEARCH", query: String(query), k: Number(k), timeRange };
-    }
-    if (act.type === "FETCH" && typeof act.url === "string" && /^https?:\/\//.test(act.url)) {
-      return { type: "FETCH", url: act.url };
-    }
-    if (act.type === "RERANK") {
-      // Ensure top_n is a positive number
-      const top_n = typeof act.top_n === 'number' && act.top_n > 0 ? act.top_n : 10;
-      return { type: "RERANK", top_n: Number(top_n) };
-    }
-    return { type: "STOP" };
-  }
+  // Planning extracted to Planner component
 
   // --- Retrieval -------------------------------------------------------------
 
@@ -943,167 +783,6 @@ Respond in JSON only.`;
   private getRecencyBonus(url: string, title: string): number {
     // Deprecated: now handled by SearchOrchestrator.scoring-utils
     return 0;
-  }
-
-  private validateAndReplaceQuery(query: string, originalQuestion: string, decomposedQueries: string[]): string {
-    console.log(`[Agent:validateQuery] Validating query: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`);
-    
-    // If no query provided, use decomposed query
-    if (!query && decomposedQueries.length > 0) {
-      const unusedQuery = this.getNextUnusedDecomposedQuery(decomposedQueries);
-      if (unusedQuery) {
-        console.log(`[Agent:validateQuery] FORCED REPLACEMENT: No query provided → "${unusedQuery}"`);
-        return unusedQuery;
-      }
-    }
-    
-    // Check if we should force decomposed query usage
-    if (this.shouldUseDecomposedQuery(query, decomposedQueries)) {
-      const replacementQuery = this.getNextUnusedDecomposedQuery(decomposedQueries);
-      if (replacementQuery) {
-        console.log(`[Agent:validateQuery] FORCED REPLACEMENT: shouldUseDecomposedQuery=true → "${replacementQuery}"`);
-        return replacementQuery;
-      }
-    }
-    
-    // Check if query is too complex (too long or too similar to original question)
-    if (this.isQueryTooComplex(query, originalQuestion)) {
-      const replacementQuery = this.getNextUnusedDecomposedQuery(decomposedQueries);
-      if (replacementQuery) {
-        console.log(`[Agent:validateQuery] FORCED REPLACEMENT: Query too complex → "${replacementQuery}"`);
-        return replacementQuery;
-      }
-    }
-    
-    // If no decomposed queries available, fallback to original question
-    if (!query) {
-      console.log(`[Agent:validateQuery] FALLBACK: No decomposed queries available → original question`);
-      return originalQuestion;
-    }
-    
-    console.log(`[Agent:validateQuery] VALIDATION PASSED: Query accepted as-is`);
-    return query;
-  }
-
-  private isQueryTooComplex(query: string, originalQuestion: string): boolean {
-    // Check if query is too long
-    if (query.length > 100) {
-      console.log(`[Agent:queryValidation] Query too long: ${query.length} chars`);
-      return true;
-    }
-    
-    // Check if query is too similar to original question (AI ignoring decomposition)
-    const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-    const originalWords = originalQuestion.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-    
-    // If more than 70% of query words are in original question, it's too similar
-    const commonWords = queryWords.filter(word => originalWords.includes(word));
-    const similarityRatio = commonWords.length / Math.max(queryWords.length, 1);
-    
-    if (similarityRatio > 0.7) {
-      console.log(`[Agent:queryValidation] Query too similar to original: ${Math.round(similarityRatio * 100)}% similarity`);
-      return true;
-    }
-    
-    // Check if query contains the full original question pattern
-    if (query.toLowerCase().includes(originalQuestion.toLowerCase().substring(0, 50))) {
-      console.log(`[Agent:queryValidation] Query contains original question pattern`);
-      return true;
-    }
-    
-    // Check if query has too many clauses (indicates complex question)
-    const clauseCount = (query.match(/and|or|including|also|additionally|furthermore/gi) || []).length;
-    if (clauseCount > 2) {
-      console.log(`[Agent:queryValidation] Query too complex: ${clauseCount} clauses detected`);
-      return true;
-    }
-    
-    // Check if query contains question marks (should be search terms, not questions)
-    if (query.includes('?')) {
-      console.log(`[Agent:queryValidation] Query contains question mark - should be search terms`);
-      return true;
-    }
-    
-    return false;
-  }
-
-  private getNextUnusedDecomposedQuery(decomposedQueries: string[]): string | null {
-    // Use session-stored decomposed queries if available
-    const queriesToUse = this.decomposedQueriesForSession.length > 0 ? this.decomposedQueriesForSession : decomposedQueries;
-    
-    console.log(`[Agent:getNextQuery] Looking for unused decomposed query from ${queriesToUse.length} options`);
-    console.log(`[Agent:getNextQuery] Search history: ${this.searchHistory.slice(-3).map(q => `"${q}"`).join(', ')}`);
-    console.log(`[Agent:getNextQuery] Used decomposed queries: ${Array.from(this.usedDecomposedQueries).map(q => `"${q}"`).join(', ')}`);
-    
-    // Get search patterns to avoid
-    const searchPatterns = this.searchHistory.slice(-5).map(q => q.toLowerCase());
-    
-    // Find unused decomposed queries (not in search history and not in used set)
-    const unusedQueries = queriesToUse.filter(q => 
-      !this.searchHistory.includes(q) && 
-      !this.usedDecomposedQueries.has(q) &&
-      !searchPatterns.some(pattern => q.toLowerCase().includes(pattern))
-    );
-    
-    if (unusedQueries.length > 0) {
-      const selectedQuery = unusedQueries[0];
-      console.log(`[Agent:getNextQuery] SUCCESS: Selected unused decomposed query: "${selectedQuery}"`);
-      console.log(`[Agent:getNextQuery] Remaining unused: ${unusedQueries.length - 1} queries`);
-      return selectedQuery;
-    }
-    
-    // If all have been used, cycle through them systematically
-    if (queriesToUse.length > 0) {
-      const nextQuery = queriesToUse[this.currentDecomposedQueryIndex % queriesToUse.length];
-      this.currentDecomposedQueryIndex++;
-      console.log(`[Agent:getNextQuery] CYCLING: All queries used, cycling to query ${this.currentDecomposedQueryIndex}: "${nextQuery}"`);
-      console.log(`[Agent:getNextQuery] Cycling index: ${this.currentDecomposedQueryIndex} (mod ${queriesToUse.length})`);
-      return nextQuery;
-    }
-    
-    console.log(`[Agent:getNextQuery] FAILED: No decomposed queries available`);
-    return null;
-  }
-
-  private shouldUseDecomposedQuery(query: string, decomposedQueries: string[]): boolean {
-    // If no decomposed queries available, can't use them
-    if (decomposedQueries.length === 0) {
-      return false;
-    }
-    
-    // If query is empty, should use decomposed query
-    if (!query || query.trim().length === 0) {
-      console.log(`[Agent:shouldUseDecomposed] Query empty, should use decomposed query`);
-      return true;
-    }
-    
-    // If query is exactly the original question, should use decomposed query
-    if (query.toLowerCase().trim() === this.currentQuestion?.toLowerCase().trim()) {
-      console.log(`[Agent:shouldUseDecomposed] Query is original question, should use decomposed query`);
-      return true;
-    }
-    
-    // If query contains the word "including" (indicates complex question), should use decomposed query
-    if (query.toLowerCase().includes('including')) {
-      console.log(`[Agent:shouldUseDecomposed] Query contains 'including', should use decomposed query`);
-      return true;
-    }
-    
-    // If query contains multiple topics separated by commas, should use decomposed query
-    const commaCount = (query.match(/,/g) || []).length;
-    if (commaCount > 1) {
-      console.log(`[Agent:shouldUseDecomposed] Query has ${commaCount} commas, should use decomposed query`);
-      return true;
-    }
-    
-    // If query is not in the decomposed queries list and we have unused decomposed queries, should use decomposed query
-    const unusedDecomposedQueries = decomposedQueries.filter(q => !this.usedDecomposedQueries.has(q));
-    if (unusedDecomposedQueries.length > 0 && !decomposedQueries.includes(query)) {
-      console.log(`[Agent:shouldUseDecomposed] Query not in decomposed list and unused queries available, should use decomposed query`);
-      return true;
-    }
-    
-    return false;
   }
 
   private passageMatchesFacet(passage: Passage, facet: Facet): boolean {
