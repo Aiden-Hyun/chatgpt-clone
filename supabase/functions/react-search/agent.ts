@@ -8,6 +8,8 @@ import { FetchService } from "./services/fetch.ts";
 import { RerankService } from "./services/rerank.ts";
 import { SearchService } from "./services/search.ts";
 // We're only using callAnthropic directly, OpenAI is used via the client
+import { BudgetManager } from "./agent/components/BudgetManager.ts";
+import { QueryDecomposer } from "./agent/components/QueryDecomposer.ts";
 
 // === Models ==================================================================
 
@@ -215,11 +217,22 @@ export class ReActAgent {
   private cfg: ReActAgentConfig;
   private currentDateTime: string;
   private trace: any[] = [];
+  private previousFacetCoverage: number = 0;
+  private iterationsWithoutProgress: number = 0;
+  private searchHistory: string[] = [];
+  private previousPassageCount: number = 0;
+  private previousDomainCount: number = 0;
+  private decomposedQueriesForSession: string[] = [];
+  private usedDecomposedQueries: Set<string> = new Set();
+  private currentDecomposedQueryIndex: number = 0;
+  private currentQuestion: string = '';
 
   private reasoningModel: string;
   private synthesisModel: string;
   private reasoningModelProvider: ModelProvider;
   private synthesisModelProvider: ModelProvider;
+  private budgetManager: BudgetManager;
+  private queryDecomposer: QueryDecomposer;
   
   // Helper method to get standardized model configuration
   private getModelConfig(isReasoning: boolean): any {
@@ -238,6 +251,8 @@ export class ReActAgent {
   constructor(cfg: ReActAgentConfig) {
     this.cfg = cfg;
     this.currentDateTime = nowISO();
+    this.budgetManager = new BudgetManager();
+    this.queryDecomposer = new QueryDecomposer();
     
     // If a single model is provided, use it for both reasoning and synthesis
     if (cfg.model) {
@@ -266,6 +281,7 @@ export class ReActAgent {
     console.log(`[Agent] Starting search for question: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`);
     const start = Date.now();
     this.trace = [];
+    this.currentQuestion = question; // Store the original question for validation
     const budget = this.initBudget();
     console.log(`[Agent] Budget initialized: ${JSON.stringify(budget)}`);
 
@@ -296,18 +312,33 @@ export class ReActAgent {
     console.log(`[Agent] Extracted ${facets.length} facets: ${facets.map(f => f.name).join(', ')}`);
 
     // Main loop with safety limits
-    const MAX_ITERATIONS = 20; // Hard limit on iterations to prevent infinite loops
+    const MAX_ITERATIONS = 10; // Reduced from 20 to prevent excessive iterations
     let iterations = 0;
     
     while (!this.isBudgetDepleted(budget) && 
            Date.now() - start < budget.timeMs && 
-           iterations < MAX_ITERATIONS) {
+           iterations < MAX_ITERATIONS &&
+           this.iterationsWithoutProgress < 3) {
       
       iterations++;
       console.log(`[Agent] Loop iteration ${iterations}: Deciding next action`);
+      
+      // Debug logging for loop analysis
+      const currentPassageCount = passages.length;
+      const currentDomainCount = distinct(passages.map(p => p.source_domain || eTLDplus1(p.url) || "unknown")).length;
+      const currentFacetCoverage = facets.filter(f => f.covered).length;
+      
+      console.log(`[Agent:Debug] State - Passages: ${currentPassageCount} (${currentPassageCount - this.previousPassageCount > 0 ? '+' : ''}${currentPassageCount - this.previousPassageCount}), Domains: ${currentDomainCount} (${currentDomainCount - this.previousDomainCount > 0 ? '+' : ''}${currentDomainCount - this.previousDomainCount}), Facets: ${currentFacetCoverage}/${facets.length}`);
+      console.log(`[Agent:Debug] Budget - Time: ${Math.round((Date.now() - budget.startedMs) / 1000)}s/${Math.round(budget.timeMs / 1000)}s, Searches: ${budget.searches}, Fetches: ${budget.fetches}`);
+      console.log(`[Agent:Debug] Search History: ${this.searchHistory.slice(-3).join(' | ')}`);
+      
       const action = await this.decideActionJSON(question, passages, facets, budget);
       console.log(`[Agent] Decided action: ${action.type}${action.query ? ` - Query: "${action.query.substring(0, 30)}..."` : ''}${action.url ? ` - URL: ${action.url}` : ''}`);
       if (this.cfg.debug) this.trace.push({ loop: iterations, action });
+      
+      // Update state tracking
+      this.previousPassageCount = currentPassageCount;
+      this.previousDomainCount = currentDomainCount;
 
       if (action.type === "STOP") break;
       
@@ -329,17 +360,52 @@ export class ReActAgent {
       }
 
       if (action.type === "SEARCH" && budget.searches > 0) {
+        // Check if we've already searched this exact query to prevent duplicates
+        const previousSearches = this.trace
+          .filter(t => t.action?.type === "SEARCH" && t.action?.query === action.query)
+          .length;
+        
+        if (previousSearches > 0) {
+          console.log(`[Agent] Skipping duplicate search for: "${action.query}" (already searched ${previousSearches} times)`);
+          if (this.cfg.debug) this.trace.push({ 
+            warning: `Skipped duplicate search: ${action.query}`,
+            previousCount: previousSearches
+          });
+          continue; // Skip to next iteration
+        }
+        
         console.log(`[Agent] Executing SEARCH action with query: "${action.query}"`);
         metrics.searches++;
         budget.searches--;
         console.log(`[Agent] Search budget remaining: ${budget.searches}`);
+        
+        // Track search history and decomposed query usage
+        if (action.query) {
+          this.searchHistory.push(action.query);
+          if (this.searchHistory.length > 10) {
+            this.searchHistory.shift(); // Keep only last 10 searches
+          }
+          
+          // Track if this was a decomposed query
+          if (this.decomposedQueriesForSession.includes(action.query)) {
+            this.usedDecomposedQueries.add(action.query);
+            console.log(`[Agent:searchTracking] Marked decomposed query as used: "${action.query}"`);
+            console.log(`[Agent:searchTracking] Used decomposed queries: ${this.usedDecomposedQueries.size}/${this.decomposedQueriesForSession.length}`);
+          }
+        }
+        
         console.log(`[Agent] Performing multi-query search with base query: "${action.query}"`);
         const results = await this.multiQuerySearch(action.query, action.k ?? 12, action.timeRange);
         console.log(`[Agent] Search returned ${results.length} raw results`);
         const filtered = this.filterAndScoreResults(results);
         console.log(`[Agent] After filtering: ${filtered.length} results`);
+        
+        // Retain more diverse sources by processing more results
+        const processedResults = this.retainDiverseSources(filtered, passages);
+        console.log(`[Agent] After diversity filtering: ${processedResults.length} results`);
+        
         // Convert to passages using snippets; FETCH later refines content
-        for (const r of filtered) {
+        for (const r of processedResults) {
           passages.push({
             id: `search_${sha1(r.url)}`,
             text: r.snippet || r.title || r.url,
@@ -399,6 +465,23 @@ export class ReActAgent {
       facets = this.updateFacetCoverage(facets, passages);
       const coveredCount = facets.filter(f => f.covered).length;
       console.log(`[Agent] Facet coverage updated: ${coveredCount}/${facets.length} facets covered`);
+      
+      // Progress tracking: detect when agent is stuck
+      if (coveredCount <= this.previousFacetCoverage) {
+        this.iterationsWithoutProgress++;
+        console.log(`[Agent] No progress detected. Iterations without improvement: ${this.iterationsWithoutProgress}/3`);
+        if (this.iterationsWithoutProgress >= 3) {
+          console.log(`[Agent] Forcing STOP after 3 iterations without progress`);
+          if (this.cfg.debug) this.trace.push({ 
+            warning: `Forced STOP due to no progress for ${this.iterationsWithoutProgress} iterations` 
+          });
+          break;
+        }
+      } else {
+        this.iterationsWithoutProgress = 0;
+        console.log(`[Agent] Progress detected! Facet coverage improved from ${this.previousFacetCoverage} to ${coveredCount}`);
+      }
+      this.previousFacetCoverage = coveredCount;
 
       // Freshness gate for time-sensitive queries
       if (isTimeSensitive(question)) {
@@ -425,8 +508,42 @@ export class ReActAgent {
         }
       }
 
+      // Early termination conditions
       // Exit if all required facets covered & have ≥2 independent domains overall
-      if (this.allRequiredFacetsCovered(facets) && this.hasDomainDiversity(passages, 2)) break;
+      if (this.allRequiredFacetsCovered(facets) && this.hasDomainDiversity(passages, 2)) {
+        console.log(`[Agent] All required facets covered with domain diversity, stopping`);
+        break;
+      }
+      
+      // Check minimum facet coverage requirement before allowing early termination
+      const facetCoverageRatio = facets.filter(f => f.required && f.covered).length / facets.filter(f => f.required).length;
+      const meetsMinimumCoverage = facetCoverageRatio >= 0.6;
+      
+      // Stop if we have sufficient passages but poor facet coverage (indicating facet extraction issue)
+      if (passages.length >= 15 && coveredCount === 0) {
+        console.log(`[Agent] Early termination: 15+ passages but 0 facets covered (likely facet extraction issue)`);
+        if (this.cfg.debug) this.trace.push({ 
+          warning: `Early termination due to facet extraction issue` 
+        });
+        break;
+      }
+      
+      // Stop if we've been searching too long (80% of time budget) AND have minimum coverage
+      if (Date.now() - start > budget.timeMs * 0.8 && meetsMinimumCoverage) {
+        console.log(`[Agent] Early termination: 80% of time budget reached with ${Math.round(facetCoverageRatio * 100)}% facet coverage`);
+        if (this.cfg.debug) this.trace.push({ 
+          warning: `Early termination due to time budget (80%) with adequate coverage` 
+        });
+        break;
+      }
+      
+      // If we're at 80% time budget but don't have minimum coverage, force one more search
+      if (Date.now() - start > budget.timeMs * 0.8 && !meetsMinimumCoverage && budget.searches > 0) {
+        console.log(`[Agent] At 80% time budget but only ${Math.round(facetCoverageRatio * 100)}% facet coverage - forcing one more search`);
+        if (this.cfg.debug) this.trace.push({ 
+          warning: `Forcing additional search due to poor facet coverage` 
+        });
+      }
 
       // If time is running out, do one last RERANK and exit to synth
       if (Date.now() - start > budget.timeMs * 0.85 || this.isBudgetDepleted(budget)) {
@@ -482,25 +599,93 @@ export class ReActAgent {
   ): Promise<{ type: "SEARCH" | "FETCH" | "RERANK" | "STOP"; query?: string; k?: number; url?: string; top_n?: number; timeRange?: TimeRange; }> {
     console.log(`[Agent:decideAction] Deciding next action with ${passages.length} passages`);
 
+    // Decompose complex query if needed
+    const decomposedQueries = await this.decomposeComplexQuery(question, facets);
+    console.log(`[Agent:decideAction] Decomposed into ${decomposedQueries.length} focused queries`);
+    
+    // Store decomposed queries for the session if this is the first iteration
+    if (this.decomposedQueriesForSession.length === 0) {
+      this.decomposedQueriesForSession = [...decomposedQueries];
+      console.log(`[Agent:decideAction] Stored ${decomposedQueries.length} decomposed queries for session`);
+    }
+    
+    // Log available decomposed queries for debugging
+    const availableQueries = decomposedQueries.filter(q => !this.usedDecomposedQueries.has(q));
+    console.log(`[Agent:decideAction] Available decomposed queries: ${availableQueries.length}/${decomposedQueries.length}`);
+    if (availableQueries.length > 0) {
+      console.log(`[Agent:decideAction] Available: ${availableQueries.map(q => `"${q}"`).join(', ')}`);
+    }
+    if (this.usedDecomposedQueries.size > 0) {
+      console.log(`[Agent:decideAction] Used: ${Array.from(this.usedDecomposedQueries).map(q => `"${q}"`).join(', ')}`);
+    }
+
     const topSources = distinct(passages.map(p => p.url)).slice(0, 3).join(", ");
+    
+    // Get recent action history for context
+    const recentActions = this.trace
+      .filter(t => t.action?.type)
+      .slice(-3)
+      .map(t => `${t.action.type}: ${t.action.query || t.action.url || 'N/A'}`);
+    
+    // Check for repeated searches using search history
+    const repeatedSearches = this.searchHistory.filter((q, i) => this.searchHistory.indexOf(q) !== i);
+    
+    // Get search patterns to avoid
+    const searchPatterns = this.searchHistory.slice(-5).map(q => q.toLowerCase());
+    
     const system = `Reply ONLY with minified JSON. Do not include markdown.
+
+CRITICAL: For complex questions, you MUST use the provided decomposed queries instead of the full question.
+
 {"thought":"...","action":{"type":"SEARCH|FETCH|RERANK|STOP","query":"...","k":12,"url":"https://...","top_n":6,"timeRange":"d|w|m|y"}}`;
 
     const needFacets = facets.filter(f => f.required && !f.covered).map(f => f.name);
+    const coveredFacets = facets.filter(f => f.required && f.covered).map(f => f.name);
+    const facetCoverageRatio = facets.filter(f => f.required && f.covered).length / facets.filter(f => f.required).length;
+    
+    // Create specific guidance for each uncovered facet
+    const uncoveredFacetGuidance = needFacets.map(facet => {
+      const facetQuery = this.createFocusedQuery(question, facet);
+      return `${facet}: ${facetQuery}`;
+    }).join(" | ");
+    
     const user = `
 Current time: ${this.currentDateTime}
 Question: ${question}
 
+*** DECOMPOSED QUERIES (MANDATORY TO USE): ***
+${decomposedQueries.map((q, i) => `${i + 1}. "${q}"`).join('\n')}
+
+*** DECOMPOSED QUERY STATUS: ***
+Used: ${this.usedDecomposedQueries.size}/${decomposedQueries.length}
+Available: ${decomposedQueries.filter(q => !this.usedDecomposedQueries.has(q)).map(q => `"${q}"`).join(', ') || 'none'}
+
 Budget left: {timeMs:${budget.timeMs - (Date.now() - budget.startedMs)}, searches:${budget.searches}, fetches:${budget.fetches}}
 Passages: ${passages.length}
 Top sources: ${topSources || "none"}
+Facet coverage: ${coveredFacets.length}/${facets.filter(f => f.required).length} (${Math.round(facetCoverageRatio * 100)}%)
+Covered facets: ${coveredFacets.join(", ") || "none"}
 Uncovered required facets: ${needFacets.join(", ") || "none"}
+Specific queries for uncovered facets: ${uncoveredFacetGuidance || "none"}
+Recent actions: ${recentActions.join(", ") || "none"}
+Repeated searches detected: ${repeatedSearches.length > 0 ? repeatedSearches.join(", ") : "none"}
+Search patterns to avoid: ${searchPatterns.join(", ") || "none"}
+Iterations without progress: ${this.iterationsWithoutProgress}/3
 
 Rules:
-- If < 3 quality passages or uncovered facets remain: SEARCH with 2-3 complementary queries (you pick ONE best here; agent will expand).
+- MANDATORY: For SEARCH actions, you MUST use decomposed queries when available. NEVER use the full complex question.
+- GOOD EXAMPLE: Use "NVIDIA market position 2024" instead of the full question about AI chips.
+- BAD EXAMPLE: Do NOT use "What are the current trends in AI chip manufacturing, including NVIDIA's market position, recent developments..." (too long).
+- PRIORITY: Facet coverage is the most important factor. If coverage < 60%, SEARCH is mandatory.
+- If facet coverage < 60%: SEARCH using specific queries for uncovered facets (see above).
+- If < 3 quality passages: SEARCH with focused sub-queries from the decomposed list.
 - If you have promising URLs from search snippets: FETCH one high-authority URL we haven't fetched yet.
 - Periodically RERANK to keep top 8–10 diverse, recent passages.
-- STOP when all required facets have ≥1 independent source and overall domain diversity ≥ 2.
+- STOP only when facet coverage ≥ 60% AND all required facets have ≥1 independent source AND domain diversity ≥ 2.
+- CRITICAL: Avoid repeating the same search query. If a query was already searched, try a different approach.
+- If repeated searches detected or no progress for 2+ iterations, prefer RERANK or STOP over SEARCH.
+- Avoid search patterns that have been used recently (see "Search patterns to avoid").
+- REQUIRED: Choose from the decomposed queries list above, do NOT create new queries.
 
 Respond in JSON only.`;
 
@@ -541,12 +726,38 @@ Respond in JSON only.`;
         ? { type: "SEARCH", query: `${question} latest`, k: 10, timeRange: isTimeSensitive(question) ? "w" : undefined }
         : { type: "RERANK", top_n: 10 };
     }
+    
+    // Log AI's query choice for debugging
+    const aiQuery = parsed?.action?.query || '';
+    if (aiQuery && aiQuery !== question) {
+      console.log(`[Agent:decideAction] AI chose query: "${aiQuery.substring(0, 80)}${aiQuery.length > 80 ? '...' : ''}"`);
+      
+      // Check if AI ignored decomposed queries
+      if (decomposedQueries.length > 0 && !decomposedQueries.includes(aiQuery)) {
+        console.log(`[Agent:decideAction] WARNING: AI ignored decomposed queries and chose: "${aiQuery}"`);
+        console.log(`[Agent:decideAction] Recommended decomposed queries were: ${decomposedQueries.map(q => `"${q}"`).join(', ')}`);
+      }
+    }
 
     const act = parsed?.action || {};
     // Sanitize and add proper type checking
     if (act.type === "SEARCH") {
-      // Ensure query is a string, fallback to original question if missing
-      const query = typeof act.query === 'string' && act.query.trim() ? act.query : question;
+      // Ensure query is a string, fallback to decomposed queries if available, then original question
+      let query = typeof act.query === 'string' && act.query.trim() ? act.query : '';
+      
+      console.log(`[Agent:decideAction] Original AI query: "${query.substring(0, 80)}${query.length > 80 ? '...' : ''}"`);
+      
+      // Validate and potentially replace the query with a decomposed query
+      const originalQuery = query;
+      query = this.validateAndReplaceQuery(query, question, decomposedQueries);
+      
+      // Log query validation results
+      if (originalQuery !== query) {
+        console.log(`[Agent:decideAction] Query REPLACED: "${originalQuery.substring(0, 50)}..." → "${query}"`);
+      } else {
+        console.log(`[Agent:decideAction] Query VALIDATED: "${query}"`);
+      }
+      
       // Ensure k is a positive number
       const k = typeof act.k === 'number' && act.k > 0 ? act.k : 12;
       // Validate timeRange is one of the allowed values
@@ -570,16 +781,50 @@ Respond in JSON only.`;
 
   private async multiQuerySearch(seedQuery: string, k: number, timeRange?: TimeRange) {
     console.log(`[Agent:multiQuerySearch] Expanding query: "${seedQuery}"`);
-    // Expand into complementary queries
+    
+    // Smart query expansion with iteration-based variation
     const year = new Date().getFullYear();
-    const qs = distinct([
+    const currentYear = new Date().getFullYear();
+    const nextYear = currentYear + 1;
+    
+    // Base variations
+    let qs = [
       seedQuery,
       `${seedQuery} ${isTimeSensitive(seedQuery) ? year : ""}`.trim(),
       `${seedQuery} latest`,
       `${seedQuery} site:gov`,
       `${seedQuery} site:edu`,
-    ]).slice(0, 5);
-    console.log(`[Agent:multiQuerySearch] Expanded to ${qs.length} queries: ${qs.join(' | ')}`);
+    ];
+    
+    // Add more diverse variations based on query type
+    if (seedQuery.toLowerCase().includes('festival') || seedQuery.toLowerCase().includes('event')) {
+      qs.push(
+        `${seedQuery} schedule`,
+        `${seedQuery} lineup`,
+        `${seedQuery} tickets`,
+        `${seedQuery} ${currentYear}`,
+        `${seedQuery} ${nextYear}`
+      );
+    } else if (seedQuery.toLowerCase().includes('price') || seedQuery.toLowerCase().includes('cost')) {
+      qs.push(
+        `${seedQuery} current`,
+        `${seedQuery} today`,
+        `${seedQuery} 2024`,
+        `${seedQuery} 2025`
+      );
+    } else {
+      // Generic variations for other queries
+      qs.push(
+        `${seedQuery} information`,
+        `${seedQuery} details`,
+        `${seedQuery} guide`,
+        `${seedQuery} overview`
+      );
+    }
+    
+    // Remove duplicates and limit to 8 queries max
+    qs = distinct(qs).slice(0, 8);
+    console.log(`[Agent:multiQuerySearch] Expanded to ${qs.length} diverse queries: ${qs.join(' | ')}`);
 
     const all: any[] = [];
     for (const q of qs) {
@@ -603,24 +848,39 @@ Respond in JSON only.`;
 
   private filterAndScoreResults(results: { url: string; title: string; snippet: string }[]) {
     console.log(`[Agent:filterAndScore] Filtering and scoring ${results.length} results`);
+    
+    // Less restrictive blocked patterns - only block obvious low-quality content
     const blocked = [
-      /\/tag\//, /\/category\//, /\/author\//, /\/page\//, /\/feed\//,
-      /\.docx?$/i, /facebook\.com/, /twitter\.com/, /x\.com/, /instagram\.com/, /youtube\.com\/watch/
+      /\/tag\//, /\/category\//, /\/author\//, /\/page\/\d+/, /\/feed\//,
+      /\.docx?$/i, /\.pdf$/i, /facebook\.com/, /twitter\.com/, /x\.com/, /instagram\.com/, /youtube\.com\/watch/
     ];
     const cleaned = results.filter(r => !blocked.some(re => re.test((r.url || "").toLowerCase())));
-    // Lightweight scoring: authority + snippet length
+    
     console.log(`[Agent:filterAndScore] After filtering: ${cleaned.length} results`);
+    
     return cleaned
       .map(r => {
         const domain = eTLDplus1(r.url);
         const auth = domainAuthorityScore(domain);
-        const len = Math.min(1, (r.snippet?.length || 0) / 300);
-        const score = 0.75 * auth + 0.25 * len;
-        return { ...r, score, domain };
+        
+        // Improved scoring algorithm with better weights
+        const snippetLength = r.snippet?.length || 0;
+        const len = Math.min(1, snippetLength / 200); // Reduced threshold from 300 to 200
+        
+        // Bonus for technical/academic sources
+        const technicalBonus = this.getTechnicalSourceBonus(domain, r.title, r.snippet);
+        
+        // Bonus for recent content (if URL contains year)
+        const recencyBonus = this.getRecencyBonus(r.url, r.title);
+        
+        // More balanced scoring
+        const score = 0.5 * auth + 0.2 * len + 0.2 * technicalBonus + 0.1 * recencyBonus;
+        
+        return { ...r, score, domain, technicalBonus, recencyBonus };
       })
       // Promote diversity: sort by score, then stable
       .sort((a, b) => b.score - a.score)
-      .slice(0, 20);
+      .slice(0, 35); // Increased from 20 to 35
   }
 
   private async safeFetchWithRetries(url: string, attempts = 3) {
@@ -747,6 +1007,414 @@ Write the answer in Markdown. Include inline citations immediately after the sen
     return pick;
   }
 
+  // --- Query Decomposition --------------------------------------------------
+
+  private async decomposeComplexQuery(question: string, facets: Facet[]): Promise<string[]> {
+    const queries = await this.queryDecomposer.decomposeComplexQuery(question, facets as any);
+    return queries;
+  }
+
+  private createFocusedQuery(question: string, facetName: string): string {
+    return this.queryDecomposer.createFocusedQuery(question, facetName);
+  }
+
+  private extractKeyTerms(question: string): string[] {
+    return this.queryDecomposer.extractKeyTerms(question);
+  }
+
+  private isStopWord(word: string): boolean {
+    const stopWords = ['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'about', 'that', 'this', 'these', 'those', 'are', 'is', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must', 'shall'];
+    return stopWords.includes(word);
+  }
+
+  private createGeneralSubQueries(question: string): string[] {
+    return this.queryDecomposer.createGeneralSubQueries(question);
+  }
+
+  private getTechnicalSourceBonus(domain: string | undefined, title: string, snippet: string): number {
+    let bonus = 0;
+    
+    // Technical/academic domains
+    const technicalDomains = [
+      'nature.com', 'sciencedirect.com', 'ieee.org', 'arxiv.org', 'researchgate.net',
+      'springer.com', 'wiley.com', 'tandfonline.com', 'sage.com', 'academia.edu',
+      'mit.edu', 'stanford.edu', 'harvard.edu', 'berkeley.edu', 'cmu.edu'
+    ];
+    
+    if (domain && technicalDomains.some(d => domain.includes(d))) {
+      bonus += 0.3;
+    }
+    
+    // Technical keywords in title/snippet
+    const technicalKeywords = [
+      'research', 'study', 'analysis', 'report', 'paper', 'journal', 'conference',
+      'technical', 'scientific', 'academic', 'peer-reviewed', 'data', 'statistics',
+      'methodology', 'findings', 'conclusions', 'abstract', 'doi'
+    ];
+    
+    const text = `${title} ${snippet}`.toLowerCase();
+    const keywordMatches = technicalKeywords.filter(keyword => text.includes(keyword));
+    bonus += (keywordMatches.length * 0.05); // 0.05 bonus per technical keyword
+    
+    return Math.min(bonus, 0.5); // Cap at 0.5
+  }
+
+  private getRecencyBonus(url: string, title: string): number {
+    let bonus = 0;
+    
+    // Check for recent years in URL or title
+    const currentYear = new Date().getFullYear();
+    const recentYears = [currentYear, currentYear - 1, currentYear - 2];
+    
+    const text = `${url} ${title}`.toLowerCase();
+    for (const year of recentYears) {
+      if (text.includes(year.toString())) {
+        bonus += 0.2;
+        break; // Only count the most recent year found
+      }
+    }
+    
+    // Check for "latest", "recent", "new" keywords
+    const recencyKeywords = ['latest', 'recent', 'new', 'updated', 'current', '2024', '2025'];
+    const keywordMatches = recencyKeywords.filter(keyword => text.includes(keyword));
+    bonus += (keywordMatches.length * 0.05);
+    
+    return Math.min(bonus, 0.3); // Cap at 0.3
+  }
+
+  private validateAndReplaceQuery(query: string, originalQuestion: string, decomposedQueries: string[]): string {
+    console.log(`[Agent:validateQuery] Validating query: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`);
+    
+    // If no query provided, use decomposed query
+    if (!query && decomposedQueries.length > 0) {
+      const unusedQuery = this.getNextUnusedDecomposedQuery(decomposedQueries);
+      if (unusedQuery) {
+        console.log(`[Agent:validateQuery] FORCED REPLACEMENT: No query provided → "${unusedQuery}"`);
+        return unusedQuery;
+      }
+    }
+    
+    // Check if we should force decomposed query usage
+    if (this.shouldUseDecomposedQuery(query, decomposedQueries)) {
+      const replacementQuery = this.getNextUnusedDecomposedQuery(decomposedQueries);
+      if (replacementQuery) {
+        console.log(`[Agent:validateQuery] FORCED REPLACEMENT: shouldUseDecomposedQuery=true → "${replacementQuery}"`);
+        return replacementQuery;
+      }
+    }
+    
+    // Check if query is too complex (too long or too similar to original question)
+    if (this.isQueryTooComplex(query, originalQuestion)) {
+      const replacementQuery = this.getNextUnusedDecomposedQuery(decomposedQueries);
+      if (replacementQuery) {
+        console.log(`[Agent:validateQuery] FORCED REPLACEMENT: Query too complex → "${replacementQuery}"`);
+        return replacementQuery;
+      }
+    }
+    
+    // If no decomposed queries available, fallback to original question
+    if (!query) {
+      console.log(`[Agent:validateQuery] FALLBACK: No decomposed queries available → original question`);
+      return originalQuestion;
+    }
+    
+    console.log(`[Agent:validateQuery] VALIDATION PASSED: Query accepted as-is`);
+    return query;
+  }
+
+  private isQueryTooComplex(query: string, originalQuestion: string): boolean {
+    // Check if query is too long
+    if (query.length > 100) {
+      console.log(`[Agent:queryValidation] Query too long: ${query.length} chars`);
+      return true;
+    }
+    
+    // Check if query is too similar to original question (AI ignoring decomposition)
+    const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    const originalWords = originalQuestion.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    
+    // If more than 70% of query words are in original question, it's too similar
+    const commonWords = queryWords.filter(word => originalWords.includes(word));
+    const similarityRatio = commonWords.length / Math.max(queryWords.length, 1);
+    
+    if (similarityRatio > 0.7) {
+      console.log(`[Agent:queryValidation] Query too similar to original: ${Math.round(similarityRatio * 100)}% similarity`);
+      return true;
+    }
+    
+    // Check if query contains the full original question pattern
+    if (query.toLowerCase().includes(originalQuestion.toLowerCase().substring(0, 50))) {
+      console.log(`[Agent:queryValidation] Query contains original question pattern`);
+      return true;
+    }
+    
+    // Check if query has too many clauses (indicates complex question)
+    const clauseCount = (query.match(/and|or|including|also|additionally|furthermore/gi) || []).length;
+    if (clauseCount > 2) {
+      console.log(`[Agent:queryValidation] Query too complex: ${clauseCount} clauses detected`);
+      return true;
+    }
+    
+    // Check if query contains question marks (should be search terms, not questions)
+    if (query.includes('?')) {
+      console.log(`[Agent:queryValidation] Query contains question mark - should be search terms`);
+      return true;
+    }
+    
+    return false;
+  }
+
+  private getNextUnusedDecomposedQuery(decomposedQueries: string[]): string | null {
+    // Use session-stored decomposed queries if available
+    const queriesToUse = this.decomposedQueriesForSession.length > 0 ? this.decomposedQueriesForSession : decomposedQueries;
+    
+    console.log(`[Agent:getNextQuery] Looking for unused decomposed query from ${queriesToUse.length} options`);
+    console.log(`[Agent:getNextQuery] Search history: ${this.searchHistory.slice(-3).map(q => `"${q}"`).join(', ')}`);
+    console.log(`[Agent:getNextQuery] Used decomposed queries: ${Array.from(this.usedDecomposedQueries).map(q => `"${q}"`).join(', ')}`);
+    
+    // Get search patterns to avoid
+    const searchPatterns = this.searchHistory.slice(-5).map(q => q.toLowerCase());
+    
+    // Find unused decomposed queries (not in search history and not in used set)
+    const unusedQueries = queriesToUse.filter(q => 
+      !this.searchHistory.includes(q) && 
+      !this.usedDecomposedQueries.has(q) &&
+      !searchPatterns.some(pattern => q.toLowerCase().includes(pattern))
+    );
+    
+    if (unusedQueries.length > 0) {
+      const selectedQuery = unusedQueries[0];
+      console.log(`[Agent:getNextQuery] SUCCESS: Selected unused decomposed query: "${selectedQuery}"`);
+      console.log(`[Agent:getNextQuery] Remaining unused: ${unusedQueries.length - 1} queries`);
+      return selectedQuery;
+    }
+    
+    // If all have been used, cycle through them systematically
+    if (queriesToUse.length > 0) {
+      const nextQuery = queriesToUse[this.currentDecomposedQueryIndex % queriesToUse.length];
+      this.currentDecomposedQueryIndex++;
+      console.log(`[Agent:getNextQuery] CYCLING: All queries used, cycling to query ${this.currentDecomposedQueryIndex}: "${nextQuery}"`);
+      console.log(`[Agent:getNextQuery] Cycling index: ${this.currentDecomposedQueryIndex} (mod ${queriesToUse.length})`);
+      return nextQuery;
+    }
+    
+    console.log(`[Agent:getNextQuery] FAILED: No decomposed queries available`);
+    return null;
+  }
+
+  private shouldUseDecomposedQuery(query: string, decomposedQueries: string[]): boolean {
+    // If no decomposed queries available, can't use them
+    if (decomposedQueries.length === 0) {
+      return false;
+    }
+    
+    // If query is empty, should use decomposed query
+    if (!query || query.trim().length === 0) {
+      console.log(`[Agent:shouldUseDecomposed] Query empty, should use decomposed query`);
+      return true;
+    }
+    
+    // If query is exactly the original question, should use decomposed query
+    if (query.toLowerCase().trim() === this.currentQuestion?.toLowerCase().trim()) {
+      console.log(`[Agent:shouldUseDecomposed] Query is original question, should use decomposed query`);
+      return true;
+    }
+    
+    // If query contains the word "including" (indicates complex question), should use decomposed query
+    if (query.toLowerCase().includes('including')) {
+      console.log(`[Agent:shouldUseDecomposed] Query contains 'including', should use decomposed query`);
+      return true;
+    }
+    
+    // If query contains multiple topics separated by commas, should use decomposed query
+    const commaCount = (query.match(/,/g) || []).length;
+    if (commaCount > 1) {
+      console.log(`[Agent:shouldUseDecomposed] Query has ${commaCount} commas, should use decomposed query`);
+      return true;
+    }
+    
+    // If query is not in the decomposed queries list and we have unused decomposed queries, should use decomposed query
+    const unusedDecomposedQueries = decomposedQueries.filter(q => !this.usedDecomposedQueries.has(q));
+    if (unusedDecomposedQueries.length > 0 && !decomposedQueries.includes(query)) {
+      console.log(`[Agent:shouldUseDecomposed] Query not in decomposed list and unused queries available, should use decomposed query`);
+      return true;
+    }
+    
+    return false;
+  }
+
+  private passageMatchesFacet(passage: Passage, facet: Facet): boolean {
+    const text = `${passage.title || ""} ${passage.text}`.toLowerCase();
+    const facetName = facet.name.toLowerCase();
+    
+    // Get flexible keywords for the facet
+    const keywords = this.getFlexibleKeywords(facetName);
+    
+    // Calculate match score based on keyword presence
+    const matchScore = this.calculateFacetMatchScore(text, keywords);
+    
+    // Log detailed matching information for debugging
+    if (this.cfg.debug) {
+      console.log(`[Agent:facetMatch] Facet "${facet.name}" vs passage: score=${matchScore.toFixed(2)}, keywords=${keywords.join(', ')}`);
+    }
+    
+    // Require at least 30% match score for coverage
+    return matchScore >= 0.3;
+  }
+
+  private getFlexibleKeywords(facetName: string): string[] {
+    const keywords: string[] = [];
+    
+    // Split facet name into words and filter out stop words
+    const words = facetName.split(/\s+/).filter(word => word.length > 2 && !this.isStopWord(word));
+    
+    // Add original words
+    keywords.push(...words);
+    
+    // Add stemmed versions
+    words.forEach(word => {
+      const stemmed = this.stemWord(word);
+      if (stemmed !== word) {
+        keywords.push(stemmed);
+      }
+    });
+    
+    // Add synonyms for common terms
+    const synonyms = this.getSynonyms(words);
+    keywords.push(...synonyms);
+    
+    // Add company name variations
+    const companyVariations = this.getCompanyVariations(words);
+    keywords.push(...companyVariations);
+    
+    // Remove duplicates and return
+    return [...new Set(keywords)];
+  }
+
+  private calculateFacetMatchScore(text: string, keywords: string[]): number {
+    if (keywords.length === 0) return 0;
+    
+    let matchedKeywords = 0;
+    let totalScore = 0;
+    
+    for (const keyword of keywords) {
+      if (text.includes(keyword)) {
+        matchedKeywords++;
+        // Give higher score for longer/more specific keywords
+        totalScore += Math.min(1, keyword.length / 5);
+      }
+    }
+    
+    // Calculate percentage of keywords matched
+    const keywordMatchRatio = matchedKeywords / keywords.length;
+    
+    // Calculate weighted score (favor more keyword matches)
+    const weightedScore = (keywordMatchRatio * 0.7) + (totalScore / keywords.length * 0.3);
+    
+    return weightedScore;
+  }
+
+  private stemWord(word: string): string {
+    // Simple stemming - remove common suffixes
+    const suffixes = ['ing', 'ed', 'er', 'est', 'ly', 's', 'es'];
+    
+    for (const suffix of suffixes) {
+      if (word.endsWith(suffix) && word.length > suffix.length + 2) {
+        return word.slice(0, -suffix.length);
+      }
+    }
+    
+    return word;
+  }
+
+  private getSynonyms(words: string[]): string[] {
+    const synonyms: string[] = [];
+    
+    // Common synonym mappings
+    const synonymMap: Record<string, string[]> = {
+      'trends': ['trend', 'development', 'advancement', 'progress'],
+      'manufacturing': ['manufacture', 'production', 'fabrication', 'assembly'],
+      'market': ['markets', 'industry', 'sector', 'business'],
+      'position': ['share', 'standing', 'rank', 'status', 'dominance'],
+      'development': ['advancement', 'progress', 'innovation', 'breakthrough'],
+      'impact': ['effect', 'influence', 'consequence', 'result'],
+      'restriction': ['ban', 'limitation', 'sanction', 'embargo'],
+      'benchmark': ['performance', 'metric', 'measure', 'standard'],
+      'data': ['information', 'statistics', 'figures', 'metrics'],
+      'chip': ['processor', 'semiconductor', 'silicon', 'hardware'],
+      'ai': ['artificial', 'intelligence', 'machine', 'learning'],
+      'custom': ['specialized', 'dedicated', 'tailored', 'specific']
+    };
+    
+    words.forEach(word => {
+      const wordSynonyms = synonymMap[word] || [];
+      synonyms.push(...wordSynonyms);
+    });
+    
+    return synonyms;
+  }
+
+  private getCompanyVariations(words: string[]): string[] {
+    const variations: string[] = [];
+    
+    // Company name variations
+    const companyMap: Record<string, string[]> = {
+      'nvidia': ['nvidia corp', 'nvidia corporation', 'nvda', 'nvidia inc'],
+      'intel': ['intel corp', 'intel corporation', 'intc', 'intel inc'],
+      'amd': ['advanced micro devices', 'amd inc', 'amd corp'],
+      'tsmc': ['taiwan semiconductor', 'tsmc corp', 'tsmc inc'],
+      'samsung': ['samsung electronics', 'samsung corp', 'samsung inc']
+    };
+    
+    words.forEach(word => {
+      const companyVariations = companyMap[word] || [];
+      variations.push(...companyVariations);
+    });
+    
+    return variations;
+  }
+
+  private retainDiverseSources(filteredResults: any[], existingPassages: Passage[]): any[] {
+    // Get existing domains to avoid duplicates
+    const existingDomains = new Set(existingPassages.map(p => p.source_domain).filter(Boolean));
+    
+    const diverseResults: any[] = [];
+    const domainCounts: Record<string, number> = {};
+    
+    // First pass: add high-scoring results with domain diversity
+    for (const result of filteredResults) {
+      const domain = result.domain || eTLDplus1(result.url) || 'unknown';
+      const currentCount = domainCounts[domain] || 0;
+      
+      // Allow up to 3 results per domain for diversity
+      if (currentCount < 3) {
+        diverseResults.push(result);
+        domainCounts[domain] = currentCount + 1;
+      }
+      
+      // Stop if we have enough diverse results
+      if (diverseResults.length >= 25) {
+        break;
+      }
+    }
+    
+    // Second pass: add lower-scoring results from new domains if we have room
+    if (diverseResults.length < 20) {
+      for (const result of filteredResults) {
+        const domain = result.domain || eTLDplus1(result.url) || 'unknown';
+        
+        // Add if it's a new domain and we have room
+        if (!domainCounts[domain] && diverseResults.length < 25) {
+          diverseResults.push(result);
+          domainCounts[domain] = 1;
+        }
+      }
+    }
+    
+    console.log(`[Agent:diversity] Selected ${diverseResults.length} results from ${Object.keys(domainCounts).length} domains`);
+    return diverseResults;
+  }
+
   // --- Facets ----------------------------------------------------------------
 
   typeFacet = undefined; // for TS playground quirks
@@ -804,17 +1472,27 @@ Return ONLY minified JSON: {"facets":[{"name":"...","required":true}...]}`;
   private updateFacetCoverage(facets: Facet[], passages: Passage[]): Facet[] {
     console.log(`[Agent:updateFacetCoverage] Updating coverage for ${facets.length} facets with ${passages.length} passages`);
     return facets.map(f => {
-      // Heuristic: a passage "covers" a facet if facet words appear in text/title
-      const kw = f.name.toLowerCase().split(/\s+/).filter(x => x.length > 2);
-      const hits = passages.filter(p => {
-        const blob = `${p.title || ""} ${p.text}`.toLowerCase();
-        return kw.every(k => blob.includes(k));
-      });
+      // Enhanced facet matching with flexible keyword matching
+      const hits = passages.filter(p => this.passageMatchesFacet(p, f));
       const domains = distinct(hits.map(h => h.source_domain || eTLDplus1(h.url) || "unknown"));
+      
+      // Temporarily reduce coverage requirement to 1+ source for better coverage
+      const isCovered = domains.length >= 1;
+      const hasMultipleSources = domains.length >= 2;
+      
+      if (!isCovered) {
+        console.log(`[Agent:updateFacetCoverage] Facet "${f.name}" has 0 sources - needs coverage`);
+      } else if (domains.length === 1) {
+        console.log(`[Agent:updateFacetCoverage] Facet "${f.name}" has 1 source (${domains[0]}) - partial coverage`);
+      } else {
+        console.log(`[Agent:updateFacetCoverage] Facet "${f.name}" has ${domains.length} sources (${domains.join(', ')}) - good coverage`);
+      }
+      
       return {
         ...f,
         sources: new Set(domains),
-        covered: domains.length >= 1 // one source minimum; synthesis will pursue consensus
+        covered: isCovered, // temporarily require only 1+ source
+        multipleSources: hasMultipleSources // track if we have 2+ sources
       };
     });
   }
@@ -822,8 +1500,30 @@ Return ONLY minified JSON: {"facets":[{"name":"...","required":true}...]}`;
   private allRequiredFacetsCovered(facets: Facet[]): boolean {
     const requiredTotal = facets.filter(f => f.required).length;
     const requiredCovered = facets.filter(f => f.required && f.covered).length;
-    console.log(`[Agent:facetsCovered] Required facets covered: ${requiredCovered}/${requiredTotal}`);
-    return facets.every(f => !f.required || f.covered);
+    const coverageRatio = requiredCovered / requiredTotal;
+    
+    // Add minimum coverage threshold - require 60% coverage before considering stopping
+    const meetsThreshold = coverageRatio >= 0.6;
+    
+    console.log(`[Agent:facetsCovered] Required facets covered: ${requiredCovered}/${requiredTotal} (${Math.round(coverageRatio * 100)}%)`);
+    
+    if (!meetsThreshold) {
+      const uncoveredFacets = facets.filter(f => f.required && !f.covered).map(f => f.name);
+      console.log(`[Agent:facetsCovered] Below 60% threshold. Missing facets: ${uncoveredFacets.join(', ')}`);
+      return false;
+    }
+    
+    // Check if all required facets are covered
+    const allCovered = facets.every(f => !f.required || f.covered);
+    
+    if (allCovered) {
+      console.log(`[Agent:facetsCovered] All required facets covered!`);
+    } else {
+      const stillMissing = facets.filter(f => f.required && !f.covered).map(f => f.name);
+      console.log(`[Agent:facetsCovered] Above threshold but still missing: ${stillMissing.join(', ')}`);
+    }
+    
+    return allCovered;
   }
 
   private hasDomainDiversity(passages: Passage[], minDomains: number): boolean {
@@ -836,18 +1536,11 @@ Return ONLY minified JSON: {"facets":[{"name":"...","required":true}...]}`;
   // --- Budget & Guardrails ---------------------------------------------------
 
   private initBudget(): Budget {
-    const b = this.cfg.budget ?? {};
-    const timeMs   = b.timeMs   ?? 25000;
-    const searches = b.searches ?? 4;
-    const fetches  = b.fetches  ?? 12;
-    const tokens   = b.tokens   ?? 24000;
-    return { timeMs, searches, fetches, tokens, startedMs: Date.now() };
+    return this.budgetManager.initBudget(this.cfg.budget as any) as any;
   }
 
   private isBudgetDepleted(b: Budget): boolean {
-    if (Date.now() - b.startedMs >= b.timeMs) return true;
-    if (b.searches <= 0 && b.fetches <= 0) return true;
-    return false;
+    return this.budgetManager.isBudgetDepleted(b as any);
   }
 }
 
@@ -858,6 +1551,7 @@ type Facet = {
   required: boolean;
   sources: Set<string>;
   covered: boolean;
+  multipleSources?: boolean;
 };
 
 type Budget = {

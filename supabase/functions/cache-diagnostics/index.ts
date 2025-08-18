@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { config } from "../shared/config.ts";
 import { CacheManager } from "../react-search/cache.ts";
+import { config } from "../shared/config.ts";
 
 serve(async (req) => {
   const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
