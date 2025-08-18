@@ -10,6 +10,9 @@ import { SearchService } from "./services/search.ts";
 // We're only using callAnthropic directly, OpenAI is used via the client
 import { BudgetManager } from "./agent/components/BudgetManager.ts";
 import { QueryDecomposer } from "./agent/components/QueryDecomposer.ts";
+import { SearchOrchestrator } from "./agent/components/SearchOrchestrator.ts";
+import { SynthesisEngine } from "./agent/components/SynthesisEngine.ts";
+import { FacetManager } from "./agent/components/FacetManager.ts";
 
 // === Models ==================================================================
 
@@ -233,6 +236,9 @@ export class ReActAgent {
   private synthesisModelProvider: ModelProvider;
   private budgetManager: BudgetManager;
   private queryDecomposer: QueryDecomposer;
+  private searchOrchestrator: SearchOrchestrator;
+  private synthesisEngine: SynthesisEngine;
+  private facetManager: FacetManager;
   
   // Helper method to get standardized model configuration
   private getModelConfig(isReasoning: boolean): any {
@@ -253,6 +259,9 @@ export class ReActAgent {
     this.currentDateTime = nowISO();
     this.budgetManager = new BudgetManager();
     this.queryDecomposer = new QueryDecomposer();
+    this.searchOrchestrator = new SearchOrchestrator(cfg.searchService);
+    this.synthesisEngine = new SynthesisEngine();
+    this.facetManager = new FacetManager();
     
     // If a single model is provided, use it for both reasoning and synthesis
     if (cfg.model) {
@@ -395,13 +404,13 @@ export class ReActAgent {
         }
         
         console.log(`[Agent] Performing multi-query search with base query: "${action.query}"`);
-        const results = await this.multiQuerySearch(action.query, action.k ?? 12, action.timeRange);
+        const results = await this.searchOrchestrator.multiQuerySearch(action.query, action.k ?? 12, action.timeRange);
         console.log(`[Agent] Search returned ${results.length} raw results`);
-        const filtered = this.filterAndScoreResults(results);
+        const filtered = this.searchOrchestrator.filterAndScoreResults(results);
         console.log(`[Agent] After filtering: ${filtered.length} results`);
         
         // Retain more diverse sources by processing more results
-        const processedResults = this.retainDiverseSources(filtered, passages);
+        const processedResults = this.searchOrchestrator.retainDiverseSources(filtered, passages);
         console.log(`[Agent] After diversity filtering: ${processedResults.length} results`);
         
         // Convert to passages using snippets; FETCH later refines content
@@ -491,8 +500,8 @@ export class ReActAgent {
           // Force an extra SEARCH if budget allows
           if (budget.searches > 0) {
             const q = `${question} ${new Date().getFullYear()} latest`;
-            const results = await this.multiQuerySearch(q, 8, "w");
-            const filtered = this.filterAndScoreResults(results);
+            const results = await this.searchOrchestrator.multiQuerySearch(q, 8, "w");
+            const filtered = this.searchOrchestrator.filterAndScoreResults(results);
             for (const r of filtered) {
               passages.push({
                 id: `search_${sha1(r.url)}`,
@@ -917,94 +926,21 @@ Respond in JSON only.`;
   // --- Synthesis -------------------------------------------------------------
 
   private async synthesize(question: string, passages: Passage[]): Promise<string> {
-    console.log(`[Agent:synthesize] Starting synthesis with ${passages.length} passages`);
-    // Keep top 10 passages with domain diversity
-    const top = this.selectTopDiverse(passages, 10);
-    console.log(`[Agent:synthesize] Selected ${top.length} diverse passages for synthesis`);
-
-    const ctx = top.map(p =>
-      `ID:${p.id}
-URL:${p.url}
-TITLE:${p.title || "Unknown"}
-PUBLISHED:${p.published_date || "Unknown"}
-CONTENT:
-${p.text}
----`
-    ).join("\n");
-
-    const system = `You are a precise synthesis agent.
-- Current time: ${this.currentDateTime}
-- Every non-trivial claim (numbers, names, dates) must be supported by a passage ID and inline citation [Title (Date)](URL).
-- Prefer consensus from ≥2 independent domains; if only one source, say "single-source".
-- If sources conflict or are stale (>30d old for time-sensitive queries), say so explicitly.
-- Keep answer concise, structured, and factual; use bullet points where helpful.`;
-
-    const user = `Question: ${question}
-
-Passages (use IDs for citation mapping):
-${ctx}
-
-Write the answer in Markdown. Include inline citations immediately after the sentences they support.`;
-
-    const messages = [
-      { role: "system", content: system },
-      { role: "user", content: user }
-    ];
-    
-    let response;
-    
-    if (this.synthesisModelProvider === 'anthropic') {
-      // Use Anthropic API
-      const modelConfig = this.getModelConfig(false); // false for synthesis model
-      response = await callAnthropic(this.synthesisModel, messages, modelConfig);
-    } else {
-      // Use OpenAI API
-      if (!this.openai) {
-        throw new Error('OpenAI client not initialized but trying to use OpenAI model');
-      }
-      const modelConfig = this.getModelConfig(false); // false for synthesis model
-      response = await this.openai.chat.completions.create({
-        model: this.synthesisModel,
-        messages,
-        temperature: modelConfig.defaultTemperature,
-        [modelConfig.tokenParameter]: modelConfig.max_tokens
-      });
-    }
-    
-    let draft = response.choices[0]?.message?.content || "Unable to synthesize.";
-    console.log(`[Agent:synthesize] Raw synthesis response length: ${draft.length} chars`);
-
-    // Simple post-pass: ensure any sentence with a number/date/name has at least one '(' → assume citation present; otherwise append a soft uncertainty.
-    const needsCite = /(?:\b\d{4}\b|\b\d+(?:\.\d+)?%|\b[A-Z][a-z]+ [A-Z][a-z]+)/;
-    draft = draft.split(/\n/).map((line: string) => {
-      if (needsCite.test(line) && !/\]\(https?:\/\//.test(line)) {
-        return line + " *(source uncertain; verify)*";
-      }
-      return line;
-    }).join("\n");
-
-    return draft;
+    const modelConfig = this.getModelConfig(false);
+    return this.synthesisEngine.synthesize({
+      currentDateTime: this.currentDateTime,
+      question,
+      passages,
+      provider: this.synthesisModelProvider,
+      model: this.synthesisModel,
+      openai: this.openai,
+      modelConfig
+    });
   }
 
   private selectTopDiverse(passages: Passage[], n: number): Passage[] {
-    // Basic composite scoring: prefer rerank score, recency, authority, and facet coverage assumed via rerank
-    const withScore = passages.map(p => {
-      const auth = domainAuthorityScore(p.source_domain);
-      const recency = p.published_date ? 1 / (1 + Math.max(0, (Date.now() - new Date(p.published_date).getTime()) / (1000*3600*24*30))) : 0.4;
-      const base = (p as any).score ?? 0.5;
-      return { p, s: 0.55*base + 0.30*auth + 0.15*recency };
-    }).sort((a, b) => b.s - a.s).map(x => x.p);
-
-    const pick: Passage[] = [];
-    const perDomainCap = 3;
-    for (const cand of withScore) {
-      const dom = cand.source_domain || eTLDplus1(cand.url) || "unknown";
-      const cnt = pick.filter(x => x.source_domain === dom).length;
-      if (cnt >= perDomainCap) continue;
-      pick.push(cand);
-      if (pick.length >= n) break;
-    }
-    return pick;
+    // Delegate to SynthesisEngine for consistency
+    return this.synthesisEngine.selectTopDiverse(passages, n);
   }
 
   // --- Query Decomposition --------------------------------------------------
@@ -1471,66 +1407,17 @@ Return ONLY minified JSON: {"facets":[{"name":"...","required":true}...]}`;
 
   private updateFacetCoverage(facets: Facet[], passages: Passage[]): Facet[] {
     console.log(`[Agent:updateFacetCoverage] Updating coverage for ${facets.length} facets with ${passages.length} passages`);
-    return facets.map(f => {
-      // Enhanced facet matching with flexible keyword matching
-      const hits = passages.filter(p => this.passageMatchesFacet(p, f));
-      const domains = distinct(hits.map(h => h.source_domain || eTLDplus1(h.url) || "unknown"));
-      
-      // Temporarily reduce coverage requirement to 1+ source for better coverage
-      const isCovered = domains.length >= 1;
-      const hasMultipleSources = domains.length >= 2;
-      
-      if (!isCovered) {
-        console.log(`[Agent:updateFacetCoverage] Facet "${f.name}" has 0 sources - needs coverage`);
-      } else if (domains.length === 1) {
-        console.log(`[Agent:updateFacetCoverage] Facet "${f.name}" has 1 source (${domains[0]}) - partial coverage`);
-      } else {
-        console.log(`[Agent:updateFacetCoverage] Facet "${f.name}" has ${domains.length} sources (${domains.join(', ')}) - good coverage`);
-      }
-      
-      return {
-        ...f,
-        sources: new Set(domains),
-        covered: isCovered, // temporarily require only 1+ source
-        multipleSources: hasMultipleSources // track if we have 2+ sources
-      };
-    });
+    return this.facetManager.updateFacetCoverage(facets as any, passages as any) as any;
   }
 
   private allRequiredFacetsCovered(facets: Facet[]): boolean {
-    const requiredTotal = facets.filter(f => f.required).length;
-    const requiredCovered = facets.filter(f => f.required && f.covered).length;
-    const coverageRatio = requiredCovered / requiredTotal;
-    
-    // Add minimum coverage threshold - require 60% coverage before considering stopping
-    const meetsThreshold = coverageRatio >= 0.6;
-    
-    console.log(`[Agent:facetsCovered] Required facets covered: ${requiredCovered}/${requiredTotal} (${Math.round(coverageRatio * 100)}%)`);
-    
-    if (!meetsThreshold) {
-      const uncoveredFacets = facets.filter(f => f.required && !f.covered).map(f => f.name);
-      console.log(`[Agent:facetsCovered] Below 60% threshold. Missing facets: ${uncoveredFacets.join(', ')}`);
-      return false;
-    }
-    
-    // Check if all required facets are covered
-    const allCovered = facets.every(f => !f.required || f.covered);
-    
-    if (allCovered) {
-      console.log(`[Agent:facetsCovered] All required facets covered!`);
-    } else {
-      const stillMissing = facets.filter(f => f.required && !f.covered).map(f => f.name);
-      console.log(`[Agent:facetsCovered] Above threshold but still missing: ${stillMissing.join(', ')}`);
-    }
-    
-    return allCovered;
+    return this.facetManager.allRequiredFacetsCovered(facets as any);
   }
 
   private hasDomainDiversity(passages: Passage[], minDomains: number): boolean {
     console.log(`[Agent:domainDiversity] Checking for minimum ${minDomains} domains`);
-    const doms = distinct(passages.map(p => p.source_domain || eTLDplus1(p.url) || "unknown"));
-    console.log(`[Agent:domainDiversity] Found ${doms.length} unique domains: ${doms.join(', ').substring(0, 100)}${doms.join(', ').length > 100 ? '...' : ''}`);
-    return doms.length >= minDomains;
+    const ok = this.facetManager.hasDomainDiversity(passages as any, minDomains);
+    return ok;
   }
 
   // --- Budget & Guardrails ---------------------------------------------------
