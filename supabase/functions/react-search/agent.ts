@@ -153,17 +153,6 @@ function distinct<T>(arr: T[]): T[] {
   return [...new Set(arr)];
 }
 
-function domainAuthorityScore(domain?: string): number {
-  if (!domain) return 0;
-  if (domain.endsWith(".gov") || domain.endsWith(".govt") || domain.endsWith(".gouv")) return 0.98;
-  if (domain.endsWith(".edu") || domain.endsWith(".ac") || domain.endsWith(".edu.cn")) return 0.95;
-  const high = ["nature.com","sciencedirect.com","nejm.org","thelancet.com","who.int","oecd.org","imf.org","worldbank.org","un.org","reuters.com","apnews.com","bbc.co.uk","nytimes.com","washingtonpost.com","ft.com","bloomberg.com"];
-  if (high.some(h => domain.endsWith(h))) return 0.9;
-  const low = ["medium.com","quora.com","reddit.com","stackexchange.com","blogspot.","wordpress.","substack.com","contentfarm","clickbait"];
-  if (low.some(l => domain.includes(l))) return 0.2;
-  return 0.6;
-}
-
 // Extract ISO date from HTML via meta tags; fallback regex
 function extractPublishedDateFromHtml(html: string, url: string): string | undefined {
   // JSON-LD datePublished
@@ -628,78 +617,6 @@ export class ReActAgent {
 
   // --- Retrieval -------------------------------------------------------------
 
-  private async multiQuerySearch(seedQuery: string, k: number, timeRange?: TimeRange) {
-    console.log(`[Agent:multiQuerySearch] Expanding query: "${seedQuery}"`);
-    
-    // Smart query expansion with iteration-based variation
-    const year = new Date().getFullYear();
-    const currentYear = new Date().getFullYear();
-    const nextYear = currentYear + 1;
-    
-    // Base variations
-    let qs = [
-      seedQuery,
-      `${seedQuery} ${isTimeSensitive(seedQuery) ? year : ""}`.trim(),
-      `${seedQuery} latest`,
-      `${seedQuery} site:gov`,
-      `${seedQuery} site:edu`,
-    ];
-    
-    // Add more diverse variations based on query type
-    if (seedQuery.toLowerCase().includes('festival') || seedQuery.toLowerCase().includes('event')) {
-      qs.push(
-        `${seedQuery} schedule`,
-        `${seedQuery} lineup`,
-        `${seedQuery} tickets`,
-        `${seedQuery} ${currentYear}`,
-        `${seedQuery} ${nextYear}`
-      );
-    } else if (seedQuery.toLowerCase().includes('price') || seedQuery.toLowerCase().includes('cost')) {
-      qs.push(
-        `${seedQuery} current`,
-        `${seedQuery} today`,
-        `${seedQuery} 2024`,
-        `${seedQuery} 2025`
-      );
-    } else {
-      // Generic variations for other queries
-      qs.push(
-        `${seedQuery} information`,
-        `${seedQuery} details`,
-        `${seedQuery} guide`,
-        `${seedQuery} overview`
-      );
-    }
-    
-    // Remove duplicates and limit to 8 queries max
-    qs = distinct(qs).slice(0, 8);
-    console.log(`[Agent:multiQuerySearch] Expanded to ${qs.length} diverse queries: ${qs.join(' | ')}`);
-
-    const all: any[] = [];
-    for (const q of qs) {
-      const res = await this.cfg.searchService.search(q, Math.ceil(k / qs.length) * 2, timeRange);
-      all.push(...(res.results || []));
-      // Gentle pacing to avoid rate limits
-      await sleep(60);
-    }
-    // Deduplicate by URL
-    const seen = new Set<string>();
-    const uniq = [];
-    for (const r of all) {
-      if (!seen.has(r.url)) {
-        seen.add(r.url);
-        uniq.push(r);
-      }
-    }
-    console.log(`[Agent:multiQuerySearch] After deduplication: ${uniq.length} unique results`);
-    return uniq;
-  }
-
-  private filterAndScoreResults(results: { url: string; title: string; snippet: string }[]) {
-    // Deprecated: now handled by SearchOrchestrator
-    return this.searchOrchestrator.filterAndScoreResults(results);
-  }
-
   private async safeFetchWithRetries(url: string, attempts = 3) {
     console.log(`[Agent:safeFetch] Attempting to fetch URL: ${url}`);
     for (let i = 0; i < attempts; i++) {
@@ -787,11 +704,6 @@ export class ReActAgent {
 
   private passageMatchesFacet(passage: Passage, facet: Facet): boolean {
     return this.facetManager.passageMatchesFacet(passage as any, facet as any);
-  }
-
-  private retainDiverseSources(filteredResults: any[], existingPassages: Passage[]): any[] {
-    // Deprecated: now handled by SearchOrchestrator
-    return this.searchOrchestrator.retainDiverseSources(filteredResults, existingPassages);
   }
 
   // --- Facets ----------------------------------------------------------------
