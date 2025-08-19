@@ -30,6 +30,7 @@ export class Planner {
 
   async decideActionJSON(ctx: {
     question: string;
+    language: string; // NEW: Add language parameter
     passages: Passage[];
     facets: Facet[];
     budget: Budget;
@@ -42,9 +43,9 @@ export class Planner {
     questionType?: QuestionType; // NEW: Question type for smart rules
     searchCount?: number; // NEW: Track number of searches performed
   }): Promise<PlannerAction> {
-    const { question, passages, facets, budget, currentDateTime, isTimeSensitive, iterationsWithoutProgress, tracePush, debug, searchHistory, questionType, searchCount = 0 } = ctx;
+    const { question, language, passages, facets, budget, currentDateTime, isTimeSensitive, iterationsWithoutProgress, tracePush, debug, searchHistory, questionType, searchCount = 0 } = ctx;
 
-    console.log(`🔍 [Planner] Starting decision process for question: "${question}"`);
+    console.log(`🔍 [Planner] Starting decision process for question: "${question}" in language: ${language}`);
     console.log(`🔍 [Planner] Question type: ${questionType || 'UNKNOWN'}`);
     console.log(`🔍 [Planner] Search count: ${searchCount}`);
     console.log(`🔍 [Planner] Current state - Passages: ${passages.length}, Facets: ${facets.length}, Budget: ${budget.searches} searches left`);
@@ -58,7 +59,9 @@ export class Planner {
 
     const system = `Reply ONLY with minified JSON. Do not include markdown.
 
-{"thought":"...","action":{"type":"SEARCH|FETCH|RERANK|STOP","query":"...","k":12,"url":"https://...","top_n":6,"timeRange":"d|w|m|y"}}
+IMPORTANT: If the user's question is not in English, include your reasoning in the user's language.
+
+{"thought":"[reasoning in user's language if question is not in English]","action":{"type":"SEARCH|FETCH|RERANK|STOP","query":"...","k":12,"url":"https://...","top_n":6,"timeRange":"d|w|m|y"}}
 
 Special Rules for MINIMAL_SEARCH questions:
 - Do exactly 1 SEARCH, then STOP

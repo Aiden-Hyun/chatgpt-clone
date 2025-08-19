@@ -30,6 +30,7 @@ export class SynthesisEngine {
   async synthesize(args: {
     currentDateTime: string;
     question: string;
+    language: string; // NEW: Add language parameter
     passages: Passage[];
     provider: ModelProvider;
     model: string;
@@ -38,8 +39,8 @@ export class SynthesisEngine {
     aiProviderManager?: AIProviderManager; // NEW: AI Provider Manager
     apiCallTracker?: APICallTracker; // NEW: API Call Tracker
   }): Promise<string> {
-    const { currentDateTime, question, passages, provider, model, openai, modelConfig, aiProviderManager, apiCallTracker } = args;
-    console.log(`[Synth] Starting synthesis with ${passages.length} passages`);
+    const { currentDateTime, question, language, passages, provider, model, openai, modelConfig, aiProviderManager, apiCallTracker } = args;
+    console.log(`[Synth] Starting synthesis with ${passages.length} passages in language: ${language}`);
 
     const top = this.selectTopDiverse(passages, 10);
     console.log(`[Synth] Selected ${top.length} diverse passages for synthesis`);
@@ -50,6 +51,7 @@ export class SynthesisEngine {
 
     const system = `You are a precise synthesis agent.
 - Current time: ${currentDateTime}
+- Respond in ${language === 'ko' ? 'Korean' : language === 'es' ? 'Spanish' : language === 'en' ? 'English' : 'the same language as the user\'s question'}
 - Every non-trivial claim (numbers, names, dates) must be supported by inline citations [Title (Date)](URL).
 - Prefer consensus from ≥2 independent domains; if only one source, say "single-source".
 - If sources conflict or are stale (>30d old for time-sensitive queries), say so explicitly.
@@ -139,6 +141,7 @@ Write the answer in Markdown. Include inline citations immediately after the sen
   async synthesizeDirectAnswer(args: {
     currentDateTime: string;
     question: string;
+    language: string; // NEW: Add language parameter
     provider: ModelProvider;
     model: string;
     openai: any | null;
@@ -146,10 +149,18 @@ Write the answer in Markdown. Include inline citations immediately after the sen
     aiProviderManager?: AIProviderManager; // NEW: AI Provider Manager
     apiCallTracker?: APICallTracker; // NEW: API Call Tracker
   }): Promise<string> {
-    const { currentDateTime, question, provider, model, openai, modelConfig, aiProviderManager, apiCallTracker } = args;
-    console.log(`[Synth] Starting direct answer synthesis for: "${question}"`);
+    const { currentDateTime, question, language, provider, model, openai, modelConfig, aiProviderManager, apiCallTracker } = args;
+    console.log(`[Synth] Starting direct answer synthesis for: "${question}" in language: ${language}`);
 
-    const system = `You are a helpful AI assistant. Answer the user's question directly using your knowledge.
+    const system = `You are a helpful AI assistant.
+
+IMPORTANT LANGUAGE INSTRUCTIONS:
+- Detect the language of the user's question
+- Respond in the SAME language as the user's question
+- If the question is in Korean, respond in Korean
+- If the question is in Spanish, respond in Spanish
+- If the question is in English, respond in English
+
 - Current time: ${currentDateTime}
 - Provide a clear, accurate, and helpful answer
 - No citations needed since this is based on your knowledge

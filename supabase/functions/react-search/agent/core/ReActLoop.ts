@@ -115,6 +115,7 @@ export class ReActLoop {
       console.log(`🔄 [ReActLoop] Asking planner to decide next action...`);
       const action = await this.deps.planner.decideActionJSON({
         question: state.question,
+        language: state.language, // NEW: Pass language from state
         passages: state.passages,
         facets: state.facets,
         budget: state.budget,

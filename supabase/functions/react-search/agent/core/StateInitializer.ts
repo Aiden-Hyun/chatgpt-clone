@@ -59,25 +59,39 @@ export class StateInitializer {
     
     const system = `Current time: ${this.currentDateTime}
 
-Analyze this question and respond appropriately:
+IMPORTANT: Detect the language of the user's question and respond in the SAME language.
+
+Analyze this question and respond appropriately in the language of the question:
 
 1. If the question can be answered using your knowledge (dates, math, definitions, basic facts, logical reasoning):
-   - Return: {"type":"DIRECT_ANSWER","reasoning":"...","answer":"[provide a complete, well-formatted answer in Markdown format]"}
+   - Return: {"type":"DIRECT_ANSWER","language":"[detected language code like 'ko', 'es', 'en']","reasoning":"[reasoning in detected language]","answer":"[provide a complete, well-formatted answer in the detected language using Markdown format]"}
 
 2. If the question needs current/real-time data (weather, prices, scores, latest info):
-   - Return: {"type":"MINIMAL_SEARCH","reasoning":"...","facets":[{"name":"Current status","required":true}]}
+   - Return: {"type":"MINIMAL_SEARCH","language":"[detected language code like 'ko', 'es', 'en']","reasoning":"[reasoning in detected language]","facets":[{"name":"[facet name in detected language]","required":true}]}
 
 3. If the question requires research, comparison, analysis, or multiple sources:
-   - Return: {"type":"FULL_RESEARCH","reasoning":"...","facets":[{"name":"Current status","required":true},{"name":"Historical context","required":true}]}
+   - Return: {"type":"FULL_RESEARCH","language":"[detected language code like 'ko', 'es', 'en']","reasoning":"[reasoning in detected language]","facets":[{"name":"[facet name in detected language]","required":true}]}
 
 For DIRECT_ANSWER questions:
-- Provide a complete, well-formatted answer in the "answer" field
+- Provide a complete, well-formatted answer in the "answer" field using the detected language
 - Use Markdown formatting (bullet points, bold text, etc.) where appropriate
 - Include any relevant calculations or explanations
 - Make the answer comprehensive and helpful
 
-For MINIMAL_SEARCH and FULL_RESEARCH questions, provide 2-5 required facets (sub-questions) in the "facets" field.
-Each facet should have: {"name":"descriptive name","required":true}`;
+For MINIMAL_SEARCH and FULL_RESEARCH questions, provide 2-5 required facets (sub-questions) in the "facets" field using the detected language.
+Each facet should have: {"name":"descriptive name in detected language","required":true}
+
+Language codes to use:
+- 'en' for English
+- 'ko' for Korean  
+- 'es' for Spanish
+- 'ja' for Japanese
+- 'zh' for Chinese
+- 'fr' for French
+- 'de' for German
+- 'it' for Italian
+- 'pt' for Portuguese
+- 'ru' for Russian`;
 
     const messages = [
       { role: "system", content: system },
@@ -142,6 +156,7 @@ Each facet should have: {"name":"descriptive name","required":true}`;
       
       const analysis: QuestionAnalysis = {
         type: obj.type as QuestionType || 'FULL_RESEARCH',
+        language: obj.language || 'en', // NEW: Parse language field with fallback
         reasoning: obj.reasoning || 'Default reasoning',
         directAnswer: obj.answer || obj.directAnswer, // Support both "answer" and "directAnswer" fields
         facets: obj.facets?.map((f: any) => ({
@@ -165,7 +180,7 @@ Each facet should have: {"name":"descriptive name","required":true}`;
     } catch (error) {
       console.log(`⚠️ [StateInitializer] Failed to parse question analysis, defaulting to FULL_RESEARCH: ${error}`);
       console.log(`⚠️ [StateInitializer] Raw response that failed to parse: "${response.choices[0]?.message?.content}"`);
-      return { type: 'FULL_RESEARCH', reasoning: 'Failed to parse analysis, defaulting to full research' };
+      return { type: 'FULL_RESEARCH', language: 'en', reasoning: 'Failed to parse analysis, defaulting to full research' };
     }
   }
 
@@ -197,6 +212,7 @@ Each facet should have: {"name":"descriptive name","required":true}`;
     // Initialize basic state for the search session
     const state: AgentState = {
       question,
+      language: 'en', // Will be updated from analysis
       passages: [],
       facets: [],
       budget,
@@ -221,6 +237,7 @@ Each facet should have: {"name":"descriptive name","required":true}`;
     const analysis = await this.analyzeQuestion(question, modelInfo);
     state.questionType = analysis.type;
     state.directAnswer = analysis.directAnswer;
+    state.language = analysis.language; // NEW: Set language from analysis
 
     console.log(`🚀 [StateInitializer] Question classified as: ${analysis.type}`);
     console.log(`🚀 [StateInitializer] Reasoning: ${analysis.reasoning}`);

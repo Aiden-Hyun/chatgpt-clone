@@ -12,6 +12,7 @@ export type QuestionType = 'DIRECT_ANSWER' | 'MINIMAL_SEARCH' | 'FULL_RESEARCH';
 
 export interface QuestionAnalysis {
   type: QuestionType;
+  language: string; // NEW: Add language field for detected language
   reasoning: string;
   directAnswer?: string; // For DIRECT_ANSWER type
   facets?: Facet[]; // For MINIMAL_SEARCH and FULL_RESEARCH types
@@ -77,6 +78,7 @@ export type Budget = {
 
 export interface AgentState {
   question: string;
+  language: string; // NEW: Add language field for detected language
   passages: Passage[];
   facets: Facet[];
   budget: Budget;

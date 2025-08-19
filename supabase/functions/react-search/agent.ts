@@ -266,6 +266,7 @@ export class ReActAgent {
     console.log(`🚀 [Agent] Building final result...`);
     const result = await this.resultOrchestrator.buildFinalResult(
       question,
+      state.language, // NEW: Pass language from state
       state.passages,
       this.synthesisEngine,
       {

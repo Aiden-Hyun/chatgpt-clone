@@ -1,7 +1,7 @@
 import { ResultBuilder } from "../components/ResultBuilder.ts";
 import type { SynthesisEngine } from "../components/SynthesisEngine.ts";
-import type { APICallTracker } from "../utils/APICallTracker.ts";
 import type { Passage, ReActResult } from "../types/AgentTypes.ts";
+import type { APICallTracker } from "../utils/APICallTracker.ts";
 
 export interface ResultOrchestratorConfig {
   debug?: boolean;
@@ -48,6 +48,7 @@ export class ResultOrchestrator {
    * 3. Returns the final ReActResult ready for caching and return
    * 
    * @param question - The original user question
+   * @param language - The language of the question
    * @param passages - Gathered passages from search and fetch operations
    * @param synthesisEngine - Engine to synthesize the final answer
    * @param synthesisConfig - Configuration for synthesis (model, provider, etc.)
@@ -57,6 +58,7 @@ export class ResultOrchestrator {
    */
   async buildFinalResult(
     question: string,
+    language: string, // NEW: Add language parameter
     passages: Passage[],
     synthesisEngine: SynthesisEngine,
     synthesisConfig: SynthesisConfig,
@@ -64,8 +66,8 @@ export class ResultOrchestrator {
     metrics?: any
   ): Promise<ReActResult> {
     // Synthesize final answer from gathered passages
-    this.debugLog(`[ResultOrchestrator] Beginning synthesis with ${passages.length} passages`);
-    const finalAnswer = await this.synthesize(question, passages, synthesisEngine, synthesisConfig);
+    this.debugLog(`[ResultOrchestrator] Beginning synthesis with ${passages.length} passages in language: ${language}`);
+    const finalAnswer = await this.synthesize(question, language, passages, synthesisEngine, synthesisConfig);
     this.debugLog(`[ResultOrchestrator] Synthesis complete. Answer length: ${finalAnswer.length} characters`);
     
     // Build final result with citations and metadata
@@ -89,6 +91,7 @@ export class ResultOrchestrator {
    * 3. Returns the final ReActResult for direct answers
    * 
    * @param question - The original user question
+   * @param language - The language of the question
    * @param synthesisEngine - Engine to synthesize the direct answer
    * @param synthesisConfig - Configuration for synthesis (model, provider, etc.)
    * @param debugTrace - Debug trace information (optional)
@@ -97,14 +100,15 @@ export class ResultOrchestrator {
    */
   async buildDirectAnswerResult(
     question: string,
+    language: string, // NEW: Add language parameter
     synthesisEngine: SynthesisEngine,
     synthesisConfig: SynthesisConfig,
     debugTrace?: any[],
     metrics?: any
   ): Promise<ReActResult> {
     // Synthesize direct answer using AI knowledge
-    this.debugLog(`[ResultOrchestrator] Beginning direct answer synthesis`);
-    const finalAnswer = await this.synthesizeDirectAnswer(question, synthesisEngine, synthesisConfig);
+    this.debugLog(`[ResultOrchestrator] Beginning direct answer synthesis in language: ${language}`);
+    const finalAnswer = await this.synthesizeDirectAnswer(question, language, synthesisEngine, synthesisConfig);
     this.debugLog(`[ResultOrchestrator] Direct answer synthesis complete. Answer length: ${finalAnswer.length} characters`);
     
     // Build result without citations
@@ -122,6 +126,7 @@ export class ResultOrchestrator {
    * Synthesize final answer from gathered passages using AI
    * 
    * @param question - The original user question
+   * @param language - The language of the question
    * @param passages - Gathered passages from search and fetch operations
    * @param synthesisEngine - Engine to synthesize the final answer
    * @param synthesisConfig - Configuration for synthesis
@@ -129,6 +134,7 @@ export class ResultOrchestrator {
    */
   private async synthesize(
     question: string, 
+    language: string, 
     passages: Passage[], 
     synthesisEngine: SynthesisEngine,
     synthesisConfig: SynthesisConfig
@@ -136,8 +142,9 @@ export class ResultOrchestrator {
     return synthesisEngine.synthesize({
       currentDateTime: synthesisConfig.currentDateTime,
       question,
+      language, // Pass language to synthesis engine
       passages,
-      provider: synthesisConfig.provider,
+      provider: synthesisConfig.provider as any, // Cast to ModelProvider
       model: synthesisConfig.model,
       openai: synthesisConfig.openai,
       modelConfig: synthesisConfig.modelConfig,
@@ -150,19 +157,22 @@ export class ResultOrchestrator {
    * Synthesize direct answer using AI knowledge (no passages needed)
    * 
    * @param question - The original user question
+   * @param language - The language of the question
    * @param synthesisEngine - Engine to synthesize the direct answer
    * @param synthesisConfig - Configuration for synthesis
    * @returns Direct answer as a string
    */
   private async synthesizeDirectAnswer(
     question: string, 
+    language: string, 
     synthesisEngine: SynthesisEngine,
     synthesisConfig: SynthesisConfig
   ): Promise<string> {
     return synthesisEngine.synthesizeDirectAnswer({
       currentDateTime: synthesisConfig.currentDateTime,
       question,
-      provider: synthesisConfig.provider,
+      language, // Pass language to synthesis engine
+      provider: synthesisConfig.provider as any, // Cast to ModelProvider
       model: synthesisConfig.model,
       openai: synthesisConfig.openai,
       modelConfig: synthesisConfig.modelConfig,
