@@ -9,7 +9,7 @@ import { createClient } from '@supabase/supabase-js';
 import { FacetManager } from '../../../supabase/functions/react-search/agent/components/FacetManager';
 import { Planner } from '../../../supabase/functions/react-search/agent/components/Planner';
 import { ProgressTracker } from '../../../supabase/functions/react-search/agent/components/ProgressTracker';
-import { QueryDecomposer } from '../../../supabase/functions/react-search/agent/components/QueryDecomposer';
+
 import { SearchOrchestrator } from '../../../supabase/functions/react-search/agent/components/SearchOrchestrator';
 import { EarlyTermination } from '../../../supabase/functions/react-search/agent/core/EarlyTermination';
 import { ReActLoop } from '../../../supabase/functions/react-search/agent/core/ReActLoop';
@@ -89,7 +89,6 @@ describe('ReActLoop Integration Test', () => {
     const facetManager = new FacetManager();
     const progressTracker = new ProgressTracker();
     const earlyTermination = new EarlyTermination();
-    const queryDecomposer = new QueryDecomposer();
 
     // Initialize ReAct loop
     reactLoop = new ReActLoop({
@@ -100,7 +99,6 @@ describe('ReActLoop Integration Test', () => {
       searchOrchestrator,
       fetchService,
       rerankService,
-      queryDecomposer,
       debug: true,
     });
   });

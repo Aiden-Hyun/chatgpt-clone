@@ -1,5 +1,5 @@
-import { callAnthropic } from "../../../ai-chat/providers/anthropic.ts";
 import type { Facet, Passage } from "../types/AgentTypes.ts";
+import type { AIProviderManager } from "../services/AIProviderManager.ts";
 import { eTLDplus1 } from "../utils/url-utils.ts";
 
 function distinct<T>(arr: T[]): T[] { return [...new Set(arr)]; }
@@ -10,7 +10,11 @@ export class FacetManager {
     openai: any | null;
     reasoningModel: string;
     modelConfig: any;
+    aiProviderManager?: AIProviderManager; // NEW: AI Provider Manager
   }): Promise<Facet[]> {
+    console.log(`🤖 [FacetManager] Starting facet extraction for: "${question}"`);
+    console.log(`🤖 [FacetManager] Using model: ${opts.reasoningModel} (${opts.reasoningModelProvider})`);
+    
     const sys = `List 2–5 required factual facets (sub-questions) to fully answer the user's query.
 Return ONLY minified JSON: {"facets":[{"name":"...","required":true}]}`;
 
@@ -19,18 +23,47 @@ Return ONLY minified JSON: {"facets":[{"name":"...","required":true}]}`;
       { role: "user", content: question }
     ];
 
+    console.log(`🤖 [FacetManager] API Call #1 - Facet Extraction:`);
+    console.log(`🤖 [FacetManager] System prompt: ${sys}`);
+    console.log(`🤖 [FacetManager] User message: "${question}"`);
+    console.log(`🤖 [FacetManager] Model config: ${JSON.stringify(opts.modelConfig)}`);
+
+    const startTime = Date.now();
+    
     let response: any;
-    if (opts.reasoningModelProvider === 'anthropic') {
-      response = await callAnthropic(opts.reasoningModel, messages, opts.modelConfig);
-    } else {
-      if (!opts.openai) throw new Error('OpenAI client not initialized but trying to use OpenAI model');
-      response = await opts.openai.chat.completions.create({
-        model: opts.reasoningModel,
+    
+    // Use AI Provider Manager if available, otherwise fall back to direct calls
+    if (opts.aiProviderManager) {
+      console.log(`🤖 [FacetManager] Using AI Provider Manager for ${opts.reasoningModelProvider}`);
+      response = await opts.aiProviderManager.call(
+        opts.reasoningModelProvider,
+        opts.reasoningModel,
         messages,
-        temperature: opts.modelConfig.defaultTemperature || 0.1,
-        [opts.modelConfig.tokenParameter || 'max_tokens']: opts.modelConfig.max_tokens || 200
-      });
+        opts.modelConfig
+      );
+    } else {
+      // Fallback to direct provider calls (for backward compatibility)
+      console.log(`🤖 [FacetManager] Using direct provider calls (fallback)`);
+      
+      if (opts.reasoningModelProvider === 'anthropic') {
+        const { callAnthropic } = await import("../../../ai-chat/providers/anthropic.ts");
+        console.log(`🤖 [FacetManager] Calling Anthropic API...`);
+        response = await callAnthropic(opts.reasoningModel, messages, opts.modelConfig);
+      } else {
+        if (!opts.openai) throw new Error('OpenAI client not initialized but trying to use OpenAI model');
+        console.log(`🤖 [FacetManager] Calling OpenAI API...`);
+        response = await opts.openai.chat.completions.create({
+          model: opts.reasoningModel,
+          messages,
+          temperature: opts.modelConfig.defaultTemperature || 0.1,
+          [opts.modelConfig.tokenParameter || 'max_tokens']: opts.modelConfig.max_tokens || 200
+        });
+      }
     }
+    
+    const apiTime = Date.now() - startTime;
+    console.log(`🤖 [FacetManager] API response received in ${apiTime}ms`);
+    console.log(`🤖 [FacetManager] Raw response: ${JSON.stringify(response.choices[0]?.message?.content || '{}')}`);
 
     try {
       const rawResponse = response.choices[0]?.message?.content ?? "{}";
@@ -41,8 +74,10 @@ Return ONLY minified JSON: {"facets":[{"name":"...","required":true}]}`;
         sources: new Set<string>(),
         covered: false
       }));
+      console.log(`🤖 [FacetManager] Extracted ${facets.length} facets: ${facets.map(f => f.name).join(', ')}`);
       return facets;
-    } catch {
+    } catch (error) {
+      console.log(`⚠️ [FacetManager] Failed to parse facets, using fallback: ${error}`);
       return [{ name: "Core answer", required: true, sources: new Set<string>(), covered: false }];
     }
   }

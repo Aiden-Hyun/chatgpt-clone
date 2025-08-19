@@ -8,6 +8,15 @@ export type ModelProvider = 'openai' | 'anthropic';
 
 export type TimeRange = 'd' | 'w' | 'm' | 'y';
 
+export type QuestionType = 'DIRECT_ANSWER' | 'MINIMAL_SEARCH' | 'FULL_RESEARCH';
+
+export interface QuestionAnalysis {
+  type: QuestionType;
+  reasoning: string;
+  directAnswer?: string; // For DIRECT_ANSWER type
+  facets?: Facet[]; // For MINIMAL_SEARCH and FULL_RESEARCH types
+}
+
 export interface ReActResult {
   final_answer_md: string;
   citations: { url: string; title?: string; published_date?: string }[];
@@ -65,5 +74,36 @@ export type Budget = {
   tokens: number;
   startedMs: number;
 };
+
+export interface AgentState {
+  question: string;
+  passages: Passage[];
+  facets: Facet[];
+  budget: Budget;
+  startMs: number;
+  currentDateTime: string;
+  metrics: AgentMetrics;
+  models: AgentModelsInfo;
+  searchHistory: string[];
+  decomposedQueriesForSession: string[];
+  usedDecomposedQueries: Set<string>;
+  previousPassageCount: number;
+  previousDomainCount: number;
+  questionType?: QuestionType; // NEW: Type of question
+  directAnswer?: string; // NEW: Direct answer for simple questions
+}
+
+export interface AgentMetrics {
+  searches: number;
+  fetches: number;
+  reranks: number;
+}
+
+export interface AgentModelsInfo {
+  reasoningModel: string;
+  synthesisModel: string;
+  reasoningProvider: 'openai' | 'anthropic';
+  synthesisProvider: 'openai' | 'anthropic';
+}
 
 

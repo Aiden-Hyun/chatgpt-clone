@@ -1,7 +1,8 @@
 import type { FacetManager } from "../components/FacetManager.ts";
 import type { Planner } from "../components/Planner.ts";
 import type { ProgressTracker } from "../components/ProgressTracker.ts";
-import type { AgentState, Budget, Facet } from "../types/AgentTypes.ts";
+import type { SearchProviderManager } from "../services/SearchProviderManager.ts";
+import type { AgentState, Budget } from "../types/AgentTypes.ts";
 import { distinct } from "../utils/text-utils.ts";
 import { isTimeSensitive } from "../utils/time-utils.ts";
 import { eTLDplus1 } from "../utils/url-utils.ts";
@@ -13,18 +14,16 @@ export interface ReActLoopConfig {
   searchService: any;
   fetchService: any;
   rerankService: any;
-  searchOrchestrator: any;
+  searchProviderManager: SearchProviderManager;
 }
 
 export interface ReActLoopDependencies {
   planner: Planner;
   facetManager: FacetManager;
   progressTracker: ProgressTracker;
-  // Remove earlyTermination since we're using static methods
-  searchOrchestrator: any;
+  searchProviderManager: SearchProviderManager;
   fetchService: any;
   rerankService: any;
-  queryDecomposer: any;
   debug: boolean;
 }
 
@@ -72,9 +71,25 @@ export class ReActLoop {
     const start = state.startMs;
     const budget = state.budget;
     
+    console.log(`🔄 [ReActLoop] Starting execution for question: "${state.question}"`);
+    console.log(`🔄 [ReActLoop] Initial state - Passages: ${state.passages.length}, Facets: ${state.facets.length}, Budget: ${budget.searches} searches, ${budget.fetches} fetches`);
+    
+    // Early exit for direct answer questions
+    if (state.questionType === 'DIRECT_ANSWER') {
+      console.log(`🔄 [ReActLoop] Direct answer question detected - skipping ReAct loop`);
+      console.log(`🔄 [ReActLoop] Direct answer: ${state.directAnswer || 'Will be handled in synthesis'}`);
+      return;
+    }
+    
+    // Log MINIMAL_SEARCH optimization
+    if (state.questionType === 'MINIMAL_SEARCH') {
+      console.log(`🔄 [ReActLoop] MINIMAL_SEARCH detected - will enforce 1 SEARCH then STOP rule`);
+    }
+    
     // Main ReAct loop - continues until budget exhausted or sufficient information gathered
     const MAX_ITERATIONS = 10;
     let iterations = 0;
+    let searchCount = 0; // NEW: Track number of searches performed
     this.deps.progressTracker.reset();
     
     while (!this.isBudgetDepleted(budget) && 
@@ -83,6 +98,7 @@ export class ReActLoop {
            this.deps.progressTracker.iterationsWithoutProgress < 3) {
       
       iterations++;
+      console.log(`🔄 [ReActLoop] === ITERATION ${iterations} ===`);
       this.debugLog(`[ReActLoop] Loop iteration ${iterations}: Deciding next action`);
       
       // Track progress for debugging
@@ -90,28 +106,29 @@ export class ReActLoop {
       const currentDomainCount = distinct(state.passages.map(p => p.source_domain || eTLDplus1(p.url) || "unknown")).length;
       const currentFacetCoverage = state.facets.filter(f => f.covered).length;
       
+      console.log(`🔄 [ReActLoop] Current state - Passages: ${currentPassageCount}, Domains: ${currentDomainCount}, Facets covered: ${currentFacetCoverage}/${state.facets.length}`);
       this.debugLog(`[ReActLoop:Debug] State - Passages: ${currentPassageCount} (${currentPassageCount - state.previousPassageCount > 0 ? '+' : ''}${currentPassageCount - state.previousPassageCount}), Domains: ${currentDomainCount} (${currentDomainCount - state.previousDomainCount > 0 ? '+' : ''}${currentDomainCount - state.previousDomainCount}), Facets: ${currentFacetCoverage}/${state.facets.length}`);
       this.debugLog(`[ReActLoop:Debug] Budget - Time: ${Math.round((Date.now() - budget.startedMs) / 1000)}s/${Math.round(budget.timeMs / 1000)}s, Searches: ${budget.searches}, Fetches: ${budget.fetches}`);
       this.debugLog(`[ReActLoop:Debug] Search History: ${state.searchHistory.slice(-3).join(' | ')}`);
       
       // REASONING: Decide what action to take next
+      console.log(`🔄 [ReActLoop] Asking planner to decide next action...`);
       const action = await this.deps.planner.decideActionJSON({
         question: state.question,
         passages: state.passages,
         facets: state.facets,
         budget: state.budget,
         currentDateTime,
-        decomposeComplexQuery: (q: string, f: any) => this.decomposeComplexQuery(q, f),
-        createFocusedQuery: (q: string, f: string) => this.createFocusedQuery(q, f),
         isTimeSensitive,
         iterationsWithoutProgress: 0,
         tracePush: (obj: any) => { if (this.deps.debug) this.trace.push(obj); },
         debug: !!this.deps.debug,
         searchHistory: state.searchHistory,
-        getUsedDecomposedQueries: () => state.usedDecomposedQueries,
-        getDecomposedSession: () => state.decomposedQueriesForSession,
-        setDecomposedSession: (qs: string[]) => { state.decomposedQueriesForSession = qs; },
+        questionType: state.questionType, // NEW: Pass question type to planner
+        searchCount: searchCount, // NEW: Pass search count to planner
       });
+      
+      console.log(`🔄 [ReActLoop] Planner decided: ${action.type}${action.query ? ` - "${action.query}"` : ''}${action.url ? ` - ${action.url}` : ''}`);
       this.debugLog(`[ReActLoop] Decided action: ${action.type}${action.query ? ` - Query: "${action.query.substring(0, 30)}..."` : ''}${action.url ? ` - URL: ${action.url}` : ''}`);
       if (this.deps.debug) this.trace.push({ loop: iterations, action });
       
@@ -119,7 +136,10 @@ export class ReActLoop {
       state.previousPassageCount = currentPassageCount;
       state.previousDomainCount = currentDomainCount;
 
-      if (action.type === "STOP") break;
+      if (action.type === "STOP") {
+        console.log(`🔄 [ReActLoop] STOP action received - ending search loop`);
+        break;
+      }
       
       // Safety check: prevent infinite loops by limiting repeated actions
       const actionTypeCounts = this.trace
@@ -131,6 +151,7 @@ export class ReActLoop {
         }, {} as Record<string, number>);
         
       if (actionTypeCounts[action.type] > 8) {
+        console.log(`⚠️ [ReActLoop] Forced STOP after ${actionTypeCounts[action.type]} iterations of ${action.type}`);
         if (this.deps.debug) this.trace.push({ 
           warning: `Forced STOP after ${actionTypeCounts[action.type]} iterations of ${action.type}` 
         });
@@ -138,11 +159,21 @@ export class ReActLoop {
       }
 
       // ACTING: Execute the planned action
+      console.log(`🔄 [ReActLoop] Executing action: ${action.type}`);
       await this.executeAction(state, action);
+      
+      // Track search count for MINIMAL_SEARCH optimization
+      if (action.type === "SEARCH") {
+        searchCount++;
+        console.log(`🔄 [ReActLoop] Search count incremented to: ${searchCount}`);
+      }
+      
+      console.log(`🔄 [ReActLoop] Action completed. New state - Passages: ${state.passages.length}, Domains: ${distinct(state.passages.map(p => p.source_domain || eTLDplus1(p.url) || "unknown")).length}`);
 
       // Update facet coverage after each action
       state.facets = this.deps.facetManager.updateFacetCoverage(state.facets, state.passages);
       const coveredCount = state.facets.filter(f => f.covered).length;
+      console.log(`🔄 [ReActLoop] Facet coverage updated: ${coveredCount}/${state.facets.length} facets covered`);
       this.debugLog(`[ReActLoop] Facet coverage updated: ${coveredCount}/${state.facets.length} facets covered`);
       
       // Check for progress and handle stagnation
@@ -213,13 +244,59 @@ export class ReActLoop {
    */
   private createActionExecutor(): ActionExecutor {
     return new ActionExecutor({
-      search: (q, k, tr) => this.deps.searchOrchestrator.multiQuerySearch(q, k, tr),
-      filterAndScore: (r) => this.deps.searchOrchestrator.filterAndScoreResults(r as any),
-      retainDiverse: (f, e) => this.deps.searchOrchestrator.retainDiverseSources(f as any, e as any),
+      search: async (q, k, tr) => {
+        const response = await this.deps.searchProviderManager.search(q, k, tr);
+        return response.results;
+      },
+      filterAndScore: (r) => this.simpleFilterAndScore(r),
+      retainDiverse: (f, e) => this.simpleRetainDiverse(f, e),
       fetchUrl: (u) => this.deps.fetchService.fetch(u) as any,
       rerank: (q, p, n) => this.deps.rerankService.rerank(q, p as any, n),
-      debugLog: (...a) => this.debugLog(...a)
+      debugLog: this.debugLog.bind(this),
     });
+  }
+
+  /**
+   * Simple filtering and scoring - replaces complex SearchOrchestrator logic
+   */
+  private simpleFilterAndScore(results: any[]): any[] {
+    console.log(`[ReActLoop] Simple filtering ${results.length} results`);
+    
+    // Basic filtering - remove obvious spam/low-quality results
+    const blocked = [
+      /\/tag\//, /\/category\//, /\/author\//, /\/page\/\d+/, /\/feed\//,
+      /\.docx?$/i, /\.pdf$/i, /facebook\.com/, /twitter\.com/, /x\.com/, /instagram\.com/, /youtube\.com\/watch/
+    ];
+    
+    const filtered = results.filter(r => !blocked.some(re => re.test((r.url || "").toLowerCase())));
+    
+    console.log(`[ReActLoop] After filtering: ${filtered.length} results`);
+    return filtered.slice(0, 25); // Limit to 25 results
+  }
+
+  /**
+   * Simple diversity management - replaces complex SearchOrchestrator logic
+   */
+  private simpleRetainDiverse(filteredResults: any[], existingPassages: any[]): any[] {
+    console.log(`[ReActLoop] Simple diversity management for ${filteredResults.length} results`);
+    
+    const diverseResults: any[] = [];
+    const domainCounts: Record<string, number> = {};
+
+    for (const result of filteredResults) {
+      const domain = eTLDplus1(result.url) || 'unknown';
+      const currentCount = domainCounts[domain] || 0;
+      
+      if (currentCount < 3) { // Max 3 results per domain
+        diverseResults.push(result);
+        domainCounts[domain] = currentCount + 1;
+      }
+      
+      if (diverseResults.length >= 20) break; // Limit to 20 diverse results
+    }
+
+    console.log(`[ReActLoop] Selected ${diverseResults.length} results from ${Object.keys(domainCounts).length} domains`);
+    return diverseResults;
   }
 
   /**
@@ -232,27 +309,7 @@ export class ReActLoop {
     return b.searches <= 0 && b.fetches <= 0;
   }
 
-  /**
-   * Decompose complex queries into simpler sub-queries
-   * 
-   * @param question - Complex question to decompose
-   * @param facets - Question facets to focus on
-   * @returns Array of simpler sub-queries
-   */
-  private async decomposeComplexQuery(question: string, facets: Facet[]): Promise<string[]> {
-    return this.deps.queryDecomposer.decomposeComplexQuery(question, facets);
-  }
 
-  /**
-   * Create focused queries for specific facets
-   * 
-   * @param question - Original question
-   * @param facetName - Facet name to focus on
-   * @returns Focused query for the specific facet
-   */
-  private createFocusedQuery(question: string, facetName: string): string {
-    return this.deps.queryDecomposer.createFocusedQuery(question, facetName);
-  }
 
   /**
    * Get trace for debugging

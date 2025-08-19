@@ -1,5 +1,9 @@
 import OpenAI from "jsr:@openai/openai";
 import { config as appConfig } from "../../../shared/config.ts";
+import { AnthropicProvider } from "../providers/AnthropicProvider.ts";
+import { OpenAIProvider } from "../providers/OpenAIProvider.ts";
+import { AIProviderManager } from "../services/AIProviderManager.ts";
+import type { ProviderName } from "../types/AIProvider.ts";
 
 type ModelProvider = 'openai' | 'anthropic';
 
@@ -13,17 +17,10 @@ export interface ModelInfo {
   reasoningModelProvider: ModelProvider;
   synthesisModelProvider: ModelProvider;
   openai: OpenAI | null;
+  aiProviderManager: AIProviderManager; // NEW: AI Provider Manager
 }
 
-export interface ReActAgentConfig {
-  model?: string;
-  reasoningModel?: string;
-  synthesisModel?: string;
-  reasoningModelProvider?: ModelProvider;
-  synthesisModelProvider?: ModelProvider;
-  modelConfig?: any;
-  debug?: boolean;
-}
+
 
 /**
  * Determines which AI provider to use based on model name
@@ -46,6 +43,7 @@ function getModelProvider(model: string): ModelProvider {
  * - Provider detection (OpenAI vs Anthropic)
  * - Model configuration (temperature, tokens, etc.)
  * - OpenAI client initialization
+ * - AI Provider Manager integration
  */
 export class ModelManager {
   private reasoningModel: string;
@@ -53,6 +51,7 @@ export class ModelManager {
   private reasoningModelProvider: ModelProvider;
   private synthesisModelProvider: ModelProvider;
   private openai: OpenAI | null = null;
+  private aiProviderManager: AIProviderManager;
   private cfg: ReActAgentConfig;
 
   constructor(cfg: ReActAgentConfig) {
@@ -74,6 +73,9 @@ export class ModelManager {
     console.log(`[ModelManager] Debug: reasoningModelProvider=${this.reasoningModelProvider}, synthesisModelProvider=${this.synthesisModelProvider}`);
     console.log(`[ModelManager] Debug: Will initialize OpenAI client: ${this.reasoningModelProvider === 'openai' || this.synthesisModelProvider === 'openai'}`);
     
+    // Initialize AI Provider Manager
+    this.aiProviderManager = new AIProviderManager(cfg.debug);
+    
     // Initialize OpenAI client only if needed
     if (this.reasoningModelProvider === 'openai' || this.synthesisModelProvider === 'openai') {
       try {
@@ -81,13 +83,24 @@ export class ModelManager {
         console.log(`[ModelManager] Debug: OpenAI API key length: ${apiKey ? apiKey.length : 0}`);
         this.openai = new OpenAI({ apiKey });
         console.log(`[ModelManager] Debug: OpenAI client initialized successfully`);
+        
+        // Register OpenAI provider
+        const openaiProvider = new OpenAIProvider(this.openai);
+        this.aiProviderManager.registerProvider(openaiProvider);
+        console.log(`[ModelManager] Debug: OpenAI provider registered`);
       } catch (error) {
         console.error(`[ModelManager] Error initializing OpenAI client:`, error);
         throw error;
       }
     }
     
+    // Register Anthropic provider (always available)
+    const anthropicProvider = new AnthropicProvider();
+    this.aiProviderManager.registerProvider(anthropicProvider);
+    console.log(`[ModelManager] Debug: Anthropic provider registered`);
+    
     console.log(`[ModelManager] Init: reasoning=${this.reasoningModel} (${this.reasoningModelProvider}), synthesis=${this.synthesisModel} (${this.synthesisModelProvider})`);
+    console.log(`[ModelManager] Init: Registered providers: ${this.aiProviderManager.getRegisteredProviders().join(', ')}`);
   }
 
   /**
@@ -97,31 +110,41 @@ export class ModelManager {
    * @returns Model configuration object with temperature, tokens, etc.
    */
   getModelConfig(isReasoning: boolean): any {
-    const baseConfig = this.cfg.modelConfig || {};
-    const defaultTemp = isReasoning ? 0.1 : 0.2;
-    const defaultTokens = isReasoning ? 300 : 1200;
+    const provider = isReasoning ? this.reasoningModelProvider : this.synthesisModelProvider;
     
-    return {
-      tokenParameter: baseConfig.tokenParameter || 'max_tokens',
-      supportsCustomTemperature: baseConfig.supportsCustomTemperature !== false,
-      defaultTemperature: baseConfig.defaultTemperature || defaultTemp,
-      max_tokens: baseConfig.max_tokens || defaultTokens
-    };
+    // Use the passed modelConfig if available, otherwise fall back to defaults
+    if (this.cfg.modelConfig) {
+      return {
+        tokenParameter: this.cfg.modelConfig.tokenParameter || 'max_tokens',
+        supportsCustomTemperature: this.cfg.modelConfig.supportsCustomTemperature ?? true,
+        defaultTemperature: this.cfg.modelConfig.defaultTemperature || (provider === 'anthropic' ? 0.7 : 0.1),
+        max_tokens: isReasoning ? 200 : 4000
+      };
+    }
+    
+    // Fallback to provider-specific defaults
+    if (provider === 'anthropic') {
+      return {
+        tokenParameter: 'max_tokens',
+        supportsCustomTemperature: true,
+        defaultTemperature: 0.7,
+        max_tokens: isReasoning ? 200 : 4000
+      };
+    } else {
+      return {
+        tokenParameter: 'max_tokens',
+        supportsCustomTemperature: true,
+        defaultTemperature: 0.1,
+        max_tokens: isReasoning ? 200 : 4000
+      };
+    }
   }
+  
 
   /**
-   * Get OpenAI client instance
+   * Get model information including providers and AI Provider Manager
    * 
-   * @returns OpenAI client or null if not needed
-   */
-  getOpenAIClient(): OpenAI | null {
-    return this.openai;
-  }
-
-  /**
-   * Get all model information
-   * 
-   * @returns Complete model configuration including providers and client
+   * @returns Model information object
    */
   getModelInfo(): ModelInfo {
     return {
@@ -130,30 +153,29 @@ export class ModelManager {
       reasoningModelProvider: this.reasoningModelProvider,
       synthesisModelProvider: this.synthesisModelProvider,
       openai: this.openai,
+      aiProviderManager: this.aiProviderManager
     };
   }
 
   /**
-   * Get reasoning model info
+   * Make an AI call using the appropriate provider
    * 
-   * @returns Reasoning model name and provider
+   * @param providerName - The provider to use ('openai' or 'anthropic')
+   * @param model - The model to use
+   * @param messages - Array of messages
+   * @param config - Configuration options
+   * @returns Promise resolving to the AI response
    */
-  getReasoningModel(): { model: string; provider: ModelProvider } {
-    return {
-      model: this.reasoningModel,
-      provider: this.reasoningModelProvider,
-    };
+  async makeAICall(providerName: ProviderName, model: string, messages: any[], config: any) {
+    return this.aiProviderManager.call(providerName, model, messages, config);
   }
 
   /**
-   * Get synthesis model info
+   * Get the AI Provider Manager instance
    * 
-   * @returns Synthesis model name and provider
+   * @returns The AI Provider Manager
    */
-  getSynthesisModel(): { model: string; provider: ModelProvider } {
-    return {
-      model: this.synthesisModel,
-      provider: this.synthesisModelProvider,
-    };
+  getAIProviderManager(): AIProviderManager {
+    return this.aiProviderManager;
   }
 }

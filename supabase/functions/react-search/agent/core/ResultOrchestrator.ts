@@ -1,5 +1,6 @@
 import { ResultBuilder } from "../components/ResultBuilder.ts";
 import type { SynthesisEngine } from "../components/SynthesisEngine.ts";
+import type { APICallTracker } from "../utils/APICallTracker.ts";
 import type { Passage, ReActResult } from "../types/AgentTypes.ts";
 
 export interface ResultOrchestratorConfig {
@@ -12,6 +13,8 @@ export interface SynthesisConfig {
   model: string;
   openai: any;
   modelConfig: any;
+  aiProviderManager?: any; // NEW: AI Provider Manager
+  apiCallTracker?: APICallTracker; // NEW: API Call Tracker
 }
 
 /**
@@ -78,6 +81,44 @@ export class ResultOrchestrator {
   }
 
   /**
+   * Build direct answer result for simple questions that don't need web search
+   * 
+   * This method:
+   * 1. Synthesizes a direct answer using AI knowledge
+   * 2. Builds a result object without citations
+   * 3. Returns the final ReActResult for direct answers
+   * 
+   * @param question - The original user question
+   * @param synthesisEngine - Engine to synthesize the direct answer
+   * @param synthesisConfig - Configuration for synthesis (model, provider, etc.)
+   * @param debugTrace - Debug trace information (optional)
+   * @param metrics - Search metrics (searches, fetches, reranks)
+   * @returns Complete ReActResult with direct answer and no citations
+   */
+  async buildDirectAnswerResult(
+    question: string,
+    synthesisEngine: SynthesisEngine,
+    synthesisConfig: SynthesisConfig,
+    debugTrace?: any[],
+    metrics?: any
+  ): Promise<ReActResult> {
+    // Synthesize direct answer using AI knowledge
+    this.debugLog(`[ResultOrchestrator] Beginning direct answer synthesis`);
+    const finalAnswer = await this.synthesizeDirectAnswer(question, synthesisEngine, synthesisConfig);
+    this.debugLog(`[ResultOrchestrator] Direct answer synthesis complete. Answer length: ${finalAnswer.length} characters`);
+    
+    // Build result without citations
+    const result: ReActResult = {
+      final_answer_md: finalAnswer,
+      citations: [], // No citations for direct answers
+      trace: debugTrace || [{ event: "direct_answer" }],
+      time_warning: undefined
+    };
+
+    return result;
+  }
+
+  /**
    * Synthesize final answer from gathered passages using AI
    * 
    * @param question - The original user question
@@ -99,7 +140,34 @@ export class ResultOrchestrator {
       provider: synthesisConfig.provider,
       model: synthesisConfig.model,
       openai: synthesisConfig.openai,
-      modelConfig: synthesisConfig.modelConfig
+      modelConfig: synthesisConfig.modelConfig,
+      aiProviderManager: synthesisConfig.aiProviderManager, // NEW: Pass AI Provider Manager
+      apiCallTracker: synthesisConfig.apiCallTracker // NEW: Pass API Call Tracker
+    });
+  }
+
+  /**
+   * Synthesize direct answer using AI knowledge (no passages needed)
+   * 
+   * @param question - The original user question
+   * @param synthesisEngine - Engine to synthesize the direct answer
+   * @param synthesisConfig - Configuration for synthesis
+   * @returns Direct answer as a string
+   */
+  private async synthesizeDirectAnswer(
+    question: string, 
+    synthesisEngine: SynthesisEngine,
+    synthesisConfig: SynthesisConfig
+  ): Promise<string> {
+    return synthesisEngine.synthesizeDirectAnswer({
+      currentDateTime: synthesisConfig.currentDateTime,
+      question,
+      provider: synthesisConfig.provider,
+      model: synthesisConfig.model,
+      openai: synthesisConfig.openai,
+      modelConfig: synthesisConfig.modelConfig,
+      aiProviderManager: synthesisConfig.aiProviderManager, // NEW: Pass AI Provider Manager
+      apiCallTracker: synthesisConfig.apiCallTracker // NEW: Pass API Call Tracker
     });
   }
 }

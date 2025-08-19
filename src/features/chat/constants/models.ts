@@ -70,12 +70,12 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
     capabilities: {
       chat: true,
       image: false,
-      search: true, // Enabled for cheaper model
+      search: false, 
       vision: false,
       code: true,
       analysis: false
     },
-    description: 'Lightning-fast model perfect for quick responses, simple tasks, and everyday conversations with search capability.',
+    description: 'Lightning-fast model perfect for quick responses, simple tasks, and everyday conversations.',
     tokenParameter: 'max_completion_tokens',
     supportsCustomTemperature: false,
     defaultTemperature: 1
