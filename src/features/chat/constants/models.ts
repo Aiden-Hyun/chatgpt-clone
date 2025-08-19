@@ -271,7 +271,7 @@ export const AVAILABLE_MODELS: ModelInfo[] = [
       analysis: false
     },
     description: 'Fast and efficient with vision capabilities. Great for quick responses, image analysis, and coding with search enabled.',
-    tokenParameter: 'max_completion_tokens',
+    tokenParameter: 'max_tokens', // FIX: Change from 'max_completion_tokens' to 'max_tokens'
     supportsCustomTemperature: true
   },
   { 

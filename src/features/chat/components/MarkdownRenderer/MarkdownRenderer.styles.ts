@@ -5,19 +5,19 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
   return StyleSheet.create({
     // Body Text
     body: {
-      fontSize: 16,
+      fontSize: 14,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
-      lineHeight: 26,
+      lineHeight: 20,
       marginBottom: theme.spacing.md,
       fontWeight: '400',
     },
     
     // Paragraphs
     paragraph: {
-      fontSize: 16,
+      fontSize: 14,
       color: theme.colors.text.primary,
-      lineHeight: 26,
+      lineHeight: 20,
       marginBottom: theme.spacing.lg,
       fontWeight: '400',
     },
@@ -29,7 +29,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       color: theme.colors.text.primary,
       marginTop: theme.spacing.xl,
       marginBottom: theme.spacing.lg,
-      lineHeight: 36,
+      lineHeight: 26,
       letterSpacing: -0.5,
     },
     heading2: {
@@ -38,7 +38,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       color: theme.colors.text.primary,
       marginTop: theme.spacing.xl,
       marginBottom: theme.spacing.md,
-      lineHeight: 32,
+      lineHeight: 26,
       letterSpacing: -0.3,
     },
     heading3: {
@@ -47,7 +47,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       color: theme.colors.text.primary,
       marginTop: theme.spacing.lg,
       marginBottom: theme.spacing.md,
-      lineHeight: 28,
+      lineHeight: 23,
       letterSpacing: -0.2,
     },
     heading4: {
@@ -56,7 +56,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.lg,
       marginBottom: theme.spacing.sm,
-      lineHeight: 26,
+      lineHeight: 21,
     },
     heading5: {
       fontSize: 16,
@@ -64,7 +64,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.md,
       marginBottom: theme.spacing.sm,
-      lineHeight: 24,
+      lineHeight: 20,
     },
     heading6: {
       fontSize: 14,
@@ -78,12 +78,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     },
     
     // Text styling
-    text: {
-      fontSize: 16,
-      color: theme.colors.text.primary,
-      lineHeight: 26,
-      
-    },
+    
     
     strong: {
       fontWeight: '600',
@@ -149,10 +144,10 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       marginVertical: theme.spacing.md,
     },
     list_item: {
-      fontSize: 16,
+      fontSize: 14,
       color: theme.colors.text.primary,
-      lineHeight: 26,
-      marginBottom: theme.spacing.sm,
+      lineHeight: 20,
+      //marginBottom: theme.spacing.sm,
       paddingLeft: theme.spacing.md,
     },
     bullet_list_icon: {
@@ -248,8 +243,9 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     // Links - Styled Like ChatGPT
     link: {
       textDecorationLine: 'none',
-      fontWeight: '100',
-      //color: 'blue' as any,
+      fontWeight: '600',
+      fontSize: 8,
+      color: theme.colors.status.info.primary, 
     },
     
     // Horizontal Rules
