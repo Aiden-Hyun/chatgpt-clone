@@ -1,17 +1,18 @@
-import { LoadingWrapper } from '@/components';
 import { useLogout } from '@/features/auth';
 import { ChatHeader, UnifiedChat } from '@/features/chat/components';
+import ChatInput from '@/features/chat/components/ChatInput';
 import { useAppTheme } from '@/features/theme/theme';
 import { useChatScreen } from '@/shared/hooks';
+import { navigationTracker } from '@/shared/lib/navigationTracker';
 import { router, useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import {
-  KeyboardAvoidingView
-} from 'react-native';
+import React, { useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoomModel } from '../../src/features/chat/model/useRoomModel';
 import { createChatStyles } from './chat.styles';
 
-// 🎯 CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
+
+// �� CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
 interface ChatScreenProps {
   roomId?: string;
   isTemporaryRoom: boolean;
@@ -34,7 +35,19 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   const theme = useAppTheme();
   const styles = createChatStyles(theme);
   
-  // No model bridge ref needed; parent owns model selection
+  // Chat state from UnifiedChat
+  const [chatState, setChatState] = useState<{
+    input: string;
+    handleInputChange: (text: string) => void;
+    sendMessage: () => void;
+    sending: boolean;
+    isTyping: boolean;
+    isSearchMode: boolean;
+    onSearchToggle: () => void;
+  } | null>(null);
+
+  // Create stable inputRef to prevent ChatInput re-renders
+  const inputRef = useRef<TextInput | null>(null);
   
   if (__DEV__) {
     // Pure component render counter
@@ -49,24 +62,42 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
     });
   }
 
-  // Header is rendered by the parent wrapper to avoid duplication
-
-  const loading = false;
+  
 
   return (
-          <LoadingWrapper loading={loading}>
-        <KeyboardAvoidingView
-          behavior="padding"
-          style={styles.container}
-        >
+    <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
+    
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+        keyboardVerticalOffset={90}
+      >
         <UnifiedChat 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}
           selectedModel={selectedModel}
           onChangeModel={onChangeModel}
+          onChatStateChange={setChatState}
         />
+      
+      
+      {/* ChatInput moved to screen level for better layout control */}
+      {chatState && (
+        <ChatInput
+          input={chatState.input}
+          onChangeText={chatState.handleInputChange}
+          onSend={chatState.sendMessage}
+          sending={chatState.sending}
+          isTyping={chatState.isTyping}
+          inputRef={inputRef}
+          isSearchMode={chatState.isSearchMode}
+          onSearchToggle={chatState.onSearchToggle}
+          selectedModel={selectedModel}
+        />
+      )}
       </KeyboardAvoidingView>
-    </LoadingWrapper>
+    
+    </SafeAreaView>
   );
 }, (prev, next) => {
   // Custom comparison: prevent re-render unless meaningful props actually change
@@ -95,8 +126,6 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   const modelEqual = prev.selectedModel === next.selectedModel;
 
   const equal = primitiveEqual && functionsEqual && stateEqual && modelEqual;
-
-
 
   return equal;
 });
@@ -137,13 +166,15 @@ const ChatScreen = () => {
     logout,
   }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, logout]);
 
-
-
   return (
     <>
       <ChatHeader
         onLogout={logout}
-        onSettings={() => { router.push('/settings'); }}
+        onSettings={() => { 
+          const currentPath = `/chat/${roomId}`;
+          navigationTracker.setPreviousRoute(currentPath);
+          router.push('/settings'); 
+        }}
         onBack={() => { try { console.log('[NAV] back'); } catch {} }}
         onNewChat={chatScreenState.startNewChat}
         onChatSelect={(rid: string) => {

@@ -1,15 +1,13 @@
 import { Button } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { useLanguageContext } from '../../../language';
 import { useAppTheme } from '../../../theme/theme';
 import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../constants';
-import { ChatSidebar } from '../ChatSidebar';
 import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
-import { useSidebar } from '../useSidebar';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 interface ChatHeaderProps {
@@ -40,7 +38,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onModelChange,
   showModelSelection = true,
 }) => {
-  const { isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
+  const navigation = useNavigation();
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
   const [isModelMenuVisible, setIsModelMenuVisible] = useState(false);
   const theme = useAppTheme();
@@ -69,6 +67,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     onLogout();
   };
 
+  const toggleDrawer = () => {
+    (navigation as any).toggleDrawer();
+  };
+
   return (
     <View style={styles.header}>
       {/* Menu Button (Left) */}
@@ -76,7 +78,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         variant="ghost"
         size="sm"
         leftIcon={<MaterialIcons name="menu" size={24} color={theme.colors.text.primary} />}
-        onPress={openSidebar}
+        onPress={toggleDrawer}
         containerStyle={styles.menuButton}
       />
 
@@ -180,17 +182,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </TouchableOpacity>
       </Modal>
 
-      {/* Chat Sidebar */}
-      <ChatSidebar 
-        isVisible={isSidebarOpen}
-        onClose={closeSidebar}
-        onNewChat={onNewChat}
-        onChatSelect={onChatSelect}
-        onSettings={onSettings}
-        onLogout={onLogout}
-        selectedChatId={selectedChatId}
-      />
-
       {/* Quick Actions Menu Dropdown */}
       <Modal
         visible={isQuickActionsVisible}
@@ -234,4 +225,4 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   );
 };
 
-export default ChatHeader; 
+export default ChatHeader;

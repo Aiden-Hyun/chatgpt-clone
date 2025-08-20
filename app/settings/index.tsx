@@ -1,12 +1,13 @@
 import { Button, Card, Input, ListItem, Text } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React from 'react';
+import { router, usePathname } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
 import { Platform, SafeAreaView, ScrollView, Switch, View } from 'react-native';
 import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert';
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
 import { useAppTheme, useThemeMode, useThemeStyle } from '../../src/features/theme';
+import { navigationTracker } from '../../src/shared/lib/navigationTracker';
 import { createSettingsStyles } from './settings.styles';
 
 export default function SettingsScreen() {
@@ -20,6 +21,10 @@ export default function SettingsScreen() {
   const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
   const { showSuccess } = useToast();
   const styles = createSettingsStyles(theme);
+  const pathname = usePathname();
+  
+  // Track the previous route for better navigation
+  const previousRouteRef = useRef<string | null>(null);
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [isEditingName, setIsEditingName] = React.useState(false);
@@ -30,18 +35,46 @@ export default function SettingsScreen() {
     setEditedName(userName || '');
   }, [userName]);
 
+  // Track navigation changes to determine where to go back to
+  useEffect(() => {
+    // When the settings page mounts, try to determine where we came from
+    if (previousRouteRef.current === null) {
+      // Check if we can go back in the navigation stack
+      const canGoBack = (router as any).canGoBack?.() ?? false;
+      
+      if (canGoBack) {
+        // If we can go back, we'll use router.back() later
+        // But we should still have a fallback in case it fails
+        previousRouteRef.current = '/chat';
+      } else {
+        // If we can't go back, we need a fallback
+        // In a drawer navigation, users typically come from a chat room
+        previousRouteRef.current = '/chat';
+      }
+    }
+  }, []);
+
   const handleBack = () => {
     try {
-      const canGoBack = (router as any).canGoBack?.() ?? false;
-      if (canGoBack) {
-        router.back();
+      // Always use the tracked route instead of router.back() for more reliable navigation
+      const previousRoute = navigationTracker.getPreviousRoute();
+      
+      if (previousRoute) {
+        router.replace(previousRoute);
       } else {
+        // Only fallback to /chat if we have no tracked route
         router.replace('/chat');
       }
-    } catch {
+      
+      // Clear the tracked route after using it
+      navigationTracker.clearPreviousRoute();
+    } catch (error) {
+      // Fallback to chat page if anything goes wrong
       router.replace('/chat');
     }
   };
+
+
 
   const handleLogout = async () => {
     await logout();
@@ -115,7 +148,6 @@ export default function SettingsScreen() {
                   variant="filled"
                   autoFocus
                   onBlur={() => {
-                    console.log('👁️ TextInput blurred');
                     // Don't cancel on blur - let user press save button
                   }}
                 />
@@ -185,7 +217,6 @@ export default function SettingsScreen() {
               title="Test Toast"
               subtitle="Tap to test"
               onPress={() => {
-                console.log('🧪 Test toast button pressed');
                 showSuccess('Test toast message!', 5000);
               }}
             />

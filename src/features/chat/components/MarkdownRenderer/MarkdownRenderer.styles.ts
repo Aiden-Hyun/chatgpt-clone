@@ -5,7 +5,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
   return StyleSheet.create({
     // Body Text
     body: {
-      fontSize: 14,
+      fontSize: theme.fontSizes.md,
       fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
       lineHeight: 20,
@@ -15,7 +15,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     
     // Paragraphs
     paragraph: {
-      fontSize: 14,
+      fontSize: 16,
       color: theme.colors.text.primary,
       lineHeight: 20,
       marginBottom: theme.spacing.lg,

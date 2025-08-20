@@ -1,16 +1,16 @@
-import { Button, ListItem, Text } from '@/components';
+import { Text } from '@/components';
 import { useToast } from '@/features/alert';
 import { useUserInfo } from '@/features/auth';
 import { useChatRooms } from '@/features/chat/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Modal, ScrollView, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../constants';
 import { createChatSidebarStyles } from './ChatSidebar.styles';
+
 
 interface ChatSidebarProps {
   isVisible: boolean;
@@ -177,121 +177,51 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
   };
 
   return (
-    <Modal
-      visible={isVisible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-    >
-      <View style={styles.sidebarOverlay}>
-        <Animated.View
-          style={[
-            styles.sidebar,
-            {
-              //paddingTop: Platform.OS === 'ios' ? insets.top + 6 : 0,
-              //paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
-              transform: [{ translateX: slideAnim }],
-            },
-          ]}
-        >
-          {/* Header */}
-          <View style={styles.sidebarHeader}>
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<MaterialIcons name="add" size={20} color={theme.colors.text.primary} />}
-              label={t('sidebar.new_chat')}
-              onPress={handleNewChat}
-              containerStyle={styles.newChatButton}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={onClose}
-              leftIcon={<MaterialIcons name="close" size={24} color={theme.colors.text.secondary} />}
-            />
-          </View>
-
-          {/* Chat History */}
-          <ScrollView style={styles.chatHistory} showsVerticalScrollIndicator={false}>
-            {rooms.map((room) => {
-              const isSelected = selectedChatId === room.id.toString();
-              const draft = drafts[room.id.toString()];
-              const hasDraft = draft && draft.trim().length > 0;
-              
-              // Prepare subtitle content
-              let subtitle = room.last_message || t('sidebar.no_messages');
-              
-              // Prepare right element (delete button)
-              const rightElement = (
-                <TouchableOpacity
-                  style={styles.chatItemDelete}
-                  onPress={() => handleDelete(room.id)}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <MaterialIcons name="delete" size={18} color={theme.colors.status.error.primary} />
-                </TouchableOpacity>
-              );
-              
-              // Prepare left element (chat icon)
-              const leftElement = (
-                <MaterialIcons 
-                  name="chat" 
-                  size={16} 
-                  color={isSelected ? theme.colors.primary : theme.colors.text.secondary} 
-                />
-              );
-
-              return (
-                <ListItem
-                  key={room.id}
-                  variant="chat"
-                  title={room.name}
-                  subtitle={hasDraft ? undefined : subtitle}
-                  description={undefined}
-                  leftElement={leftElement}
-                  rightElement={rightElement}
-                  selected={isSelected}
-                  showBorder={false}
-                  onPress={() => handleChatSelect(room.id.toString())}
-                  containerStyle={styles.chatItem}
-                >
-                  {hasDraft && renderDraftContent(room.id.toString())}
-                </ListItem>
-              );
-            })}
-          </ScrollView>
-
-          {/* User Profile */}
-          <View style={styles.userProfile}>
-            <View style={styles.userInfo}>
-              <MaterialIcons name="account-circle" size={32} color={theme.colors.text.secondary} />
-              <Text variant="body" weight="medium" style={styles.userName}>
-                {userName || t('sidebar.user')}
-              </Text>
+    <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+      <Modal
+        visible={isVisible}
+        transparent
+        animationType="none"
+        onRequestClose={onClose}
+      >
+        <View style={styles.sidebarOverlay}>
+          <Animated.View
+            style={[
+              styles.sidebar,
+              {
+                transform: [{ translateX: slideAnim }],
+              },
+            ]}
+          >
+            {/* Header */}
+            <View style={styles.sidebarHeader}>
+              {/* ... existing header content ... */}
             </View>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={handleSettings}
-              leftIcon={<MaterialIcons name="settings" size={20} color={theme.colors.text.secondary} />}
-              containerStyle={styles.settingsButton}
+  
+            {/* Chat History */}
+            <ScrollView style={styles.chatHistory} showsVerticalScrollIndicator={false}>
+              {/* ... existing chat history content ... */}
+            </ScrollView>
+  
+            {/* User Profile */}
+            <View style={styles.userProfile}>
+              {/* ... existing user profile content ... */}
+            </View>
+          </Animated.View>
+          <Animated.View 
+            style={[
+              styles.sidebarBackdrop, 
+              { opacity: fadeAnim }
+            ]}
+          >
+            <TouchableOpacity 
+              style={{ flex: 1 }}
+              onPress={onClose}
+              activeOpacity={1}
             />
-          </View>
-        </Animated.View>
-        <Animated.View 
-          style={[
-            styles.sidebarBackdrop, 
-            { opacity: fadeAnim }
-          ]}
-        >
-          <TouchableOpacity 
-            style={{ flex: 1 }}
-            onPress={onClose}
-            activeOpacity={1}
-          />
-        </Animated.View>
-      </View>
-    </Modal>
+          </Animated.View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };

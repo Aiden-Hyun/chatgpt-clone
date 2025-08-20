@@ -4,7 +4,6 @@ import { createChatStyles } from '~/app/chat/chat.styles';
 import { useAppTheme } from '../../../theme/theme';
 import { useChat } from '../../hooks';
 import { ChatMessage } from '../../types';
-import ChatInput from '../ChatInput';
 import MessageList from '../MessageList';
 
 interface UnifiedChatProps {
@@ -14,21 +13,23 @@ interface UnifiedChatProps {
   showHeader?: boolean;
   selectedModel?: string;
   onChangeModel?: (model: string) => void | Promise<void>;
+  // New props to expose chat state to parent
+  onChatStateChange?: (state: {
+    input: string;
+    handleInputChange: (text: string) => void;
+    sendMessage: () => void;
+    sending: boolean;
+    isTyping: boolean;
+    isSearchMode: boolean;
+    onSearchToggle: () => void;
+  }) => void;
 }
 
 /**
- * UnifiedChat - Simplified chat component that consolidates the best features
+ * UnifiedChat - Messages Only Component
  * 
- * This component uses the proven chat system architecture while providing
- * a clean, unified interface. It's designed to replace both the original
- * chat components and the complex concurrent-chat system.
- * 
- * Features:
- * - Message sending and receiving
- * - Model selection
- * - Message regeneration
- * - Beautiful, proven UI
- * - Simplified state management
+ * This component now only handles messages, with chat input moved to parent.
+ * This provides better layout control and responsive behavior.
  */
 export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   roomId,
@@ -37,18 +38,12 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   showHeader = true,
   selectedModel,
   onChangeModel,
+  onChatStateChange,
 }) => {
 
   // Get proven styles - memoized to prevent excessive re-renders
   const theme = useAppTheme();
   const styles = React.useMemo(() => createChatStyles(theme), [theme]);
-  
-  // Create stable inputRef to prevent ChatInput re-renders
-  const inputRef = React.useRef<any>(null);
-  
-
-  
-
   
   // Use the existing proven chat hook
   const {
@@ -66,7 +61,21 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     isSearchMode,
     onSearchToggle,
   } = useChat(roomId || null, { selectedModel, setModel: onChangeModel });
-  
+
+  // Expose chat state to parent component
+  React.useEffect(() => {
+    if (onChatStateChange) {
+      onChatStateChange({
+        input,
+        handleInputChange,
+        sendMessage,
+        sending,
+        isTyping,
+        isSearchMode,
+        onSearchToggle,
+      });
+    }
+  }, [input, handleInputChange, sendMessage, sending, isTyping, isSearchMode, onSearchToggle, onChatStateChange]);
 
   // Like/dislike handlers
   const handleLike = React.useCallback((messageId: string) => {
@@ -97,11 +106,7 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     );
   }, [setMessages]);
 
-  // Pass primitive regeneratingIndex to MessageList for stability
-
-  // Welcome text is controlled by MessageList based on messages.length === 0 && !loading
-
-      return (
+  return (
     <View style={styles.container}>
       {/* Messages using proven MessageList component - memoized to prevent input-related re-renders */}
       {React.useMemo(() => (
@@ -117,19 +122,6 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
           onDislike={handleDislike}
         />
       ), [messages, loading, regeneratingIndex, regenerateMessage, editUserAndRegenerate, handleLike, handleDislike])}
-
-      {/* Input using proven ChatInput component */}
-      <ChatInput
-        input={input}
-        onChangeText={handleInputChange}
-        onSend={sendMessage}
-        sending={sending}
-        isTyping={isTyping}
-        inputRef={inputRef}
-        isSearchMode={isSearchMode}
-        onSearchToggle={onSearchToggle}
-        selectedModel={selectedModel}
-      />
     </View>
   );
 };

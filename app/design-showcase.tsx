@@ -1,12 +1,11 @@
 import { Button, Input, Text } from '@/components/ui';
-import { LanguageSelector } from '@/features/language';
-import { useLanguageContext } from '@/features/language';
+import { LanguageSelector, useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { getButtonSize } from '@/shared/utils/layout';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Platform, SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
 
 export default function DesignShowcaseScreen() {
   const { t } = useLanguageContext();

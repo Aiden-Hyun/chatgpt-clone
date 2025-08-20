@@ -1,9 +1,8 @@
-import { Input } from '@/components/ui';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { getModelInfo } from '../../constants/models';
 import { createChatInputStyles } from './ChatInput.styles';
 
@@ -13,19 +12,22 @@ interface ChatInputProps {
   onSend: () => void;
   sending?: boolean;
   isTyping?: boolean;
-  inputRef: RefObject<any>;
+  inputRef: RefObject<TextInput | null>;
   isSearchMode?: boolean;
   onSearchToggle?: () => void;
   selectedModel?: string;
 }
 
 /**
- * ChatInput - iOS Messages Style
+ * ChatInput - Native Responsive Multiline Input
  * Features:
  * - Sleek bubble-shaped input container
  * - Circular send button with proper MaterialIcons
- * - Clean iOS-like design with no focus borders
+ * - Clean design with no focus borders
  * - Smooth animations for state changes
+ * - Native TextInput for proper iOS multiline behavior
+ * - Responsive height that grows and shrinks with content
+ * - Consistent behavior across iOS, Android, and Web
  */
 const ChatInput: React.FC<ChatInputProps> = ({
   input,
@@ -38,7 +40,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   onSearchToggle,
   selectedModel,
 }) => {
-  const [inputHeight, setInputHeight] = useState(44);
+  const [inputHeight, setInputHeight] = useState(36);
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   
@@ -53,22 +55,15 @@ const ChatInput: React.FC<ChatInputProps> = ({
   );
 
   const hasText = input.trim().length > 0;
+  const MIN_INPUT_HEIGHT = 36;
   const MAX_INPUT_HEIGHT = 120;
 
-  // Platform-specific scrolling logic
-  const shouldEnableScrolling = Platform.OS === 'web' 
-    ? inputHeight >= MAX_INPUT_HEIGHT 
-    : true; // Always enable scrolling on mobile for multiline inputs
-
-  // Platform-specific height calculation
-  const inputHeightStyle = Platform.OS === 'web' 
-    ? { height: Math.min(MAX_INPUT_HEIGHT, inputHeight) }
-    : { minHeight: 36, maxHeight: MAX_INPUT_HEIGHT }; // Let content determine height on mobile
+  // Enable scrolling when content exceeds max height
+  const shouldEnableScrolling = inputHeight >= MAX_INPUT_HEIGHT;
 
   // Custom send button icon component with dynamic states
   const SendButtonIcon = () => {
     if (sending) {
-      // Stop icon for stop generation
       return (
         <MaterialIcons 
           name="stop" 
@@ -78,7 +73,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
       );
     }
 
-    // Send icon for both states (inactive and active)
     return (
       <MaterialIcons 
         name="send" 
@@ -91,29 +85,40 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <View style={styles.container}>
       {/* Main input row */}
-      <View style={styles.inputRow}>
-        {/* Bubble-shaped input container - no focus styling */}
-        <View style={styles.inputBubble}>
-          <Input
+      <View style={[styles.inputRow, { height: Math.max(MIN_INPUT_HEIGHT, Math.min(MAX_INPUT_HEIGHT, inputHeight)) }]}>
+        {/* Bubble-shaped input container - Native TextInput */}
+        <View style={[styles.inputBubble, { height: Math.max(MIN_INPUT_HEIGHT, Math.min(MAX_INPUT_HEIGHT, inputHeight)) }]}>
+          <TextInput
             ref={inputRef}
             value={input}
             onChangeText={onChangeText}
             placeholder={t('chat.placeholder')}
-            variant="chat"
+            placeholderTextColor={theme.colors.text.quaternary}
             multiline
-            scrollEnabled={shouldEnableScrolling}
+            //numberOfLines={10}
+            //scrollEnabled={shouldEnableScrolling}
             onContentSizeChange={(e) => {
               const nextHeight = e.nativeEvent.contentSize.height;
               setInputHeight(nextHeight);
             }}
-            blurOnSubmit={false}
+            //blurOnSubmit={false}
             autoFocus
             editable={!sending}
-            containerStyle={styles.inputContainer}
-            inputStyle={[
-              styles.input,
-              inputHeightStyle
-            ]}
+            style={styles.input}
+            textAlignVertical="top"
+            // iOS-specific props for better multiline behavior
+            {...(Platform.OS === 'ios' && {
+              textAlignVertical: 'top',
+              paddingTop: 8,
+              paddingBottom: 8,
+            })}
+            // Web-specific props
+            {...(Platform.OS === 'web' && {
+              outlineWidth: 0,
+              outlineColor: 'transparent',
+              borderWidth: 0,
+              boxShadow: 'none',
+            })}
           />
         </View>
 
@@ -137,7 +142,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </View>
         )}
 
-        {/* iOS-style send button */}
+        {/* Native send button */}
         <View style={styles.sendButtonContainer}>
           <TouchableOpacity
             onPress={() => {
@@ -168,4 +173,4 @@ const ChatInput: React.FC<ChatInputProps> = ({
   );
 };
 
-export default ChatInput; 
+export default ChatInput;

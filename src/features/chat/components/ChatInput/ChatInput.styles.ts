@@ -1,24 +1,27 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { AppTheme } from '../../../theme/theme.types';
 
 /**
- * ChatInput Styles - iOS Messages Style
+ * ChatInput Styles - Native TextInput Style
  * Features:
  * - Sleek bubble-shaped input with subtle shadows
  * - Perfectly circular send button with MaterialIcons
- * - Clean iOS-like design with no focus borders
+ * - Clean design with no focus borders
  * - Smooth state transitions
+ * - Native TextInput styling for proper iOS behavior
+ * - Consistent appearance across iOS, Android, and Web
  */
 export const createChatInputStyles = (theme: AppTheme) => {
   
   const styles = StyleSheet.create({
-    // Main container
+    // Main container - Consistent padding across platforms
     container: {
+      height: 100,
       backgroundColor: theme.colors.background.primary,
       borderTopWidth: 0.5,
       borderTopColor: theme.colors.border.light,
       paddingTop: theme.spacing.md,
-      paddingBottom: Platform.OS === 'ios' ? theme.spacing.lg + 10 : theme.spacing.lg,
+      paddingBottom: theme.spacing.lg, // Consistent padding for all platforms
     },
 
     // Input row containing bubble and send button
@@ -29,31 +32,24 @@ export const createChatInputStyles = (theme: AppTheme) => {
       gap: theme.spacing.sm,
     },
 
-    // Bubble-shaped input container - iOS Messages style (no focus changes)
+    // Bubble-shaped input container - Native TextInput container
     inputBubble: {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
       borderRadius: 20, // iOS Messages uses 20px border radius
-      minHeight: 36, // iOS Messages height
-      maxHeight: 120,
+      //minHeight: 36, // Minimum height for empty state
+      //maxHeight: 120, // Maximum height before scrolling
       shadowColor: theme.colors.text.primary,
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
       elevation: 2,
+      // Remove any height constraints - let TextInput grow naturally
     },
 
-    // Input container styling
-    inputContainer: {
-      flex: 1,
-      backgroundColor: 'transparent',
-      borderWidth: 0,
-      margin: 0,
-      padding: 0,
-    },
-
-    // Input text styling - iOS Messages style
+    // Native TextInput styling - iOS Messages style
     input: {
+      flex: 1,
       textAlignVertical: 'top',
       paddingVertical: 8, // iOS Messages padding
       paddingHorizontal: 12, // iOS Messages padding
@@ -61,16 +57,14 @@ export const createChatInputStyles = (theme: AppTheme) => {
       lineHeight: 22, // iOS Messages line height
       color: theme.colors.text.primary,
       fontFamily: theme.fontFamily.primary,
-      // Web-specific: Remove focus outline using proper React Native properties
-      ...(Platform.OS === 'web' && {
-        outlineWidth: 0,
-        outlineColor: 'transparent',
-        borderWidth: 0,
-        boxShadow: 'none',
-      }),
+      backgroundColor: 'transparent', // Transparent background
+      borderWidth: 0, // No border
+      borderRadius: 0, // No border radius
+      // Web-specific: Remove focus outline
+      outlineWidth: 0,
+      outlineColor: 'transparent',
+      boxShadow: 'none',
     },
-
-
 
     // Send button container
     sendButtonContainer: {
@@ -79,7 +73,7 @@ export const createChatInputStyles = (theme: AppTheme) => {
       marginBottom: 2, // Slight adjustment for visual alignment
     },
 
-    // Send button styling - Perfect circle
+    // Send button styling - Perfect circle (consistent across platforms)
     sendButton: {
       width: 36, // Slightly larger for better visibility
       height: 36, // Perfect square for circle
@@ -95,16 +89,13 @@ export const createChatInputStyles = (theme: AppTheme) => {
       shadowOpacity: 0.1,
       shadowRadius: 1,
       elevation: 1,
-      // Web-specific: Remove focus outline using proper React Native properties
-      ...(Platform.OS === 'web' && {
-        outlineWidth: 0,
-        outlineColor: 'transparent',
-        borderWidth: 0,
-        boxShadow: 'none',
-      }),
+      // Web-style focus outline removal for all platforms
+      outlineWidth: 0,
+      outlineColor: 'transparent',
+      boxShadow: 'none',
     },
 
-    // Active send button (when text is present) - iOS blue
+    // Active send button (when text is present) - Web-like blue
     sendButtonActive: {
       backgroundColor: theme.colors.primary, // Use theme primary color
       shadowOpacity: 0.2,
@@ -140,7 +131,7 @@ export const createChatInputStyles = (theme: AppTheme) => {
       marginBottom: 2, // Slight adjustment for visual alignment
     },
 
-    // Search button styling - Perfect circle
+    // Search button styling - Perfect circle (consistent across platforms)
     searchButton: {
       width: 36, // Slightly larger for better visibility
       height: 36, // Perfect square for circle
@@ -156,13 +147,10 @@ export const createChatInputStyles = (theme: AppTheme) => {
       shadowOpacity: 0.1,
       shadowRadius: 1,
       elevation: 1,
-      // Web-specific: Remove focus outline using proper React Native properties
-      ...(Platform.OS === 'web' && {
-        outlineWidth: 0,
-        outlineColor: 'transparent',
-        borderWidth: 0,
-        boxShadow: 'none',
-      }),
+      // Web-style focus outline removal for all platforms
+      outlineWidth: 0,
+      outlineColor: 'transparent',
+      boxShadow: 'none',
     },
 
     // Search button active state
@@ -177,4 +165,5 @@ export const createChatInputStyles = (theme: AppTheme) => {
   return {
     styles,
   };
-}; 
+};
+
