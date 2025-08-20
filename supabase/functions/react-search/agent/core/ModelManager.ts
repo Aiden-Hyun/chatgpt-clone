@@ -1,4 +1,4 @@
-import OpenAI from "jsr:@openai/openai";
+import OpenAI from "npm:@openai/openai";
 import { config as appConfig } from "../../../shared/config.ts";
 import { AnthropicProvider } from "../providers/AnthropicProvider.ts";
 import { OpenAIProvider } from "../providers/OpenAIProvider.ts";

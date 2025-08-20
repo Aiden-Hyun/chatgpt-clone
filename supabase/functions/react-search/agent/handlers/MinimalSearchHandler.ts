@@ -1,4 +1,4 @@
-import type { QuestionHandler, HandleResult, HandlerDeps } from "../core/QuestionRouter.ts";
+import type { HandleResult, HandlerDeps, QuestionHandler } from "../core/QuestionRouter.ts";
 import type { AgentState } from "../types/AgentTypes.ts";
 
 export class MinimalSearchHandler implements QuestionHandler {
