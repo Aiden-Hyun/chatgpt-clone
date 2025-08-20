@@ -55,6 +55,7 @@ export class StateInitializer {
    * @returns Question analysis with type and reasoning
    */
   private async analyzeQuestion(question: string, modelInfo: ModelInfo): Promise<QuestionAnalysis> {
+    console.log(`🔍 [StateInitializer] Analyzing question type: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`);
     this.debugLog(`[StateInitializer] Analyzing question type: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`);
     
     const system = `Current time: ${this.currentDateTime}
@@ -207,6 +208,7 @@ Language codes to use:
     facetManager: FacetManager,
     modelInfo: ModelInfo
   ): Promise<AgentState> {
+    console.log(`🏗️ [StateInitializer] Initializing state for question: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`);
     this.debugLog(`[StateInitializer] Initializing state for question: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`);
 
     // Initialize basic state for the search session

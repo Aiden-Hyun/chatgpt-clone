@@ -1,12 +1,11 @@
-import type { AgentState } from "../types/AgentTypes.ts";
-import type { Planner } from "../components/Planner.ts";
 import type { FacetManager } from "../components/FacetManager.ts";
+import type { Planner } from "../components/Planner.ts";
 import type { ProgressTracker } from "../components/ProgressTracker.ts";
+import type { AgentState } from "../types/AgentTypes.ts";
 import { ActionExecutor } from "./ActionExecutor.ts";
-import { StateLogger } from "./StateLogger.ts";
 import { EarlyTermination } from "./EarlyTermination.ts";
 import { SearchResultProcessor } from "./SearchResultProcessor.ts";
-import { ERROR_MESSAGES } from "./constants.ts";
+import { StateLogger } from "./StateLogger.ts";
 
 export interface IterationExecutorDeps {
   planner: Planner;
@@ -40,6 +39,8 @@ export class IterationExecutor {
   }
 
   async executeIteration(state: AgentState, currentDateTime: string, iteration: number, searchCount: number): Promise<void> {
+    console.log(`🎯 [IterationExecutor] Executing iteration ${iteration}`);
+    
     // Log iteration start
     this.logger.logIterationStart(state, iteration);
 
@@ -48,11 +49,13 @@ export class IterationExecutor {
     this.logger.logActionDecision(action);
 
     // Execute action
+    console.log(`⚡ [IterationExecutor] Executing action: ${action.type}`);
     await this.executeAction(state, action);
     this.logger.logActionExecution(state);
 
     // Update state and check progress
     await this.updateStateAndProgress(state, action);
+    console.log(`📈 [IterationExecutor] Iteration ${iteration} completed`);
   }
 
   private async decideNextAction(state: AgentState, currentDateTime: string, searchCount: number): Promise<any> {
@@ -73,19 +76,14 @@ export class IterationExecutor {
   }
 
   private async executeAction(state: AgentState, action: any): Promise<void> {
-    try {
-      if (action.type === "SEARCH" && state.budget.searches > 0) {
-        await this.actionExecutor.execute(state, action as any);
-      } else if (action.type === "FETCH" && state.budget.fetches > 0) {
-        await this.actionExecutor.execute(state, action as any);
-      } else if (action.type === "RERANK") {
-        await this.actionExecutor.execute(state, action as any);
-      } else {
-        console.warn(`[IterationExecutor] Invalid action type or insufficient budget: ${action.type}`);
-      }
-    } catch (error) {
-      console.error(`[IterationExecutor] ${ERROR_MESSAGES.ACTION_EXECUTION_FAILED}:`, error);
-      // Continue execution even if one action fails
+    if (action.type === "SEARCH" && state.budget.searches > 0) {
+      await this.actionExecutor.execute(state, action as any);
+    }
+    if (action.type === "FETCH" && state.budget.fetches > 0) {
+      await this.actionExecutor.execute(state, action as any);
+    }
+    if (action.type === "RERANK") {
+      await this.actionExecutor.execute(state, action as any);
     }
   }
 

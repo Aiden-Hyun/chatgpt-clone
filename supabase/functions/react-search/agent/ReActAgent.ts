@@ -71,6 +71,8 @@ export class ReActAgent {
   constructor(cfg: any) { // ReActAgentConfig) { // This type was removed, so we'll use 'any' for now
     this.cfg = cfg;
     
+    console.log("🚀 [ReActAgent] Initializing ReActAgent with config:", { debug: cfg.debug, cacheEnabled: !!cfg.cacheManager });
+    
     // Initialize API Call Tracker
     this.apiCallTracker = new APICallTracker();
     
@@ -101,16 +103,19 @@ export class ReActAgent {
     const tavilyApiKey = appConfig.secrets.tavily?.apiKey?.() || getEnv("TAVILY_API_KEY") || "";
     if (tavilyApiKey) {
       this.searchProviderManager.registerProvider(new TavilyProvider(tavilyApiKey));
+      console.log("🔍 [ReActAgent] Registered Tavily search provider");
     }
     
     const bingApiKey = getEnv("BING_API_KEY") || "";
     if (bingApiKey) {
       this.searchProviderManager.registerProvider(new BingProvider(bingApiKey));
+      console.log("🔍 [ReActAgent] Registered Bing search provider");
     }
     
     const serpApiKey = getEnv("SERPAPI_API_KEY") || "";
     if (serpApiKey) {
       this.searchProviderManager.registerProvider(new SerpAPIProvider(serpApiKey));
+      console.log("🔍 [ReActAgent] Registered SerpAPI search provider");
     }
     
     this.synthesisEngine = new SynthesisEngine();
@@ -168,10 +173,16 @@ export class ReActAgent {
    * @returns Promise resolving to the final answer with citations
    */
   async run(question: string): Promise<ReActResult> {
+    console.log("🎯 [ReActAgent] Starting workflow for question:", question.substring(0, 50) + "...");
+    
     if (!this.workflowOrchestrator) {
       throw new Error('WorkflowOrchestrator not initialized');
     }
-    return this.workflowOrchestrator.run(question);
+    
+    const result = await this.workflowOrchestrator.run(question);
+    console.log("✅ [ReActAgent] Workflow completed successfully");
+    
+    return result;
   }
 }
 

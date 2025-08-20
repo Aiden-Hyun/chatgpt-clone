@@ -71,14 +71,13 @@ export class CacheManager {
       fetches: budget.fetches,
     });
 
-    // Check cache first - if we have a cached answer, return it immediately
-    this.debugLog(`[CacheManager] Checking cache with key: ${cacheKey}`);
+    console.log(`🔍 [CacheManager] Checking cache with key: ${cacheKey.substring(0, 20)}...`);
     const cached = await this.cfg.cacheManager.getAnswerCache(cacheKey);
     if (cached) {
-      this.debugLog(`[CacheManager] Cache hit! Returning cached result`);
+      console.log(`🎯 [CacheManager] Cache hit! Returning cached result`);
       return { cached, cacheKey };
     }
-    this.debugLog(`[CacheManager] No cache hit, proceeding with search`);
+    console.log(`❌ [CacheManager] No cache hit, proceeding with search`);
     return { cached: null, cacheKey };
   }
 
@@ -89,7 +88,7 @@ export class CacheManager {
    * @param result - The search result to cache
    */
   async setCache(cacheKey: string, result: ReActResult): Promise<void> {
-    this.debugLog(`[CacheManager] Caching result with key: ${cacheKey}`);
+    console.log(`💾 [CacheManager] Caching result with key: ${cacheKey.substring(0, 20)}...`);
     await this.cfg.cacheManager.setAnswerCache(cacheKey, result, 24 * 60 * 60);
   }
 }

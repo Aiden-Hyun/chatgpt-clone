@@ -65,9 +65,11 @@ export class ResultOrchestrator {
     debugTrace?: any[],
     metrics?: any
   ): Promise<ReActResult> {
+    console.log(`🎨 [ResultOrchestrator] Beginning synthesis with ${passages.length} passages in language: ${language}`);
     // Synthesize final answer from gathered passages
     this.debugLog(`[ResultOrchestrator] Beginning synthesis with ${passages.length} passages in language: ${language}`);
     const finalAnswer = await this.synthesize(question, language, passages, synthesisEngine, synthesisConfig);
+    console.log(`📝 [ResultOrchestrator] Synthesis complete. Answer length: ${finalAnswer.length} characters`);
     this.debugLog(`[ResultOrchestrator] Synthesis complete. Answer length: ${finalAnswer.length} characters`);
     
     // Build final result with citations and metadata
@@ -79,6 +81,7 @@ export class ResultOrchestrator {
       metrics,
     });
 
+    console.log(`🏆 [ResultOrchestrator] Final result built with ${result.citations?.length || 0} citations`);
     return result;
   }
 
