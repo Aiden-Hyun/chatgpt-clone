@@ -31,6 +31,7 @@ import { TavilyProvider } from "./providers/TavilyProvider.ts";
 import { SearchProviderManager } from "./services/SearchProviderManager.ts";
 import type { ReActResult } from "./types/AgentTypes.ts";
 import { APICallTracker } from "./utils/APICallTracker.ts";
+import { WorkflowOrchestrator } from "./core/WorkflowOrchestrator.ts";
 
 /**
  * ReActAgent - Main class that orchestrates the search and synthesis workflow
@@ -60,6 +61,7 @@ export class ReActAgent {
   
   // API Call Tracking
   private apiCallTracker: APICallTracker;    // Tracks all API calls for performance analysis
+  private workflowOrchestrator?: WorkflowOrchestrator;
   
   /**
    * Debug logging helper - only outputs when debug mode is enabled
@@ -90,17 +92,25 @@ export class ReActAgent {
     this.searchProviderManager = new SearchProviderManager(!!cfg.debug, cfg.cacheManager);
     
     // Register search providers
-    const tavilyApiKey = appConfig.secrets.tavily?.apiKey?.() || Deno.env.get("TAVILY_API_KEY") || "";
+    const getEnv = (key: string): string => {
+      try {
+        const env = (globalThis as any)?.Deno?.env?.get?.(key);
+        return typeof env === 'string' ? env : "";
+      } catch {
+        return "";
+      }
+    };
+    const tavilyApiKey = appConfig.secrets.tavily?.apiKey?.() || getEnv("TAVILY_API_KEY") || "";
     if (tavilyApiKey) {
       this.searchProviderManager.registerProvider(new TavilyProvider(tavilyApiKey));
     }
     
-    const bingApiKey = Deno.env.get("BING_API_KEY") || "";
+    const bingApiKey = getEnv("BING_API_KEY") || "";
     if (bingApiKey) {
       this.searchProviderManager.registerProvider(new BingProvider(bingApiKey));
     }
     
-    const serpApiKey = Deno.env.get("SERPAPI_API_KEY") || "";
+    const serpApiKey = getEnv("SERPAPI_API_KEY") || "";
     if (serpApiKey) {
       this.searchProviderManager.registerProvider(new SerpAPIProvider(serpApiKey));
     }
@@ -126,11 +136,24 @@ export class ReActAgent {
       planner: this.planner,
       facetManager: this.facetManager,
       progressTracker: this.progressTracker,
-      earlyTermination: this.earlyTermination,
       searchProviderManager: this.searchProviderManager,
       fetchService: cfg.fetchService,
       rerankService: cfg.rerankService,
       debug: !!cfg.debug,
+    });
+
+    // Initialize workflow orchestrator (extracted from run)
+    this.workflowOrchestrator = new WorkflowOrchestrator({
+      cfg: this.cfg,
+      budgetManager: this.budgetManager,
+      modelManager: this.modelManager,
+      cacheManager: this.cacheManager,
+      stateInitializer: this.stateInitializer,
+      facetManager: this.facetManager,
+      reactLoop: this.reactLoop,
+      resultOrchestrator: this.resultOrchestrator,
+      synthesisEngine: this.synthesisEngine,
+      apiCallTracker: this.apiCallTracker,
     });
   }
 
@@ -148,153 +171,10 @@ export class ReActAgent {
    * @returns Promise resolving to the final answer with citations
    */
   async run(question: string): Promise<ReActResult> {
-    this.debugLog(`[Agent] Starting search for question: "${question.substring(0, 50)}${question.length > 50 ? '...' : ''}"`);
-    console.log(`🚀 [Agent] Starting search for question: "${question}"`);
-    const start = Date.now();
-    this.trace = [];
-    
-    // Track API calls
-    let totalApiCalls = 0;
-    let totalTokensUsed = 0;
-    
-    console.log(`📊 [Agent] Performance tracking enabled - will log all API calls and token usage`);
-    
-    // Initialize budget constraints for this search session
-    const budget = this.budgetManager.initBudget(this.cfg.budget as any) as any;
-    this.debugLog(`[Agent] Budget initialized: ${JSON.stringify(budget)}`);
-    console.log(`🚀 [Agent] Budget initialized: ${budget.searches} searches, ${budget.fetches} fetches, ${Math.round(budget.timeMs/1000)}s time limit`);
-
-    // Get model configuration for cache and state initialization
-    const modelInfo = this.modelManager.getModelInfo();
-
-    // Check cache first - return cached result if available
-    console.log(`🚀 [Agent] Checking cache...`);
-    const { cached, cacheKey } = await this.cacheManager.checkCache(question, {
-      reasoningModel: modelInfo.reasoningModel,
-      synthesisModel: modelInfo.synthesisModel,
-    }, budget);
-    
-    if (cached) {
-      this.debugLog(`[Agent] Cache hit! Returning cached result`);
-      console.log(`✅ [Agent] Cache hit! Returning cached result`);
-      if (this.cfg.debug) this.trace.push({ event: "cache_hit", cacheKey });
-      return cached;
+    if (!this.workflowOrchestrator) {
+      throw new Error('WorkflowOrchestrator not initialized');
     }
-    this.debugLog(`[Agent] No cache hit, proceeding with search`);
-    console.log(`🚀 [Agent] No cache hit, proceeding with search`);
-
-    // Initialize search state including question facets
-    console.log(`🚀 [Agent] Initializing search state...`);
-    const state = await this.stateInitializer.initializeState(
-      question,
-      budget,
-      start,
-      this.facetManager,
-      {
-        reasoningModel: modelInfo.reasoningModel,
-        synthesisModel: modelInfo.synthesisModel,
-        reasoningProvider: modelInfo.reasoningModelProvider,
-        synthesisProvider: modelInfo.synthesisModelProvider,
-        openai: modelInfo.openai, // Add OpenAI client
-        modelConfig: this.modelManager.getModelConfig(true), // Add model config for reasoning
-        aiProviderManager: modelInfo.aiProviderManager, // NEW: Pass AI Provider Manager
-      }
-    );
-    console.log(`🚀 [Agent] State initialized with ${state.facets.length} facets: ${state.facets.map(f => f.name).join(', ')}`);
-
-    // Handle different question types
-    console.log(`🚀 [Agent] Processing question type: ${state.questionType}`);
-    
-    switch (state.questionType) {
-      case 'DIRECT_ANSWER':
-        console.log(`🚀 [Agent] Direct answer question detected - using pre-generated answer`);
-        console.log(`🚀 [Agent] Pre-generated answer: ${state.directAnswer ? state.directAnswer.substring(0, 100) + '...' : 'None'}`);
-        
-        // Use the pre-generated answer directly (no second API call)
-        console.log(`🚀 [Agent] Building direct answer result from pre-generated answer...`);
-        const directResult: ReActResult = {
-          final_answer_md: state.directAnswer || "Unable to provide direct answer.",
-          citations: [], // No citations for direct answers
-          trace: [{ event: "direct_answer", questionType: state.questionType }],
-          time_warning: undefined
-        };
-        console.log(`🚀 [Agent] Direct answer result built. Answer length: ${directResult.final_answer_md.length} chars`);
-        
-        // Cache the result for future use
-        console.log(`🚀 [Agent] Caching direct answer result...`);
-        await this.cacheManager.setCache(cacheKey, directResult);
-        
-        const directTime = ((Date.now() - start)/1000).toFixed(2);
-        console.log(`✅ [Agent] Direct answer complete in ${directTime}s`);
-        
-        // Print API call summary
-        this.apiCallTracker.printSummary();
-        
-        return directResult;
-        
-      case 'MINIMAL_SEARCH':
-        console.log(`🚀 [Agent] Minimal search question detected - limiting search resources`);
-        // Limit budget for minimal search
-        state.budget.searches = Math.min(state.budget.searches, 2);
-        state.budget.fetches = Math.min(state.budget.fetches, 1);
-        console.log(`🚀 [Agent] Limited budget: ${state.budget.searches} searches, ${state.budget.fetches} fetches`);
-        
-        // Execute the main ReAct loop with limited resources
-        console.log(`🚀 [Agent] Starting limited ReAct loop...`);
-        await this.reactLoop.execute(state, this.stateInitializer.getCurrentDateTime());
-        console.log(`🚀 [Agent] Limited ReAct loop completed. Final state - Passages: ${state.passages.length}, Facets covered: ${state.facets.filter(f => f.covered).length}/${state.facets.length}`);
-        break;
-        
-      case 'FULL_RESEARCH':
-        console.log(`🚀 [Agent] Full research question detected - using full search pipeline`);
-        // Execute the main ReAct loop with full resources
-        console.log(`🚀 [Agent] Starting full ReAct loop...`);
-        await this.reactLoop.execute(state, this.stateInitializer.getCurrentDateTime());
-        console.log(`🚀 [Agent] Full ReAct loop completed. Final state - Passages: ${state.passages.length}, Facets covered: ${state.facets.filter(f => f.covered).length}/${state.facets.length}`);
-        break;
-        
-      default:
-        console.log(`🚀 [Agent] Unknown question type: ${state.questionType}, defaulting to full research`);
-        // Execute the main ReAct loop until sufficient information is gathered
-        console.log(`🚀 [Agent] Starting ReAct loop...`);
-        await this.reactLoop.execute(state, this.stateInitializer.getCurrentDateTime());
-        console.log(`🚀 [Agent] ReAct loop completed. Final state - Passages: ${state.passages.length}, Facets covered: ${state.facets.filter(f => f.covered).length}/${state.facets.length}`);
-        break;
-    }
-
-    // Build final result with citations and metadata
-    console.log(`🚀 [Agent] Building final result...`);
-    const result = await this.resultOrchestrator.buildFinalResult(
-      question,
-      state.language, // NEW: Pass language from state
-      state.passages,
-      this.synthesisEngine,
-      {
-        currentDateTime: this.stateInitializer.getCurrentDateTime(),
-        provider: modelInfo.synthesisModelProvider,
-        model: modelInfo.synthesisModel,
-        openai: modelInfo.openai,
-        modelConfig: this.modelManager.getModelConfig(false),
-        aiProviderManager: modelInfo.aiProviderManager, // NEW: Pass AI Provider Manager
-        apiCallTracker: this.apiCallTracker, // NEW: Pass API Call Tracker
-      },
-      this.cfg.debug ? this.reactLoop.getTrace() : undefined,
-      state.metrics,
-    );
-    console.log(`🚀 [Agent] Final result built. Answer length: ${result.final_answer_md.length} chars, Citations: ${result.citations?.length || 0}`);
-
-    // Cache the result for future use
-    console.log(`🚀 [Agent] Caching result...`);
-    await this.cacheManager.setCache(cacheKey, result);
-    this.debugLog(`[Agent] Search complete in ${(Date.now() - start)/1000}s`);
-    
-    const totalTime = ((Date.now() - start)/1000).toFixed(2);
-    console.log(`✅ [Agent] Search complete in ${totalTime}s`);
-    
-    // Print API call summary
-    this.apiCallTracker.printSummary();
-    
-    return result;
+    return this.workflowOrchestrator.run(question);
   }
 }
 
