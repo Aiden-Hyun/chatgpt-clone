@@ -1,14 +1,14 @@
 import { BudgetManager } from "../components/BudgetManager.ts";
 import { FacetManager } from "../components/FacetManager.ts";
 import { SynthesisEngine } from "../components/SynthesisEngine.ts";
+import { DirectAnswerHandler } from "../handlers/DirectAnswerHandler.ts";
+import { FullResearchHandler } from "../handlers/FullResearchHandler.ts";
+import { MinimalSearchHandler } from "../handlers/MinimalSearchHandler.ts";
 import type { ReActResult } from "../types/AgentTypes.ts";
 import { APICallTracker } from "../utils/APICallTracker.ts";
-import { QuestionRouter } from "./QuestionRouter.ts";
-import { DirectAnswerHandler } from "../handlers/DirectAnswerHandler.ts";
-import { MinimalSearchHandler } from "../handlers/MinimalSearchHandler.ts";
-import { FullResearchHandler } from "../handlers/FullResearchHandler.ts";
 import { CacheManager } from "./CacheManager.ts";
 import { ModelManager } from "./ModelManager.ts";
+import { QuestionRouter } from "./QuestionRouter.ts";
 import { ReActLoop } from "./ReActLoop.ts";
 import { ResultOrchestrator } from "./ResultOrchestrator.ts";
 import { StateInitializer } from "./StateInitializer.ts";

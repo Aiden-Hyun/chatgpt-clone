@@ -2,12 +2,13 @@ import type { FacetManager } from "../components/FacetManager.ts";
 import type { Planner } from "../components/Planner.ts";
 import type { ProgressTracker } from "../components/ProgressTracker.ts";
 import type { SearchProviderManager } from "../services/SearchProviderManager.ts";
-import type { AgentState, Budget } from "../types/AgentTypes.ts";
+import type { AgentState } from "../types/AgentTypes.ts";
 import { distinct } from "../utils/text-utils.ts";
 import { isTimeSensitive } from "../utils/time-utils.ts";
 import { eTLDplus1 } from "../utils/url-utils.ts";
 import { ActionExecutor } from "./ActionExecutor.ts";
 import { EarlyTermination } from "./EarlyTermination.ts";
+import { BudgetManager } from "../components/BudgetManager.ts";
 
 export interface ReActLoopConfig {
   debug?: boolean;
@@ -44,9 +45,11 @@ export interface ReActLoopDependencies {
 export class ReActLoop {
   private deps: ReActLoopDependencies;
   private trace: any[] = [];
+  private budgetManager: BudgetManager;
 
   constructor(deps: ReActLoopDependencies) {
     this.deps = deps;
+    this.budgetManager = new BudgetManager();
   }
 
   /**
@@ -92,10 +95,9 @@ export class ReActLoop {
     let searchCount = 0; // NEW: Track number of searches performed
     this.deps.progressTracker.reset();
     
-    while (!this.isBudgetDepleted(budget) && 
+    while (!this.budgetManager.isBudgetDepleted(budget) && 
            Date.now() - start < budget.timeMs && 
-           iterations < MAX_ITERATIONS &&
-           this.deps.progressTracker.iterationsWithoutProgress < 3) {
+           iterations < MAX_ITERATIONS) {
       
       iterations++;
       console.log(`🔄 [ReActLoop] === ITERATION ${iterations} ===`);
@@ -205,7 +207,7 @@ export class ReActLoop {
       }
 
       // If time is running out, do final rerank and exit
-      if (Date.now() - start > state.budget.timeMs * 0.85 || this.isBudgetDepleted(state.budget)) {
+      if (Date.now() - start > state.budget.timeMs * 0.85 || this.budgetManager.isBudgetDepleted(state.budget)) {
         const reranked = await this.deps.rerankService.rerank(state.question, state.passages as any, 10);
         state.passages.splice(0, state.passages.length, ...(reranked.reranked_passages || state.passages).slice(0, 10) as any);
         if (this.deps.debug) this.trace.push({ event: "final_consolidate" });
@@ -306,9 +308,7 @@ export class ReActLoop {
    * @param b - Budget to check
    * @returns True if budget is depleted (no searches or fetches remaining)
    */
-  private isBudgetDepleted(b: Budget): boolean {
-    return b.searches <= 0 && b.fetches <= 0;
-  }
+  // isBudgetDepleted moved to BudgetController
 
 
 
