@@ -31,6 +31,12 @@ export class MessageAnimation {
   }): void {
     const { regenerateIndex, userMsg, assistantMsg, messageId, requestId } = request;
 
+    console.log('🎭 [MessageAnimation] Updating UI state for request:', requestId, {
+      regenerateIndex,
+      userMessageId: userMsg.id,
+      assistantMessageId: assistantMsg.id
+    });
+
     this.loggingService.debug(`Updating UI state for request ${requestId}`, { 
       regenerateIndex, 
       messageId
@@ -45,12 +51,23 @@ export class MessageAnimation {
 
     // Only set typing for new messages, not for regeneration
     if (regenerateIndex === undefined) {
+      console.log('⌨️ [MessageAnimation] Setting typing indicator ON for new message');
       this.typingStateService.setTyping(true);
+    } else {
+      console.log('⌨️ [MessageAnimation] Skipping typing indicator for regeneration');
     }
+
+    console.log('✅ [MessageAnimation] UI state updated successfully');
   }
 
   animateResponse(request: AnimationRequest): void {
     const { fullContent, regenerateIndex, messageId, requestId } = request;
+
+    console.log('🎬 [MessageAnimation] Starting response animation for request:', requestId, {
+      contentLength: fullContent.length,
+      regenerateIndex,
+      messageId
+    });
 
     this.loggingService.debug(`Starting animation for request ${requestId}`, { 
       messageId, 
@@ -64,9 +81,13 @@ export class MessageAnimation {
       regenerateIndex,
       messageId
     });
+
+    console.log('✅ [MessageAnimation] Animation started successfully');
   }
 
   clearTypingState(): void {
+    console.log('⌨️ [MessageAnimation] Clearing typing indicator');
     this.typingStateService.setTyping(false);
+    console.log('✅ [MessageAnimation] Typing indicator cleared');
   }
 }
