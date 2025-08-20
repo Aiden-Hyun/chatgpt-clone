@@ -1,5 +1,3 @@
-import OpenAI from "npm:@openai/openai";
-import { config as appConfig } from "../../../shared/config.ts";
 import { AnthropicProvider } from "../providers/AnthropicProvider.ts";
 import { OpenAIProvider } from "../providers/OpenAIProvider.ts";
 import { AIProviderManager } from "../services/AIProviderManager.ts";
@@ -17,8 +15,8 @@ export interface ModelInfo {
   synthesisModel: string;
   reasoningModelProvider: ModelProvider;
   synthesisModelProvider: ModelProvider;
-  openai: OpenAI | null;
-  aiProviderManager: AIProviderManager; // NEW: AI Provider Manager
+  openai: any | null; // Keep for backward compatibility
+  aiProviderManager: AIProviderManager;
 }
 
 
@@ -51,7 +49,7 @@ export class ModelManager {
   private synthesisModel: string;
   private reasoningModelProvider: ModelProvider;
   private synthesisModelProvider: ModelProvider;
-  private openai: OpenAI | null = null;
+  private openai: any | null = null;
   private aiProviderManager: AIProviderManager;
   private cfg: ReActAgentConfig;
 
@@ -77,20 +75,17 @@ export class ModelManager {
     // Initialize AI Provider Manager
     this.aiProviderManager = new AIProviderManager(cfg.debug);
     
-    // Initialize OpenAI client only if needed
+    // Register OpenAI provider if needed
     if (this.reasoningModelProvider === 'openai' || this.synthesisModelProvider === 'openai') {
       try {
-        const apiKey = appConfig.secrets.openai.apiKey();
-        console.log(`[ModelManager] Debug: OpenAI API key length: ${apiKey ? apiKey.length : 0}`);
-        this.openai = new OpenAI({ apiKey });
-        console.log(`[ModelManager] Debug: OpenAI client initialized successfully`);
+        console.log(`[ModelManager] Debug: Registering OpenAI provider`);
         
-        // Register OpenAI provider
-        const openaiProvider = new OpenAIProvider(this.openai);
+        // Register OpenAI provider (it handles its own API key)
+        const openaiProvider = new OpenAIProvider();
         this.aiProviderManager.registerProvider(openaiProvider);
         console.log(`[ModelManager] Debug: OpenAI provider registered`);
       } catch (error) {
-        console.error(`[ModelManager] Error initializing OpenAI client:`, error);
+        console.error(`[ModelManager] Error registering OpenAI provider:`, error);
         throw error;
       }
     }

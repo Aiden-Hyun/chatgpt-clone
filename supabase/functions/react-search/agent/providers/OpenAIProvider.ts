@@ -1,16 +1,16 @@
 import type { AIProvider, AIProviderConfig, AIProviderResponse } from "../types/AIProvider.ts";
+import { config as appConfig } from "../../../shared/config.ts";
 
 /**
  * OpenAI Provider Implementation
  * 
- * This class wraps the OpenAI client to provide a consistent interface
- * for making API calls to OpenAI models.
+ * This class handles OpenAI API calls using direct fetch instead of SDK
  */
 export class OpenAIProvider implements AIProvider {
-  private client: any;
+  private apiKey: string;
 
-  constructor(openaiClient: any) {
-    this.client = openaiClient;
+  constructor() {
+    this.apiKey = appConfig.secrets.openai.apiKey();
   }
 
   /**
@@ -22,10 +22,6 @@ export class OpenAIProvider implements AIProvider {
    * @returns Promise resolving to the OpenAI response
    */
   async call(model: string, messages: any[], config: AIProviderConfig): Promise<AIProviderResponse> {
-    if (!this.client) {
-      throw new Error('OpenAI client not initialized');
-    }
-
     // Build the request configuration
     const requestConfig: any = {
       model,
@@ -58,8 +54,21 @@ export class OpenAIProvider implements AIProvider {
     });
 
     try {
-      const response = await this.client.chat.completions.create(requestConfig);
-      return response;
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestConfig),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error?.message || 'OpenAI API error');
+      }
+
+      return data;
     } catch (error) {
       console.error(`🤖 [OpenAIProvider] OpenAI API call failed:`, error);
       throw error;
