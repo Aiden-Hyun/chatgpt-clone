@@ -1,6 +1,5 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { GLOBAL_EVENT_TYPES, GlobalEvents } from '../../../shared/lib/globalEvents';
 import { supabase } from '../../../shared/lib/supabase';
 import { useAuth } from '../../auth';
 import { chatDebugLog } from '../constants';
@@ -16,7 +15,7 @@ export const useChatRooms = () => {
 
   const fetchRooms = useCallback(async () => {
     if (!session) {
-      router.replace('/login');
+     // router.replace('/login');
       return;
     }
 

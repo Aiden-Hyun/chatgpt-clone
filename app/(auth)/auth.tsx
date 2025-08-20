@@ -9,18 +9,21 @@ import Constants from 'expo-constants';
 import { router, usePathname } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    View
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View
 } from 'react-native';
 
 import { supabase } from '@/shared/lib/supabase';
 import { createAuthStyles } from './auth.styles';
 
 export default function AuthScreen() {
+  console.log('[AuthScreen] 🎯 About to call useAuth()');
   const { session } = useAuth();
+  console.log('[AuthScreen] ✅ useAuth() called successfully');
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});

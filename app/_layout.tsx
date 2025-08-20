@@ -19,37 +19,71 @@ import { resetDebugGlobals } from '../src/shared/lib/resetDebugGlobals';
 configureServices();
 
 function ProtectedRoutes() {
+  console.log('[ProtectedRoutes] 🎯 About to call useAuth()');
   const { session, isLoading } = useAuth();
+  console.log('[ProtectedRoutes] ✅ useAuth() called successfully');
+  
   const router = useRouter();
   const pathname = usePathname();
+
+  console.log('[ProtectedRoutes] 🔄 Render - Component ID:', Math.random().toString(36).substr(2, 9));
+  console.log('[ProtectedRoutes] 📊 State:', { 
+    hasSession: !!session, 
+    isLoading, 
+    pathname,
+    userId: session?.user?.id,
+    timestamp: new Date().toISOString()
+  });
 
   // Define auth routes that don't require authentication
   const authRoutes = ['/auth', '/signup', '/forgot-password'];
   const isAuthRoute = authRoutes.includes(pathname);
 
+  console.log('[ProtectedRoutes] 🛣️ Route check:', { pathname, isAuthRoute, authRoutes });
+
   // 🧹 MEMORY LEAK PREVENTION: Reset debug globals when app backgrounds
   useEffect(() => {
+    console.log('[ProtectedRoutes] 📱 Setting up AppState listener');
     const subscription = AppState.addEventListener('change', (nextAppState) => {
+      console.log('[ProtectedRoutes] 📱 AppState changed:', nextAppState);
       if (nextAppState !== 'active') {
+        console.log('[ProtectedRoutes] 🧹 Resetting debug globals');
         resetDebugGlobals();
       }
     });
 
-    return () => subscription.remove();
+    return () => {
+      console.log('[ProtectedRoutes] 🧹 Cleaning up AppState listener');
+      subscription.remove();
+    };
   }, []);
 
   useEffect(() => {
+    console.log('[ProtectedRoutes] 🔍 Auth check effect triggered:', {
+      isLoading,
+      hasSession: !!session,
+      isAuthRoute,
+      pathname
+    });
+    
     if (!isLoading && !session && !isAuthRoute) {
+      console.log('[ProtectedRoutes] 🔀 Redirecting to auth - no session and not on auth route');
       // Only redirect to auth if user is not on an auth route
       router.replace('/auth');
+    } else {
+      console.log('[ProtectedRoutes] ✅ No redirect needed');
     }
   }, [isLoading, session, pathname, isAuthRoute, router]);
 
   if (isLoading) {
+    console.log('[ProtectedRoutes] ⏳ Showing loading screen');
     return <LoadingScreen />;
   }
 
+  console.log('[ProtectedRoutes] 🎨 Rendering main content');
+
   const handleSettings = () => {
+    console.log('[ProtectedRoutes] ⚙️ Settings button clicked');
     // Store the current pathname before navigating to settings
     const currentPath = pathname || '/chat';
     navigationTracker.setPreviousRoute(currentPath);
@@ -73,7 +107,6 @@ function ProtectedRoutes() {
         <Drawer.Screen name="(auth)" />
         <Drawer.Screen name="settings/index" />
         <Drawer.Screen name="settings/theme-settings" />
-        <Drawer.Screen name="theme-showcase" />
         <Drawer.Screen name="chat/index" />
         <Drawer.Screen name="chat/[roomId]" />
         <Drawer.Screen name="design-showcase" />
@@ -84,10 +117,14 @@ function ProtectedRoutes() {
 }
 
 export default function Layout() {
+  console.log('[Layout] 🔄 Layout render - Component ID:', Math.random().toString(36).substr(2, 9));
+  
   const [fontsLoaded] = useFonts({
     CascadiaMono: require('../assets/fonts/Cascadia/CascadiaMono.ttf'),
     CascadiaMonoBold: require('../assets/fonts/Cascadia/CascadiaMono-Bold.otf'),
   });
+
+  console.log('[Layout] 📚 Fonts loaded:', fontsLoaded);
 
   return (
     <SafeAreaProvider>
