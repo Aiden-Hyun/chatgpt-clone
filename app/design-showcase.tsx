@@ -1,19 +1,18 @@
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Button } from '../src/components/ui/Button';
-import { CustomAlert, useCustomAlert, useToast } from '../src/features/alert';
-import { LanguageSelector, useLanguageContext } from '../src/features/language';
-import { useAppTheme } from '../src/features/theme/theme';
-// Import Lucide icons for showcase
-
-// Import Expo Vector Icons
+import { Button, Input, Text } from '@/components';
+import { CustomAlert, useCustomAlert, useToast } from '@/features/alert';
+import { LanguageSelector, useLanguageContext } from '@/features/language';
+import { useAppTheme } from '@/features/theme/theme';
+import { getButtonSize, getHeaderHeight } from '@/shared/utils/layout';
 import { AntDesign, Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView, Switch, TextInput, TouchableOpacity, View } from 'react-native';
 
 // Heroicons temporarily disabled due to missing icons
 
 export default function DesignShowcaseScreen() {
   const { t } = useLanguageContext();
+  const router = useRouter();
   const theme = useAppTheme();
   const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
   const { showSuccess, showError, showWarning, showInfo } = useToast();
@@ -48,14 +47,15 @@ export default function DesignShowcaseScreen() {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
       padding: theme.spacing.lg,
+      paddingTop: getHeaderHeight(), // Use utility for consistent header height
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.light,
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: getButtonSize('action'),
+      height: getButtonSize('action'),
+      borderRadius: getButtonSize('action') / 2,
       backgroundColor: theme.colors.background.secondary,
       justifyContent: 'center',
       alignItems: 'center',
@@ -902,7 +902,7 @@ export default function DesignShowcaseScreen() {
           
           <View style={styles.card}>
             <Text style={styles.label}>Text Input</Text>
-                          <TextInput
+                          <Input
                 style={styles.input}
                 placeholder={t('placeholder.enter_text')}
                 placeholderTextColor={theme.colors.text.tertiary}
@@ -912,7 +912,7 @@ export default function DesignShowcaseScreen() {
 
             <Text style={styles.label}>Chat Input (Multi-line)</Text>
             <View style={styles.chatInputContainer}>
-              <TextInput
+              <Input
                 style={styles.chatInput}
                 placeholder="Type a message..."
                 placeholderTextColor={theme.colors.text.tertiary}

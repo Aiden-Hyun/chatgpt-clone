@@ -1,4 +1,5 @@
 import { Platform, StyleSheet } from "react-native";
+import { getButtonSize, getHeaderHeight } from "../../../../shared/utils/layout";
 import { AppTheme } from "../../../theme/theme.types";
 
 /**
@@ -9,7 +10,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     header: {
       padding: theme.spacing.lg,
-      paddingTop: theme.spacing.lg + 40, // Add extra padding for iOS status bar
+      paddingTop: getHeaderHeight(), // Use utility instead of hardcoded value
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -18,9 +19,9 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       ...theme.shadows.light,
     },
     backButton: {
-      minWidth: 44,
-      minHeight: 44,
-      borderRadius: 22,
+      minWidth: getButtonSize('header'),
+      minHeight: getButtonSize('header'),
+      borderRadius: getButtonSize('header') / 2,
       backgroundColor: "transparent", // Transparent background for cleaner look
       justifyContent: "center",
       alignItems: "center",
@@ -46,9 +47,9 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       fontWeight: theme.fontWeights.semibold as "600",
     },
     menuButton: {
-      minWidth: 44,
-      minHeight: 44,
-      borderRadius: 22,
+      minWidth: getButtonSize('header'),
+      minHeight: getButtonSize('header'),
+      borderRadius: getButtonSize('header') / 2,
       backgroundColor: "transparent", // Transparent background for cleaner look
       justifyContent: "center",
       alignItems: "center",

@@ -1,22 +1,24 @@
 
-import { FormWrapper } from '@/components';
-import { Button, Input, Text } from '@/components/ui';
+import { Button, FormWrapper, Input, Text } from '@/components';
 import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import { getButtonSize, getHeaderHeight } from '@/shared/utils/layout';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Platform, TouchableOpacity, View } from 'react-native';
-import { createForgotPasswordStyles } from './forgot-password.styles';
+import { Alert, TouchableOpacity, View } from 'react-native';
+import createForgotPasswordStyles from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
+  const { t } = useLanguageContext();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [hasError, setHasError] = useState(false);
+
   const { resetPassword, isLoading } = usePasswordReset();
   const { showError } = useToast();
-  const { t } = useLanguageContext();
 
   const theme = useAppTheme();
   const styles = createForgotPasswordStyles(theme);
@@ -98,11 +100,7 @@ export default function ForgotPasswordScreen() {
         alignItems: 'center',
         paddingHorizontal: theme.spacing.md,
         paddingVertical: theme.spacing.md,
-        paddingTop: Platform.OS === 'ios' 
-          ? theme.spacing.md + 44 
-          : Platform.OS === 'android' 
-            ? theme.spacing.md + 24  // Android status bar height
-            : theme.spacing.md,
+        paddingTop: getHeaderHeight(), // Use utility instead of platform-specific logic
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.border.light,
         backgroundColor: theme.colors.background.primary,
@@ -112,30 +110,36 @@ export default function ForgotPasswordScreen() {
           style={{
             padding: theme.spacing.sm,
             marginRight: theme.spacing.md,
-            // Android-specific: Increase touch area for better accessibility
-            ...(Platform.OS === 'android' && {
-              minWidth: 48,
-              minHeight: 48,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }),
+            // Use consistent button size for all platforms
+            minWidth: getButtonSize('action'),
+            minHeight: getButtonSize('action'),
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
-        <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: 40 }}>
+        <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
           Reset Password
         </Text>
       </View>
 
       <View style={styles.container}>
-        <Text variant="body" style={styles.description}>
-          Enter your email address and we will send you a link to reset your password.
+        <Text variant="body"
+          style={{
+            fontSize: theme.fontSizes.md,
+            color: theme.colors.text.secondary,
+            textAlign: 'center',
+            marginBottom: theme.spacing.xl,
+            lineHeight: 24,
+          }}
+        >
+          Enter your email address and we'll send you a link to reset your password.
         </Text>
-        
+
         <FormWrapper onSubmit={handleResetPassword} style={{ width: '100%' }}>
           <Input
-            placeholder="Email"
+            placeholder={t('auth.email')}
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -143,18 +147,30 @@ export default function ForgotPasswordScreen() {
             autoCorrect={false}
             editable={!isLoading}
             variant="filled"
-            onFocus={() => console.log('Email input focused on forgot-password')}
-            onBlur={() => console.log('Email input blurred on forgot-password')}
+            returnKeyType="done"
+            onSubmitEditing={handleResetPassword}
+            blurOnSubmit={false}
+          />
+          
+          <Button
+            variant="primary"
+            size="lg"
+            label={isLoading ? t('auth.sending') : t('auth.reset_password')}
+            onPress={handleResetPassword}
+            disabled={isLoading}
+            isLoading={isLoading}
+            fullWidth
+            containerStyle={{ marginTop: theme.spacing.lg }}
           />
         </FormWrapper>
         
-        <Button 
-          label={isLoading ? 'Sending...' : 'Send Reset Link'}
-          onPress={handleResetPassword}
+        <Button
+          variant="link"
+          size="md"
+          label={t('auth.back_to_signin')}
+          onPress={() => router.replace('/signin')}
           disabled={isLoading}
-          isLoading={isLoading}
-          fullWidth
-          containerStyle={styles.button}
+          containerStyle={{ marginTop: theme.spacing.sm }}
         />
       </View>
     </View>

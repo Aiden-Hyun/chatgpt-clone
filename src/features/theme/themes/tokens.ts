@@ -45,3 +45,28 @@ export const letterSpacing = {
   normal: 0.2,
   wide: 0.5,
 };
+
+// Layout constants for consistent spacing and sizing across the app
+export const layout = {
+  // Standard header height (56px + status bar)
+  headerHeight: 30,
+  
+  // Status bar heights for different platforms
+  statusBarHeight: {
+    ios: 44,
+    android: 24,
+  },
+  
+  // Standard button sizes for different use cases
+  buttonSizes: {
+    header: 44,    // For header buttons (menu, back, etc.)
+    action: 48,    // For action buttons (submit, save, etc.)
+    icon: 32,      // For icon-only buttons (interactions, etc.)
+  },
+  
+  // Standard screen padding
+  screenPadding: {
+    horizontal: 16, // spacing.lg
+    vertical: 12,   // spacing.md
+  },
+};

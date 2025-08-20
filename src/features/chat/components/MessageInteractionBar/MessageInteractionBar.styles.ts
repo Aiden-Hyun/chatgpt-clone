@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { getButtonSize } from '../../../../shared/utils/layout';
 import { AppTheme } from '../../../theme/theme.types';
 
 export const createMessageInteractionBarStyles = (theme: AppTheme) => {
@@ -15,15 +16,15 @@ export const createMessageInteractionBarStyles = (theme: AppTheme) => {
       marginBottom: theme.spacing.sm,
     },
     iconButton: {
-      width: 32,
-      height: 32,
+      width: getButtonSize('icon'),
+      height: getButtonSize('icon'),
       paddingVertical: 0,
       paddingHorizontal: 0,
-      minHeight: 32,
+      minHeight: getButtonSize('icon'),
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: theme.spacing.md,
-      borderRadius: 16,
+      borderRadius: getButtonSize('icon') / 2,
       backgroundColor: 'transparent',
     },
     iconText: {

@@ -1,22 +1,24 @@
 
-import { FormWrapper } from '@/components';
-import { Button, Input, Text } from '@/components/ui';
+import { Button, FormWrapper, Input, Text } from '@/components';
 import { useToast } from '@/features/alert';
-import { useEmailSignup } from '@/features/auth/hooks';
-import { useLanguageContext } from '@/features/language';
+import { useEmailSignup } from '@/features/auth';
+import { LanguageSelector, useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import { getButtonSize, getHeaderHeight } from '@/shared/utils/layout';
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
-import { createSignupStyles } from './signup.styles';
+import createSignupStyles from './signup.styles';
 
 export default function SignupScreen() {
   const { t } = useLanguageContext();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+
   const { signUp, isLoading } = useEmailSignup();
   const { showError } = useToast();
 
@@ -150,11 +152,7 @@ export default function SignupScreen() {
         alignItems: 'center',
         paddingHorizontal: theme.spacing.md,
         paddingVertical: theme.spacing.md,
-        paddingTop: Platform.OS === 'ios' 
-          ? theme.spacing.md + 44 
-          : Platform.OS === 'android' 
-            ? theme.spacing.md + 24  // Android status bar height
-            : theme.spacing.md,
+        paddingTop: getHeaderHeight(), // Use utility instead of platform-specific logic
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.border.light,
         backgroundColor: theme.colors.background.primary,
@@ -164,18 +162,16 @@ export default function SignupScreen() {
           style={{
             padding: theme.spacing.sm,
             marginRight: theme.spacing.md,
-            // Android-specific: Increase touch area for better accessibility
-            ...(Platform.OS === 'android' && {
-              minWidth: 48,
-              minHeight: 48,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }),
+            // Use consistent button size for all platforms
+            minWidth: getButtonSize('action'),
+            minHeight: getButtonSize('action'),
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
-        <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: 40 }}>
+        <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
           {t('auth.create_account')}
         </Text>
       </View>
@@ -244,30 +240,37 @@ export default function SignupScreen() {
               variant="filled"
               returnKeyType="done"
               onSubmitEditing={handleConfirmPasswordSubmit}
+              blurOnSubmit={false}
               status={errors.confirmPassword ? 'error' : 'default'}
               errorText={errors.confirmPassword}
             />
+            
+            <Button
+              variant="primary"
+              size="lg"
+              label={isLoading ? t('auth.creating_account') : t('auth.create_account')}
+              onPress={handleSignup}
+              disabled={isLoading}
+              isLoading={isLoading}
+              fullWidth
+              containerStyle={{ marginTop: theme.spacing.lg }}
+            />
           </FormWrapper>
           
-          <Button 
-            label={isLoading ? t('auth.signing_up') : t('auth.sign_up')}
-            onPress={() => {
-              console.log('Signup button pressed');
-              handleSignup();
-            }}
-            disabled={isLoading}
-            isLoading={isLoading}
-            fullWidth
-            containerStyle={styles.button}
-          />
-          
-          <Button 
+          {/* Links */}
+          <Button
             variant="link"
-            label={t('auth.have_account_link')}
+            size="md"
+            label={t('auth.already_have_account')}
             onPress={handleGoToSignin}
             disabled={isLoading}
-            containerStyle={styles.linkButton}
+            containerStyle={{ marginTop: theme.spacing.sm }}
           />
+          
+          {/* Language Selector */}
+          <View style={{ marginTop: theme.spacing.xl, alignItems: 'center' }}>
+            <LanguageSelector />
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

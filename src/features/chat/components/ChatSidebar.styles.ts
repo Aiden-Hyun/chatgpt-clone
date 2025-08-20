@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { AppTheme } from "../../theme/theme.types";
+import { getHeaderHeight } from "../../../shared/utils/layout";
 
 export const createChatSidebarStyles = (theme: AppTheme) => {
   return StyleSheet.create({
@@ -27,6 +28,7 @@ export const createChatSidebarStyles = (theme: AppTheme) => {
       justifyContent: "space-between",
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
+      paddingTop: getHeaderHeight(), // Use consistent header height
     },
     newChatButton: {
       flexDirection: "row",

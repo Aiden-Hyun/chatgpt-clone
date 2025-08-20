@@ -1,5 +1,6 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { AppTheme } from '../../src/features/theme/theme.types';
+import { getButtonSize, getHeaderHeight } from '../../src/shared/utils/layout';
 
 export const createSettingsStyles = (theme: AppTheme) => {
   
@@ -14,10 +15,7 @@ export const createSettingsStyles = (theme: AppTheme) => {
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      // Android-specific: Add extra padding for status bar
-      paddingTop: Platform.OS === 'android' 
-        ? theme.spacing.md + 24  // Android status bar height
-        : theme.spacing.md,
+      paddingTop: getHeaderHeight(), // Use utility instead of platform-specific logic
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.light,
       backgroundColor: theme.colors.background.primary,
@@ -25,19 +23,17 @@ export const createSettingsStyles = (theme: AppTheme) => {
     backButton: {
       padding: theme.spacing.sm,
       borderRadius: theme.borderRadius.md,
-      // Android-specific: Increase touch area for better accessibility
-      ...(Platform.OS === 'android' && {
-        minWidth: 48,
-        minHeight: 48,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }),
+      // Use consistent button size for all platforms
+      minWidth: getButtonSize('action'),
+      minHeight: getButtonSize('action'),
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     headerTitle: {
       marginBottom: 0, // Remove margin since Text component handles spacing
     },
     headerSpacer: {
-      width: 44, // Same width as back button for centering
+      width: getButtonSize('header'), // Use consistent button size for centering
     },
     content: {
       flex: 1,

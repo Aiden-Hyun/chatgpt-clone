@@ -1,22 +1,26 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ClaymorphismDemo, Text } from '../src/components/ui';
-import { useThemeContext, useThemeStyle } from '../src/features/theme';
+import { Text } from '../src/components/ui';
+import { useThemeStyle } from '../src/features/theme/theme';
+import { getButtonSize, getHeaderHeight } from '../src/shared/utils/layout';
 
 export default function ClaymorphismShowcaseScreen() {
   const { themeStyle, setThemeStyle } = useThemeStyle();
-  const { currentTheme } = useThemeContext();
-  
-  // Set claymorphism theme when entering this screen
+  const router = useRouter();
+  const currentTheme = themeStyle === 'claymorphism' 
+    ? require('../src/features/theme/themes/claymorphism').claymorphismTheme.theme.light
+    : themeStyle === 'glassmorphism'
+    ? require('../src/features/theme/themes/glassmorphism').glassmorphismTheme.theme.light
+    : require('../src/features/theme/themes/default').defaultTheme.light;
+
+  // Import the demo component based on theme
+  const ClaymorphismDemo = require('../src/features/theme/components/ClaymorphismDemo').ClaymorphismDemo;
+
+  // Store the previous theme to restore it when leaving
   useEffect(() => {
     const previousTheme = themeStyle;
-    
-    // Switch to claymorphism theme
-    setThemeStyle('claymorphism');
-    
-    // Restore previous theme when leaving
     return () => {
       setThemeStyle(previousTheme);
     };
@@ -32,15 +36,21 @@ export default function ClaymorphismShowcaseScreen() {
       alignItems: 'center',
       paddingHorizontal: currentTheme.spacing.md,
       paddingVertical: currentTheme.spacing.md,
+      paddingTop: getHeaderHeight(), // Use utility for consistent header height
       borderBottomWidth: 1,
       borderBottomColor: currentTheme.colors.border.light,
     },
     backButton: {
       padding: currentTheme.spacing.sm,
       marginRight: currentTheme.spacing.md,
+      // Use consistent button size
+      minWidth: getButtonSize('action'),
+      minHeight: getButtonSize('action'),
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     headerSpacer: {
-      width: 40, // Balance the back button width
+      width: getButtonSize('header'), // Use consistent button size for centering
     },
     scrollView: {
       flex: 1,
