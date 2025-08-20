@@ -52,14 +52,14 @@ function ProtectedRoutes() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="settings/index" />
-        <Stack.Screen name="settings/new-settings" />
+        
         <Stack.Screen name="settings/theme-settings" />
         <Stack.Screen name="theme-showcase" />
-        <Stack.Screen name="claymorphism-showcase" />
+       
         <Stack.Screen name="chat/index" />
         <Stack.Screen name="chat/[roomId]" />
         <Stack.Screen name="design-showcase" />
-        <Stack.Screen name="chatgpt-demo" />
+        
       </Stack>
       <ToastContainer />
     </>

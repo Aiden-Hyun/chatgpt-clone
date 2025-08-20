@@ -6,7 +6,7 @@ import { getButtonSize, getHeaderHeight } from '@/shared/utils/layout';
 import { AntDesign, Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, Switch, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Switch, TextInput, TouchableOpacity, View } from 'react-native';
 
 // Heroicons temporarily disabled due to missing icons
 
@@ -842,7 +842,7 @@ export default function DesignShowcaseScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton as any}>
@@ -1588,6 +1588,6 @@ export default function DesignShowcaseScreen() {
           hideAlert();
         }}
       />
-    </SafeAreaView>
+    </View>
   );
 } 

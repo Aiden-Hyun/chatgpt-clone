@@ -39,6 +39,10 @@ export const createSettingsStyles = (theme: AppTheme) => {
       flex: 1,
       paddingHorizontal: theme.spacing.lg,
     },
+    contentContainer: {
+      paddingBottom: theme.spacing.xxl,
+      minHeight: '100%',
+    },
     section: {
       marginTop: theme.spacing.xl,
     },

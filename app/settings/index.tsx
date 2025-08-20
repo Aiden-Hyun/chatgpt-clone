@@ -2,7 +2,7 @@ import { Button, Card, Input, ListItem, Text } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, ScrollView, Switch, View } from 'react-native';
+import { ScrollView, Switch, View, SafeAreaView, Platform } from 'react-native';
 import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert';
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';
@@ -80,6 +80,7 @@ export default function SettingsScreen() {
     setEditedName(userName || '');
   };
 
+  
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -94,7 +95,13 @@ export default function SettingsScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={Platform.OS !== 'web'}
+        bounces={Platform.OS === 'ios'}
+        alwaysBounceVertical={Platform.OS === 'ios'}
+      >
         {/* Account Section */}
         <View style={styles.section}>
           <Text variant="h3" weight="semibold" style={styles.sectionTitle}>{t('settings.account')}</Text>

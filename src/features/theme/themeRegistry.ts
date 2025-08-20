@@ -59,14 +59,14 @@ class ThemeRegistry {
    * Get the default theme
    * @returns Default theme
    */
+
   getDefaultTheme(): ThemeWithMetadata {
-    // Return the first registered theme if no default is set
     if (this.themes.size === 0) {
       throw new Error('No themes registered');
     }
     
     // Try to get the default theme, fallback to first theme if not found
-    return this.themes.get('default') || this.themes.values().next().value;
+    return this.themes.get('default') || this.themes.values().next().value!;
   }
 }
 

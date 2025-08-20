@@ -6,7 +6,7 @@ import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Animated, Modal, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../constants';
@@ -188,8 +188,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
           style={[
             styles.sidebar,
             {
-              paddingTop: Platform.OS === 'ios' ? insets.top + 6 : 0,
-              paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
+              //paddingTop: Platform.OS === 'ios' ? insets.top + 6 : 0,
+              //paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
               transform: [{ translateX: slideAnim }],
             },
           ]}

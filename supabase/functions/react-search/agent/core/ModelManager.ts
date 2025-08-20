@@ -4,6 +4,7 @@ import { AnthropicProvider } from "../providers/AnthropicProvider.ts";
 import { OpenAIProvider } from "../providers/OpenAIProvider.ts";
 import { AIProviderManager } from "../services/AIProviderManager.ts";
 import type { ProviderName } from "../types/AIProvider.ts";
+import type { ReActAgentConfig } from "../types/AgentTypes.ts";
 
 type ModelProvider = 'openai' | 'anthropic';
 

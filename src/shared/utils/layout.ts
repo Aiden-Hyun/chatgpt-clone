@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 import { layout } from '../../features/theme/themes/tokens';
 
 /**
@@ -6,8 +5,8 @@ import { layout } from '../../features/theme/themes/tokens';
  * Returns header height (56px) + platform-specific status bar height
  */
 export const getHeaderHeight = (): number => {
-  const statusBar = Platform.OS === 'ios' ? layout.statusBarHeight.ios : layout.statusBarHeight.android;
-  return layout.headerHeight + statusBar;
+  //const statusBar = Platform.OS === 'ios' ? layout.statusBarHeight.ios : layout.statusBarHeight.android;
+  return layout.headerHeight + 34;
 };
 
 /**
