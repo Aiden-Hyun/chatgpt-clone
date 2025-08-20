@@ -18,6 +18,8 @@ import { resetDebugGlobals } from '../src/shared/lib/resetDebugGlobals';
 // Initialize services
 configureServices();
 
+
+
 function AppContent() {
   const [fontsLoaded] = useFonts({
     CascadiaMono: require('../assets/fonts/Cascadia/CascadiaMono.ttf'),

@@ -8,10 +8,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router, usePathname } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import mobileStorage from '../../../shared/lib/mobileStorage';
 import { navigationTracker } from '../../../shared/lib/navigationTracker';
 import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../constants';
 import { createCustomDrawerStyles } from './CustomDrawer.styles';
+
 
 interface CustomDrawerProps {
   onNewChat?: () => void;
@@ -149,6 +151,7 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
   };
 
   return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -229,5 +232,6 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
         />
       </View>
     </View>
+    </SafeAreaView>
   );
 };
