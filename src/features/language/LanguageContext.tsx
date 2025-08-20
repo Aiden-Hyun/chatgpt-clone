@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 // Define the translation function type
 type TranslationFunction = (key: string) => string;
@@ -616,30 +616,21 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
-  // Debug when currentLanguage changes
-  useEffect(() => {
-    console.log('🌍 Language changed to:', currentLanguage);
-  }, [currentLanguage]);
-
-  // 🎯 STEP 3: Memoize translation function to prevent recreation
+  // Memoize translation function to prevent recreation
   const t: TranslationFunction = useCallback((key: string) => {
     const languageTranslations = translations[currentLanguage] || translations.en;
     return languageTranslations[key] || key;
   }, [currentLanguage]); // Only recreate when language actually changes
 
-  // 🎯 STEP 3: Memoize setLanguage function to prevent recreation
+  // Memoize setLanguage function to prevent recreation
   const setLanguage = useCallback((language: string) => {
-    console.log('🌍 setLanguage called with:', language);
-    console.log('🌍 Available languages:', Object.keys(translations));
     if (translations[language]) {
-      console.log('🌍 Setting language to:', language);
+      console.log('🌍 [LanguageContext] Setting language to:', language);
       setCurrentLanguage(language);
-    } else {
-      console.log('🌍 Language not found:', language);
     }
   }, []); // Stable function - no dependencies needed
 
-  // 🎯 STEP 3: Memoize LanguageContext value to prevent unnecessary re-renders
+  // Memoize LanguageContext value to prevent unnecessary re-renders
   const value = useMemo(() => ({
     t,
     currentLanguage,

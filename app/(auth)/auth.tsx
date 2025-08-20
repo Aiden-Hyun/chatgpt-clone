@@ -20,9 +20,7 @@ import { supabase } from '@/shared/lib/supabase';
 import { createAuthStyles } from './auth.styles';
 
 export default function AuthScreen() {
-  console.log('[AuthScreen] 🎯 About to call useAuth()');
   const { session } = useAuth();
-  console.log('[AuthScreen] ✅ useAuth() called successfully');
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,7 +63,6 @@ export default function AuthScreen() {
   // Monitor pathname changes to detect navigation
   useEffect(() => {
     if (navigationAttempted.current) {
-      console.log('Pathname changed to:', pathname);
       navigationAttempted.current = false;
     }
   }, [pathname]);
@@ -119,20 +116,13 @@ export default function AuthScreen() {
       return;
     }
 
-    console.log('Form validation passed, attempting signin...');
-
     try {
       const result = await signIn(email, password);
-      console.log('🔍 [AUTH] Signin result:', result);
       
       if (result.success) {
-        console.log('✅ [AUTH] Signin successful, navigating to home');
         showSuccess(t('auth.login_successful') || 'Login successful!');
         router.replace('/');
       } else {
-        console.log('❌ [AUTH] Signin failed, showing error:', result.error);
-        console.log('❌ [AUTH] Network error detected:', result.isNetworkError);
-        
         // Show appropriate localized message based on error type
         if (result.isNetworkError) {
           showError(t('auth.network_error'));

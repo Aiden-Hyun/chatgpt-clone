@@ -23,6 +23,9 @@ interface ThemeContextType {
   
   // Available themes for UI selection
   availableThemes: ReturnType<typeof themeRegistry.getAllThemes>;
+  
+  // Loading state to track when theme preferences are being loaded
+  isLoading: boolean;
 }
 
 // Create context with undefined default value
@@ -36,26 +39,36 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // State for theme style (which theme set to use)
   const [themeStyle, setThemeStyleState] = useState<ThemeStyle>('default');
   
+  // State for loading state
+  const [isLoading, setIsLoading] = useState(true);
+
   // Get system color scheme
   const systemColorScheme = useColorScheme();
 
   // Load saved theme preferences from storage
   useEffect(() => {
+    console.log('🎨 [ThemeContext] Loading theme preferences from storage...');
     const loadThemePreferences = async () => {
+      setIsLoading(true);
       try {
         // Load theme mode
         const savedThemeMode = await AsyncStorage.getItem(THEME_MODE_STORAGE_KEY);
         if (savedThemeMode && ['light', 'dark', 'system'].includes(savedThemeMode)) {
+          console.log('☀️ [ThemeContext] Loaded theme mode:', savedThemeMode);
           setThemeModeState(savedThemeMode as ThemeMode);
         }
         
         // Load theme style
         const savedThemeStyle = await AsyncStorage.getItem(THEME_STYLE_STORAGE_KEY);
         if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
+          console.log('✨ [ThemeContext] Loaded theme style:', savedThemeStyle);
           setThemeStyleState(savedThemeStyle);
         }
       } catch (error) {
         console.error('Failed to load theme preferences:', error);
+      } finally {
+        console.log('✅ [ThemeContext] Theme preferences loading complete');
+        setIsLoading(false);
       }
     };
 
@@ -108,14 +121,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Memoize context value to prevent unnecessary re-renders
-  const contextValue = useMemo(() => ({
-    themeMode,
-    setThemeMode,
-    themeStyle,
-    setThemeStyle,
-    currentTheme,
-    availableThemes,
-  }), [themeMode, setThemeMode, themeStyle, setThemeStyle, currentTheme, availableThemes]);
+  const contextValue = useMemo(() => {
+    return {
+      themeMode,
+      setThemeMode,
+      themeStyle,
+      setThemeStyle,
+      currentTheme,
+      availableThemes,
+      isLoading,
+    };
+  }, [themeMode, setThemeMode, themeStyle, setThemeStyle, currentTheme, availableThemes, isLoading]);
 
   return (
     <ThemeContext.Provider value={contextValue}>
