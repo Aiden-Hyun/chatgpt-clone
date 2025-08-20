@@ -20,7 +20,6 @@ import { ProgressTracker } from "./components/ProgressTracker.ts";
 import { config as appConfig } from "../../shared/config.ts";
 import { SynthesisEngine } from "./components/SynthesisEngine.ts";
 import { CacheManager } from "./core/CacheManager.ts";
-import { EarlyTermination } from "./core/EarlyTermination.ts";
 import { ModelManager } from "./core/ModelManager.ts";
 import { ReActLoop } from "./core/ReActLoop.ts";
 import { ResultOrchestrator } from "./core/ResultOrchestrator.ts";
@@ -57,12 +56,11 @@ export class ReActAgent {
   private facetManager: FacetManager;        // Manages question facets (sub-questions)
   private planner: Planner;                  // Plans next actions
   private progressTracker: ProgressTracker;  // Tracks search progress
-  private earlyTermination: EarlyTermination; // Handles early termination logic
   
   // API Call Tracking
   private apiCallTracker: APICallTracker;    // Tracks all API calls for performance analysis
   private workflowOrchestrator?: WorkflowOrchestrator;
-  
+
   /**
    * Debug logging helper - only outputs when debug mode is enabled
    */
@@ -118,7 +116,6 @@ export class ReActAgent {
     this.synthesisEngine = new SynthesisEngine();
     this.facetManager = new FacetManager();
     this.progressTracker = new ProgressTracker();
-    this.earlyTermination = new EarlyTermination();
     
     // Initialize planner with model configuration
     const modelInfo = this.modelManager.getModelInfo();

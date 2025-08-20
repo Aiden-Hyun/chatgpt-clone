@@ -1,3 +1,4 @@
+import { BudgetManager } from "../components/BudgetManager.ts";
 import type { FacetManager } from "../components/FacetManager.ts";
 import type { Planner } from "../components/Planner.ts";
 import type { ProgressTracker } from "../components/ProgressTracker.ts";
@@ -8,15 +9,6 @@ import { isTimeSensitive } from "../utils/time-utils.ts";
 import { eTLDplus1 } from "../utils/url-utils.ts";
 import { ActionExecutor } from "./ActionExecutor.ts";
 import { EarlyTermination } from "./EarlyTermination.ts";
-import { BudgetManager } from "../components/BudgetManager.ts";
-
-export interface ReActLoopConfig {
-  debug?: boolean;
-  searchService: any;
-  fetchService: any;
-  rerankService: any;
-  searchProviderManager: SearchProviderManager;
-}
 
 export interface ReActLoopDependencies {
   planner: Planner;
@@ -76,13 +68,6 @@ export class ReActLoop {
     
     console.log(`🔄 [ReActLoop] Starting execution for question: "${state.question}"`);
     console.log(`🔄 [ReActLoop] Initial state - Passages: ${state.passages.length}, Facets: ${state.facets.length}, Budget: ${budget.searches} searches, ${budget.fetches} fetches`);
-    
-    // Early exit for direct answer questions
-    if (state.questionType === 'DIRECT_ANSWER') {
-      console.log(`🔄 [ReActLoop] Direct answer question detected - skipping ReAct loop`);
-      console.log(`🔄 [ReActLoop] Direct answer: ${state.directAnswer || 'Will be handled in synthesis'}`);
-      return;
-    }
     
     // Log MINIMAL_SEARCH optimization
     if (state.questionType === 'MINIMAL_SEARCH') {
@@ -301,16 +286,6 @@ export class ReActLoop {
     console.log(`[ReActLoop] Selected ${diverseResults.length} results from ${Object.keys(domainCounts).length} domains`);
     return diverseResults;
   }
-
-  /**
-   * Check if budget has been exhausted
-   * 
-   * @param b - Budget to check
-   * @returns True if budget is depleted (no searches or fetches remaining)
-   */
-  // isBudgetDepleted moved to BudgetController
-
-
 
   /**
    * Get trace for debugging
