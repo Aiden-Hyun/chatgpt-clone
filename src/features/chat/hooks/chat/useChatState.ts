@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { ChatMessage } from '../types';
+import { ChatMessage } from '../../types';
+import { useMessageLoader } from '../message/useMessageLoader';
 
 // Legacy interfaces - will be phased out in favor of state machine
 interface LoadingStates {
@@ -107,6 +108,14 @@ export const useChatState = (roomId: number | null) => {
   const isRegenerating = useCallback((index: number) => {
     return regeneratingIndices.has(index);
   }, [regeneratingIndices]);
+
+  // Load messages for this room (no optimistic path)
+  useMessageLoader({
+    roomId,
+    optimisticMessages: null,
+    setMessages,
+    setLoading,
+  });
 
   return {
     // ✅ STATE MACHINE: Core state

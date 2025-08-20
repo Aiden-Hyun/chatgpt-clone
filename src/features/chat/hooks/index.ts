@@ -1,11 +1,11 @@
-// Barrel file for chat-related hooks
-export * from './useChat';
+// Export all chat-related hooks from the chat subdirectory
+export * from './chat';
+
+// Export message-related hooks from the message subdirectory
+export * from './message';
+
+// Export remaining hooks that weren't moved to subdirectories
 export * from './useChatRooms';
-export * from './useMessageInput';
-
-// New extracted hooks
-export * from './useRegenerationService';
-export * from './useMessageLoader';
-
-// Legacy message hooks removed - using new state machine system
+export { useMessageStorage } from './useMessageStorage';
+export * from './useOptimisticMessages';
 

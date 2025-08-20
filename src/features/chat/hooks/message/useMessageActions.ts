@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import { sendMessageHandler } from '../services/sendMessage';
-import { ChatMessage } from '../types';
-import { logger } from '../utils/logger';
-import { generateMessageId } from '../utils/messageIdGenerator';
+import { sendMessageHandler } from '../../services/sendMessage';
+import { ChatMessage } from '../../types';
+import { logger } from '../../utils/logger';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 
 interface UseMessageActionsProps {
   roomId: number | null;

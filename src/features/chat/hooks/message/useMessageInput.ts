@@ -1,6 +1,6 @@
 // useMessageInput.ts - Hook for managing chat input and draft messages  
 import { useCallback, useEffect, useRef, useState } from 'react';
-import mobileStorage from '../../../shared/lib/mobileStorage';
+import mobileStorage from '../../../../shared/lib/mobileStorage';
 
 type StorageLike = {
   setItem(key: string, value: string): Promise<void>;

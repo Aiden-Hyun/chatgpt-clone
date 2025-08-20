@@ -1,9 +1,9 @@
 // src/features/chat/hooks/useRegenerationService.ts
 import { useCallback, useMemo } from 'react';
-import { useAuth } from '../../auth/context';
-import { ServiceFactory } from '../services/core';
-import { MessageStateManager } from '../services/MessageStateManager';
-import type { ChatMessage } from '../types';
+import { useAuth } from '../../../auth/context';
+import { ServiceFactory } from '../../services/core';
+import { MessageStateManager } from '../../services/MessageStateManager';
+import type { ChatMessage } from '../../types';
 
 type Deps = {
   messages: ChatMessage[];

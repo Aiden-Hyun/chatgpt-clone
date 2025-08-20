@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { DB_MESSAGE_POLL_ATTEMPTS, MESSAGE_FETCH_DELAY_MS } from '../constants';
-import { ServiceFactory } from '../services/core';
-import type { ChatMessage } from '../types';
-import { generateMessageId } from '../utils/messageIdGenerator';
+import { DB_MESSAGE_POLL_ATTEMPTS, MESSAGE_FETCH_DELAY_MS } from '../../constants';
+import { ServiceFactory } from '../../services/core';
+import type { ChatMessage } from '../../types';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 
 type UseMessageLoaderDeps = {
   roomId: number | null;

@@ -4,7 +4,7 @@ import mobileStorage from '../../../shared/lib/mobileStorage';
 import { STALE_MESSAGE_THRESHOLD_MS } from '../constants';
 import { ChatMessage } from '../types';
 
-export const useOptimisticMessages = (numericRoomId: number | null) => {
+export const useMessageStorage = (numericRoomId: number | null) => {
   const [optimisticMessages, setOptimisticMessages] = useState<ChatMessage[] | null>(null);
   const [optimisticModel, setOptimisticModel] = useState<string | null>(null);
 
