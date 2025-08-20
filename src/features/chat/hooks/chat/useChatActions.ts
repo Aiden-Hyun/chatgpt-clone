@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { ChatMessage } from '../../types';
 import { useMessageActions } from '../message/useMessageActions';
 import { useRegenerationService } from '../message/useRegenerationService';
@@ -26,6 +26,16 @@ export const useChatActions = ({
   selectedModel,
   isSearchMode,
 }: UseChatActionsProps) => {
+  // Log only when dependencies change, not on every render
+  useEffect(() => {
+    console.log('🔍 [useChatActions] Dependencies changed:', { 
+      roomId: numericRoomId, 
+      searchMode: isSearchMode, 
+      model: selectedModel,
+      messagesCount: messages.length 
+    });
+  }, [numericRoomId, isSearchMode, selectedModel, messages.length]);
+  
   // ✅ STATE MACHINE: Message actions using state machine
   const { sendMessage: sendMessageToBackend } = useMessageActions({
     roomId: numericRoomId,
@@ -85,8 +95,11 @@ export const useChatActions = ({
     }
   }, [regenerateMessageInBackend]);
 
-  return {
+  // Memoize the return object to prevent unnecessary re-renders
+  const result = useMemo(() => ({
     sendMessage,
     regenerateMessage,
-  };
+  }), [sendMessage, regenerateMessage]);
+
+  return result;
 };

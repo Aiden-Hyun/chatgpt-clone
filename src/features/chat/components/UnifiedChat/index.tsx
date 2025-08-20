@@ -40,7 +40,6 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   onChangeModel,
   onChatStateChange,
 }) => {
-
   // Get proven styles - memoized to prevent excessive re-renders
   const theme = useAppTheme();
   const styles = React.useMemo(() => createChatStyles(theme), [theme]);
@@ -62,20 +61,23 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
     onSearchToggle,
   } = useChat(roomId || null, { selectedModel, setModel: onChangeModel });
 
+  // Memoize the chat state object to prevent unnecessary parent re-renders
+  const chatState = React.useMemo(() => ({
+    input,
+    handleInputChange,
+    sendMessage,
+    sending,
+    isTyping,
+    isSearchMode,
+    onSearchToggle,
+  }), [input, handleInputChange, sendMessage, sending, isTyping, isSearchMode, onSearchToggle]);
+
   // Expose chat state to parent component
   React.useEffect(() => {
     if (onChatStateChange) {
-      onChatStateChange({
-        input,
-        handleInputChange,
-        sendMessage,
-        sending,
-        isTyping,
-        isSearchMode,
-        onSearchToggle,
-      });
+      onChatStateChange(chatState);
     }
-  }, [input, handleInputChange, sendMessage, sending, isTyping, isSearchMode, onSearchToggle, onChatStateChange]);
+  }, [chatState, onChatStateChange]);
 
   // Like/dislike handlers
   const handleLike = React.useCallback((messageId: string) => {

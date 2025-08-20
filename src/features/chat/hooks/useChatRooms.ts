@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import mobileStorage from '../../../shared/lib/mobileStorage'; // Add this import
 import { supabase } from '../../../shared/lib/supabase';
 import { useAuth } from '../../auth';
 import { chatDebugLog } from '../constants';
+
 
 export interface ChatRoom { id: number; name: string; }
 export interface ChatRoomWithLastMsg { id: number; name: string; last_message?: string; last_activity?: string; updated_at?: string }
@@ -167,9 +169,17 @@ export const useChatRooms = () => {
   }, [session]); // Dependency on session
 
   // Use stable identity to avoid re-renders in consumers that depend on this function
-  const startNewChat = useCallback(() => {
-    router.push('/chat');
-  }, []);
+const startNewChat = useCallback(async () => {
+  // Clear search mode from storage to ensure new chat starts fresh
+  try {
+    await mobileStorage.removeItem('chat_search_mode');
+    console.log('[ROOMS] Cleared search mode for new chat');
+  } catch (error) {
+    console.warn('[ROOMS] Failed to clear search mode:', error);
+  }
+  
+  router.push('/chat');
+}, []);
 
   return {
     rooms,

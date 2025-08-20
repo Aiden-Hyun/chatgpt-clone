@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useChatRooms } from '../../features/chat/hooks';
-import { useAppTheme } from '../../features/theme/theme';
 import { useBackButtonHandler, useInputFocus } from './index';
 
 /**
@@ -18,7 +17,6 @@ export function useChatScreen() {
   const inputFocus = useInputFocus();
   const backButton = useBackButtonHandler({ enabled: true });
   const chatRooms = useChatRooms();
-  const theme = useAppTheme();
 
   // Memoize the entire result to prevent recreation
   const chatScreenState = useMemo(() => {
@@ -32,16 +30,12 @@ export function useChatScreen() {
       
       // Chat rooms state
       startNewChat: chatRooms.startNewChat,
-      
-      // Theme for component usage
-      theme,
     };
   }, [
     inputFocus.inputRef,
     inputFocus.maintainFocus,
     backButton.disableBackButton,
     chatRooms.startNewChat,
-    theme,
   ]); // Only recreate when these actually change
 
   return chatScreenState;

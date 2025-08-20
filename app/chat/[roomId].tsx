@@ -22,17 +22,16 @@ interface ChatScreenProps {
     maintainFocus: any;
     disableBackButton: any;
     startNewChat: () => void;
-    theme: any;
   };
   logout: () => void;
   // Pass-through model selection props from parent
   selectedModel?: string;
   onChangeModel?: (model: string) => void | Promise<void>;
+  theme: any; // ✅ Add theme to props
 }
 
 const ChatScreenPure = React.memo((props: ChatScreenProps) => {
-  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, selectedModel, onChangeModel } = props;
-  const theme = useAppTheme();
+  const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, selectedModel, onChangeModel, theme } = props; // ✅ theme as prop
   const styles = createChatStyles(theme);
   
   // Chat state from UnifiedChat
@@ -62,11 +61,8 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
     });
   }
 
-  
-
   return (
     <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
-    
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -79,24 +75,22 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
           onChangeModel={onChangeModel}
           onChatStateChange={setChatState}
         />
-      
-      
-      {/* ChatInput moved to screen level for better layout control */}
-      {chatState && (
-        <ChatInput
-          input={chatState.input}
-          onChangeText={chatState.handleInputChange}
-          onSend={chatState.sendMessage}
-          sending={chatState.sending}
-          isTyping={chatState.isTyping}
-          inputRef={inputRef}
-          isSearchMode={chatState.isSearchMode}
-          onSearchToggle={chatState.onSearchToggle}
-          selectedModel={selectedModel}
-        />
-      )}
+        
+        {/* ChatInput moved to screen level for better layout control */}
+        {chatState && (
+          <ChatInput
+            input={chatState.input}
+            onChangeText={chatState.handleInputChange}
+            onSend={chatState.sendMessage}
+            sending={chatState.sending}
+            isTyping={chatState.isTyping}
+            inputRef={inputRef}
+            isSearchMode={chatState.isSearchMode}
+            onSearchToggle={chatState.onSearchToggle}
+            selectedModel={selectedModel}
+          />
+        )}
       </KeyboardAvoidingView>
-    
     </SafeAreaView>
   );
 }, (prev, next) => {
@@ -118,14 +112,36 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
       a?.inputRef === b?.inputRef &&
       a?.maintainFocus === b?.maintainFocus &&
       a?.disableBackButton === b?.disableBackButton &&
-      a?.startNewChat === b?.startNewChat &&
-      a?.theme === b?.theme
+      a?.startNewChat === b?.startNewChat
     );
 
   // Re-render when selected model changes so UnifiedChat sees updated model
   const modelEqual = prev.selectedModel === next.selectedModel;
 
-  const equal = primitiveEqual && functionsEqual && stateEqual && modelEqual;
+  // ✅ Add theme comparison
+  const themeEqual = prev.theme === next.theme;
+
+  const equal = primitiveEqual && functionsEqual && stateEqual && modelEqual && themeEqual;
+
+  if (__DEV__ && !equal) {
+    console.log('🔍 [PURE-COMPARE] Re-render triggered because:', {
+      primitiveEqual,
+      functionsEqual,
+      stateEqual,
+      modelEqual,
+      themeEqual,
+      prev: {
+        roomId: prev.roomId,
+        selectedModel: prev.selectedModel,
+        theme: prev.theme,
+      },
+      next: {
+        roomId: next.roomId,
+        selectedModel: next.selectedModel,
+        theme: next.theme,
+      }
+    });
+  }
 
   return equal;
 });
@@ -140,8 +156,12 @@ const ChatScreen = () => {
   const isTemporaryRoom = roomId?.startsWith('temp_') ?? false;
   const numericRoomId = isTemporaryRoom ? null : (roomId ? parseInt(roomId, 10) : null);
   
+  // Add render counter for debugging
+  const renderCount = React.useRef(0);
+  renderCount.current += 1;
+  
   if (__DEV__) {
-    console.log('🏠 [CHAT-SCREEN] Route params changed', {
+    console.log('🏠 [CHAT-SCREEN] Parent render #' + renderCount.current, {
       roomId,
       isTemporaryRoom,
       numericRoomId,
@@ -152,19 +172,35 @@ const ChatScreen = () => {
   // 🎯 CONTEXT CONSUMPTION: All context/hook consumption happens here
   const chatScreenState = useChatScreen();
   const { logout } = useLogout();
+  const theme = useAppTheme(); // ✅ Move theme consumption to parent
   
   // State and refs
   // Parent owns per-room model via decoupled hook
   const { model: selectedModel, setModel: updateModel } = useRoomModel(numericRoomId);
 
   // 🎯 MEMOIZED PROPS: Only recreate when actual values change
-  const chatScreenProps = React.useMemo(() => ({
-    roomId,
-    isTemporaryRoom,
-    numericRoomId,
-    chatScreenState,
-    logout,
-  }), [roomId, isTemporaryRoom, numericRoomId, chatScreenState, logout]);
+  const chatScreenProps = React.useMemo(() => {
+    if (__DEV__) {
+      console.log('🔍 [CHAT-SCREEN] Recreating chatScreenProps because dependencies changed:', {
+        roomId,
+        isTemporaryRoom,
+        numericRoomId,
+        selectedModel,
+        themeChanged: !!theme,
+      });
+    }
+    
+    return {
+      roomId,
+      isTemporaryRoom,
+      numericRoomId,
+      chatScreenState,
+      logout,
+      theme, // ✅ Pass theme as prop
+      selectedModel, // ✅ Include selectedModel in memoized props
+      onChangeModel: updateModel, // ✅ Include onChangeModel in memoized props
+    };
+  }, [roomId, isTemporaryRoom, numericRoomId, chatScreenState, logout, theme, selectedModel, updateModel]);
 
   return (
     <>
@@ -176,7 +212,10 @@ const ChatScreen = () => {
           router.push('/settings'); 
         }}
         onBack={() => { try { console.log('[NAV] back'); } catch {} }}
-        onNewChat={chatScreenState.startNewChat}
+        onNewChat={() => {
+          console.log('🔍 [CHAT-SCREEN] onNewChat called from ChatHeader');
+          chatScreenState.startNewChat();
+        }}
         onChatSelect={(rid: string) => {
           try {
             if (rid && rid !== roomId) router.push(`/chat/${rid}`);
@@ -188,8 +227,6 @@ const ChatScreen = () => {
       />
       <ChatScreenPure 
         {...chatScreenProps}
-        selectedModel={selectedModel}
-        onChangeModel={updateModel}
       />
     </>
   );

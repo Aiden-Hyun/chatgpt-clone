@@ -71,12 +71,31 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
     }
   };
 
-  const handleNewChat = () => {
-    console.log('[DRAWER] new chat');
+  const handleNewChat = async () => {
+    console.log('🔍 [DRAWER] New chat button pressed');
+    console.log('🔍 [DRAWER] onNewChat prop:', !!onNewChat);
+    
+    // Always clear search mode from storage to ensure new chat starts fresh
+    try {
+      console.log('🔍 [DRAWER] Clearing search mode from storage...');
+      const beforeClear = await mobileStorage.getItem('chat_search_mode');
+      console.log('🔍 [DRAWER] Search mode before clear:', beforeClear);
+      
+      await mobileStorage.removeItem('chat_search_mode');
+      console.log('🔍 [DRAWER] Cleared search mode for new chat');
+      
+      const afterClear = await mobileStorage.getItem('chat_search_mode');
+      console.log('🔍 [DRAWER] Search mode after clear:', afterClear);
+    } catch (error) {
+      console.warn('[DRAWER] Failed to clear search mode:', error);
+    }
+    
     if (onNewChat) {
+      console.log('🔍 [DRAWER] Calling onNewChat prop');
       onNewChat();
     } else {
-      router.push('/chat/temp_new');
+      console.log('🔍 [DRAWER] No onNewChat prop, navigating to /chat');
+      router.push('/chat');
     }
   };
 

@@ -1,10 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import mobileStorage from '../../../../shared/lib/mobileStorage';
 import { getModelInfo } from '../../constants/models';
 
 export const useChatSearch = (selectedModel: string) => {
   // Search mode state - persist across room changes
   const [isSearchMode, setIsSearchMode] = useState(false);
+  
+  // Log only on mount
+  useEffect(() => {
+    console.log('🔍 [useChatSearch] Hook mounted with model:', selectedModel);
+  }, []);
   
   // Load search mode from storage on mount
   useEffect(() => {
@@ -13,8 +18,10 @@ export const useChatSearch = (selectedModel: string) => {
         const saved = await mobileStorage.getItem('chat_search_mode');
         if (saved === 'true') {
           setIsSearchMode(true);
+        } else {
+          setIsSearchMode(false);
         }
-      } catch {
+      } catch (error) {
         // Ignore storage errors
       }
     };
@@ -25,7 +32,6 @@ export const useChatSearch = (selectedModel: string) => {
   useEffect(() => {
     const modelInfo = getModelInfo(selectedModel);
     if (isSearchMode && !modelInfo?.capabilities.search) {
-      console.log(`Auto-disabling search mode for model: ${selectedModel}`);
       setIsSearchMode(false);
       // Update storage
       mobileStorage.setItem('chat_search_mode', 'false').catch(() => {
@@ -34,12 +40,15 @@ export const useChatSearch = (selectedModel: string) => {
     }
   }, [selectedModel, isSearchMode]);
   
+  // Log when state changes (not every render)
+  useEffect(() => {
+    console.log('🔍 [useChatSearch] State changed:', { isSearchMode, selectedModel });
+  }, [isSearchMode, selectedModel]);
+  
   const handleSearchToggle = useCallback(() => {
     // Check if the selected model supports search
     const modelInfo = getModelInfo(selectedModel);
     if (!modelInfo?.capabilities.search) {
-      // Search is not supported for this model - could add toast notification here
-      console.log(`Search is not supported for model: ${selectedModel}`);
       return;
     }
     
@@ -53,8 +62,11 @@ export const useChatSearch = (selectedModel: string) => {
     });
   }, [selectedModel]);
 
-  return {
+  // Stable return reference
+  const result = useMemo(() => ({
     isSearchMode,
     onSearchToggle: handleSearchToggle,
-  };
+  }), [isSearchMode, handleSearchToggle]);
+
+  return result;
 };

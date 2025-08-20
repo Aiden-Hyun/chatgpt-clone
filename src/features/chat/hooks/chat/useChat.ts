@@ -1,5 +1,5 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useChatActions } from './useChatActions';
 import { useChatInput } from './useChatInput';
 import { useChatModel } from './useChatModel';
@@ -87,7 +87,8 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     await regenerateMessage(assistantIndex, newText);
   }, [messages, setMessages, regenerateMessage]);
 
-  return {
+  // Memoize the return object to prevent unnecessary re-renders
+  const result = useMemo(() => ({
     // State
     messages,
     loading,
@@ -119,5 +120,28 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
     
     // State setters (for advanced usage)
     setMessages,
-  };
+  }), [
+    messages,
+    loading,
+    sending,
+    isTyping,
+    regeneratingIndex,
+    regeneratingIndices,
+    isNewMessageLoading,
+    getLoadingMessages,
+    getAnimatingMessages,
+    isRegenerating,
+    input,
+    handleInputChange,
+    sendMessage,
+    regenerateMessage,
+    editUserAndRegenerate,
+    selectedModel,
+    updateModel,
+    isSearchMode,
+    onSearchToggle,
+    setMessages,
+  ]);
+
+  return result;
 };

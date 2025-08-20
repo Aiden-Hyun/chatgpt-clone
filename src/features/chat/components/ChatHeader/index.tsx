@@ -106,7 +106,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         variant="ghost"
         size="sm"
         leftIcon={<MaterialIcons name="more-vert" size={24} color={theme.colors.text.primary} />}
-        onPress={() => setIsQuickActionsVisible(!isQuickActionsVisible)}
+        onPress={() => {
+          console.log('🔍 [ChatHeader] More options button pressed');
+          setIsQuickActionsVisible(!isQuickActionsVisible);
+        }}
         containerStyle={styles.menuButton}
       />
 
