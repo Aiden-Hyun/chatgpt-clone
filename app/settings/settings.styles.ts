@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { AppTheme } from '../../src/features/theme/theme.types';
-import { getButtonSize, getHeaderHeight } from '../../src/shared/utils/layout';
+import { getButtonSize } from '../../src/shared/utils/layout';
 
 export const createSettingsStyles = (theme: AppTheme) => {
   
@@ -15,7 +15,6 @@ export const createSettingsStyles = (theme: AppTheme) => {
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      paddingTop: getHeaderHeight(), // Use utility instead of platform-specific logic
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.light,
       backgroundColor: theme.colors.background.primary,

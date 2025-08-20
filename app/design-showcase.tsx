@@ -1,25 +1,20 @@
-import { Button, Input, Text } from '@/components';
-import { CustomAlert, useCustomAlert, useToast } from '@/features/alert';
-import { LanguageSelector, useLanguageContext } from '@/features/language';
+import { Button, Input, Text } from '@/components/ui';
+import { LanguageSelector } from '@/features/language';
+import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { getButtonSize, getHeaderHeight } from '@/shared/utils/layout';
-import { AntDesign, Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { getButtonSize } from '@/shared/utils/layout';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, Switch, TextInput, TouchableOpacity, View } from 'react-native';
-
-// Heroicons temporarily disabled due to missing icons
+import { Platform, SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
 
 export default function DesignShowcaseScreen() {
   const { t } = useLanguageContext();
-  const router = useRouter();
   const theme = useAppTheme();
-  const { showSuccessAlert, showErrorAlert, alert, hideAlert } = useCustomAlert();
-  const { showSuccess, showError, showWarning, showInfo } = useToast();
-  
+
+  // State for interactive elements
   const [inputValue, setInputValue] = useState('');
   const [switchValue, setSwitchValue] = useState(false);
-  
 
   const handleBack = () => {
     try {
@@ -34,10 +29,6 @@ export default function DesignShowcaseScreen() {
     }
   };
 
-  const handleOpenChatGPTDemo = () => {
-    router.push('/chatgpt-demo');
-  };
-
   const styles = {
     container: {
       flex: 1,
@@ -47,7 +38,6 @@ export default function DesignShowcaseScreen() {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
       padding: theme.spacing.lg,
-      paddingTop: getHeaderHeight(), // Use utility for consistent header height
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border.light,
       backgroundColor: theme.colors.background.primary,
@@ -57,8 +47,8 @@ export default function DesignShowcaseScreen() {
       height: getButtonSize('action'),
       borderRadius: getButtonSize('action') / 2,
       backgroundColor: theme.colors.background.secondary,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
       marginRight: theme.spacing.md,
       ...theme.shadows.light,
       borderWidth: 1,
@@ -147,11 +137,56 @@ export default function DesignShowcaseScreen() {
     errorButtonText: {
       color: theme.colors.text.inverted,
     },
-    warningButton: {
-      backgroundColor: theme.colors.status.warning.primary,
+    infoButton: {
+      backgroundColor: theme.colors.status.info.primary,
     },
-    warningButtonText: {
+    infoButtonText: {
+      color: theme.colors.text.inverted,
+    },
+    outlineButton: {
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
+    },
+    outlineButtonText: {
+      color: theme.colors.primary,
+    },
+    ghostButton: {
+      backgroundColor: 'transparent',
+    },
+    ghostButtonText: {
+      color: theme.colors.primary,
+    },
+    smallButton: {
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      minWidth: 80,
+    },
+    smallButtonText: {
+      fontSize: theme.fontSizes.sm,
+    },
+    mediumButton: {
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+      minWidth: 100,
+    },
+    mediumButtonText: {
+      fontSize: theme.fontSizes.md,
+    },
+    largeButton: {
+      paddingHorizontal: theme.spacing.xl,
+      paddingVertical: theme.spacing.lg,
+      minWidth: 120,
+    },
+    largeButtonText: {
+      fontSize: theme.fontSizes.lg,
+    },
+    label: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.medium as '500',
+      marginBottom: theme.spacing.sm,
     },
     input: {
       borderWidth: 1,
@@ -159,740 +194,114 @@ export default function DesignShowcaseScreen() {
       borderRadius: theme.borderRadius.md,
       padding: theme.spacing.md,
       fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
-      marginBottom: theme.spacing.sm,
-      ...theme.shadows.light,
-    },
-    label: {
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.secondary,
-      marginBottom: theme.spacing.xs,
-      fontWeight: theme.fontWeights.medium as '500',
+      marginBottom: theme.spacing.lg,
     },
     chatInputContainer: {
-      borderWidth: 1,
-      borderColor: theme.colors.border.medium,
-      borderRadius: theme.borderRadius.lg,
-      backgroundColor: theme.colors.background.primary,
-      padding: theme.spacing.md,
-      marginBottom: theme.spacing.sm,
-      ...theme.shadows.light,
+      flexDirection: 'row' as const,
+      alignItems: 'flex-end' as const,
+      gap: theme.spacing.sm,
     },
     chatInput: {
+      flex: 1,
+      borderWidth: 1,
+      borderColor: theme.colors.border.medium,
+      borderRadius: theme.borderRadius.md,
+      padding: theme.spacing.md,
       fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
       color: theme.colors.text.primary,
-      minHeight: 40,
+      backgroundColor: theme.colors.background.primary,
+      minHeight: 80,
       textAlignVertical: 'top' as const,
     },
     sendButton: {
       backgroundColor: theme.colors.primary,
-      borderRadius: theme.borderRadius.md,
       paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.sm,
-      alignSelf: 'flex-end' as const,
-      ...theme.shadows.light,
+      paddingVertical: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
     },
     sendButtonText: {
       color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium as '500',
-    },
-    disabledButton: {
-      backgroundColor: theme.colors.background.tertiary,
-      opacity: 0.5,
-    },
-    disabledButtonText: {
-      color: theme.colors.text.tertiary,
-    },
-    colorSwatch: {
-      width: 60,
-      height: 40,
-      borderRadius: theme.borderRadius.sm,
-      marginRight: theme.spacing.sm,
-      ...theme.shadows.light,
-    },
-    colorLabel: {
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.secondary,
-      fontWeight: theme.fontWeights.medium as '500',
-    },
-    // Sharp Corners Design Styles
-    caption: {
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.tertiary,
-      marginBottom: theme.spacing.md,
-      fontStyle: 'italic' as const,
-    },
-    sharpButton: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-      borderRadius: 2, // Very slight rounding for professional look
-      marginRight: theme.spacing.sm,
-      marginBottom: theme.spacing.sm,
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
-      minWidth: 120,
-      borderWidth: 1,
-      ...theme.shadows.light,
-    },
-    sharpButtonText: {
       fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      fontWeight: theme.fontWeights.medium as '500',
-      textAlign: 'center' as const,
-    },
-    sharpPrimaryButton: {
-      backgroundColor: theme.colors.primary,
-      borderColor: theme.colors.primary,
-    },
-    sharpPrimaryButtonText: {
-      color: theme.colors.text.inverted,
-    },
-    sharpSecondaryButton: {
-      backgroundColor: theme.colors.background.primary,
-      borderColor: theme.colors.border.medium,
-    },
-    sharpSecondaryButtonText: {
-      color: theme.colors.text.primary,
-    },
-    sharpInput: {
-      borderWidth: 1,
-      borderColor: theme.colors.border.medium,
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.md,
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      backgroundColor: theme.colors.background.primary,
-      ...theme.shadows.light,
-    },
-    sharpCard: {
-      backgroundColor: theme.colors.background.primary,
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.lg,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
-      ...theme.shadows.light,
-    },
-    sharpCardTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
-      marginBottom: theme.spacing.sm,
-    },
-    sharpCardText: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.secondary,
-      lineHeight: theme.fontSizes.md * 1.4,
-    },
-    // Additional Sharp Corners Components
-    sharpChatInputContainer: {
-      borderWidth: 1,
-      borderColor: theme.colors.border.medium,
-      borderRadius: 2, // Very slight rounding
-      backgroundColor: theme.colors.background.primary,
-      padding: theme.spacing.md,
-      marginBottom: theme.spacing.sm,
-      ...theme.shadows.light,
-    },
-    sharpChatInput: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      minHeight: 40,
-      textAlignVertical: 'top' as const,
-    },
-    sharpSendButton: {
-      backgroundColor: theme.colors.primary,
-      borderRadius: 2, // Very slight rounding
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.sm,
-      alignSelf: 'flex-end' as const,
-      ...theme.shadows.light,
-    },
-    sharpSendButtonText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium as '500',
-    },
-    sharpSuccessButton: {
-      backgroundColor: theme.colors.status.success.primary,
-      borderColor: theme.colors.status.success.primary,
-    },
-    sharpSuccessButtonText: {
-      color: theme.colors.text.inverted,
-    },
-    sharpErrorButton: {
-      backgroundColor: theme.colors.status.error.primary,
-      borderColor: theme.colors.status.error.primary,
-    },
-    sharpErrorButtonText: {
-      color: theme.colors.text.inverted,
-    },
-    sharpMessageContainer: {
-      marginTop: theme.spacing.md,
-    },
-    sharpUserMessage: {
-      backgroundColor: theme.colors.primary,
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.md,
-      marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-end' as const,
-      maxWidth: '80%' as any,
-      ...theme.shadows.light,
-    },
-    sharpUserMessageText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-    },
-    sharpAssistantMessage: {
-      backgroundColor: theme.colors.background.secondary,
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.md,
-      marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-start' as const,
-      maxWidth: '80%' as any,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
-      ...theme.shadows.light,
-    },
-    sharpAssistantMessageText: {
-      color: theme.colors.text.primary,
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-    },
-    // Sharp Corners Alert Demo Styles
-    sharpToastDemo: {
-      marginBottom: theme.spacing.md,
-    },
-    sharpToastContainer: {
-      backgroundColor: theme.colors.background.primary,
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.md,
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
-      ...theme.shadows.medium,
-    },
-    sharpErrorToastContainer: {
-      borderColor: theme.colors.status.error.primary,
-      backgroundColor: theme.colors.status.error.background,
-    },
-    sharpToastIcon: {
-      width: 24,
-      height: 24,
-      borderRadius: 2, // Very slight rounding
-      backgroundColor: theme.colors.status.success.primary,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      marginRight: theme.spacing.md,
-    },
-    sharpErrorToastIcon: {
-      backgroundColor: theme.colors.status.error.primary,
-    },
-    sharpToastIconText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.bold as '700',
-    },
-    sharpToastContent: {
-      flex: 1,
-    },
-    sharpToastTitle: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
-      marginBottom: theme.spacing.xs,
-    },
-    sharpToastMessage: {
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.secondary,
-    },
-    sharpAlertDialogDemo: {
-      marginTop: theme.spacing.md,
-    },
-    sharpAlertOverlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.lg,
-    },
-    sharpAlertDialog: {
-      backgroundColor: theme.colors.background.primary,
-      borderRadius: 2, // Very slight rounding
-      padding: theme.spacing.lg,
-      borderWidth: 1,
-      borderColor: theme.colors.border.light,
-      ...theme.shadows.heavy,
-    },
-    sharpAlertHeader: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      marginBottom: theme.spacing.md,
-    },
-    sharpAlertIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 2, // Very slight rounding
-      backgroundColor: theme.colors.status.success.primary,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      marginRight: theme.spacing.md,
-    },
-    sharpSuccessAlertIcon: {
-      backgroundColor: theme.colors.status.success.primary,
-    },
-    sharpAlertIconText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.bold as '700',
-    },
-    sharpAlertDialogTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
-    },
-    sharpAlertDialogMessage: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: theme.colors.text.secondary,
-      lineHeight: theme.fontSizes.md * 1.4,
-      marginBottom: theme.spacing.lg,
-    },
-    sharpAlertButtons: {
-      flexDirection: 'row' as const,
-      justifyContent: 'space-between' as const,
-    },
-    // Floating Action Design Styles (Option C)
-    floatingButton: {
-      paddingHorizontal: theme.spacing.xl,
-      paddingVertical: theme.spacing.lg,
-      borderRadius: 16, // Material design rounded corners
-      marginRight: theme.spacing.sm,
-      marginBottom: theme.spacing.sm,
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
-      minWidth: 140,
-      borderWidth: 0,
-      elevation: 8, // Android elevation
-      shadowColor: 'rgba(0, 0, 0, 0.3)',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-    },
-    floatingButtonText: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      fontWeight: theme.fontWeights.medium as '500',
-      textAlign: 'center' as const,
-    },
-    floatingPrimaryButton: {
-      backgroundColor: '#6366F1', // Modern indigo
-      shadowColor: 'rgba(99, 102, 241, 0.4)',
-    },
-    floatingPrimaryButtonText: {
-      color: '#FFFFFF',
-    },
-    floatingSecondaryButton: {
-      backgroundColor: '#FFFFFF',
-      borderWidth: 1,
-      borderColor: '#E5E7EB',
-    },
-    floatingSecondaryButtonText: {
-      color: '#374151',
-    },
-    floatingSuccessButton: {
-      backgroundColor: '#10B981', // Modern emerald
-      shadowColor: 'rgba(16, 185, 129, 0.4)',
-    },
-    floatingSuccessButtonText: {
-      color: '#FFFFFF',
-    },
-    floatingErrorButton: {
-      backgroundColor: '#EF4444', // Modern red
-      shadowColor: 'rgba(239, 68, 68, 0.4)',
-    },
-    floatingErrorButtonText: {
-      color: '#FFFFFF',
-    },
-    floatingInput: {
-      borderWidth: 1,
-      borderColor: '#E5E7EB',
-      borderRadius: 12, // Material design rounded corners
-      padding: theme.spacing.lg,
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: '#374151',
-      backgroundColor: '#FFFFFF',
-      elevation: 2,
-      shadowColor: 'rgba(0, 0, 0, 0.1)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    floatingCard: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: 16, // Material design rounded corners
-      padding: theme.spacing.xl,
-      borderWidth: 0,
-      elevation: 4,
-      shadowColor: 'rgba(0, 0, 0, 0.15)',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-    },
-    floatingCardTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontFamily: theme.fontFamily.primary,
-      color: '#111827',
-      fontWeight: theme.fontWeights.semibold as '600',
-      marginBottom: theme.spacing.sm,
-    },
-    floatingCardText: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: '#6B7280',
-      lineHeight: theme.fontSizes.md * 1.5,
-    },
-    floatingChatInputContainer: {
-      borderWidth: 1,
-      borderColor: '#E5E7EB',
-      borderRadius: 20, // Material design rounded corners
-      backgroundColor: '#FFFFFF',
-      padding: theme.spacing.lg,
-      marginBottom: theme.spacing.sm,
-      elevation: 3,
-      shadowColor: 'rgba(0, 0, 0, 0.1)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 6,
-    },
-    floatingChatInput: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      color: '#374151',
-      minHeight: 40,
-      textAlignVertical: 'top' as const,
-    },
-    floatingSendButton: {
-      backgroundColor: '#6366F1',
-      borderRadius: 20, // Material design rounded corners
-      paddingHorizontal: theme.spacing.xl,
-      paddingVertical: theme.spacing.md,
-      elevation: 4,
-      shadowColor: 'rgba(99, 102, 241, 0.3)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-      minWidth: 80,
-      alignItems: 'center' as const,
-    },
-    floatingSendButtonText: {
-      color: '#FFFFFF',
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium as '500',
-      fontFamily: theme.fontFamily.primary,
-    },
-    floatingToastDemo: {
-      marginBottom: theme.spacing.lg,
-    },
-    floatingToastContainer: {
-      backgroundColor: '#10B981',
-      borderRadius: 12, // Material design rounded corners
-      padding: theme.spacing.lg,
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      elevation: 6,
-      shadowColor: 'rgba(16, 185, 129, 0.3)',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-    },
-    floatingErrorToastContainer: {
-      backgroundColor: '#EF4444',
-      shadowColor: 'rgba(239, 68, 68, 0.3)',
-    },
-    floatingToastIcon: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      marginRight: theme.spacing.md,
-    },
-    floatingErrorToastIcon: {
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    },
-    floatingToastIconText: {
-      color: '#FFFFFF',
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.bold as '700',
-    },
-    floatingToastContent: {
-      flex: 1,
-    },
-    floatingToastTitle: {
-      color: '#FFFFFF',
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.semibold as '600',
-      fontFamily: theme.fontFamily.primary,
-      marginBottom: 2,
-    },
-    floatingToastMessage: {
-      color: 'rgba(255, 255, 255, 0.9)',
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
-    },
-    floatingAlertDialogDemo: {
-      marginBottom: theme.spacing.lg,
-    },
-    floatingAlertOverlay: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      padding: theme.spacing.lg,
-    },
-    floatingAlertDialog: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: 20, // Material design rounded corners
-      padding: theme.spacing.xl,
-      margin: theme.spacing.lg,
-      maxWidth: '80%' as any,
-      minWidth: 280,
-      elevation: 8,
-      shadowColor: 'rgba(0, 0, 0, 0.2)',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 12,
-    },
-    floatingAlertHeader: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      marginBottom: theme.spacing.md,
-    },
-    floatingAlertIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: '#10B981',
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      marginRight: theme.spacing.md,
-      elevation: 2,
-      shadowColor: 'rgba(16, 185, 129, 0.3)',
-      shadowOffset: {width: 0, height: 2},
-      shadowOpacity: 0.3,
-      shadowRadius: 4,
-    },
-    floatingSuccessAlertIcon: {
-      backgroundColor: '#10B981',
-      shadowColor: 'rgba(16, 185, 129, 0.3)',
-    },
-    floatingAlertIconText: {
-      color: '#FFFFFF',
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.bold as '700',
-    },
-    floatingAlertDialogTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold as '600',
-      color: '#111827',
-      textAlign: 'center' as const,
-      fontFamily: theme.fontFamily.primary,
-    },
-    floatingAlertDialogMessage: {
-      fontSize: theme.fontSizes.md,
-      color: '#6B7280',
-      textAlign: 'center' as const,
-      lineHeight: 20,
-      fontFamily: theme.fontFamily.primary,
-      marginBottom: theme.spacing.lg,
-    },
-    floatingAlertButtons: {
-      flexDirection: 'row' as const,
-      justifyContent: 'center' as const,
-      gap: theme.spacing.md,
-    },
-    floatingMessageContainer: {
-      marginBottom: theme.spacing.lg,
-    },
-    floatingUserMessage: {
-      backgroundColor: '#6366F1',
-      borderRadius: 20, // Material design rounded corners
-      padding: theme.spacing.lg,
-      marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-end' as const,
-      maxWidth: '80%' as any,
-      elevation: 3,
-      shadowColor: 'rgba(99, 102, 241, 0.3)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-    },
-    floatingUserMessageText: {
-      color: '#FFFFFF',
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      lineHeight: theme.fontSizes.md * 1.4,
-    },
-    floatingAssistantMessage: {
-      backgroundColor: '#F3F4F6',
-      borderRadius: 20, // Material design rounded corners
-      padding: theme.spacing.lg,
-      marginBottom: theme.spacing.sm,
-      alignSelf: 'flex-start' as const,
-      maxWidth: '80%' as any,
-      elevation: 2,
-      shadowColor: 'rgba(0, 0, 0, 0.1)',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    floatingAssistantMessageText: {
-      color: '#374151',
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      lineHeight: theme.fontSizes.md * 1.4,
-    },
-    // Clean Article Layout Styles (Option 1)
-    articleChatContainer: {
-      backgroundColor: theme.colors.background.primary,
-      padding: theme.spacing.lg,
-      marginBottom: theme.spacing.lg,
-    },
-    articleUserMessage: {
-      alignSelf: 'flex-end',
-      backgroundColor: theme.colors.primary,
-      borderRadius: theme.borderRadius.lg,
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-      marginBottom: theme.spacing.lg,
-      maxWidth: '70%',
-      ...theme.shadows.light,
-    },
-    articleUserMessageText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      lineHeight: 22,
-    },
-    articleAIResponseContainer: {
-      marginBottom: theme.spacing.xl,
-      position: 'relative' as const,
-    },
-    articleAIAvatar: {
-      position: 'absolute' as const,
-      top: 0,
-      left: 0,
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor: theme.colors.status.info.primary,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      zIndex: 1,
-    },
-    articleAIAvatarText: {
-      color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.xs,
-      fontWeight: theme.fontWeights.bold as '700',
-    },
-    articleAIContent: {
-      marginLeft: 32, // Space for avatar
-      paddingTop: theme.spacing.sm,
-      paddingBottom: theme.spacing.lg, // Space for regenerate button
-    },
-    articleAIText: {
-      color: theme.colors.text.primary,
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      lineHeight: 26,
-      textAlign: 'left' as const,
-    },
-    articleRegenerateButton: {
-      position: 'absolute' as const,
-      bottom: 0,
-      right: 0,
-      width: 20,
-      height: 20,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      backgroundColor: 'transparent',
-      borderRadius: 10,
-      opacity: 0.6,
-    },
-    articleRegenerateIcon: {
-      color: theme.colors.text.tertiary,
-      fontSize: theme.fontSizes.xs,
       fontWeight: theme.fontWeights.medium as '500',
     },
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton as any}>
-          <Text style={styles.backButtonText}>←</Text>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('showcase.title')}</Text>
-        <TouchableOpacity 
-          style={[styles.backButton as any, { marginLeft: 'auto', marginRight: 0 }]}
-          onPress={handleOpenChatGPTDemo}
-        >
-          <Text style={styles.backButtonText}>🤖</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Design Showcase</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Buttons Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('showcase.buttons')}</Text>
+          <Text style={styles.sectionTitle}>Buttons</Text>
           
           <View style={styles.card}>
-            <Text style={styles.label}>{t('showcase.primary_buttons')}</Text>
-                          <View style={styles.row as any}>
-                <Button variant="primary" size="md" label={t('button.primary')} />
-                <Button variant="primary" size="md" label={t('button.disabled')} disabled />
-              </View>
+            <Text style={styles.label}>Primary Buttons</Text>
+            <View style={styles.row}>
+              <Button
+                label="Primary"
+                onPress={() => console.log('Primary button pressed')}
+                containerStyle={[styles.button, styles.primaryButton]}
+              />
+              <Button
+                label="Success"
+                onPress={() => console.log('Success button pressed')}
+                containerStyle={[styles.button, styles.successButton]}
+              />
+              <Button
+                label="Error"
+                onPress={() => console.log('Error button pressed')}
+                containerStyle={[styles.button, styles.errorButton]}
+              />
+            </View>
 
-              <Text style={styles.label}>Secondary Buttons</Text>
-              <View style={styles.row as any}>
-                <Button variant="secondary" size="md" label="Secondary" />
-                <Button variant="secondary" size="md" label="Disabled" disabled />
-              </View>
+            <Text style={styles.label}>Secondary Buttons</Text>
+            <View style={styles.row}>
+              <Button
+                label="Secondary"
+                onPress={() => console.log('Secondary button pressed')}
+                containerStyle={[styles.button, styles.secondaryButton]}
+              />
+              <Button
+                label="Outline"
+                onPress={() => console.log('Outline button pressed')}
+                containerStyle={[styles.button, styles.outlineButton]}
+              />
+              <Button
+                label="Ghost"
+                onPress={() => console.log('Ghost button pressed')}
+                containerStyle={[styles.button, styles.ghostButton]}
+              />
+            </View>
 
-              <Text style={styles.label}>Outline & Ghost Buttons</Text>
-              <View style={styles.row as any}>
-                <Button variant="outline" size="md" label="Outline" />
-                <Button variant="ghost" size="md" label="Ghost" />
-              </View>
-
-              <Text style={styles.label}>Status Buttons</Text>
-              <View style={styles.row as any}>
-                <Button variant="primary" size="md" status="success" label="Success" />
-                <Button variant="primary" size="md" status="error" label="Danger" />
-              </View>
-
-              <Text style={styles.label}>Button Sizes</Text>
-              <View style={styles.row as any}>
-                <Button variant="primary" size="sm" label="Small" />
-                <Button variant="primary" size="md" label="Medium" />
-                <Button variant="primary" size="lg" label="Large" />
-              </View>
+            <Text style={styles.label}>Button Sizes</Text>
+            <View style={styles.row}>
+              <Button
+                label="Small"
+                onPress={() => console.log('Small button pressed')}
+                containerStyle={[styles.button, styles.smallButton]}
+              />
+              <Button
+                label="Medium"
+                onPress={() => console.log('Medium button pressed')}
+                containerStyle={[styles.button, styles.mediumButton]}
+              />
+              <Button
+                label="Large"
+                onPress={() => console.log('Large button pressed')}
+                containerStyle={[styles.button, styles.largeButton]}
+              />
+            </View>
           </View>
         </View>
 
@@ -902,18 +311,18 @@ export default function DesignShowcaseScreen() {
           
           <View style={styles.card}>
             <Text style={styles.label}>Text Input</Text>
-                          <Input
-                style={styles.input}
-                placeholder={t('placeholder.enter_text')}
-                placeholderTextColor={theme.colors.text.tertiary}
-                value={inputValue}
-                onChangeText={setInputValue}
-              />
+            <Input
+              inputStyle={styles.input}
+              placeholder={t('placeholder.enter_text')}
+              placeholderTextColor={theme.colors.text.tertiary}
+              value={inputValue}
+              onChangeText={setInputValue}
+            />
 
             <Text style={styles.label}>Chat Input (Multi-line)</Text>
             <View style={styles.chatInputContainer}>
               <Input
-                style={styles.chatInput}
+                inputStyle={styles.chatInput}
                 placeholder="Type a message..."
                 placeholderTextColor={theme.colors.text.tertiary}
                 multiline
@@ -957,34 +366,23 @@ export default function DesignShowcaseScreen() {
           <Text style={styles.sectionTitle}>Toast Notifications</Text>
           
           <View style={styles.card}>
-            <Text style={styles.label}>Test different toast types</Text>
+            <Text style={styles.label}>Test different types of toast notifications</Text>
             <View style={styles.row}>
-              <TouchableOpacity 
-                style={[styles.button, styles.successButton]}
-                onPress={() => showSuccess('Success toast message!', 3000)}
-              >
-                <Text style={[styles.buttonText, styles.successButtonText]}>Success</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.button, styles.errorButton]}
-                onPress={() => showError('Error toast message!', 3000)}
-              >
-                <Text style={[styles.buttonText, styles.errorButtonText]}>Error</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity 
-                style={[styles.button, styles.warningButton]}
-                onPress={() => showWarning('Warning toast message!', 3000)}
-              >
-                <Text style={[styles.buttonText, styles.warningButtonText]}>Warning</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.button, styles.secondaryButton]}
-                onPress={() => showInfo('Info toast message!', 3000)}
-              >
-                <Text style={[styles.buttonText, styles.secondaryButtonText]}>Info</Text>
-              </TouchableOpacity>
+              <Button
+                label="Success"
+                onPress={() => console.log('Success toast')}
+                containerStyle={[styles.button, styles.successButton]}
+              />
+              <Button
+                label="Error"
+                onPress={() => console.log('Error toast')}
+                containerStyle={[styles.button, styles.errorButton]}
+              />
+              <Button
+                label="Info"
+                onPress={() => console.log('Info toast')}
+                containerStyle={[styles.button, styles.infoButton]}
+              />
             </View>
           </View>
         </View>
@@ -994,600 +392,27 @@ export default function DesignShowcaseScreen() {
           <Text style={styles.sectionTitle}>Alert Dialogs</Text>
           
           <View style={styles.card}>
-            <Text style={styles.label}>Test different alert types</Text>
+            <Text style={styles.label}>Test different types of alerts</Text>
             <View style={styles.row}>
-              <TouchableOpacity 
-                style={[styles.button, styles.successButton]}
-                onPress={() => showSuccessAlert('Success', 'This is a success alert message!')}
-              >
-                <Text style={[styles.buttonText, styles.successButtonText]}>Success Alert</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.button, styles.errorButton]}
-                onPress={() => showErrorAlert('Error', 'This is an error alert message!')}
-              >
-                <Text style={[styles.buttonText, styles.errorButtonText]}>Error Alert</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        {/* Sharp Corners Design Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sharp Corners Design (Option B)</Text>
-          
-          <View style={[styles.card, { borderRadius: 0 }]}>
-            <Text style={styles.label}>Professional Business Buttons</Text>
-            <Text style={styles.caption}>Square or slightly rounded buttons with clean, structured appearance</Text>
-            
-            <View style={styles.row}>
-              <TouchableOpacity style={[styles.sharpButton, styles.sharpPrimaryButton]}>
-                <Text style={[styles.sharpButtonText, styles.sharpPrimaryButtonText]}>Primary Action</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.sharpButton, styles.sharpSecondaryButton]}>
-                <Text style={[styles.sharpButtonText, styles.sharpSecondaryButtonText]}>Secondary</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.label}>Sharp Corner Input Fields</Text>
-            <TextInput
-              style={[styles.sharpInput, { marginBottom: theme.spacing.sm }]}
-              placeholder="Enter business data..."
-              placeholderTextColor={theme.colors.text.tertiary}
-              value={inputValue}
-              onChangeText={setInputValue}
-            />
-
-            <Text style={styles.label}>Professional Cards</Text>
-            <View style={[styles.sharpCard, { marginBottom: theme.spacing.md }]}>
-              <Text style={styles.sharpCardTitle}>Business Report</Text>
-              <Text style={styles.sharpCardText}>Clean, structured layout with sharp corners for professional appearance.</Text>
-            </View>
-
-            <Text style={styles.label}>Sharp Corner Switches</Text>
-            <View style={styles.row}>
-              <Text style={styles.label}>Enable Feature</Text>
-              <Switch
-                value={switchValue}
-                onValueChange={setSwitchValue}
-                trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
-                thumbColor={switchValue ? theme.colors.button.text : theme.colors.text.secondary}
+              <Button
+                label="Success Alert"
+                onPress={() => console.log('Success alert')}
+                containerStyle={[styles.button, styles.successButton]}
+              />
+              <Button
+                label="Error Alert"
+                onPress={() => console.log('Error alert')}
+                containerStyle={[styles.button, styles.errorButton]}
+              />
+              <Button
+                label="Confirm Alert"
+                onPress={() => console.log('Confirm alert')}
+                containerStyle={[styles.button, styles.infoButton]}
               />
             </View>
-
-            <Text style={styles.label}>Sharp Corner Chat Input</Text>
-            <View style={styles.sharpChatInputContainer}>
-              <TextInput
-                style={styles.sharpChatInput}
-                placeholder="Type a professional message..."
-                placeholderTextColor={theme.colors.text.tertiary}
-                multiline
-                numberOfLines={3}
-              />
-              <TouchableOpacity style={styles.sharpSendButton}>
-                <Text style={styles.sharpSendButtonText}>Send</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.label}>Sharp Corner Alert Examples</Text>
-            <Text style={styles.caption}>Demo of how Sharp Corners alerts would look (visual examples)</Text>
-            
-            {/* Demo Sharp Corner Toast Alert */}
-            <View style={styles.sharpToastDemo}>
-              <View style={styles.sharpToastContainer}>
-                <View style={styles.sharpToastIcon}>
-                  <Text style={styles.sharpToastIconText}>✓</Text>
-                </View>
-                <View style={styles.sharpToastContent}>
-                  <Text style={styles.sharpToastTitle}>Success</Text>
-                  <Text style={styles.sharpToastMessage}>Professional success message with sharp corners</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Demo Sharp Corner Error Toast */}
-            <View style={styles.sharpToastDemo}>
-              <View style={[styles.sharpToastContainer, styles.sharpErrorToastContainer]}>
-                <View style={[styles.sharpToastIcon, styles.sharpErrorToastIcon]}>
-                  <Text style={styles.sharpToastIconText}>✕</Text>
-                </View>
-                <View style={styles.sharpToastContent}>
-                  <Text style={styles.sharpToastTitle}>Error</Text>
-                  <Text style={styles.sharpToastMessage}>Professional error message with sharp corners</Text>
-                </View>
-              </View>
-            </View>
-
-            <Text style={styles.label}>Sharp Corner Alert Dialog Demo</Text>
-            <Text style={styles.caption}>Visual example of Sharp Corners alert dialog</Text>
-            
-            {/* Demo Sharp Corner Alert Dialog */}
-            <View style={styles.sharpAlertDialogDemo}>
-              <View style={styles.sharpAlertOverlay}>
-                <View style={styles.sharpAlertDialog}>
-                  <View style={styles.sharpAlertHeader}>
-                    <View style={[styles.sharpAlertIcon, styles.sharpSuccessAlertIcon]}>
-                      <Text style={styles.sharpAlertIconText}>✓</Text>
-                    </View>
-                    <Text style={styles.sharpAlertDialogTitle}>Success</Text>
-                  </View>
-                  <Text style={styles.sharpAlertDialogMessage}>
-                    This is a professional success alert dialog with sharp corners and structured layout.
-                  </Text>
-                  <View style={styles.sharpAlertButtons}>
-                    <TouchableOpacity style={[styles.sharpButton, styles.sharpSecondaryButton, { flex: 1, marginRight: theme.spacing.sm }]}>
-                      <Text style={[styles.sharpButtonText, styles.sharpSecondaryButtonText]}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.sharpButton, styles.sharpSuccessButton, { flex: 1 }]}>
-                      <Text style={[styles.sharpButtonText, styles.sharpSuccessButtonText]}>Confirm</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            <Text style={styles.label}>Sharp Corner Message Bubbles</Text>
-            <View style={styles.sharpMessageContainer}>
-              <View style={styles.sharpUserMessage}>
-                <Text style={styles.sharpUserMessageText}>Professional user message with sharp corners</Text>
-              </View>
-              <View style={styles.sharpAssistantMessage}>
-                <Text style={styles.sharpAssistantMessageText}>Professional assistant response with structured layout</Text>
-              </View>
-            </View>
           </View>
         </View>
-
-        {/* Floating Action Design Section (Option C) */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Floating Action Design (Option C)</Text>
-          <Text style={styles.caption}>Material design with elevated buttons and modern aesthetics</Text>
-          
-          <View style={styles.card}>
-            <Text style={styles.label}>Floating Action Buttons</Text>
-            <View style={styles.row}>
-              <TouchableOpacity style={[styles.floatingButton, styles.floatingPrimaryButton]}>
-                <Text style={[styles.floatingButtonText, styles.floatingPrimaryButtonText]}>Primary</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.floatingButton, styles.floatingSecondaryButton]}>
-                <Text style={[styles.floatingButtonText, styles.floatingSecondaryButtonText]}>Secondary</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={[styles.floatingButton, styles.floatingSuccessButton]}>
-                <Text style={[styles.floatingButtonText, styles.floatingSuccessButtonText]}>Success</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.floatingButton, styles.floatingErrorButton]}>
-                <Text style={[styles.floatingButtonText, styles.floatingErrorButtonText]}>Error</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.label}>Floating Action Input Field</Text>
-            <TextInput
-              style={styles.floatingInput}
-              placeholder="Enter text here..."
-              placeholderTextColor="#9CA3AF"
-            />
-
-            <Text style={styles.label}>Floating Action Card</Text>
-            <View style={styles.floatingCard}>
-              <Text style={styles.floatingCardTitle}>Material Design Card</Text>
-              <Text style={styles.floatingCardText}>
-                This card demonstrates the Floating Action design with elevated shadows and modern rounded corners.
-              </Text>
-            </View>
-
-            <Text style={styles.label}>Floating Action Chat Input</Text>
-            <View style={styles.floatingChatInputContainer}>
-              <TextInput
-                style={styles.floatingChatInput}
-                placeholder="Type a message..."
-                placeholderTextColor="#9CA3AF"
-                multiline
-              />
-              <TouchableOpacity style={styles.floatingSendButton}>
-                <Text style={styles.floatingSendButtonText}>Send</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.label}>Floating Action Toast Demo</Text>
-            <Text style={styles.caption}>Visual example of Floating Action toast notifications</Text>
-            
-            {/* Demo Floating Action Toast */}
-            <View style={styles.floatingToastDemo}>
-              <View style={styles.floatingToastContainer}>
-                <View style={styles.floatingToastIcon}>
-                  <Text style={styles.floatingToastIconText}>✓</Text>
-                </View>
-                <View style={styles.floatingToastContent}>
-                  <Text style={styles.floatingToastTitle}>Success</Text>
-                  <Text style={styles.floatingToastMessage}>Modern material design toast with elevated shadows</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.floatingToastDemo}>
-              <View style={[styles.floatingToastContainer, styles.floatingErrorToastContainer]}>
-                <View style={[styles.floatingToastIcon, styles.floatingErrorToastIcon]}>
-                  <Text style={styles.floatingToastIconText}>✕</Text>
-                </View>
-                <View style={styles.floatingToastContent}>
-                  <Text style={styles.floatingToastTitle}>Error</Text>
-                  <Text style={styles.floatingToastMessage}>Modern material design error toast with elevated shadows</Text>
-                </View>
-              </View>
-            </View>
-
-            <Text style={styles.label}>Floating Action Alert Dialog Demo</Text>
-            <Text style={styles.caption}>Visual example of Floating Action alert dialog</Text>
-            
-            {/* Demo Floating Action Alert Dialog */}
-            <View style={styles.floatingAlertDialogDemo}>
-              <View style={styles.floatingAlertOverlay}>
-                <View style={styles.floatingAlertDialog}>
-                  <View style={styles.floatingAlertHeader}>
-                    <View style={[styles.floatingAlertIcon, styles.floatingSuccessAlertIcon]}>
-                      <Text style={styles.floatingAlertIconText}>✓</Text>
-                    </View>
-                    <Text style={styles.floatingAlertDialogTitle}>Success</Text>
-                  </View>
-                  <Text style={styles.floatingAlertDialogMessage}>
-                    This is a modern material design alert dialog with elevated shadows and rounded corners.
-                  </Text>
-                  <View style={styles.floatingAlertButtons}>
-                    <TouchableOpacity style={[styles.floatingButton, styles.floatingSecondaryButton, { flex: 1, marginRight: theme.spacing.sm }]}>
-                      <Text style={[styles.floatingButtonText, styles.floatingSecondaryButtonText]}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.floatingButton, styles.floatingSuccessButton, { flex: 1 }]}>
-                      <Text style={[styles.floatingButtonText, styles.floatingSuccessButtonText]}>Confirm</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            <Text style={styles.label}>Floating Action Message Bubbles</Text>
-            <View style={styles.floatingMessageContainer}>
-              <View style={styles.floatingUserMessage as any}>
-                <Text style={styles.floatingUserMessageText}>Modern user message with material design</Text>
-              </View>
-              <View style={styles.floatingAssistantMessage as any}>
-                <Text style={styles.floatingAssistantMessageText}>Modern assistant response with elevated design</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Clean Article Layout Section (Option 1) */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Clean Article Layout (Option 1)</Text>
-          <Text style={styles.caption}>Full-width text blocks with no borders, like reading an article</Text>
-          
-          <View style={styles.articleChatContainer}>
-            {/* User Message */}
-            <View style={styles.articleUserMessage as any}>
-              <Text style={styles.articleUserMessageText}>What can you tell me about React Native?</Text>
-            </View>
-
-            {/* AI Response */}
-            <View style={styles.articleAIResponseContainer}>
-              <View style={styles.articleAIAvatar}>
-                <Text style={styles.articleAIAvatarText}>AI</Text>
-              </View>
-              <View style={styles.articleAIContent}>
-                <Text style={styles.articleAIText}>
-                  React Native is a popular open-source framework for building mobile applications using JavaScript and React. It allows developers to create native mobile apps for both iOS and Android platforms using a single codebase.
-                </Text>
-                <Text style={styles.articleAIText}>
-                  Key features include:
-                </Text>
-                <Text style={styles.articleAIText}>
-                  • Cross-platform development with native performance
-                </Text>
-                <Text style={styles.articleAIText}>
-                  • Hot reloading for faster development cycles
-                </Text>
-                <Text style={styles.articleAIText}>
-                  • Large ecosystem of libraries and components
-                </Text>
-                <Text style={styles.articleAIText}>
-                  • Strong community support and regular updates
-                </Text>
-                <TouchableOpacity style={styles.articleRegenerateButton as any}>
-                  <Text style={styles.articleRegenerateIcon as any}>↻</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Another User Message */}
-            <View style={styles.articleUserMessage as any}>
-              <Text style={styles.articleUserMessageText}>How does it compare to Flutter?</Text>
-            </View>
-
-            {/* Another AI Response */}
-            <View style={styles.articleAIResponseContainer}>
-              <View style={styles.articleAIAvatar}>
-                <Text style={styles.articleAIAvatarText}>AI</Text>
-              </View>
-              <View style={styles.articleAIContent}>
-                <Text style={styles.articleAIText}>
-                  React Native and Flutter are both excellent cross-platform frameworks, but they have different approaches and trade-offs.
-                </Text>
-                <Text style={styles.articleAIText}>
-                  React Native uses JavaScript/TypeScript and bridges to native components, while Flutter uses Dart and renders everything through its own engine. React Native has a larger ecosystem and community, while Flutter offers more consistent performance and UI.
-                </Text>
-                <TouchableOpacity style={styles.articleRegenerateButton}>
-                  <Text style={styles.articleRegenerateIcon}>↻</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Color Palette Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Color Palette</Text>
-          
-          <View style={styles.card}>
-            <Text style={styles.label}>Theme Colors</Text>
-            <View style={styles.row}>
-              <View style={styles.row as any}>
-                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.primary }]} />
-                <Text style={styles.colorLabel}>Primary</Text>
-              </View>
-              <View style={styles.row as any}>
-                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.success.primary }]} />
-                <Text style={styles.colorLabel}>Success</Text>
-              </View>
-              <View style={styles.row as any}>
-                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.error.primary }]} />
-                <Text style={styles.colorLabel}>Error</Text>
-              </View>
-              <View style={styles.row as any}>
-                <View style={[styles.colorSwatch, { backgroundColor: theme.colors.status.warning.primary }]} />
-                <Text style={styles.colorLabel}>Warning</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-                 {/* Expo Vector Icons Section */}
-         <View style={styles.section}>
-           <Text style={styles.sectionTitle}>Expo Vector Icons</Text>
-           <Text style={styles.caption}>Built-in Expo icons with multiple icon families.</Text>
-           
-           <View style={styles.card}>
-             <Text style={styles.label}>Material Icons (Google)</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MaterialIcons name="thumb-down" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Dislike</Text>
-               </View>
-                  <View style={{ alignItems: 'center' as const }}>
-                 <MaterialIcons name="volume-up" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Audio</Text>
-               </View>
-             </View>
-
-             <Text style={styles.label}>Ionicons (iOS Style)</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Ionicons name="chatbubble-outline" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Ionicons name="thumbs-up-outline" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Ionicons name="share-outline" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
-               </View>
-                  <View style={{ alignItems: 'center' as const }}>
-                 <Ionicons name="settings-outline" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
-               </View>
-             </View>
-
-             <Text style={styles.label}>Feather Icons (Minimal)</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Feather name="message-circle" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Feather name="thumbs-up" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <Feather name="copy" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Copy</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <Feather name="send" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Send</Text>
-               </View>
-             </View>
-
-             <Text style={styles.label}>Ant Design Icons</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <AntDesign name="message1" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <AntDesign name="like1" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <AntDesign name="setting" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <AntDesign name="user" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>User</Text>
-               </View>
-             </View>
-
-             <Text style={styles.label}>Font Awesome</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <FontAwesome name="comment" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <FontAwesome name="heart" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Heart</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <FontAwesome name="star" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Star</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <FontAwesome name="home" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Home</Text>
-               </View>
-             </View>
-           </View>
-         </View>
-
-         {/* Heroicons Section - Temporarily Disabled */}
-         <View style={styles.section}>
-           <Text style={styles.sectionTitle}>Heroicons (Temporarily Disabled)</Text>
-           <Text style={styles.caption}>Heroicons package has some missing icons. Using Expo Vector Icons instead.</Text>
-           
-           <View style={styles.card}>
-             <Text style={styles.label}>Alternative: Expo Vector Icons</Text>
-             <View style={styles.row}>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Chat</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Like</Text>
-               </View>
-               <View style={{ alignItems: 'center', marginRight: 15 }}>
-                 <MaterialIcons name="share" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Share</Text>
-               </View>
-               <View style={{ alignItems: 'center' }}>
-                 <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
-                 <Text style={[styles.label, { fontSize: 10 }]}>Settings</Text>
-               </View>
-             </View>
-           </View>
-         </View>
-
-         {/* Icon Comparison Section */}
-         <View style={styles.section}>
-           <Text style={styles.sectionTitle}>Icon Library Comparison</Text>
-           <Text style={styles.caption}>Side-by-side comparison of different icon libraries for the same actions.</Text>
-           
-           <View style={styles.card}>
-             <Text style={styles.label}>Chat/Message Icons</Text>
-                             <View style={styles.row}>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Emoji</Text>
-                   <Text style={{ fontSize: 24, marginBottom: 5 }}>💬</Text>
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Lucide</Text>
-                    {/* Replace unsupported icon component with MaterialIcons to avoid undefined import */}
-                    <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Material</Text>
-                   <MaterialIcons name="chat" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Ionicons</Text>
-                   <Ionicons name="chatbubble-outline" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Feather</Text>
-                   <Feather name="message-circle" size={24} color={theme.colors.text.primary} />
-                 </View>
-               </View>
-
-              <Text style={styles.label}>Like/Thumbs Up Icons</Text>
-                             <View style={styles.row}>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Emoji</Text>
-                   <Text style={{ fontSize: 24, marginBottom: 5 }}>👍</Text>
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Lucide</Text>
-                    {/* Replace unsupported icon component with MaterialIcons to avoid undefined import */}
-                    <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Material</Text>
-                   <MaterialIcons name="thumb-up" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Ionicons</Text>
-                   <Ionicons name="thumbs-up-outline" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Feather</Text>
-                   <Feather name="thumbs-up" size={24} color={theme.colors.text.primary} />
-                 </View>
-               </View>
-
-              <Text style={styles.label}>Settings Icons</Text>
-                             <View style={styles.row}>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Emoji</Text>
-                   <Text style={{ fontSize: 24, marginBottom: 5 }}>⚙️</Text>
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Lucide</Text>
-                    {/* Replace unsupported icon component with MaterialIcons to avoid undefined import */}
-                    <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Material</Text>
-                   <MaterialIcons name="settings" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const, marginRight: 10 }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Ionicons</Text>
-                   <Ionicons name="settings-outline" size={24} color={theme.colors.text.primary} />
-                 </View>
-                  <View style={{ alignItems: 'center' as const }}>
-                   <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>Feather</Text>
-                   <Feather name="settings" size={24} color={theme.colors.text.primary} />
-                 </View>
-               </View>
-            </View>
-          </View>
-        </ScrollView>
-
-      {/* Custom Alert */}
-      <CustomAlert
-        visible={alert.visible}
-        title={alert.title}
-        message={alert.message}
-        type={alert.type}
-        confirmText={alert.confirmText}
-        cancelText={alert.cancelText}
-        onConfirm={() => {
-          alert.onConfirm?.();
-          hideAlert();
-        }}
-        onCancel={() => {
-          alert.onCancel?.();
-          hideAlert();
-        }}
-      />
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 } 

@@ -2,7 +2,7 @@ import { Button, Card, Input, ListItem, Text } from '@/components/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { ScrollView, Switch, View, SafeAreaView, Platform } from 'react-native';
+import { Platform, SafeAreaView, ScrollView, Switch, View } from 'react-native';
 import { CustomAlert, useCustomAlert, useToast } from '../../src/features/alert';
 import { useLogout, useUpdateProfile, useUserInfo } from '../../src/features/auth';
 import { LanguageSelector, useLanguageContext } from '../../src/features/language';

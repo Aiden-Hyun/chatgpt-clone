@@ -1,70 +1,54 @@
 
-import { Button, FormWrapper, Input, Text } from '@/components';
+import { Button, Input, Text } from '@/components/ui';
+import { FormWrapper } from '@/components/FormWrapper';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View, SafeAreaView } from 'react-native';
+import { getButtonSize } from '@/shared/utils/layout';
 import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { getButtonSize, getHeaderHeight } from '@/shared/utils/layout';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, TouchableOpacity, View } from 'react-native';
-import createForgotPasswordStyles from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
   const { t } = useLanguageContext();
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [hasError, setHasError] = useState(false);
-
-  const { resetPassword, isLoading } = usePasswordReset();
-  const { showError } = useToast();
-
   const theme = useAppTheme();
-  const styles = createForgotPasswordStyles(theme);
+  const { resetPassword, isLoading } = usePasswordReset();
+  const { showSuccess, showError } = useToast();
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState<{ email?: string }>({});
+
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+
+    if (!email.trim()) {
+      newErrors.email = t('auth.email_required');
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = t('auth.email_invalid');
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleResetPassword = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     try {
-      if (!email) {
-        showError(t('auth.enter_email'));
-        return;
-      }
-
-      if (!validateEmail(email)) {
-        showError(t('auth.enter_valid_email'));
-        return;
-      }
-
-      const result = await resetPassword(email);
-      if (result.success) {
-        Alert.alert(
-          'Success', 
-          'Password reset email sent. Please check your email and follow the instructions.',
-          [{ text: 'OK', onPress: async () => {
-            try {
-              router.replace('/signin');
-            } catch {
-              console.error('Navigation error:');
-              setHasError(true);
-            }
-          }}]
-        );
-      } else {
-        setHasError(true);
-        showError(t('auth.unexpected_error'));
-      }
-    } catch {
-      setHasError(true);
-      showError(t('auth.unexpected_error'));
+      await resetPassword(email.trim());
+      showSuccess(t('auth.password_reset_sent'));
+      router.replace('/auth');
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      showError(t('auth.reset_password_failed'));
     }
   };
 
-  const handleGoBack = async () => {
+  const handleGoBack = () => {
     try {
       const canGoBack = (router as any).canGoBack?.() ?? false;
       if (canGoBack) {
@@ -72,107 +56,99 @@ export default function ForgotPasswordScreen() {
       } else {
         router.replace('/auth');
       }
-    } catch (fallbackError) {
-      console.error('Navigation error:', fallbackError);
-      setHasError(true);
+    } catch {
+      router.replace('/auth');
     }
   };
 
-  // Error state
-  if (hasError) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text variant="h2" weight="semibold" style={{ marginBottom: 20 }}>Something went wrong</Text>
-        <Button 
-          label="Try Again"
-          onPress={() => setHasError(false)}
-          variant="primary"
-        />
-      </View>
-    );
-  }
-
   return (
-    <View style={{ flex: 1 }}>
-      {/* Header with Back Button */}
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: theme.spacing.md,
-        paddingVertical: theme.spacing.md,
-        paddingTop: getHeaderHeight(), // Use utility instead of platform-specific logic
-        borderBottomWidth: 1,
-        borderBottomColor: theme.colors.border.light,
-        backgroundColor: theme.colors.background.primary,
-      }}>
-        <TouchableOpacity 
-          onPress={handleGoBack} 
-          style={{
-            padding: theme.spacing.sm,
-            marginRight: theme.spacing.md,
-            // Use consistent button size for all platforms
-            minWidth: getButtonSize('action'),
-            minHeight: getButtonSize('action'),
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
-        </TouchableOpacity>
-        <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
-          Reset Password
-        </Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        {/* Header with Back Button */}
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: theme.spacing.md,
+          paddingVertical: theme.spacing.md,
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.border.light,
+          backgroundColor: theme.colors.background.primary,
+        }}>
+          <TouchableOpacity 
+            onPress={handleGoBack} 
+            style={{
+              padding: theme.spacing.sm,
+              marginRight: theme.spacing.md,
+              minWidth: getButtonSize('action'),
+              minHeight: getButtonSize('action'),
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
+          </TouchableOpacity>
+          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
+            {t('auth.reset_password')}
+          </Text>
+        </View>
 
-      <View style={styles.container}>
-        <Text variant="body"
-          style={{
-            fontSize: theme.fontSizes.md,
-            color: theme.colors.text.secondary,
-            textAlign: 'center',
-            marginBottom: theme.spacing.xl,
-            lineHeight: 24,
-          }}
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-          Enter your email address and we'll send you a link to reset your password.
-        </Text>
-
-        <FormWrapper onSubmit={handleResetPassword} style={{ width: '100%' }}>
-          <Input
-            placeholder={t('auth.email')}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            editable={!isLoading}
-            variant="filled"
-            returnKeyType="done"
-            onSubmitEditing={handleResetPassword}
-            blurOnSubmit={false}
-          />
-          
-          <Button
-            variant="primary"
-            size="lg"
-            label={isLoading ? t('auth.sending') : t('auth.reset_password')}
-            onPress={handleResetPassword}
-            disabled={isLoading}
-            isLoading={isLoading}
-            fullWidth
-            containerStyle={{ marginTop: theme.spacing.lg }}
-          />
-        </FormWrapper>
-        
-        <Button
-          variant="link"
-          size="md"
-          label={t('auth.back_to_signin')}
-          onPress={() => router.replace('/signin')}
-          disabled={isLoading}
-          containerStyle={{ marginTop: theme.spacing.sm }}
-        />
-      </View>
-    </View>
+          <View style={styles.container}>
+            <FormWrapper onSubmit={handleResetPassword} style={{ width: '100%' }}>
+              <Text variant="body" style={styles.description}>
+                {t('auth.forgot_password_description')}
+              </Text>
+              
+              <Input
+                placeholder={t('auth.email')}
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (errors.email) {
+                    setErrors(prev => ({ ...prev, email: undefined }));
+                  }
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+                variant="filled"
+                returnKeyType="done"
+                onSubmitEditing={handleResetPassword}
+                status={errors.email ? 'error' : 'default'}
+                errorText={errors.email}
+              />
+              
+              <Button
+                label={isLoading ? t('common.loading') : t('auth.send_reset_email')}
+                onPress={handleResetPassword}
+                disabled={isLoading}
+                isLoading={isLoading}
+                fullWidth
+              />
+            </FormWrapper>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
-} 
+}
+
+const styles = {
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center' as const,
+  },
+  description: {
+    textAlign: 'center' as const,
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+}; 
