@@ -1,22 +1,23 @@
 // src/features/chat/services/core/ServiceFactory.ts
 import { Session } from '@supabase/supabase-js';
+import { ChatMessage } from '../../types';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { IRegenerationService } from '../interfaces/IRegenerationService';
-import { ChatMessage } from '../types';
 import { OpenAIResponseProcessor } from './AIResponseProcessor';
-import { MessageSenderService } from './MessageSenderService';
+import { MessageOrchestrator } from './message-sender';
 import { ServiceRegistry } from './ServiceRegistry';
 
+/**
+ * Factory for creating service instances with proper dependency injection
+ * Creates a complete MessageOrchestrator with all dependencies
+ */
 export class ServiceFactory {
-  /**
-   * Creates a complete MessageSenderService with all dependencies
-   */
   static createMessageSender(
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>,
     setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>
-  ): MessageSenderService {
+  ): MessageOrchestrator {
     // Create all service instances using the registry
     const chatRoomService = ServiceRegistry.createChatRoomService();
     const messageService = ServiceRegistry.createMessageService();
@@ -32,16 +33,15 @@ export class ServiceFactory {
 
 
     // Create and return the orchestrator with all dependencies injected
-    return new MessageSenderService(
+    return new MessageOrchestrator(
+      aiApiService,
+      responseProcessor,
       chatRoomService,
       messageService,
-      aiApiService,
-      navigationService,
-      responseProcessor,
+      animationService,
       messageStateService,
       typingStateService,
-      animationService,
-
+      navigationService
     );
   }
 
