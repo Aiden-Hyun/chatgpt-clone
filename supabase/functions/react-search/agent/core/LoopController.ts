@@ -1,5 +1,5 @@
-import type { AgentState } from "../types/AgentTypes.ts";
 import type { BudgetManager } from "../components/BudgetManager.ts";
+import type { AgentState } from "../types/AgentTypes.ts";
 import { EarlyTermination } from "./EarlyTermination.ts";
 import { IterationExecutor, IterationExecutorDeps } from "./IterationExecutor.ts";
 
@@ -12,6 +12,7 @@ const MAX_ITERATIONS = 10;
 export class LoopController {
   private deps: LoopControllerDeps;
   private iterationExecutor: IterationExecutor;
+  private trace: any[] = [];
 
   constructor(deps: LoopControllerDeps) {
     this.deps = deps;
@@ -69,5 +70,9 @@ export class LoopController {
   private async consolidateResults(state: AgentState): Promise<void> {
     const reranked = await this.deps.rerankService.rerank(state.question, state.passages as any, 10);
     state.passages.splice(0, state.passages.length, ...(reranked.reranked_passages || state.passages).slice(0, 10) as any);
+  }
+
+  getTrace(): any[] {
+    return this.trace;
   }
 }

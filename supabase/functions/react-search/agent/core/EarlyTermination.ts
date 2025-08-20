@@ -1,6 +1,7 @@
 import { isTimeSensitive, newestDate } from "../utils/time-utils.ts";
 import { eTLDplus1 } from "../utils/url-utils.ts";
 import type { AgentState } from "./AgentState.ts";
+import { BudgetManager } from "../components/BudgetManager.ts";
 
 export class EarlyTermination {
   static hasDomainDiversity(state: AgentState, minDomains: number): boolean {
@@ -9,8 +10,15 @@ export class EarlyTermination {
   }
 
   static shouldStopLoop(state: AgentState, requiredFacetsCovered: boolean, facetCoverageRatio: number): boolean {
+    // Use BudgetManager to check budget depletion instead of duplicating logic
+    const budgetManager = new BudgetManager();
+    if (budgetManager.isBudgetDepleted(state.budget)) return true;
+    
+    // Check time thresholds
     const timeExceeded = Date.now() - state.startMs > state.budget.timeMs * 0.85;
     if (timeExceeded) return true;
+    
+    // Check completion conditions
     if (requiredFacetsCovered && this.hasDomainDiversity(state, 2)) return true;
     if (state.passages.length >= 15 && state.facets.filter(f => f.covered).length === 0) return true;
     if (Date.now() - state.startMs > state.budget.timeMs * 0.8 && facetCoverageRatio >= 0.6) return true;
