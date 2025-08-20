@@ -3,6 +3,10 @@ import { FacetManager } from "../components/FacetManager.ts";
 import { SynthesisEngine } from "../components/SynthesisEngine.ts";
 import type { ReActResult } from "../types/AgentTypes.ts";
 import { APICallTracker } from "../utils/APICallTracker.ts";
+import { QuestionRouter } from "./QuestionRouter.ts";
+import { DirectAnswerHandler } from "../handlers/DirectAnswerHandler.ts";
+import { MinimalSearchHandler } from "../handlers/MinimalSearchHandler.ts";
+import { FullResearchHandler } from "../handlers/FullResearchHandler.ts";
 import { CacheManager } from "./CacheManager.ts";
 import { ModelManager } from "./ModelManager.ts";
 import { ReActLoop } from "./ReActLoop.ts";
@@ -24,9 +28,15 @@ export interface WorkflowOrchestratorDeps {
 
 export class WorkflowOrchestrator {
   private deps: WorkflowOrchestratorDeps;
+  private router: QuestionRouter;
 
   constructor(deps: WorkflowOrchestratorDeps) {
     this.deps = deps;
+    this.router = new QuestionRouter({
+      DIRECT_ANSWER: new DirectAnswerHandler(),
+      MINIMAL_SEARCH: new MinimalSearchHandler(),
+      FULL_RESEARCH: new FullResearchHandler(),
+    });
   }
 
   private debugLog(...args: any[]): void {
@@ -83,50 +93,20 @@ export class WorkflowOrchestrator {
     );
     console.log(`🚀 [Agent] State initialized with ${state.facets.length} facets: ${state.facets.map(f => f.name).join(', ')}`);
 
-    // Handle different question types
+    // Handle different question types via router
     console.log(`🚀 [Agent] Processing question type: ${state.questionType}`);
+    const routed = await this.router.route(state.questionType, state, {
+      reactLoop: this.deps.reactLoop,
+      stateInitializer: this.deps.stateInitializer,
+      facetManager: this.deps.facetManager,
+      cacheManager: this.deps.cacheManager,
+    }, { cacheKey });
 
-    switch (state.questionType) {
-      case 'DIRECT_ANSWER': {
-        console.log(`🚀 [Agent] Direct answer question detected - using pre-generated answer`);
-        console.log(`🚀 [Agent] Pre-generated answer: ${state.directAnswer ? state.directAnswer.substring(0, 100) + '...' : 'None'}`);
-        const directResult: ReActResult = {
-          final_answer_md: state.directAnswer || "Unable to provide direct answer.",
-          citations: [],
-          trace: [{ event: "direct_answer", questionType: state.questionType }],
-          time_warning: undefined
-        };
-        console.log(`🚀 [Agent] Direct answer result built. Answer length: ${directResult.final_answer_md.length} chars`);
-        console.log(`🚀 [Agent] Caching direct answer result...`);
-        await this.deps.cacheManager.setCache(cacheKey, directResult);
-        const directTime = ((Date.now() - start)/1000).toFixed(2);
-        console.log(`✅ [Agent] Direct answer complete in ${directTime}s`);
-        this.deps.apiCallTracker.printSummary();
-        return directResult;
-      }
-      case 'MINIMAL_SEARCH': {
-        console.log(`🚀 [Agent] Minimal search question detected - limiting search resources`);
-        state.budget.searches = Math.min(state.budget.searches, 2);
-        state.budget.fetches = Math.min(state.budget.fetches, 1);
-        console.log(`🚀 [Agent] Limited budget: ${state.budget.searches} searches, ${state.budget.fetches} fetches`);
-        console.log(`🚀 [Agent] Starting limited ReAct loop...`);
-        await this.deps.reactLoop.execute(state, this.deps.stateInitializer.getCurrentDateTime());
-        console.log(`🚀 [Agent] Limited ReAct loop completed. Final state - Passages: ${state.passages.length}, Facets covered: ${state.facets.filter(f => f.covered).length}/${state.facets.length}`);
-        break;
-      }
-      case 'FULL_RESEARCH':
-      default: {
-        if (state.questionType === 'FULL_RESEARCH') {
-          console.log(`🚀 [Agent] Full research question detected - using full search pipeline`);
-          console.log(`🚀 [Agent] Starting full ReAct loop...`);
-        } else {
-          console.log(`🚀 [Agent] Unknown question type: ${state.questionType}, defaulting to full research`);
-          console.log(`🚀 [Agent] Starting ReAct loop...`);
-        }
-        await this.deps.reactLoop.execute(state, this.deps.stateInitializer.getCurrentDateTime());
-        console.log(`🚀 [Agent] ReAct loop completed. Final state - Passages: ${state.passages.length}, Facets covered: ${state.facets.filter(f => f.covered).length}/${state.facets.length}`);
-        break;
-      }
+    if (routed.completed && routed.directResult) {
+      const directTime = ((Date.now() - start)/1000).toFixed(2);
+      console.log(`✅ [Agent] Direct answer complete in ${directTime}s`);
+      this.deps.apiCallTracker.printSummary();
+      return routed.directResult;
     }
 
     // Build final result with citations and metadata
