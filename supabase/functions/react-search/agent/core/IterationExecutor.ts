@@ -6,6 +6,7 @@ import { ActionExecutor } from "./ActionExecutor.ts";
 import { StateLogger } from "./StateLogger.ts";
 import { EarlyTermination } from "./EarlyTermination.ts";
 import { SearchResultProcessor } from "./SearchResultProcessor.ts";
+import { ERROR_MESSAGES } from "./constants.ts";
 
 export interface IterationExecutorDeps {
   planner: Planner;
@@ -72,14 +73,19 @@ export class IterationExecutor {
   }
 
   private async executeAction(state: AgentState, action: any): Promise<void> {
-    if (action.type === "SEARCH" && state.budget.searches > 0) {
-      await this.actionExecutor.execute(state, action as any);
-    }
-    if (action.type === "FETCH" && state.budget.fetches > 0) {
-      await this.actionExecutor.execute(state, action as any);
-    }
-    if (action.type === "RERANK") {
-      await this.actionExecutor.execute(state, action as any);
+    try {
+      if (action.type === "SEARCH" && state.budget.searches > 0) {
+        await this.actionExecutor.execute(state, action as any);
+      } else if (action.type === "FETCH" && state.budget.fetches > 0) {
+        await this.actionExecutor.execute(state, action as any);
+      } else if (action.type === "RERANK") {
+        await this.actionExecutor.execute(state, action as any);
+      } else {
+        console.warn(`[IterationExecutor] Invalid action type or insufficient budget: ${action.type}`);
+      }
+    } catch (error) {
+      console.error(`[IterationExecutor] ${ERROR_MESSAGES.ACTION_EXECUTION_FAILED}:`, error);
+      // Continue execution even if one action fails
     }
   }
 

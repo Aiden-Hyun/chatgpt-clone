@@ -1,11 +1,12 @@
 import type { Budget } from "../types/AgentTypes.ts";
+import { BUDGET_CONSTANTS } from "../core/constants.ts";
 
 export class BudgetManager {
   initBudget(overrides?: Partial<Pick<Budget, 'timeMs' | 'searches' | 'fetches' | 'tokens'>>): Budget {
-    const timeMs   = overrides?.timeMs   ?? 25000;
-    const searches = overrides?.searches ?? 4;
-    const fetches  = overrides?.fetches  ?? 12;
-    const tokens   = overrides?.tokens   ?? 24000;
+    const timeMs   = overrides?.timeMs   ?? BUDGET_CONSTANTS.DEFAULT_TIME_MS;
+    const searches = overrides?.searches ?? BUDGET_CONSTANTS.DEFAULT_SEARCHES;
+    const fetches  = overrides?.fetches  ?? BUDGET_CONSTANTS.DEFAULT_FETCHES;
+    const tokens   = overrides?.tokens   ?? BUDGET_CONSTANTS.DEFAULT_TOKENS;
     return { timeMs, searches, fetches, tokens, startedMs: Date.now() };
   }
 

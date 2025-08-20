@@ -1,3 +1,5 @@
+import { LOOP_CONSTANTS } from "../core/constants.ts";
+
 export class ProgressTracker {
   private previousFacetCoverage = 0;
   private iterationsWithoutProgress = 0;
@@ -10,7 +12,7 @@ export class ProgressTracker {
   update(currentCoverage: number): { progressed: boolean; stop: boolean; iterationsWithoutProgress: number } {
     if (currentCoverage <= this.previousFacetCoverage) {
       this.iterationsWithoutProgress++;
-      const stop = this.iterationsWithoutProgress >= 3;
+      const stop = this.iterationsWithoutProgress >= LOOP_CONSTANTS.MAX_ITERATIONS_WITHOUT_PROGRESS;
       return { progressed: false, stop, iterationsWithoutProgress: this.iterationsWithoutProgress };
     }
     this.previousFacetCoverage = currentCoverage;

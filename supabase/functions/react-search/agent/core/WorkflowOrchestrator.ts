@@ -12,6 +12,7 @@ import { QuestionRouter } from "./QuestionRouter.ts";
 import { ReActLoop } from "./ReActLoop.ts";
 import { ResultOrchestrator } from "./ResultOrchestrator.ts";
 import { StateInitializer } from "./StateInitializer.ts";
+import { ERROR_MESSAGES } from "./constants.ts";
 
 export interface WorkflowOrchestratorDeps {
   cfg: any;
@@ -29,6 +30,7 @@ export interface WorkflowOrchestratorDeps {
 export class WorkflowOrchestrator {
   private deps: WorkflowOrchestratorDeps;
   private router: QuestionRouter;
+  private trace: any[] = [];
 
   constructor(deps: WorkflowOrchestratorDeps) {
     this.deps = deps;
@@ -37,6 +39,20 @@ export class WorkflowOrchestrator {
       MINIMAL_SEARCH: new MinimalSearchHandler(),
       FULL_RESEARCH: new FullResearchHandler(),
     });
+  }
+
+  private addTraceEvent(event: string, data?: any): void {
+    try {
+      if (this.deps.cfg.debug) {
+        this.trace.push({ event, data, timestamp: Date.now() });
+      }
+    } catch (error) {
+      console.warn(`[WorkflowOrchestrator] ${ERROR_MESSAGES.TRACE_ACCESS_ERROR}:`, error);
+    }
+  }
+
+  private getTrace(): any[] {
+    return this.trace;
   }
 
   private debugLog(...args: any[]): void {
@@ -68,7 +84,7 @@ export class WorkflowOrchestrator {
     if (cached) {
       this.debugLog(`[Agent] Cache hit! Returning cached result`);
       console.log(`✅ [Agent] Cache hit! Returning cached result`);
-      if (this.deps.cfg.debug) this.deps.reactLoop.getTrace?.()?.push?.({ event: "cache_hit", cacheKey });
+      this.addTraceEvent("cache_hit", { cacheKey });
       return cached;
     }
     this.debugLog(`[Agent] No cache hit, proceeding with search`);
@@ -126,7 +142,7 @@ export class WorkflowOrchestrator {
         aiProviderManager: modelInfo2.aiProviderManager,
         apiCallTracker: this.deps.apiCallTracker,
       },
-      this.deps.cfg.debug ? this.deps.reactLoop.getTrace() : undefined,
+      this.deps.cfg.debug ? this.getTrace() : undefined,
       state.metrics,
     );
     console.log(`🚀 [Agent] Final result built. Answer length: ${result.final_answer_md.length} chars, Citations: ${result.citations?.length || 0}`);
