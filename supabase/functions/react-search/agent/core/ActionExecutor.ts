@@ -6,6 +6,8 @@ import type { AgentState } from "./AgentState.ts";
 export type PlannedAction = { type: "SEARCH" | "FETCH" | "RERANK" | "STOP"; query?: string; k?: number; url?: string; top_n?: number; timeRange?: 'd'|'w'|'m'|'y' };
 
 export class ActionExecutor {
+  private apiCallTracker?: any;
+
   constructor(private deps: {
     search: (q: string, k: number, timeRange?: 'd'|'w'|'m'|'y') => Promise<any[]>;
     filterAndScore: (results: any[]) => any[];
@@ -13,7 +15,10 @@ export class ActionExecutor {
     fetchUrl: (url: string) => Promise<{ url: string; text?: string; status?: number; title?: string }>;
     rerank: (question: string, passages: any[], topN: number) => Promise<{ reranked_passages: any[] } | any>;
     debugLog: (...args: any[]) => void;
-  }) {}
+    apiCallTracker?: any;
+  }) {
+    this.apiCallTracker = deps.apiCallTracker;
+  }
 
   async execute(state: AgentState, action: PlannedAction): Promise<void> {
     console.log(`⚡ [ActionExecutor] Executing action: ${action.type}${action.query ? ` - "${action.query}"` : ''}${action.url ? ` - ${action.url}` : ''}`);
@@ -47,7 +52,27 @@ export class ActionExecutor {
       state.metrics.fetches++;
       state.budget.fetches--;
       this.deps.debugLog(`[Action] FETCH: ${action.url}`);
+      
+      const startTime = Date.now();
       const ob = await this.deps.fetchUrl(action.url);
+      const responseTime = Date.now() - startTime;
+      
+      // Track the fetch call
+      if (this.apiCallTracker) {
+        this.apiCallTracker.trackCall({
+          purpose: 'Fetch URL',
+          model: 'fetch-api',
+          provider: 'fetch',
+          responseTimeMs: responseTime,
+          success: !!(ob?.text && ob?.status && ob.status >= 200 && ob.status < 400),
+          error: ob?.status && ob.status >= 400 ? `HTTP ${ob.status}` : undefined,
+          metadata: {
+            url: action.url,
+            status: ob?.status,
+            hasText: !!ob?.text
+          }
+        });
+      }
       if (ob?.text && ob.status && ob.status >= 200 && ob.status < 400) {
         const pub = extractPublishedDateFromHtml(ob.text, ob.url);
         const domain = eTLDplus1(ob.url);
@@ -71,7 +96,26 @@ export class ActionExecutor {
 
     if (action.type === 'RERANK') {
       console.log(`⚡ [ActionExecutor] Starting RERANK with ${state.passages.length} passages`);
+      
+      const startTime = Date.now();
       const reranked = await this.deps.rerank(state.question, state.passages as any, action.top_n ?? 8);
+      const responseTime = Date.now() - startTime;
+      
+      // Track the rerank call
+      if (this.apiCallTracker) {
+        this.apiCallTracker.trackCall({
+          purpose: 'Rerank Passages',
+          model: 'rerank-api',
+          provider: 'rerank',
+          responseTimeMs: responseTime,
+          success: true,
+          metadata: {
+            inputPassages: state.passages.length,
+            topN: action.top_n ?? 8,
+            outputPassages: reranked.reranked_passages?.length || state.passages.length
+          }
+        });
+      }
       const chosen: any[] = [];
       const domainCounts = new Map<string, number>();
       for (const p of (reranked.reranked_passages || state.passages)) {

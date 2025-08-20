@@ -14,6 +14,7 @@ export interface ReActLoopDependencies {
   fetchService: any;
   rerankService: any;
   debug: boolean;
+  apiCallTracker?: any;
 }
 
 /**
@@ -38,7 +39,10 @@ export class ReActLoop {
   constructor(deps: ReActLoopDependencies) {
     this.deps = deps;
     this.budgetManager = new BudgetManager();
-    this.loopController = new LoopController(deps);
+    this.loopController = new LoopController({
+      ...deps,
+      budgetManager: this.budgetManager
+    });
   }
 
   /**

@@ -89,7 +89,7 @@ export class ReActAgent {
     this.budgetManager = new BudgetManager();
     
     // Initialize Search Provider Manager
-    this.searchProviderManager = new SearchProviderManager(!!cfg.debug, cfg.cacheManager);
+    this.searchProviderManager = new SearchProviderManager(!!cfg.debug, cfg.cacheManager, this.apiCallTracker);
     
     // Register search providers
     const getEnv = (key: string): string => {
@@ -142,6 +142,7 @@ export class ReActAgent {
       fetchService: cfg.fetchService,
       rerankService: cfg.rerankService,
       debug: !!cfg.debug,
+      apiCallTracker: this.apiCallTracker,
     });
 
     // Initialize workflow orchestrator (extracted from run)

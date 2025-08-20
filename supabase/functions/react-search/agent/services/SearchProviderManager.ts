@@ -1,4 +1,5 @@
 import type { SearchProvider, SearchProviderName, SearchResponse } from "../types/SearchProvider.ts";
+import type { APICallTracker } from "../utils/APICallTracker.ts";
 
 /**
  * Search Provider Manager
@@ -13,15 +14,18 @@ import type { SearchProvider, SearchProviderName, SearchResponse } from "../type
  * - Simplified testing and mocking
  * - Unified error handling and logging
  * - Automatic fallback between providers
+ * - API call tracking for performance analysis
  */
 export class SearchProviderManager {
   private providers: Map<SearchProviderName, SearchProvider> = new Map();
   private debug: boolean;
   private cacheManager?: any;
+  private apiCallTracker?: APICallTracker;
 
-  constructor(debug: boolean = false, cacheManager?: any) {
+  constructor(debug: boolean = false, cacheManager?: any, apiCallTracker?: APICallTracker) {
     this.debug = debug;
     this.cacheManager = cacheManager;
+    this.apiCallTracker = apiCallTracker;
   }
 
   /**
@@ -116,7 +120,26 @@ export class SearchProviderManager {
           console.log(`🔍 [SearchProviderManager] Trying ${providerName} for query: "${query}"`);
         }
 
+        const startTime = Date.now();
         const response = await provider.search(query, maxResults, timeRange);
+        const responseTime = Date.now() - startTime;
+        
+        // Track the API call
+        if (this.apiCallTracker) {
+          this.apiCallTracker.trackCall({
+            purpose: `Search - ${providerName}`,
+            model: 'search-api',
+            provider: providerName,
+            responseTimeMs: responseTime,
+            success: true,
+            metadata: {
+              query,
+              maxResults,
+              timeRange,
+              resultsCount: response.results.length
+            }
+          });
+        }
         
         if (this.debug) {
           console.log(`🔍 [SearchProviderManager] ${providerName} returned ${response.results.length} results`);
@@ -130,6 +153,24 @@ export class SearchProviderManager {
         return response;
       } catch (error) {
         lastError = error as Error;
+        
+        // Track failed API call
+        if (this.apiCallTracker) {
+          this.apiCallTracker.trackCall({
+            purpose: `Search - ${providerName}`,
+            model: 'search-api',
+            provider: providerName,
+            responseTimeMs: 0, // Could track actual time if we measure it
+            success: false,
+            error: (error as Error).message,
+            metadata: {
+              query,
+              maxResults,
+              timeRange
+            }
+          });
+        }
+        
         if (this.debug) {
           console.error(`🔍 [SearchProviderManager] ${providerName} failed:`, error);
         }

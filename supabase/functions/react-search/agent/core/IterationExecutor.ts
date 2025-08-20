@@ -15,6 +15,7 @@ export interface IterationExecutorDeps {
   fetchService: any;
   rerankService: any;
   debug: boolean;
+  apiCallTracker?: any;
 }
 
 export class IterationExecutor {
@@ -35,6 +36,7 @@ export class IterationExecutor {
       fetchUrl: (u) => deps.fetchService.fetch(u) as any,
       rerank: (q, p, n) => deps.rerankService.rerank(q, p as any, n),
       debugLog: (...args) => { if (deps.debug) console.log(...args); },
+      apiCallTracker: deps.apiCallTracker,
     });
   }
 
