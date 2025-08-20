@@ -12,25 +12,25 @@
  */
 
 // Core components that handle specific aspects of the agent's workflow
-import { BudgetManager } from "./agent/components/BudgetManager.ts";
-import { FacetManager } from "./agent/components/FacetManager.ts";
-import { Planner } from "./agent/components/Planner.ts";
-import { ProgressTracker } from "./agent/components/ProgressTracker.ts";
+import { BudgetManager } from "./components/BudgetManager.ts";
+import { FacetManager } from "./components/FacetManager.ts";
+import { Planner } from "./components/Planner.ts";
+import { ProgressTracker } from "./components/ProgressTracker.ts";
 
-import { config as appConfig } from "../shared/config.ts";
-import { SynthesisEngine } from "./agent/components/SynthesisEngine.ts";
-import { CacheManager } from "./agent/core/CacheManager.ts";
-import { EarlyTermination } from "./agent/core/EarlyTermination.ts";
-import { ModelManager } from "./agent/core/ModelManager.ts";
-import { ReActLoop } from "./agent/core/ReActLoop.ts";
-import { ResultOrchestrator } from "./agent/core/ResultOrchestrator.ts";
-import { StateInitializer } from "./agent/core/StateInitializer.ts";
-import { BingProvider } from "./agent/providers/BingProvider.ts";
-import { SerpAPIProvider } from "./agent/providers/SerpAPIProvider.ts";
-import { TavilyProvider } from "./agent/providers/TavilyProvider.ts";
-import { SearchProviderManager } from "./agent/services/SearchProviderManager.ts";
-import type { ReActResult } from "./agent/types/AgentTypes.ts";
-import { APICallTracker } from "./agent/utils/APICallTracker.ts";
+import { config as appConfig } from "../../shared/config.ts";
+import { SynthesisEngine } from "./components/SynthesisEngine.ts";
+import { CacheManager } from "./core/CacheManager.ts";
+import { EarlyTermination } from "./core/EarlyTermination.ts";
+import { ModelManager } from "./core/ModelManager.ts";
+import { ReActLoop } from "./core/ReActLoop.ts";
+import { ResultOrchestrator } from "./core/ResultOrchestrator.ts";
+import { StateInitializer } from "./core/StateInitializer.ts";
+import { BingProvider } from "./providers/BingProvider.ts";
+import { SerpAPIProvider } from "./providers/SerpAPIProvider.ts";
+import { TavilyProvider } from "./providers/TavilyProvider.ts";
+import { SearchProviderManager } from "./services/SearchProviderManager.ts";
+import type { ReActResult } from "./types/AgentTypes.ts";
+import { APICallTracker } from "./utils/APICallTracker.ts";
 
 /**
  * ReActAgent - Main class that orchestrates the search and synthesis workflow
@@ -297,3 +297,5 @@ export class ReActAgent {
     return result;
   }
 }
+
+

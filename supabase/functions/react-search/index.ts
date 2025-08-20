@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { config } from "../shared/config.ts";
-import { ReActAgent } from "./agent.ts";
+import { ReActAgent } from "./agent/ReActAgent.ts";
 import { CacheManager } from "./cache.ts";
 import { FetchService } from "./services/fetch.ts";
 import { RerankService } from "./services/rerank.ts";
