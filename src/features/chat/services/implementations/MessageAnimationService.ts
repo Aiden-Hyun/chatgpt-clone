@@ -1,18 +1,18 @@
-// src/features/chat/services/implementations/ReactAnimationService.ts
+// src/features/chat/services/implementations/MessageAnimationService.ts
 import { TYPING_ANIMATION_CHUNK_SIZE, TYPING_ANIMATION_MIN_TICK_MS } from '../../constants';
 import { computeAnimationParams } from '../core/AnimationPolicy';
 import { IAnimationService } from '../interfaces/IAnimationService';
 import { MessageStateManager } from '../MessageStateManager';
 import { ChatMessage } from '../types';
 
-export class ReactAnimationService implements IAnimationService {
+export class MessageAnimationService implements IAnimationService {
   private messageStateManager: MessageStateManager;
   private runningJobs: Map<string, { timer: ReturnType<typeof setTimeout> | null; index: number; target: string; speedMs: number; chunkSize: number }> = new Map();
 
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    console.log('[Service] ReactAnimationService initialized');
+    console.log('[Service] MessageAnimationService initialized');
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 

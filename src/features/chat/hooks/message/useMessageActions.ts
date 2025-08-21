@@ -58,7 +58,7 @@ export const useMessageActions = ({
     }
   }, [roomId, messages, setMessages, setDrafts, selectedModel, isSearchMode]);
 
-  // Regeneration logic moved to ReactRegenerationService
+      // Regeneration logic moved to MessageRegenerationService
 
   return {
     sendMessage

@@ -1,4 +1,4 @@
-// src/features/chat/constants/logic.ts
+// src/features/chat/constants/uiConstants.ts
 
 /**
  * Heuristic threshold in characters for detecting a "large" code block that might

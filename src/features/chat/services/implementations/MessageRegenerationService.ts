@@ -1,17 +1,19 @@
-// src/features/chat/services/implementations/ReactRegenerationService.ts
+// src/features/chat/services/implementations/MessageRegenerationService.ts
 import { Session } from '@supabase/supabase-js';
 import { ChatMessage } from '../../types';
 // Import removed: import { logger } from '../../utils/logger';
 import { supabase } from '../../../../shared/lib/supabase';
  
+import { OpenAIResponseProcessor } from '../core/AIResponseProcessor';
 import { IAIApiService } from '../interfaces/IAIApiService';
 import { IAnimationService } from '../interfaces/IAnimationService';
 import { IMessageService } from '../interfaces/IMessageService';
 import { IRegenerationService } from '../interfaces/IRegenerationService';
 import { MessageStateManager } from '../MessageStateManager';
 
-export class ReactRegenerationService implements IRegenerationService {
+export class MessageRegenerationService implements IRegenerationService {
   private regeneratingIndices: Set<number> = new Set();
+  private responseProcessor: OpenAIResponseProcessor;
   
   constructor(
     private messageStateManager: MessageStateManager,
@@ -24,7 +26,7 @@ export class ReactRegenerationService implements IRegenerationService {
     private roomId: number | null,
     private isSearchMode: boolean = false
   ) {
-    
+    this.responseProcessor = new OpenAIResponseProcessor();
   }
 
   async regenerateMessage(
@@ -123,12 +125,17 @@ export class ReactRegenerationService implements IRegenerationService {
       const apiResponse = await this.aiApiService.sendMessage(apiRequest, accessToken, this.isSearchMode);
       
 
-      if (!apiResponse || !apiResponse.choices || !apiResponse.choices[0]?.message?.content) {
+      // Use the same response processor as MessageSenderService for consistent handling
+      if (!this.responseProcessor.validateResponse(apiResponse)) {
         console.error('🔄 REGEN-SERVICE: API response missing content');
         throw new Error('No content in AI response');
       }
-      const newContent = apiResponse.choices[0].message.content;
       
+      const newContent = this.responseProcessor.extractContent(apiResponse);
+      if (!newContent) {
+        console.error('🔄 REGEN-SERVICE: No content extracted from API response');
+        throw new Error('No content in AI response');
+      }
 
       // Drive UI state and animation
       this.messageStateManager.handleRegeneration(targetMessageId, newContent);

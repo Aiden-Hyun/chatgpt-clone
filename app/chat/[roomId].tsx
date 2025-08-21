@@ -7,7 +7,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRoomModel } from '../../src/features/chat/model/useRoomModel';
+import { useModelSelection } from '../../src/features/chat/model/useModelSelection';
 import { createChatStyles } from './chat.styles';
 
 
@@ -175,7 +175,7 @@ const ChatScreen = () => {
   
   // State and refs
   // Parent owns per-room model via decoupled hook
-  const { model: selectedModel, setModel: updateModel } = useRoomModel(numericRoomId);
+  const { model: selectedModel, setModel: updateModel } = useModelSelection(numericRoomId);
 
   // 🎯 MEMOIZED PROPS: Only recreate when actual values change
   const chatScreenProps = React.useMemo(() => {

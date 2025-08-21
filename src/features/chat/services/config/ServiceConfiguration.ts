@@ -1,15 +1,15 @@
 // src/features/chat/services/config/ServiceConfiguration.ts
 import { ServiceRegistry } from '../core/ServiceRegistry';
 import {
-    ChatAPIService,
-    ExpoRouterNavigationService,
-    ReactAnimationService,
-    ReactMessageStateService,
-    ReactRegenerationService,
-    ReactTypingStateService,
-    SupabaseAuthService,
-    SupabaseChatRoomService,
-    SupabaseMessageService
+  ChatAPIService,
+  ExpoRouterNavigationService,
+  MessageAnimationService,
+  MessageRegenerationService,
+  MessageStateService,
+  SupabaseAuthService,
+  SupabaseChatRoomService,
+  SupabaseMessageService,
+  TypingStateService
 } from '../implementations';
 
 export function configureServices(): void {
@@ -19,10 +19,10 @@ export function configureServices(): void {
     messageService: SupabaseMessageService,
     navigationService: ExpoRouterNavigationService,
     // New services
-    messageStateService: ReactMessageStateService,
-    typingStateService: ReactTypingStateService,
-    animationService: ReactAnimationService,
-    regenerationService: ReactRegenerationService,
+    messageStateService: MessageStateService,
+    typingStateService: TypingStateService,
+    animationService: MessageAnimationService,
+    regenerationService: MessageRegenerationService,
     authService: SupabaseAuthService,
 
   });

@@ -1,5 +1,5 @@
 export * from './ModelRepository';
 export * from './ModelStore';
-export * from './useRoomModel';
+export * from './useModelSelection';
 
 

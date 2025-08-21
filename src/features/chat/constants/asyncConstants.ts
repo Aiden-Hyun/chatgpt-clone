@@ -1,4 +1,4 @@
-// src/features/chat/constants/timing.ts
+// src/features/chat/constants/asyncConstants.ts
 
 /**
  * Delay in milliseconds before polling for messages from the database.

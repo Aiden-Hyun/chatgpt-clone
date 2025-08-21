@@ -1,4 +1,4 @@
-// src/features/chat/constants/typing.ts
+// src/features/chat/constants/animationConstants.ts
 
 // Typing animation speed in milliseconds
 export const TYPING_ANIMATION_SPEED = 8;
@@ -19,5 +19,3 @@ export const LONG_RESPONSE_THRESHOLD_CHARS = 600;
 
 // Minimum timer interval to align with frame budget and reduce CPU load
 export const TYPING_ANIMATION_MIN_TICK_MS = 16;
-
-

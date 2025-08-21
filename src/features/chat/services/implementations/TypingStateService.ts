@@ -1,11 +1,11 @@
-// src/features/chat/services/implementations/ReactTypingStateService.ts
+// src/features/chat/services/implementations/TypingStateService.ts
 import { ITypingStateService } from '../interfaces/ITypingStateService';
 
-export class ReactTypingStateService implements ITypingStateService {
+export class TypingStateService implements ITypingStateService {
   constructor(
     private setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
   ) {
-    console.log('[Service] ReactTypingStateService initialized');
+    console.log('[Service] TypingStateService initialized');
   }
 
   setTyping(isTyping: boolean): void {
