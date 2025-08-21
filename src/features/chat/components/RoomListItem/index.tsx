@@ -1,5 +1,5 @@
 import { Button, ListItem } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
@@ -32,7 +32,7 @@ const RoomListItem: React.FC<Props> = ({ room, onDelete, onPress }) => {
         variant="ghost"
         size="sm"
         status="error"
-        leftIcon={<MaterialIcons name="delete" size={20} color={theme.colors.status.error.primary} />}
+        leftIcon={<Ionicons name="trash-outline" size={20} color={theme.colors.status.error.primary} />}
         onPress={onDelete}
         containerStyle={styles.deleteButton}
       />

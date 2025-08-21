@@ -1,5 +1,5 @@
 import { Card, ListItem, Text } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import { useLanguageContext } from '../../../src/features/language';
@@ -33,19 +33,22 @@ export const DataPrivacySection: React.FC = () => {
         <ListItem
           variant="settings"
           title={t('settings.export_data')}
-          rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+          leftElement={<Ionicons name="cloud-download-outline" size={24} color={theme.colors.text.primary} />}
+          rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handleExportData}
         />
         <ListItem
           variant="settings"
           title={t('settings.clear_conversations')}
-          rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+          leftElement={<Ionicons name="trash-outline" size={24} color={theme.colors.text.primary} />}
+          rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handleClearConversations}
         />
         <ListItem
           variant="settings"
           title={t('settings.privacy_policy')}
-          rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+          leftElement={<Ionicons name="shield-checkmark-outline" size={24} color={theme.colors.text.primary} />}
+          rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handlePrivacyPolicy}
         />
       </Card>

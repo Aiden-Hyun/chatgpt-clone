@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import mobileStorage from '../../../../shared/lib/mobileStorage';
 import { getModelInfo } from '../../constants/models';
+import { ChatMessage } from '../../types';
+import { generateMessageId } from '../../utils/messageIdGenerator';
 
-export const useChatSearch = (selectedModel: string) => {
+export const useChatSearch = (selectedModel: string, setMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>) => {
   // Search mode state - persist across room changes
   const [isSearchMode, setIsSearchMode] = useState(false);
   
@@ -18,6 +20,16 @@ export const useChatSearch = (selectedModel: string) => {
         const saved = await mobileStorage.getItem('chat_search_mode');
         if (saved === 'true') {
           setIsSearchMode(true);
+          // Add system message if search mode was already on
+          if (setMessages) {
+            const systemMessage: ChatMessage = {
+              role: 'system',
+              content: '🌐 Web search mode ON',
+              id: generateMessageId(),
+              state: 'completed',
+            };
+            setMessages(prev => [...prev, systemMessage]);
+          }
         } else {
           setIsSearchMode(false);
         }
@@ -26,7 +38,7 @@ export const useChatSearch = (selectedModel: string) => {
       }
     };
     loadSearchMode();
-  }, []);
+  }, [setMessages]);
   
   // Auto-disable search mode when switching to a model that doesn't support search
   useEffect(() => {
@@ -58,9 +70,22 @@ export const useChatSearch = (selectedModel: string) => {
       mobileStorage.setItem('chat_search_mode', newValue.toString()).catch(() => {
         // Ignore storage errors
       });
+      
+      // Add system message when search mode is toggled
+      if (setMessages) {
+        const systemMessage: ChatMessage = {
+          role: 'system',
+          content: newValue ? '🌐 Web search mode ON' : '🌐 Web search mode OFF',
+          id: generateMessageId(),
+          state: 'completed',
+        };
+        
+        setMessages(prev => [...prev, systemMessage]);
+      }
+      
       return newValue;
     });
-  }, [selectedModel]);
+  }, [selectedModel, setMessages]);
 
   // Stable return reference
   const result = useMemo(() => ({

@@ -8,7 +8,7 @@ export type MessageState =
   | 'error';       // Error state
 
 export type ChatMessage = {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   state?: MessageState;     // Add optional state
   fullContent?: string;     // Add full content for loading state
@@ -17,5 +17,4 @@ export type ChatMessage = {
   isLiked?: boolean;
   isDisliked?: boolean;
   // Search-related fields
-
 };

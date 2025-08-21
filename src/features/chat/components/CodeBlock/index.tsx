@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 // import * as Clipboard from 'expo-clipboard';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -46,8 +46,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           onPress={handleCopy}
           activeOpacity={0.7}
         >
-          <MaterialIcons 
-            name="content-copy" 
+          <Ionicons 
+            name="copy-outline" 
             size={16} 
             color={theme.colors.text.tertiary} 
           />

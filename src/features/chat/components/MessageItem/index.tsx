@@ -4,6 +4,7 @@ import { ErrorMessage } from '../ErrorMessage';
 import { LoadingMessage } from '../LoadingMessage';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
+import { SystemMessage } from './SystemMessage';
 
 interface MessageItemProps {
   message: ChatMessage;
@@ -54,6 +55,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     if (isRegenerating && message.role === 'assistant') {
       return <LoadingMessage />;
     }
+
+  // Render system message
+  if (message.role === 'system') {
+    return <SystemMessage message={message} />;
+  }
 
   // Render user message
   if (message.role === 'user') {

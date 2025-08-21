@@ -39,7 +39,7 @@ export const useChat = (numericRoomId: number | null, options?: UseChatOptions) 
   const { selectedModel, updateModel } = useChatModel(options?.selectedModel, options?.setModel);
 
   // Search mode logic
-  const { isSearchMode, onSearchToggle } = useChatSearch(selectedModel);
+  const { isSearchMode, onSearchToggle } = useChatSearch(selectedModel, setMessages);
 
   // Input management
   const {

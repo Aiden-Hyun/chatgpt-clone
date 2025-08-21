@@ -1,5 +1,5 @@
 import { Button, Text } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import { useAppTheme } from '../../../src/features/theme/theme';
@@ -20,7 +20,7 @@ export const SettingsHeader: React.FC<SettingsHeaderProps> = ({ onBack, title })
         variant="ghost"
         onPress={onBack}
         containerStyle={styles.backButton}
-        leftIcon={<MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />}
+        leftIcon={<Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />}
       />
       <Text variant="h2" weight="semibold" style={styles.headerTitle}>{title}</Text>
       <View style={styles.headerSpacer} />

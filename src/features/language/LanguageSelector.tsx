@@ -1,9 +1,8 @@
-import { Button } from '@/components/ui/Button';
 import { useToast } from '@/features/alert';
 import { useAppTheme } from '@/features/theme/theme';
-import React, { useState, useRef } from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useRef, useState } from 'react';
+import { Dimensions, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from './LanguageContext';
 
 interface LanguageSelectorProps {
@@ -119,8 +118,8 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
         <Text style={styles.selectorText}>
           {currentLanguageInfo.name}
         </Text>
-        <MaterialIcons 
-          name="keyboard-arrow-down" 
+        <Ionicons 
+          name="chevron-down-outline" 
           size={20} 
           color={theme.colors.text.secondary} 
         />
@@ -163,8 +162,8 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
                       
                       {isSelected && (
                         <View style={styles.languageItemRight}>
-                          <MaterialIcons 
-                            name="check" 
+                          <Ionicons 
+                            name="checkmark-outline" 
                             size={16} 
                             color={theme.colors.status.info.primary} 
                           />

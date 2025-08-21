@@ -1,6 +1,6 @@
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
 import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { getModelInfo } from '../../constants/models';
@@ -22,7 +22,7 @@ interface ChatInputProps {
  * ChatInput - Native Responsive Multiline Input
  * Features:
  * - Sleek bubble-shaped input container
- * - Circular send button with proper MaterialIcons
+ * - Circular send button with proper Ionicons
  * - Clean design with no focus borders
  * - Smooth animations for state changes
  * - Native TextInput for proper iOS multiline behavior
@@ -65,8 +65,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const SendButtonIcon = () => {
     if (sending) {
       return (
-        <MaterialIcons 
-          name="stop" 
+        <Ionicons 
+          name="stop-outline" 
           size={20} 
           color={theme.colors.text.inverted} 
         />
@@ -74,8 +74,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
 
     return (
-      <MaterialIcons 
-        name="send" 
+      <Ionicons 
+        name="send-outline" 
         size={20} 
         color={hasText ? theme.colors.text.inverted : theme.colors.primary} 
       />
@@ -133,8 +133,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
               ]}
               activeOpacity={0.7}
             >
-              <MaterialIcons 
-                name="search" 
+              <Ionicons 
+                name="globe-outline" 
                 size={20} 
                 color={isSearchMode ? theme.colors.text.inverted : theme.colors.primary} 
               />

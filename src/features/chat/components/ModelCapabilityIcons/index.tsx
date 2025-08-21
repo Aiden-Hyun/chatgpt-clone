@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { useAppTheme } from '../../../theme/theme';
@@ -26,13 +26,13 @@ export const ModelCapabilityIcons: React.FC<ModelCapabilityIconsProps> = ({
   const capabilityConfig = [
     {
       key: 'chat' as keyof ModelCapabilities,
-      icon: 'chat',
+      icon: 'chatbubbles',
       label: 'Chat',
       color: theme.colors.primary,
     },
     {
       key: 'image' as keyof ModelCapabilities,
-      icon: 'image',
+      icon: 'images',
       label: 'Image',
       color: theme.colors.status.success.primary,
     },
@@ -44,19 +44,19 @@ export const ModelCapabilityIcons: React.FC<ModelCapabilityIconsProps> = ({
     },
     {
       key: 'vision' as keyof ModelCapabilities,
-      icon: 'visibility',
+      icon: 'eye',
       label: 'Vision',
       color: theme.colors.status.warning.primary,
     },
     {
       key: 'code' as keyof ModelCapabilities,
-      icon: 'code',
+      icon: 'code-slash',
       label: 'Code',
       color: theme.colors.secondary,
     },
     {
       key: 'analysis' as keyof ModelCapabilities,
-      icon: 'analytics',
+      icon: 'bar-chart',
       label: 'Analysis',
       color: theme.colors.status.error.primary,
     },
@@ -72,8 +72,8 @@ export const ModelCapabilityIcons: React.FC<ModelCapabilityIconsProps> = ({
     <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 4 }, containerStyle]}>
       {activeCapabilities.map((capability, index) => (
         <View key={capability.key} style={{ alignItems: 'center' }}>
-          <MaterialIcons
-            name={capability.icon as any}
+          <Ionicons
+            name={`${capability.icon}-outline` as any}
             size={size}
             color={capability.color}
           />

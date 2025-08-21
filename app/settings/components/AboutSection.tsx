@@ -1,5 +1,5 @@
 import { Card, ListItem, Text } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import { useLanguageContext } from '../../../src/features/language';
@@ -29,17 +29,20 @@ export const AboutSection: React.FC = () => {
           variant="settings"
           title={t('settings.version')}
           subtitle="1.0.0"
+          leftElement={<Ionicons name="information-circle-outline" size={24} color={theme.colors.text.primary} />}
         />
         <ListItem
           variant="settings"
           title={t('settings.terms_of_service')}
-          rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+          leftElement={<Ionicons name="document-text-outline" size={24} color={theme.colors.text.primary} />}
+          rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handleTermsOfService}
         />
         <ListItem
           variant="settings"
           title={t('settings.support')}
-          rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+          leftElement={<Ionicons name="help-circle-outline" size={24} color={theme.colors.text.primary} />}
+          rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handleSupport}
         />
       </Card>

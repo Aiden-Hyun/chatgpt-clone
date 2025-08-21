@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
@@ -71,7 +71,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                leftIcon={<MaterialIcons name="content-copy" size={18} color={theme.colors.text.secondary} />}
+                leftIcon={<Ionicons name="copy-outline" size={18} color={theme.colors.text.secondary} />}
                 onPress={async () => {
                   try {
                     await copyToClipboard(message.content);
@@ -86,7 +86,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                leftIcon={<MaterialIcons name="edit" size={18} color={theme.colors.text.secondary} />}
+                leftIcon={<Ionicons name="create-outline" size={18} color={theme.colors.text.secondary} />}
                 onPress={() => { console.log('[USER-MSG] edit'); setIsEditing(true); setDraft(message.content); }}
                 containerStyle={{ padding: 4 }}
               />

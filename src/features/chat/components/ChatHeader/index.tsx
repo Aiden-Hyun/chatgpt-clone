@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -77,7 +77,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button
         variant="ghost"
         size="sm"
-        leftIcon={<MaterialIcons name="menu" size={24} color={theme.colors.text.primary} />}
+        leftIcon={<Ionicons name="menu-outline" size={24} color={theme.colors.text.primary} />}
         onPress={toggleDrawer}
         containerStyle={styles.menuButton}
       />
@@ -88,7 +88,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           variant="ghost"
           size="sm"
           label={selectedModelLabel}
-          rightIcon={<MaterialIcons name="expand-more" size={20} color={theme.colors.text.primary} />}
+          rightIcon={<Ionicons name="chevron-down-outline" size={24} color={theme.colors.text.primary} />}
           leftIcon={(() => {
             const provider = selectedModelInfo?.provider;
             if (provider === 'anthropic') return <AnthropicLogo size={16} />;
@@ -105,7 +105,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button
         variant="ghost"
         size="sm"
-        leftIcon={<MaterialIcons name="more-vert" size={24} color={theme.colors.text.primary} />}
+        leftIcon={<Ionicons name="ellipsis-vertical-outline" size={24} color={theme.colors.text.primary} />}
         onPress={() => {
           console.log('🔍 [ChatHeader] More options button pressed');
           setIsQuickActionsVisible(!isQuickActionsVisible);
@@ -168,8 +168,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                         
                         {/* Selection Check */}
                         {isSelected && (
-                          <MaterialIcons 
-                            name="check" 
+                          <Ionicons 
+                            name="checkmark-outline" 
                             size={20} 
                             color={theme.colors.status.info.primary} 
                             style={styles.checkIcon}

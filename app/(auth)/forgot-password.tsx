@@ -1,15 +1,15 @@
 
-import { Button, Input, Text } from '@/components/ui';
 import { FormWrapper } from '@/components/FormWrapper';
-import { MaterialIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View, SafeAreaView } from 'react-native';
-import { getButtonSize } from '@/shared/utils/layout';
+import { Button, Input, Text } from '@/components/ui';
 import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
+import { getButtonSize } from '@/shared/utils/layout';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
 
 export default function ForgotPasswordScreen() {
   const { t } = useLanguageContext();
@@ -88,7 +88,7 @@ export default function ForgotPasswordScreen() {
               alignItems: 'center',
             }}
           >
-            <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
+            <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
           </TouchableOpacity>
           <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
             {t('auth.reset_password')}

@@ -1,4 +1,4 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from "expo-file-system";
 import { Image as ExpoImage } from "expo-image";
 import React from "react";
@@ -318,7 +318,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             {isDownloading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <MaterialIcons name="file-download" size={20} color="#fff" />
+              <Ionicons name="download-outline" size={20} color="#fff" />
             )}
           </TouchableOpacity>
         </View>

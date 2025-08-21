@@ -1,5 +1,5 @@
 import { Card, ListItem, Text } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Switch, View } from 'react-native';
 import { useToast } from '../../../src/features/alert';
@@ -39,6 +39,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
         <ListItem
           variant="settings"
           title={t('settings.language')}
+          leftElement={<Ionicons name="language-outline" size={24} color={theme.colors.text.primary} />}
           rightElement={<LanguageSelector style={styles.languageSelector} />}
         />
         
@@ -46,7 +47,8 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
           variant="settings"
           title={t('settings.theme')}
           subtitle={getThemeDisplayText()}
-          rightElement={<MaterialIcons name="chevron-right" size={20} color={theme.colors.text.tertiary} />}
+          leftElement={<Ionicons name="color-palette-outline" size={24} color={theme.colors.text.primary} />}
+          rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={onNavigateToThemes}
         />
         
@@ -55,6 +57,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
           variant="settings"
           title="Test Toast"
           subtitle="Tap to test"
+          leftElement={<Ionicons name="notifications-outline" size={24} color={theme.colors.text.primary} />}
           onPress={() => {
             showSuccess('Test toast message!', 5000);
           }}
@@ -63,6 +66,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
         <ListItem
           variant="settings"
           title={t('settings.notifications')}
+          leftElement={<Ionicons name="notifications-circle-outline" size={24} color={theme.colors.text.primary} />}
           rightElement={
             <Switch
               value={notificationsEnabled}

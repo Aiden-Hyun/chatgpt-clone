@@ -1,4 +1,5 @@
 import { Button, Card, Input, ListItem, Text } from '@/components/ui';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import { useCustomAlert } from '../../../src/features/alert';
@@ -103,6 +104,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
             variant="settings"
             title={t('settings.name')}
             subtitle={userName || t('settings.not_set')}
+            leftElement={<Ionicons name="person-circle-outline" size={24} color={theme.colors.text.primary} />}
             rightElement={
               <Button 
                 variant="ghost"
@@ -118,6 +120,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
           variant="settings"
           title={t('settings.email')}
           subtitle={email || t('settings.not_set')}
+          leftElement={<Ionicons name="mail-open-outline" size={24} color={theme.colors.text.primary} />}
         />
       </Card>
     </View>

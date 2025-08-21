@@ -1,5 +1,5 @@
 import { Button, Card, Text } from '@/components/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
@@ -40,7 +40,7 @@ export default function ThemeSettingsScreen() {
           variant="ghost"
           onPress={handleBack}
           containerStyle={styles.backButton}
-          leftIcon={<MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />}
+          leftIcon={<Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />}
         />
         <Text variant="h2" weight="semibold" style={styles.headerTitle}>Theme & Appearance</Text>
         <View style={styles.headerSpacer} />
@@ -96,7 +96,7 @@ export default function ThemeSettingsScreen() {
                   <Text variant="body" weight="medium" style={styles.themeName}>{themeOption.name}</Text>
                   {isSelected && (
                     <View style={styles.selectedIndicator}>
-                      <MaterialIcons name="check-circle" size={20} color={theme.colors.primary} />
+                      <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.primary} />
                     </View>
                   )}
                 </TouchableOpacity>
@@ -125,8 +125,8 @@ export default function ThemeSettingsScreen() {
                     isSelected && styles.modeButtonSelected
                   ]}
                   leftIcon={
-                    <MaterialIcons 
-                      name={mode.icon as any} 
+                    <Ionicons 
+                      name={`${mode.icon}-outline` as any} 
                       size={20} 
                       color={isSelected ? theme.colors.text.inverted : theme.colors.text.primary} 
                     />

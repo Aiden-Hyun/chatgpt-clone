@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 import { useToast } from '../../../alert';
@@ -42,7 +42,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<MaterialIcons name="refresh" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="refresh-outline" size={20} color={theme.colors.text.secondary} />}
           onPress={handleRegeneratePress}
           containerStyle={styles.iconButton}
         />
@@ -51,8 +51,8 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
           variant="ghost"
           size="sm"
           leftIcon={
-            <MaterialIcons 
-              name="thumb-up" 
+            <Ionicons 
+              name="thumbs-up-outline" 
               size={20} 
               color={isLiked ? theme.colors.primary : theme.colors.text.secondary} 
             />
@@ -65,8 +65,8 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
           variant="ghost"
           size="sm"
           leftIcon={
-            <MaterialIcons 
-              name="thumb-down" 
+            <Ionicons 
+              name="thumbs-down-outline" 
               size={20} 
               color={isDisliked ? theme.colors.status.error.primary : theme.colors.text.secondary} 
             />
@@ -78,7 +78,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<MaterialIcons name="volume-up" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="volume-high-outline" size={20} color={theme.colors.text.secondary} />}
           onPress={onAudio}
           containerStyle={styles.iconButton}
         />
@@ -86,7 +86,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<MaterialIcons name="content-copy" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="copy-outline" size={20} color={theme.colors.text.secondary} />}
           onPress={() => {
             onCopy?.();
           }}
@@ -96,7 +96,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<MaterialIcons name="share" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="share-outline" size={20} color={theme.colors.text.secondary} />}
           onPress={async () => {
             try { await onShare?.(); } catch {}
           }}

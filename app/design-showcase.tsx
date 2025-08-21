@@ -2,7 +2,7 @@ import { Button, Input, Text } from '@/components/ui';
 import { LanguageSelector, useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
 import { getButtonSize } from '@/shared/utils/layout';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
@@ -14,6 +14,7 @@ export default function DesignShowcaseScreen() {
   // State for interactive elements
   const [inputValue, setInputValue] = useState('');
   const [switchValue, setSwitchValue] = useState(false);
+  const [activeSearchButtons, setActiveSearchButtons] = useState<Set<string>>(new Set());
 
   const handleBack = () => {
     try {
@@ -26,6 +27,18 @@ export default function DesignShowcaseScreen() {
     } catch {
       router.replace('/chat');
     }
+  };
+
+  const toggleSearchButton = (buttonId: string) => {
+    setActiveSearchButtons(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(buttonId)) {
+        newSet.delete(buttonId);
+      } else {
+        newSet.add(buttonId);
+      }
+      return newSet;
+    });
   };
 
   const styles = {
@@ -227,6 +240,41 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.fontSizes.md,
       fontWeight: theme.fontWeights.medium as '500',
     },
+    searchButtonRow: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      marginBottom: theme.spacing.md,
+      gap: theme.spacing.sm,
+    },
+    searchButtonBase: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: theme.colors.background.secondary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      shadowColor: theme.colors.text.primary,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 1,
+      elevation: 1,
+    },
+    searchButtonLabel: {
+      fontSize: theme.fontSizes.md,
+      fontFamily: theme.fontFamily.primary,
+      color: theme.colors.text.primary,
+      fontWeight: theme.fontWeights.medium as '500',
+      flex: 1,
+    },
+    iconShowcase: {
+      alignItems: 'center' as const,
+      marginBottom: theme.spacing.md,
+    },
+    iconLabel: {
+      fontSize: theme.fontSizes.sm,
+      color: theme.colors.text.secondary,
+      marginTop: theme.spacing.sm,
+    },
   };
 
   return (
@@ -234,7 +282,7 @@ export default function DesignShowcaseScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={theme.colors.text.primary} />
+          <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Design Showcase</Text>
       </View>
@@ -411,6 +459,8 @@ export default function DesignShowcaseScreen() {
             </View>
           </View>
         </View>
+
+
       </ScrollView>
     </SafeAreaView>
   );

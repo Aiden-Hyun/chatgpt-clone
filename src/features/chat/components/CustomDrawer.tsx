@@ -4,7 +4,7 @@ import { useUserInfo } from '@/features/auth';
 import { useChatRooms } from '@/features/chat/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { router, usePathname } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
@@ -158,7 +158,7 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
         <Button
           variant="secondary"
           size="sm"
-          leftIcon={<MaterialIcons name="add" size={20} color={theme.colors.text.primary} />}
+          leftIcon={<Ionicons name="add-outline" size={20} color={theme.colors.text.primary} />}
           label={t('sidebar.new_chat')}
           onPress={handleNewChat}
           containerStyle={styles.newChatButton}
@@ -182,14 +182,14 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
               onPress={() => handleDelete(room.id)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <MaterialIcons name="delete" size={18} color={theme.colors.status.error.primary} />
+              <Ionicons name="trash-outline" size={18} color={theme.colors.status.error.primary} />
             </TouchableOpacity>
           );
           
           // Prepare left element (chat icon)
           const leftElement = (
-            <MaterialIcons 
-              name="chat" 
+            <Ionicons 
+              name="chatbubbles-outline" 
               size={16} 
               color={isSelected ? theme.colors.primary : theme.colors.text.secondary} 
             />
@@ -218,7 +218,7 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
       {/* User Profile */}
       <View style={styles.userProfile}>
         <View style={styles.userInfo}>
-          <MaterialIcons name="account-circle" size={32} color={theme.colors.text.secondary} />
+          <Ionicons name="person-circle-outline" size={32} color={theme.colors.text.secondary} />
           <Text variant="body" weight="medium" style={styles.userName}>
             {userName || t('sidebar.user')}
           </Text>
@@ -227,7 +227,7 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
           variant="ghost"
           size="sm"
           onPress={handleSettings}
-          leftIcon={<MaterialIcons name="settings" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="settings-outline" size={20} color={theme.colors.text.secondary} />}
           containerStyle={styles.settingsButton}
         />
       </View>

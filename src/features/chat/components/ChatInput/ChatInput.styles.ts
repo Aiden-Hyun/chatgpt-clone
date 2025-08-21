@@ -153,12 +153,13 @@ export const createChatInputStyles = (theme: AppTheme) => {
       boxShadow: 'none',
     },
 
-    // Search button active state
+    // Search button active state - Vibrant Blue
     searchButtonActive: {
-      backgroundColor: theme.colors.primary,
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 2,
+      backgroundColor: theme.colors.status.info.secondary,
+      shadowColor: theme.colors.status.info.primary,
+      shadowOpacity: 0.5,
+      shadowRadius: 6,
+      elevation: 6,
     },
   });
 
