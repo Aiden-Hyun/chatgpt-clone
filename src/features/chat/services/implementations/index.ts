@@ -10,7 +10,4 @@ export * from './SupabaseMessageService';
 export * from './TypingStateService';
 
 // Search service implementations
-export * from './DuckDuckGoSearchService';
-
-export * from './WebSearchService';
 
