@@ -8,8 +8,8 @@ export const resetDebugGlobals = () => {
     const globalKeys = [
       'navRenderCount',
       'prevWrapperDeps', 
-      'unifiedChatRenderCount',
-      'prevUnifiedChatProps',
+        'chatInterfaceRenderCount',
+  'prevChatInterfaceProps',
       'useChatRenderCount',
       'useChatStartTime',
       'pureRenderCount'

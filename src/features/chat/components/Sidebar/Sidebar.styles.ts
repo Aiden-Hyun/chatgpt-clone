@@ -1,7 +1,7 @@
 import { AppTheme } from '@/features/theme/theme.types'; // ← Use absolute path with @ alias
 import { StyleSheet } from 'react-native';
 
-export const createCustomDrawerStyles = (theme: AppTheme) => {
+export const createSidebarStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,

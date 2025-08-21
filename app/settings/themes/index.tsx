@@ -110,8 +110,8 @@ export default function ThemeSettingsScreen() {
           <Text variant="h3" weight="semibold" style={styles.sectionTitle}>Appearance</Text>
           <View style={styles.modeSelector}>
             {[
-              { value: 'light' as ThemeMode, label: 'Light', icon: 'light-mode' },
-              { value: 'dark' as ThemeMode, label: 'Dark', icon: 'dark-mode' },
+              { value: 'light' as ThemeMode, label: 'Light', icon: 'sunny' },
+              { value: 'dark' as ThemeMode, label: 'Dark', icon: 'moon' },
               { value: 'system' as ThemeMode, label: 'System', icon: 'settings' }
             ].map((mode) => {
               const isSelected = mode.value === themeMode;

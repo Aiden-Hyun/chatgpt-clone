@@ -8,7 +8,7 @@ import { AppState } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastContainer, ToastProvider } from '../src/features/alert';
 import { AuthProvider, useAuth } from '../src/features/auth';
-import { CustomDrawer } from '../src/features/chat/components/CustomDrawer';
+import { Sidebar } from '../src/features/chat/components/Sidebar';
 import { configureServices } from '../src/features/chat/services/config/ServiceConfiguration';
 import { LanguageProvider } from '../src/features/language';
 import { ThemeProvider, useThemeContext } from '../src/features/theme';
@@ -58,9 +58,9 @@ function ProtectedRoutes() {
     router.push('/settings');
   }, [pathname, router]); 
   
-  // Memoize drawerContent to prevent unnecessary re-renders of CustomDrawer
+      // Memoize drawerContent to prevent unnecessary re-renders of Sidebar
   const drawerContent = useCallback(() => (
-    <CustomDrawer onSettings={handleSettings} />
+            <Sidebar onSettings={handleSettings} />
   ), [handleSettings]);
 
   const screenOptions = useMemo(() => {

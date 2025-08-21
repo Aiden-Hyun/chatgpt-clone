@@ -6,7 +6,7 @@ import { useChat } from '../../hooks';
 import { ChatMessage } from '../../types';
 import MessageList from '../MessageList';
 
-interface UnifiedChatProps {
+interface ChatInterfaceProps {
   roomId?: number;
   initialModel?: string;
   className?: string;
@@ -26,12 +26,12 @@ interface UnifiedChatProps {
 }
 
 /**
- * UnifiedChat - Messages Only Component
+ * ChatInterface - Messages Only Component
  * 
  * This component now only handles messages, with chat input moved to parent.
  * This provides better layout control and responsive behavior.
  */
-export const UnifiedChat: React.FC<UnifiedChatProps> = ({
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   roomId,
   initialModel = 'gpt-3.5-turbo',
   className,
@@ -128,4 +128,4 @@ export const UnifiedChat: React.FC<UnifiedChatProps> = ({
   );
 };
 
-export default UnifiedChat;
+export default ChatInterface;

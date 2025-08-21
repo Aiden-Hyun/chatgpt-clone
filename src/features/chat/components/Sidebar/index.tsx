@@ -9,13 +9,13 @@ import { router, usePathname } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import mobileStorage from '../../../shared/lib/mobileStorage';
-import { navigationTracker } from '../../../shared/lib/navigationTracker';
-import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../constants';
-import { createCustomDrawerStyles } from './CustomDrawer.styles';
+import mobileStorage from '../../../../shared/lib/mobileStorage';
+import { navigationTracker } from '../../../../shared/lib/navigationTracker';
+import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../../constants';
+import { createSidebarStyles } from './Sidebar.styles';
 
 
-interface CustomDrawerProps {
+interface SidebarProps {
   onNewChat?: () => void;
   onChatSelect?: (roomId: string) => void;
   onSettings?: () => void;
@@ -23,7 +23,7 @@ interface CustomDrawerProps {
   selectedChatId?: string;
 }
 
-export const CustomDrawer: React.FC<CustomDrawerProps> = ({
+export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
   onChatSelect,
   onSettings,
@@ -36,7 +36,7 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
   const { userName } = useUserInfo();
   const { rooms, deleteRoom, fetchRooms } = useChatRooms();
   const pathname = usePathname();  // ← Add this line
-  const styles = createCustomDrawerStyles(theme);
+  const styles = createSidebarStyles(theme);
 
   // Local state for room drafts loaded from storage
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -218,7 +218,7 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
       {/* User Profile */}
       <View style={styles.userProfile}>
         <View style={styles.userInfo}>
-          <Ionicons name="person-circle-outline" size={32} color={theme.colors.text.secondary} />
+          <Ionicons name="person-outline" size={20} color={theme.colors.text.secondary} />
           <Text variant="body" weight="medium" style={styles.userName}>
             {userName || t('sidebar.user')}
           </Text>

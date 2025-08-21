@@ -4,9 +4,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
-import { createMessageInteractionBarStyles } from './MessageInteractionBar.styles';
+import { createAssistantMessageBarStyles } from './AssistantMessageBar.styles';
 
-interface MessageInteractionBarProps {
+interface AssistantMessageBarProps {
   onRegenerate?: () => void;
   onLike?: () => void;
   onDislike?: () => void;
@@ -18,7 +18,7 @@ interface MessageInteractionBarProps {
   isDisliked?: boolean;
 }
 
-export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
+export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
   onRegenerate,
   onLike,
   onDislike,
@@ -29,7 +29,7 @@ export const MessageInteractionBar: React.FC<MessageInteractionBarProps> = ({
   isDisliked = false,
 }) => {
   const theme = useAppTheme();
-  const styles = createMessageInteractionBarStyles(theme);
+  const styles = createAssistantMessageBarStyles(theme);
   const { showSuccess } = useToast();
   const handleRegeneratePress = () => {
     

@@ -1,6 +1,5 @@
 import { useLogout } from '@/features/auth';
-import { ChatHeader, UnifiedChat } from '@/features/chat/components';
-import ChatInput from '@/features/chat/components/ChatInput';
+import { ChatHeader, ChatInputBar, ChatInterface } from '@/features/chat/components';
 import { useAppTheme } from '@/features/theme/theme';
 import { useChatScreen } from '@/shared/hooks';
 import { navigationTracker } from '@/shared/lib/navigationTracker';
@@ -34,7 +33,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
   const { roomId, isTemporaryRoom, numericRoomId, chatScreenState, selectedModel, onChangeModel, theme } = props; // ✅ theme as prop
   const styles = createChatStyles(theme);
   
-  // Chat state from UnifiedChat
+  // Chat state from ChatInterface
   const [chatState, setChatState] = useState<{
     input: string;
     handleInputChange: (text: string) => void;
@@ -45,7 +44,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
     onSearchToggle: () => void;
   } | null>(null);
 
-  // Create stable inputRef to prevent ChatInput re-renders
+  // Create stable inputRef to prevent ChatInputBar re-renders
   const inputRef = useRef<TextInput | null>(null);
   
   if (__DEV__) {
@@ -68,7 +67,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
         style={styles.container}
         keyboardVerticalOffset={90}
       >
-        <UnifiedChat 
+        <ChatInterface 
           roomId={numericRoomId ?? undefined} 
           showHeader={false}
           selectedModel={selectedModel}
@@ -76,9 +75,9 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
           onChatStateChange={setChatState}
         />
         
-        {/* ChatInput moved to screen level for better layout control */}
+        {/* ChatInputBar moved to screen level for better layout control */}
         {chatState && (
-          <ChatInput
+          <ChatInputBar
             input={chatState.input}
             onChangeText={chatState.handleInputChange}
             onSend={chatState.sendMessage}
@@ -115,7 +114,7 @@ const ChatScreenPure = React.memo((props: ChatScreenProps) => {
       a?.startNewChat === b?.startNewChat
     );
 
-  // Re-render when selected model changes so UnifiedChat sees updated model
+  // Re-render when selected model changes so ChatInterface sees updated model
   const modelEqual = prev.selectedModel === next.selectedModel;
 
   // ✅ Add theme comparison

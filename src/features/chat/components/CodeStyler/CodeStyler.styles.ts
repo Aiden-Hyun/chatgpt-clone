@@ -9,7 +9,7 @@ const monoFont = Platform.select({
 });
 const codeFontNative = 'CascadiaMono';
 
-export const createSyntaxHighlighterStyles = (theme: AppTheme) => {
+export const createCodeStylerStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       backgroundColor: 'transparent',

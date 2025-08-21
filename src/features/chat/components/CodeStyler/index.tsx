@@ -2,7 +2,7 @@ import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 import { useThemeContext } from '../../../theme';
 import { useAppTheme } from '../../../theme/theme';
-import { createSyntaxHighlighterStyles } from './SyntaxHighlighter.styles';
+import { createCodeStylerStyles } from './CodeStyler.styles';
 
  
 // @ts-ignore - library lacks proper types for RN env
@@ -11,19 +11,19 @@ import SyntaxHighlighter from 'react-native-syntax-highlighter';
 // @ts-ignore - use Prism styles for richer, IDE-like colorization
 import { nightOwl, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-interface SyntaxHighlighterComponentProps {
+interface CodeStylerProps {
   code: string;
   language: string;
   showLineNumbers?: boolean;
 }
 
-export const SyntaxHighlighterComponent: React.FC<SyntaxHighlighterComponentProps> = ({
+export const CodeStyler: React.FC<CodeStylerProps> = ({
   code,
   language,
 }) => {
   const theme = useAppTheme();
   const { themeMode } = useThemeContext();
-  const styles = React.useMemo(() => createSyntaxHighlighterStyles(theme), [theme]);
+  const styles = React.useMemo(() => createCodeStylerStyles(theme), [theme]);
 
   const prismTheme = themeMode === 'dark' || 
     (themeMode === 'system' && theme.colors.background.primary === '#1A202C') 

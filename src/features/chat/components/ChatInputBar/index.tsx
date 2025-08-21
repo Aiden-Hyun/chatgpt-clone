@@ -4,9 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
 import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { getModelInfo } from '../../constants/models';
-import { createChatInputStyles } from './ChatInput.styles';
+import { createChatInputStyles } from './ChatInputBar.styles';
 
-interface ChatInputProps {
+interface ChatInputBarProps {
   input: string;
   onChangeText: (text: string) => void;
   onSend: () => void;
@@ -29,7 +29,7 @@ interface ChatInputProps {
  * - Responsive height that grows and shrinks with content
  * - Consistent behavior across iOS, Android, and Web
  */
-const ChatInput: React.FC<ChatInputProps> = ({
+const ChatInputBar: React.FC<ChatInputBarProps> = ({
   input,
   onChangeText,
   onSend,
@@ -173,4 +173,4 @@ const ChatInput: React.FC<ChatInputProps> = ({
   );
 };
 
-export default ChatInput;
+export default ChatInputBar;

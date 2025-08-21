@@ -4,8 +4,8 @@ import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
+import { AssistantMessageBar } from '../AssistantMessageBar';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { MessageInteractionBar } from '../MessageInteractionBar';
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
 
 interface AssistantMessageProps {
@@ -56,7 +56,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
 
       {/* Message interaction bar - always show for assistant messages */}
       {isLastInGroup && !isAnimating && (
-        <MessageInteractionBar
+        <AssistantMessageBar
           onRegenerate={onRegenerate}
           onLike={handleLike}
           onDislike={handleDislike}

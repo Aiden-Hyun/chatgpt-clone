@@ -1,4 +1,4 @@
-// tests/features/chat/UnifiedChat.integration.test.tsx
+// tests/features/chat/ChatInterface.integration.test.tsx
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { ChatInterface } from '../../../src/features/chat/components/ChatInterface';

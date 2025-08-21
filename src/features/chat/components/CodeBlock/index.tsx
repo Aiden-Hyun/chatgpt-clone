@@ -5,7 +5,7 @@ import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
 import { useToast } from '../../../alert';
 import { useAppTheme } from '../../../theme/theme';
-import { SyntaxHighlighterComponent } from '../SyntaxHighlighter';
+import { CodeStyler } from '../CodeStyler';
 import { createCodeBlockStyles } from './CodeBlock.styles';
 
 interface CodeBlockProps {
@@ -66,7 +66,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     {(idx + 1).toString()}
                   </Text>
                   <View style={styles.codeContent}>
-                    <SyntaxHighlighterComponent
+                    <CodeStyler
                       code={line && line.length > 0 ? line : ' '}
                       language={language || 'text'}
                       showLineNumbers={false}
@@ -77,7 +77,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
             </View>
           </ScrollView>
         ) : (
-          <SyntaxHighlighterComponent
+          <CodeStyler
             code={code}
             language={language || 'text'}
             showLineNumbers={false}
