@@ -40,7 +40,12 @@ export interface DropdownProps {
   maxHeight?: number;
   /** Menu placement */
   placement?: Placement;
-  /** Optional style overrides */
+  /** 
+   * Optional style overrides for the menu container
+   * ⚠️  WARNING: Do NOT include positioning properties (marginTop, marginLeft, top, left, transform, etc.)
+   *     This component calculates positioning internally. Only use for: backgroundColor, borderRadius, 
+   *     padding, shadows, etc.
+   */
   menuStyle?: object;
   itemStyle?: object;
   itemTextStyle?: object;
@@ -154,23 +159,43 @@ export const Dropdown: React.FC<DropdownProps> = ({
   );
 
   // Compute menu position
+  // ⚠️  IMPORTANT: This component calculates absolute positioning based on trigger measurements.
+  //     External menuStyle props should NOT include positioning properties like:
+  //     - marginTop/marginBottom (affects Y position)
+  //     - marginLeft/marginRight (affects X position) 
+  //     - top/left/right/bottom (conflicts with computed position)
+  //     - transform with translateY/translateX (offsets the menu)
+  //
+  //     Only use menuStyle for: backgroundColor, borderRadius, padding, shadows, etc.
+  //     The component handles all positioning internally via measureInWindow + useMemo.
   const { menuLeft, menuTop, menuWidth } = useMemo(() => {
     if (!triggerRect) return { menuLeft: 0, menuTop: 0, menuWidth: dropdownWidth ?? 200 };
     const width = dropdownWidth ?? triggerRect.width;
     
     // Convert physical pixels to logical pixels for vertical positioning only
-    const triggerY = triggerRect.y / SCALE;
-    const triggerHeight = triggerRect.height / SCALE;
+    const triggerY = triggerRect.y ;
+    const triggerHeight = triggerRect.height ;
     
     // Position menu centered below the trigger (horizontal positioning works fine without scale conversion)
     const leftCalc = triggerRect.x + (triggerRect.width - width) / 2;
     const leftMin = Math.min(leftCalc, SCREEN.width - width - 8);
     const left = Math.max(8, leftMin);
 
-    // Always place below unless explicitly set to "top" placement
-    const wantTop = placement === "top";
+    // Determine placement based on available space
     const topCalcBelow = triggerY + triggerHeight + 6;
     const topCalcAbove = triggerY - maxHeight + 6;
+    
+    let wantTop = false;
+    if (placement === "top") {
+      wantTop = true;
+    } else if (placement === "auto") {
+      // Auto: prefer below, but use above if not enough space below
+      const hasSpaceBelow = topCalcBelow + maxHeight <= SCREEN.height - 8;
+      const hasSpaceAbove = topCalcAbove >= 8;
+      wantTop = !hasSpaceBelow && hasSpaceAbove;
+    }
+    // For "bottom" placement, always prefer below (default behavior)
+    
     const top = wantTop ? Math.max(8, topCalcAbove) : Math.min(SCREEN.height - 8, topCalcBelow);
 
     // Console logs for debugging
@@ -214,7 +239,6 @@ export const Dropdown: React.FC<DropdownProps> = ({
     return (
       <Pressable
         onPress={openMenu}
-        ref={triggerRef}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel ?? "Open dropdown"}
         disabled={disabled}
@@ -332,6 +356,11 @@ export const Dropdown: React.FC<DropdownProps> = ({
         />
 
         {/* Animated menu */}
+        {/* 
+          ⚠️  POSITIONING WARNING: This Animated.View uses computed top/left from measureInWindow.
+          The menuStyle prop should NOT override these positioning values or add margins/transforms
+          that would offset the carefully calculated position.
+        */}
         <Animated.View
           style={[
             styles.menu,
