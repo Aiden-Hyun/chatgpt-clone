@@ -187,5 +187,13 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       fontWeight: theme.typography.fontWeights.medium as "500",
       fontFamily: theme.typography.fontFamily.primary,
     },
+    quickActionsItemLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
+    quickActionsIcon: {
+      marginRight: theme.spacing.sm,
+    },
   });
 };

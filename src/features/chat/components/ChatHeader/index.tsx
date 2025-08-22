@@ -218,13 +218,51 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             containerStyle={styles.menuButton}
           />
         )}
-        renderCustomItem={({ item, isSelected }) => (
-          <View style={styles.quickActionsMenuItem}>
-            <Text style={styles.quickActionsMenuText}>
-              {item.label}
-            </Text>
-          </View>
-        )}
+        renderCustomItem={({ item, isSelected }) => {
+          // Define icon and color for each menu item
+          const getIconConfig = (value: string) => {
+            switch (value) {
+              case 'settings':
+                return {
+                  name: 'settings-outline' as const,
+                  color: theme.colors.status.info.primary,
+                };
+              case 'design_showcase':
+                return {
+                  name: 'color-palette-outline' as const,
+                  color: theme.colors.status.success.primary,
+                };
+              case 'logout':
+                return {
+                  name: 'log-out-outline' as const,
+                  color: theme.colors.status.error.primary,
+                };
+              default:
+                return {
+                  name: 'ellipsis-horizontal-outline' as const,
+                  color: theme.colors.text.secondary,
+                };
+            }
+          };
+
+          const iconConfig = getIconConfig(item.value as string);
+
+          return (
+            <View style={styles.quickActionsMenuItem}>
+              <View style={styles.quickActionsItemLeft}>
+                <Ionicons 
+                  name={iconConfig.name} 
+                  size={20} 
+                  color={iconConfig.color}
+                  style={styles.quickActionsIcon}
+                />
+                <Text style={styles.quickActionsMenuText}>
+                  {item.label}
+                </Text>
+              </View>
+            </View>
+          );
+        }}
         menuStyle={styles.quickActionsContainer}
         itemStyle={styles.quickActionsMenuItem}
         itemTextStyle={styles.quickActionsMenuText}
