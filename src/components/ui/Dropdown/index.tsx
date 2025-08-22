@@ -53,6 +53,7 @@ export interface DropdownProps {
 }
 
 const SCREEN = Dimensions.get("window");
+const SCALE = Dimensions.get("window").scale;
 
 export const Dropdown: React.FC<DropdownProps> = ({
   items,
@@ -120,6 +121,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
     // measureInWindow handles parents with overflow/transform better across platforms
     // (same positioning idea as the Medium article’s measure usage). :contentReference[oaicite:1]{index=1}
     triggerRef.current.measureInWindow((x, y, width, height) => {
+      console.log('📏 [Dropdown] measureInWindow raw values:', { x, y, width, height });
+      console.log('📏 [Dropdown] Screen scale:', SCALE);
+      console.log('📏 [Dropdown] Platform:', Platform.OS);
       setTriggerRect({ x, y, width, height });
     });
   }, []);
@@ -150,15 +154,55 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const { menuLeft, menuTop, menuWidth } = useMemo(() => {
     if (!triggerRect) return { menuLeft: 0, menuTop: 0, menuWidth: dropdownWidth ?? 200 };
     const width = dropdownWidth ?? triggerRect.width;
-    const left = Math.max(8, Math.min(triggerRect.x + triggerRect.width / 2 - width / 2, SCREEN.width - width - 8));
+    
+    // Convert physical pixels to logical pixels for vertical positioning only
+    const triggerY = triggerRect.y / SCALE;
+    const triggerHeight = triggerRect.height / SCALE;
+    
+    // Position menu centered below the trigger (horizontal positioning works fine without scale conversion)
+    const leftCalc = triggerRect.x + (triggerRect.width - width) / 2;
+    const leftMin = Math.min(leftCalc, SCREEN.width - width - 8);
+    const left = Math.max(8, leftMin);
 
-    const wantTop =
-      placement === "top" ||
-      (placement === "auto" &&
-        triggerRect.y + triggerRect.height + maxHeight > SCREEN.height && // not enough space below
-        triggerRect.y - maxHeight > 0); // but enough space above
+    // Always place below unless explicitly set to "top" placement
+    const wantTop = placement === "top";
+    const topCalcBelow = triggerY + triggerHeight + 6;
+    const topCalcAbove = triggerY - maxHeight + 6;
+    const top = wantTop ? Math.max(8, topCalcAbove) : Math.min(SCREEN.height - 8, topCalcBelow);
 
-    const top = wantTop ? Math.max(8, triggerRect.y - maxHeight - 6) : Math.min(SCREEN.height - 8, triggerRect.y + triggerRect.height + 6);
+    // Console logs for debugging
+    console.log('🔍 [Dropdown] Positioning Debug:');
+    console.log('  Screen info:', { 
+      width: SCREEN.width, 
+      height: SCREEN.height, 
+      scale: SCALE,
+      pixelRatio: Dimensions.get('window').scale,
+      platform: Platform.OS
+    });
+    console.log('  Trigger rect:', triggerRect);
+    console.log('  Menu width:', width);
+    console.log('  Placement:', placement);
+    console.log('  Want top:', wantTop);
+    console.log('  LEFT calculation:');
+    console.log('    Raw trigger x:', triggerRect.x, '(physical pixels)');
+    console.log('    Raw trigger width:', triggerRect.width, '(physical pixels)');
+    console.log('    Scale factor:', SCALE);
+    console.log('    Center calc:', leftCalc, '=', triggerRect.x, '+ (', triggerRect.width, '-', width, ') / 2');
+    console.log('    Min with right edge:', leftMin, '= Math.min(', leftCalc, ',', SCREEN.width - width - 8, ')');
+    console.log('    Final left:', left, '= Math.max(8,', leftMin, ')');
+    console.log('  TOP calculation:');
+    console.log('    Raw trigger y:', triggerRect.y, '(physical pixels)');
+    console.log('    Raw trigger height:', triggerRect.height, '(physical pixels)');
+    console.log('    Converted y:', triggerY, '(logical pixels)');
+    console.log('    Converted height:', triggerHeight, '(logical pixels)');
+    if (wantTop) {
+      console.log('    Above calc:', topCalcAbove, '=', triggerY, '-', maxHeight, '+ 6');
+      console.log('    Final top:', top, '= Math.max(8,', topCalcAbove, ')');
+    } else {
+      console.log('    Below calc:', topCalcBelow, '=', triggerY, '+', triggerHeight, '+ 6');
+      console.log('    Final top:', top, '= Math.min(', SCREEN.height - 8, ',', topCalcBelow, ')');
+    }
+    console.log('  Final positions:', { menuLeft: left, menuTop: top, menuWidth: width });
 
     return { menuLeft: left, menuTop: top, menuWidth: width };
   }, [triggerRect, dropdownWidth, placement, maxHeight]);

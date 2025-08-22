@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui';
+import type { DropdownItem } from '@/components/ui';
+import { Button, Dropdown } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { useLanguageContext } from '../../../language';
 import { useAppTheme } from '../../../theme/theme';
@@ -40,7 +41,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   const navigation = useNavigation();
   const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
-  const [isModelMenuVisible, setIsModelMenuVisible] = useState(false);
   const theme = useAppTheme();
   const { t } = useLanguageContext();
   const styles = React.useMemo(() => createChatHeaderStyles(theme), [theme]);
@@ -84,18 +84,90 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
       {/* Inline Model Selector (Center) */}
       {showModelSelection ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          label={selectedModelLabel}
-          rightIcon={<Ionicons name="chevron-down-outline" size={24} color={theme.colors.text.primary} />}
-          leftIcon={(() => {
-            const provider = selectedModelInfo?.provider;
-            if (provider === 'anthropic') return <AnthropicLogo size={16} />;
-            return <OpenAILogo size={16} />;
-          })()}
-          onPress={() => setIsModelMenuVisible(true)}
-          containerStyle={styles.modelSelector}
+        <Dropdown
+          items={AVAILABLE_MODELS.map(model => ({
+            value: model.value,
+            label: model.label,
+            disabled: false,
+          }))}
+          value={selectedModel ?? DEFAULT_MODEL}
+          onChange={(item: DropdownItem) => onModelChange?.(item.value as string)}
+          renderTrigger={({ open, selected }) => {
+            const selectedModelData = selected ? getModelInfo(selected.value as string) : selectedModelInfo;
+            const provider = selectedModelData?.provider;
+            
+            return (
+              <TouchableOpacity
+                onPress={open}
+                style={styles.modelSelector}
+              >
+                <View style={styles.providerLogo}>
+                  {provider === 'anthropic' ? <AnthropicLogo size={16} /> : <OpenAILogo size={16} />}
+                </View>
+                <Text style={styles.modelSelectorText}>
+                  {selected?.label ?? selectedModelLabel}
+                </Text>
+                <Ionicons name="chevron-down-outline" size={24} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+            );
+          }}
+          renderCustomItem={({ item, isSelected }) => {
+            const model = AVAILABLE_MODELS.find(m => m.value === item.value);
+            
+            if (!model) return null;
+            
+            return (
+              <View style={styles.modelMenuItemContainer}>
+                <View style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}>
+                  <View style={styles.modelItemLeft}>
+                    {/* Provider Logo */}
+                    <View style={styles.providerLogo}>
+                      {model.provider === 'openai' && <OpenAILogo size={16} />}
+                      {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
+                    </View>
+                    
+                    {/* Model Name */}
+                    <View style={styles.modelInfo}>
+                      <Text style={[styles.modelMenuText, isSelected && styles.selectedModelMenuText]}>
+                        {model.label}
+                      </Text>
+                      {model.description && (
+                        <Text style={styles.modelDescription}>
+                          {model.description}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  
+                  <View style={styles.modelItemRight}>
+                    {/* Capability Icons */}
+                    <ModelCapabilityIcons
+                      capabilities={model.capabilities}
+                      size={14}
+                      containerStyle={styles.capabilityIcons}
+                    />
+                    
+                    {/* Selection Check */}
+                    {isSelected && (
+                      <Ionicons 
+                        name="checkmark-outline" 
+                        size={20} 
+                        color={theme.colors.status.info.primary} 
+                        style={styles.checkIcon}
+                      />
+                    )}
+                  </View>
+                </View>
+              </View>
+            );
+          }}
+          menuStyle={styles.modelMenuContainer}
+          itemStyle={styles.modelMenuItem}
+          selectedItemStyle={styles.selectedModelMenuItem}
+          itemTextStyle={styles.modelMenuText}
+          selectedItemTextStyle={styles.selectedModelMenuText}
+          maxHeight={400}
+          dropdownWidth={320}
         />
       ) : (
         <View style={styles.titleContainer} />
@@ -113,77 +185,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         containerStyle={styles.menuButton}
       />
 
-      {/* Model Selection Dropdown */}
-      <Modal
-        visible={isModelMenuVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsModelMenuVisible(false)}
-      >
-        <TouchableOpacity 
-          style={styles.modelMenuOverlay} 
-          onPress={() => setIsModelMenuVisible(false)} 
-          activeOpacity={1}
-        >
-          <View style={styles.modelMenuContainer}>
-            <ScrollView style={styles.modelListContainer}>
-              {AVAILABLE_MODELS.map(model => {
-                const isSelected = (selectedModel ?? DEFAULT_MODEL) === model.value;
-                return (
-                  <View key={model.value} style={styles.modelMenuItemContainer}>
-                    <TouchableOpacity
-                      style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}
-                      onPress={() => {
-                        onModelChange?.(model.value);
-                        setIsModelMenuVisible(false);
-                      }}
-                    >
-                      <View style={styles.modelItemLeft}>
-                        {/* Provider Logo */}
-                        <View style={styles.providerLogo}>
-                          {model.provider === 'openai' && <OpenAILogo size={16} />}
-                          {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
-                        </View>
-                        
-                        {/* Model Name */}
-                        <View style={styles.modelInfo}>
-                          <Text style={[styles.modelMenuText, isSelected && styles.selectedModelMenuText]}>
-                            {model.label}
-                          </Text>
-                          {model.description && (
-                            <Text style={styles.modelDescription}>
-                              {model.description}
-                            </Text>
-                          )}
-                        </View>
-                      </View>
-                      
-                      <View style={styles.modelItemRight}>
-                        {/* Capability Icons */}
-                        <ModelCapabilityIcons
-                          capabilities={model.capabilities}
-                          size={14}
-                          containerStyle={styles.capabilityIcons}
-                        />
-                        
-                        {/* Selection Check */}
-                        {isSelected && (
-                          <Ionicons 
-                            name="checkmark-outline" 
-                            size={20} 
-                            color={theme.colors.status.info.primary} 
-                            style={styles.checkIcon}
-                          />
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+
 
       {/* Quick Actions Menu Dropdown */}
       <Modal
