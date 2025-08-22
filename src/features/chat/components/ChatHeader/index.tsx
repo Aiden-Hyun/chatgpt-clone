@@ -2,7 +2,7 @@ import type { DropdownItem } from '@/components/ui';
 import { Button, Dropdown } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { useLanguageContext } from '../../../language';
@@ -119,8 +119,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                   <View style={styles.modelItemLeft}>
                     {/* Provider Logo */}
                     <View style={styles.providerLogo}>
-                      {model.provider === 'openai' && <OpenAILogo size={16} />}
-                      {model.provider === 'anthropic' && <AnthropicLogo size={16} />}
+                      {model.provider === 'openai' && <OpenAILogo size={24} />}
+                      {model.provider === 'anthropic' && <AnthropicLogo size={24} />}
                     </View>
                     
                     {/* Model Name */}
@@ -165,6 +165,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           selectedItemTextStyle={styles.selectedModelMenuText}
           maxHeight={400}
           dropdownWidth={320}
+          placement="bottom"
         />
       ) : (
         <View style={styles.titleContainer} />

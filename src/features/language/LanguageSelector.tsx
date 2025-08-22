@@ -1,8 +1,10 @@
+import type { DropdownItem } from '@/components/ui';
+import { Dropdown } from '@/components/ui';
 import { useToast } from '@/features/alert';
 import { useAppTheme } from '@/features/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useRef, useState } from 'react';
-import { Dimensions, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { useLanguageContext } from './LanguageContext';
 
 interface LanguageSelectorProps {
@@ -13,9 +15,6 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
   const { currentLanguage, setLanguage, t } = useLanguageContext();
   const { showSuccess } = useToast();
   const theme = useAppTheme();
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
-  const buttonRef = useRef<any>(null);
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -25,16 +24,14 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
 
   const currentLanguageInfo = languages.find(lang => lang.code === currentLanguage) || languages[0];
 
-  const handleLanguageChange = (newLanguage: string) => {
+  const handleLanguageChange = (item: DropdownItem) => {
+    const newLanguage = item.value as string;
     console.log('🌍 Language button pressed:', newLanguage);
     console.log('🌍 Current language before:', currentLanguage);
     
     // Set the new language
     setLanguage(newLanguage);
     console.log('🌍 Language set to:', newLanguage);
-    
-    // Close dropdown
-    setIsDropdownVisible(false);
     
     // Show toast in the new language
     const languageNames = {
@@ -62,132 +59,70 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
     console.log('🌍 Toast showSuccess called');
   };
 
-  const handleButtonPress = () => {
-    if (buttonRef.current) {
-      buttonRef.current.measureInWindow((x: number, y: number, width: number, height: number) => {
-        const screenHeight = Dimensions.get('window').height;
-        const screenWidth = Dimensions.get('window').width;
-        const dropdownHeight = Math.min(languages.length * 50 + 20, 300); // Cap at 300px
-        const dropdownWidth = Math.min(200, screenWidth - 20); // Ensure it fits on screen
-        
-        // Calculate initial position - align with button
-        let dropdownX = x;
-        let dropdownY = y + height + 5; // Default: below button
-        
-        // Check if dropdown would go off the bottom of the screen
-        if (dropdownY + dropdownHeight > screenHeight - 20) {
-          // Position above the button instead
-          dropdownY = Math.max(20, y - dropdownHeight - 5);
-        }
-        
-        // Check if dropdown would go off the right side of the screen
-        if (dropdownX + dropdownWidth > screenWidth - 10) {
-          // Align to the right edge of the screen with some padding
-          dropdownX = screenWidth - dropdownWidth - 10;
-        }
-        
-        // Check if dropdown would go off the left side of the screen
-        if (dropdownX < 10) {
-          // Align to the left edge of the screen with some padding
-          dropdownX = 10;
-        }
-        
-        // Ensure dropdown is fully visible
-        dropdownY = Math.max(20, Math.min(dropdownY, screenHeight - dropdownHeight - 20));
-        
-        setDropdownPosition({
-          x: dropdownX,
-          y: dropdownY
-        });
-        setIsDropdownVisible(true);
-      });
-    }
-  };
-
   const styles = createLanguageSelectorStyles(theme);
 
   return (
     <View style={[styles.container, style]}>
-      {/* Language Selector Button */}
-      <TouchableOpacity
-        ref={buttonRef}
-        style={styles.selectorButton}
-        onPress={handleButtonPress}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.selectorText}>
-          {currentLanguageInfo.name}
-        </Text>
-        <Ionicons 
-          name="chevron-down-outline" 
-          size={20} 
-          color={theme.colors.text.secondary} 
-        />
-      </TouchableOpacity>
-
-      {/* Language Dropdown Modal */}
-      <Modal
-        visible={isDropdownVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsDropdownVisible(false)}
-      >
-        <TouchableOpacity 
-          style={styles.dropdownOverlay} 
-          onPress={() => setIsDropdownVisible(false)} 
-          activeOpacity={1}
-        >
-          <View style={[
-            styles.dropdownContainer,
-            {
-              position: 'absolute',
-              left: dropdownPosition.x,
-              top: dropdownPosition.y,
-            }
-          ]}>
-            <ScrollView style={styles.languageListContainer}>
-              {languages.map((lang) => {
-                const isSelected = currentLanguage === lang.code;
-                return (
-                  <View key={lang.code} style={styles.languageMenuItemContainer}>
-                    <TouchableOpacity
-                      style={[styles.languageMenuItem, isSelected && styles.selectedLanguageMenuItem]}
-                      onPress={() => handleLanguageChange(lang.code)}
-                    >
-                      <View style={styles.languageItemLeft}>
-                        <Text style={[styles.languageMenuText, isSelected && styles.selectedLanguageMenuText]}>
-                          {lang.name}
-                        </Text>
-                      </View>
-                      
-                      {isSelected && (
-                        <View style={styles.languageItemRight}>
-                          <Ionicons 
-                            name="checkmark-outline" 
-                            size={16} 
-                            color={theme.colors.status.info.primary} 
-                          />
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  </View>
-                );
-              })}
-            </ScrollView>
+      <Dropdown
+        items={languages.map(lang => ({
+          value: lang.code,
+          label: lang.name,
+          disabled: false,
+        }))}
+        value={currentLanguage}
+        onChange={handleLanguageChange}
+        renderTrigger={({ open }) => (
+          <TouchableOpacity
+            style={styles.selectorButton}
+            onPress={open}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.selectorText}>
+              {currentLanguageInfo.name}
+            </Text>
+            <Ionicons 
+              name="chevron-down-outline" 
+              size={20} 
+              color={theme.colors.text.secondary} 
+            />
+          </TouchableOpacity>
+        )}
+        renderCustomItem={({ item, isSelected }) => (
+          <View style={styles.languageMenuItemContainer}>
+            <View style={[styles.languageMenuItem, isSelected && styles.selectedLanguageMenuItem]}>
+              <View style={styles.languageItemLeft}>
+                <Text style={[styles.languageMenuText, isSelected && styles.selectedLanguageMenuText]}>
+                  {item.label}
+                </Text>
+              </View>
+              
+              {isSelected && (
+                <View style={styles.languageItemRight}>
+                  <Ionicons 
+                    name="checkmark-outline" 
+                    size={16} 
+                    color={theme.colors.status.info.primary} 
+                  />
+                </View>
+              )}
+            </View>
           </View>
-        </TouchableOpacity>
-      </Modal>
+        )}
+        maxHeight={300}
+        dropdownWidth={200}
+        placement="auto"
+      />
     </View>
   );
 };
 
-const createLanguageSelectorStyles = (theme: any) => StyleSheet.create({
+const createLanguageSelectorStyles = (theme: any) => ({
   container: {
     alignItems: 'flex-end',
   },
   selectorButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.md,
     backgroundColor: theme.colors.background.secondary,
@@ -202,22 +137,6 @@ const createLanguageSelectorStyles = (theme: any) => StyleSheet.create({
     fontWeight: theme.typography.fontWeights.medium,
     marginRight: theme.spacing.xs,
   },
-  dropdownOverlay: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  dropdownContainer: {
-    backgroundColor: theme.colors.background.primary,
-    borderRadius: theme.borders.radius.md,
-    padding: theme.spacing.sm,
-    minWidth: 150,
-    maxWidth: 250,
-    ...theme.shadows.medium,
-    zIndex: theme.zIndex.dropdown,
-  },
-  languageListContainer: {
-    maxHeight: 300,
-  },
   languageMenuItemContainer: {
     marginBottom: 4,
   },
@@ -226,9 +145,9 @@ const createLanguageSelectorStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
     borderRadius: theme.borders.radius.sm,
     marginVertical: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
   },
   selectedLanguageMenuItem: {
     backgroundColor: theme.colors.background.secondary,
@@ -246,6 +165,6 @@ const createLanguageSelectorStyles = (theme: any) => StyleSheet.create({
     fontWeight: theme.typography.fontWeights.semibold,
   },
   languageItemRight: {
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
 }); 

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { useCallback, useEffect, useMemo } from 'react';
 import { AppState } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastContainer, ToastProvider } from '../src/features/alert';
 import { AuthProvider, useAuth } from '../src/features/auth';
@@ -122,15 +123,19 @@ function ProtectedRoutes() {
 export default function Layout() {
   return (
     <SafeAreaProvider>
-      <LanguageProvider>
-        <ThemeProvider>
-          <AuthProvider>
+      
+        <LanguageProvider>
+          <ThemeProvider>
+            <AuthProvider>
             <ToastProvider>
+            <PaperProvider>
               <AppContent />
+              </PaperProvider>
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
       </LanguageProvider>
+      
     </SafeAreaProvider>
   );
 }

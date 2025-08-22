@@ -1,4 +1,4 @@
-import { Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { AppTheme } from "../../../theme/theme.types";
 
 /**
@@ -92,7 +92,6 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
 
       borderRadius: theme.borders.radius.md,
       padding: theme.spacing.sm,
-      marginTop: Platform.OS === "ios" ? 100 : 80,
       minWidth: 320, // Increased width to accommodate capability icons
       maxWidth: 400,
 
@@ -122,7 +121,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       flex: 1,
     },
     providerLogo: {
-      marginRight: theme.spacing.sm,
+      marginRight: theme.spacing.lg,
       width: 20,
       alignItems: "center",
     },
@@ -167,8 +166,6 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.background.primary,
       borderRadius: theme.borders.radius.md,
       padding: theme.spacing.sm,
-      marginTop: Platform.OS === "ios" ? 100 : 60,
-      marginRight: 16,
       minWidth: 180,
       ...theme.shadows.medium,
     },
