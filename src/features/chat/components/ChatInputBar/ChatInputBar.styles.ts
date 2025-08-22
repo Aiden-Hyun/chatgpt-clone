@@ -2,10 +2,10 @@ import { StyleSheet } from 'react-native';
 import { AppTheme } from '../../../theme/theme.types';
 
 /**
- * ChatInput Styles - Native TextInput Style
+ * ChatInput Styles - Native TextInput Style with Neumorphic Effects
  * Features:
- * - Sleek bubble-shaped input with subtle shadows
- * - Perfectly circular send button with MaterialIcons
+ * - Neumorphic bubble-shaped input with proper shadows
+ * - Neumorphic circular send button with depth
  * - Clean design with no focus borders
  * - Smooth state transitions
  * - Native TextInput styling for proper iOS behavior
@@ -16,9 +16,9 @@ export const createChatInputStyles = (theme: AppTheme) => {
   const styles = StyleSheet.create({
     // Main container - Consistent padding across platforms
     container: {
-      height: 100,
+      height: theme.layout.dimensions.chat.sendButtonSize * 3, // Use theme-based height
       backgroundColor: theme.colors.background.primary,
-      borderTopWidth: 0.5,
+      borderTopWidth: theme.borders.widths.thin / 2, // Use theme border width
       borderTopColor: theme.colors.border.light,
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.lg, // Consistent padding for all platforms
@@ -32,36 +32,30 @@ export const createChatInputStyles = (theme: AppTheme) => {
       gap: theme.spacing.sm,
     },
 
-    // Bubble-shaped input container - Native TextInput container
+    // Bubble-shaped input container - Native TextInput container with neumorphic effect
     inputBubble: {
       flex: 1,
       backgroundColor: theme.colors.background.secondary,
-      borderRadius: 20, // iOS Messages uses 20px border radius
-      //minHeight: 36, // Minimum height for empty state
-      //maxHeight: 120, // Maximum height before scrolling
-      shadowColor: theme.colors.text.primary,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2,
-      // Remove any height constraints - let TextInput grow naturally
+      borderRadius: theme.layout.dimensions.chat.inputBorderRadius * 2.5, // Use theme border radius
+      // Use theme shadows for neumorphic effect
+      ...theme.shadows.medium,
     },
 
     // Native TextInput styling - iOS Messages style
     input: {
       flex: 1,
       textAlignVertical: 'top',
-      paddingVertical: 8, // iOS Messages padding
-      paddingHorizontal: 12, // iOS Messages padding
-      fontSize: 17, // iOS Messages font size
-      lineHeight: 22, // iOS Messages line height
+      paddingVertical: theme.spacing.sm, // Use theme spacing
+      paddingHorizontal: theme.spacing.md, // Use theme spacing
+      fontSize: theme.layout.dimensions.chat.inputFontSize, // Use theme font size
+      lineHeight: theme.layout.dimensions.chat.inputLineHeight, // Use theme line height
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fontFamily.primary,
       backgroundColor: 'transparent', // Transparent background
-      borderWidth: 0, // No border
-      borderRadius: 0, // No border radius
+      borderWidth: theme.borders.widths.none, // Use theme border width
+      borderRadius: 0, // No border radius for input
       // Web-specific: Remove focus outline
-      outlineWidth: 0,
+      outlineWidth: theme.borders.widths.none,
       outlineColor: 'transparent',
       boxShadow: 'none',
     },
@@ -70,45 +64,40 @@ export const createChatInputStyles = (theme: AppTheme) => {
     sendButtonContainer: {
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginBottom: 2, // Slight adjustment for visual alignment
+      marginBottom: theme.spacing.xs, // Use theme spacing
     },
 
-    // Send button styling - Perfect circle (consistent across platforms)
+    // Send button styling - Perfect circle with neumorphic effect
     sendButton: {
-      width: 36, // Slightly larger for better visibility
-      height: 36, // Perfect square for circle
-      borderRadius: 18, // Exactly half of width/height for perfect circle
-      padding: 0,
+      width: theme.layout.dimensions.chat.sendButtonSize, // Use theme button size
+      height: theme.layout.dimensions.chat.sendButtonSize, // Use theme button size
+      borderRadius: theme.layout.dimensions.chat.sendButtonSize / 2, // Use theme border radius
+      padding: theme.borders.widths.none, // Use theme border width
       backgroundColor: theme.colors.background.secondary, // Use theme background
-      borderWidth: 0,
+      borderWidth: theme.borders.widths.none, // Use theme border width
       justifyContent: 'center',
       alignItems: 'center',
       overflow: 'visible', // Ensure icons aren't clipped
-      shadowColor: theme.colors.text.primary,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 1,
-      elevation: 1,
+      // Use theme shadows for neumorphic effect
+      ...theme.shadows.medium,
       // Web-style focus outline removal for all platforms
-      outlineWidth: 0,
+      outlineWidth: theme.borders.widths.none,
       outlineColor: 'transparent',
       boxShadow: 'none',
     },
 
-    // Active send button (when text is present) - Web-like blue
+    // Active send button (when text is present) - Neumorphic pressed effect
     sendButtonActive: {
       backgroundColor: theme.colors.primary, // Use theme primary color
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 2,
+      // Use theme light shadows for pressed effect
+      ...theme.shadows.light,
     },
 
-    // Sending state
+    // Sending state - Neumorphic pressed effect
     sendButtonSending: {
       backgroundColor: theme.colors.primary, // Use theme error color
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 2,
+      // Use theme light shadows for pressed effect
+      ...theme.shadows.light,
     },
 
     // Typing indicator
@@ -119,7 +108,7 @@ export const createChatInputStyles = (theme: AppTheme) => {
 
     // Typing text
     typingText: {
-      fontSize: 13, // iOS Messages secondary text size
+      fontSize: theme.layout.dimensions.chat.secondaryFontSize, // Use theme font size
       color: theme.colors.text.secondary,
       fontStyle: 'italic',
     },
@@ -128,38 +117,33 @@ export const createChatInputStyles = (theme: AppTheme) => {
     searchButtonContainer: {
       justifyContent: 'flex-end',
       alignItems: 'center',
-      marginBottom: 2, // Slight adjustment for visual alignment
+      marginBottom: theme.spacing.xs, // Use theme spacing
     },
 
-    // Search button styling - Perfect circle (consistent across platforms)
+    // Search button styling - Perfect circle with neumorphic effect
     searchButton: {
-      width: 36, // Slightly larger for better visibility
-      height: 36, // Perfect square for circle
-      borderRadius: 18, // Exactly half of width/height for perfect circle
-      padding: 0,
+      width: theme.layout.dimensions.chat.sendButtonSize, // Use theme button size
+      height: theme.layout.dimensions.chat.sendButtonSize, // Use theme button size
+      borderRadius: theme.layout.dimensions.chat.sendButtonSize / 2, // Use theme border radius
+      padding: theme.borders.widths.none, // Use theme border width
       backgroundColor: theme.colors.background.secondary, // Use theme background
-      borderWidth: 0,
+      borderWidth: theme.borders.widths.none, // Use theme border width
       justifyContent: 'center',
       alignItems: 'center',
       overflow: 'visible', // Ensure icons aren't clipped
-      shadowColor: theme.colors.text.primary,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 1,
-      elevation: 1,
+      // Use theme shadows for neumorphic effect
+      ...theme.shadows.medium,
       // Web-style focus outline removal for all platforms
-      outlineWidth: 0,
+      outlineWidth: theme.borders.widths.none,
       outlineColor: 'transparent',
       boxShadow: 'none',
     },
 
-    // Search button active state - Vibrant Blue
+    // Search button active state - Neumorphic pressed effect
     searchButtonActive: {
       backgroundColor: theme.colors.status.info.secondary,
-      shadowColor: theme.colors.status.info.primary,
-      shadowOpacity: 0.5,
-      shadowRadius: 6,
-      elevation: 6,
+      // Use theme light shadows for pressed effect
+      ...theme.shadows.light,
     },
   });
 
@@ -167,4 +151,3 @@ export const createChatInputStyles = (theme: AppTheme) => {
     styles,
   };
 };
-

@@ -97,11 +97,6 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       maxWidth: 400,
 
       ...theme.shadows.medium,
-      shadowColor: "#000000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 8,
     },
     modelListContainer: {
       maxHeight: 400, // Increased height for more models
@@ -146,7 +141,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     },
     modelDescription: {
       fontSize: 11,
-      color: theme.colors.text.secondary + "80",
+      color: theme.colors.text.tertiary,
       fontFamily: theme.typography.fontFamily.primary,
       marginTop: 10,
       fontStyle: "italic",
@@ -176,11 +171,6 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       marginRight: 16,
       minWidth: 180,
       ...theme.shadows.medium,
-      shadowColor: "#000000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 8,
     },
     quickActionsMenuItem: {
       paddingVertical: theme.spacing.md,

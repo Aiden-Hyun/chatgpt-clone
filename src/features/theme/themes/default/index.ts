@@ -2,9 +2,9 @@
 // Exports both light and dark variants along with theme metadata
 
 import { BaseTheme } from '../../theme.types';
+import { spacing } from '../tokens';
 import { darkColors, darkShadows } from './dark';
 import { lightColors, lightShadows } from './light';
-import { spacing } from '../tokens';
 
 // Theme metadata
 export const defaultThemeMetadata = {

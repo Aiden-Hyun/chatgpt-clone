@@ -18,17 +18,17 @@ export const createListItemStyles = (theme: AppTheme) => {
     sm: {
       paddingVertical: theme.spacing.sm,
       paddingHorizontal: theme.spacing.md,
-      minHeight: 48,
+      minHeight: theme.layout.buttonSizes.action,
     },
     md: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
-      minHeight: 60,
+      minHeight: theme.layout.buttonSizes.action + theme.spacing.lg,
     },
     lg: {
       paddingVertical: theme.spacing.lg,
       paddingHorizontal: theme.spacing.xl,
-      minHeight: 72,
+      minHeight: theme.layout.buttonSizes.action + theme.spacing.xl,
     },
   };
 
@@ -50,7 +50,7 @@ export const createListItemStyles = (theme: AppTheme) => {
           backgroundColor: theme.colors.background.primary,
           paddingVertical: theme.spacing.sm,
           paddingHorizontal: theme.spacing.md,
-          minHeight: 40,
+          minHeight: theme.layout.buttonSizes.header + theme.spacing.sm,
         };
       default:
         return {};
@@ -83,13 +83,13 @@ export const createListItemStyles = (theme: AppTheme) => {
     subtitle: {
       fontSize: theme.typography.fontSizes.sm,
       color: theme.colors.text.secondary,
-      marginTop: 2,
+      marginTop: theme.spacing.xs,
       fontFamily: theme.typography.fontFamily.primary,
     },
     description: {
       fontSize: theme.typography.fontSizes.xs,
       color: theme.colors.text.tertiary,
-      marginTop: 2,
+      marginTop: theme.spacing.xs,
       fontFamily: theme.typography.fontFamily.primary,
     },
     
@@ -118,7 +118,7 @@ export const createListItemStyles = (theme: AppTheme) => {
     
     // Border
     border: {
-      borderBottomWidth: 1,
+      borderBottomWidth: theme.borders.widths.thin,
       borderBottomColor: theme.colors.border.light,
     },
   };

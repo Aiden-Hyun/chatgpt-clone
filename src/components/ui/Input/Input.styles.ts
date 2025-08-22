@@ -149,18 +149,18 @@ export const createInputStyles = (theme: AppTheme) => {
       width: '100%',
     },
     disabled: {
-      opacity: 0.6,
+      opacity: theme.opacity.disabled,
     },
     leftIconContainer: {
       position: 'absolute',
       left: theme.spacing.sm,
-      height: '100%',
+      height: theme.layout.dimensions.chat.sendButtonSize * 2,
       justifyContent: 'center',
     },
     rightIconContainer: {
       position: 'absolute',
       right: theme.spacing.sm,
-      height: '100%',
+      height: theme.layout.dimensions.chat.sendButtonSize * 2,
       justifyContent: 'center',
     },
     inputWithLeftIcon: {

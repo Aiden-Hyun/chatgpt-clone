@@ -2,9 +2,9 @@
 // Exports both light and dark variants along with theme metadata
 
 import { BaseTheme } from '../../theme.types';
+import { spacing } from '../tokens';
 import { darkColors, darkShadows } from './dark';
 import { lightColors, lightShadows } from './light';
-import { spacing } from '../tokens';
 
 // Theme metadata
 export const gradientNeumorphismThemeMetadata = {
@@ -139,42 +139,76 @@ const gradientNeumorphismLayout = {
   spacing: spacing,
 };
 
-// Gradient Neumorphism shadow values (soft for neumorphic effect)
+// Gradient Neumorphism shadow values (enhanced for neumorphic effect)
 const gradientNeumorphismShadows = {
   light: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
   },
   medium: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  heavy: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  button: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  heavy: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  button: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
   card: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  // Enhanced neumorphic shadows
+  neumorphic: {
+    light: {
+      shadowColor: '#ffffff',
+      shadowOffset: { width: -20, height: -20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+    dark: {
+      shadowColor: '#bebebe',
+      shadowOffset: { width: 20, height: 20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+  },
+  // Inset neumorphic shadows for pressed state
+  inset: {
+    light: {
+      shadowColor: '#ffffff',
+      shadowOffset: { width: 20, height: 20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+    dark: {
+      shadowColor: '#bebebe',
+      shadowOffset: { width: -20, height: -20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
   },
 };
 
@@ -270,6 +304,8 @@ export const gradientNeumorphismTheme = {
       heavy: lightShadows.heavy,
       button: gradientNeumorphismShadows.button,
       card: gradientNeumorphismShadows.card,
+      neumorphic: lightShadows.neumorphic,
+      inset: lightShadows.inset,
     },
     animations: gradientNeumorphismAnimations,
     zIndex: gradientNeumorphismZIndex,
@@ -290,6 +326,8 @@ export const gradientNeumorphismTheme = {
       heavy: darkShadows.heavy,
       button: gradientNeumorphismShadows.button,
       card: gradientNeumorphismShadows.card,
+      neumorphic: darkShadows.neumorphic,
+      inset: darkShadows.inset,
     },
     animations: gradientNeumorphismAnimations,
     zIndex: gradientNeumorphismZIndex,

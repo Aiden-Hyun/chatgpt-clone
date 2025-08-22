@@ -22,7 +22,7 @@ export const lightColors = {
   
   // Background colors - Optimized for gradients
   background: {
-    primary: '#e8e8e8',    // Base color for gradient backgrounds
+    primary: '#e0e0e0',    // Classic neumorphic background
     secondary: '#f0f0f0',  // Gradient end color
     tertiary: '#d8d8d8',   // Alternative gradient start
     avatar: '#e0e0e0',     // Avatar background
@@ -38,7 +38,7 @@ export const lightColors = {
   
   // Claymorphism specific colors - For compatibility
   claymorphism: {
-    background: '#e8e8e8',
+    background: '#e0e0e0',
     shadow: 'rgba(99, 102, 241, 0.2)',
     highlight: 'rgba(255, 255, 255, 0.6)',
     palette: {
@@ -170,7 +170,7 @@ export const lightColors = {
   // Message bubbles - Gradient-based
   message: {
     user: '#ff6b6b',        // Uses gradient accent color
-    assistant: '#e8e8e8',  // Uses gradient neutral color
+    assistant: '#e0e0e0',  // Uses gradient neutral color
     userText: '#ffffff',           // White text for gradient backgrounds
     assistantText: '#2d3748',      // Dark text for light gradients
   },
@@ -199,44 +199,61 @@ export const lightColors = {
   },
 };
 
-// Light mode shadows - Enhanced for gradient neumorphism
+// Light mode shadows - Using the specific neumorphic shadow values
 export const lightShadows = {
   light: {
-    shadowColor: 'rgba(255, 255, 255, 0.8)',
-    shadowOffset: { width: -4, height: -4 },
-    shadowOpacity: 0.8,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowColor: '#bebebe',
+    shadowOffset: { width: 20, height: 20 },
+    shadowOpacity: 1,
+    shadowRadius: 60,
+    elevation: 20,
   },
   medium: {
-    shadowColor: 'rgba(90, 90, 90, 0.6)',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: '#bebebe',
+    shadowOffset: { width: 15, height: 15 },
+    shadowOpacity: 1,
+    shadowRadius: 45,
+    elevation: 15,
   },
   heavy: {
-    shadowColor: 'rgba(90, 90, 90, 0.8)',
-    shadowOffset: { width: 8, height: 8 },
-    shadowOpacity: 0.8,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowColor: '#bebebe',
+    shadowOffset: { width: 25, height: 25 },
+    shadowOpacity: 1,
+    shadowRadius: 75,
+    elevation: 25,
   },
-  // Dual shadow system for neumorphism
+  // Classic neumorphic dual shadow system
   neumorphic: {
     light: {
-      shadowColor: 'rgba(255, 255, 255, 0.8)',
-      shadowOffset: { width: -6, height: -6 },
-      shadowOpacity: 0.8,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowColor: '#ffffff',
+      shadowOffset: { width: -20, height: -20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
     },
     dark: {
-      shadowColor: 'rgba(90, 90, 90, 0.8)',
-      shadowOffset: { width: 6, height: 6 },
-      shadowOpacity: 0.8,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowColor: '#bebebe',
+      shadowOffset: { width: 20, height: 20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+  },
+  // Inset neumorphic shadows for pressed state
+  inset: {
+    light: {
+      shadowColor: '#ffffff',
+      shadowOffset: { width: 20, height: 20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+    dark: {
+      shadowColor: '#bebebe',
+      shadowOffset: { width: -20, height: -20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
     },
   },
 };

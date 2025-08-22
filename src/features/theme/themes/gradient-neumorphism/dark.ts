@@ -22,9 +22,9 @@ export const darkColors = {
   
   // Background colors - Optimized for dark gradients
   background: {
-    primary: '#1a202c',    // Base color for dark gradient backgrounds
-    secondary: '#2d3748',  // Gradient end color
-    tertiary: '#4a5568',   // Alternative gradient start
+    primary: '#2d3748',    // Dark neumorphic background
+    secondary: '#4a5568',  // Gradient end color
+    tertiary: '#1a202c',   // Alternative gradient start
     avatar: '#2d3748',     // Avatar background
   },
   
@@ -38,7 +38,7 @@ export const darkColors = {
   
   // Claymorphism specific colors - For compatibility
   claymorphism: {
-    background: '#1a202c',
+    background: '#2d3748',
     shadow: 'rgba(139, 92, 246, 0.3)',
     highlight: 'rgba(255, 255, 255, 0.1)',
     palette: {
@@ -61,7 +61,7 @@ export const darkColors = {
     secondary: '#e2e8f0',       // Medium light gray for secondary text
     tertiary: '#cbd5e0',        // Medium gray for tertiary text
     quaternary: '#a0aec0',      // Light gray for quaternary text
-    inverted: '#1a202c',        // Dark for inverted text
+    inverted: '#2d3748',        // Dark for inverted text
   },
   
   // Border colors - Subtle borders for dark gradient elements
@@ -191,7 +191,7 @@ export const darkColors = {
     function: '#ed8936',       // Orange for function names
     variable: '#a78bfa',       // Light purple for variables
     operator: '#f7fafc',       // Light for operators
-    background: 'rgba(26, 32, 44, 0.7)',
+    background: 'rgba(45, 55, 72, 0.7)',
     type: '#48bb78',           // Green for types
     builtin: '#8B5CF6',        // Purple for built-in functions
     tag: '#f56565',            // Red for HTML tags
@@ -199,44 +199,61 @@ export const darkColors = {
   },
 };
 
-// Dark mode shadows - Enhanced for gradient neumorphism
+// Dark mode shadows - Using neumorphic shadow values for dark theme
 export const darkShadows = {
   light: {
-    shadowColor: 'rgba(255, 255, 255, 0.2)',
-    shadowOffset: { width: -4, height: -4 },
-    shadowOpacity: 0.8,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowColor: '#1a202c',
+    shadowOffset: { width: 20, height: 20 },
+    shadowOpacity: 1,
+    shadowRadius: 60,
+    elevation: 20,
   },
   medium: {
-    shadowColor: 'rgba(0, 0, 0, 0.6)',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.6,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: '#1a202c',
+    shadowOffset: { width: 15, height: 15 },
+    shadowOpacity: 1,
+    shadowRadius: 45,
+    elevation: 15,
   },
   heavy: {
-    shadowColor: 'rgba(0, 0, 0, 0.8)',
-    shadowOffset: { width: 8, height: 8 },
-    shadowOpacity: 0.8,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowColor: '#1a202c',
+    shadowOffset: { width: 25, height: 25 },
+    shadowOpacity: 1,
+    shadowRadius: 75,
+    elevation: 25,
   },
-  // Dual shadow system for neumorphism
+  // Classic neumorphic dual shadow system for dark theme
   neumorphic: {
     light: {
-      shadowColor: 'rgba(255, 255, 255, 0.2)',
-      shadowOffset: { width: -6, height: -6 },
-      shadowOpacity: 0.8,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowColor: '#4a5568',
+      shadowOffset: { width: -20, height: -20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
     },
     dark: {
-      shadowColor: 'rgba(0, 0, 0, 0.8)',
-      shadowOffset: { width: 6, height: 6 },
-      shadowOpacity: 0.8,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowColor: '#1a202c',
+      shadowOffset: { width: 20, height: 20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+  },
+  // Inset neumorphic shadows for pressed state
+  inset: {
+    light: {
+      shadowColor: '#4a5568',
+      shadowOffset: { width: 20, height: 20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
+    },
+    dark: {
+      shadowColor: '#1a202c',
+      shadowOffset: { width: -20, height: -20 },
+      shadowOpacity: 1,
+      shadowRadius: 60,
+      elevation: 20,
     },
   },
 };

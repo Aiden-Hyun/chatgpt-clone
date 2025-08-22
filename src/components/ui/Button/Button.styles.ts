@@ -88,30 +88,30 @@ export const createButtonStyles = (theme: AppTheme) => {
       case 'primary':
         return {
           backgroundColor: colors.background,
-          borderWidth: 0,
+          borderWidth: theme.borders.widths.none,
           ...theme.shadows.medium,
         };
       case 'secondary':
         return {
           backgroundColor: theme.colors.background.secondary,
-          borderWidth: 1,
+          borderWidth: theme.borders.widths.thin,
           borderColor: colors.border,
         };
       case 'outline':
         return {
           backgroundColor: 'transparent',
-          borderWidth: 1,
+          borderWidth: theme.borders.widths.thin,
           borderColor: colors.border,
         };
       case 'ghost':
         return {
           backgroundColor: 'transparent',
-          borderWidth: 0,
+          borderWidth: theme.borders.widths.none,
         };
       case 'link':
         return {
           backgroundColor: 'transparent',
-          borderWidth: 0,
+          borderWidth: theme.borders.widths.none,
           paddingVertical: theme.spacing.xs,
           paddingHorizontal: 0,
           minHeight: 0,
