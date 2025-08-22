@@ -13,3 +13,7 @@ export type { CardPadding, CardProps, CardVariant } from './Card/Card.types';
 
 export { default as ListItem } from './ListItem';
 export type { ListItemProps, ListItemSize, ListItemVariant } from './ListItem/ListItem.types';
+
+export { Dropdown } from './Dropdown';
+export type { DropdownItem } from './Dropdown';
+

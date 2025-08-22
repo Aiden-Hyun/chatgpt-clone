@@ -1,11 +1,12 @@
-import { Button, Input, Text } from '@/components/ui';
+import type { DropdownItem } from '@/components/ui';
+import { Button, Dropdown, Input, Text } from '@/components/ui';
 import { LanguageSelector, useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { getButtonSize } from '@/shared/utils/layout';
+
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
 
 export default function DesignShowcaseScreen() {
   const { t } = useLanguageContext();
@@ -15,6 +16,13 @@ export default function DesignShowcaseScreen() {
   const [inputValue, setInputValue] = useState('');
   const [switchValue, setSwitchValue] = useState(false);
   const [activeSearchButtons, setActiveSearchButtons] = useState<Set<string>>(new Set());
+  
+  // State for dropdown examples
+  const [dropdownValue, setDropdownValue] = useState<string>('');
+  const [dropdownWithIconsValue, setDropdownWithIconsValue] = useState<string>('');
+  const [dropdownWithDescValue, setDropdownWithDescValue] = useState<string>('');
+  const [searchableDropdownValue, setSearchableDropdownValue] = useState<string>('');
+  const [variantDropdownValue, setVariantDropdownValue] = useState<string>('');
 
   const handleBack = () => {
     try {
@@ -55,9 +63,9 @@ export default function DesignShowcaseScreen() {
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {
-      width: getButtonSize('action'),
-      height: getButtonSize('action'),
-      borderRadius: getButtonSize('action') / 2,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
       backgroundColor: theme.colors.background.secondary,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
@@ -175,7 +183,7 @@ export default function DesignShowcaseScreen() {
       minWidth: 80,
     },
     smallButtonText: {
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.typography.fontSizes.sm,
     },
     mediumButton: {
       paddingHorizontal: theme.spacing.lg,
@@ -183,7 +191,7 @@ export default function DesignShowcaseScreen() {
       minWidth: 100,
     },
     mediumButtonText: {
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
     },
     largeButton: {
       paddingHorizontal: theme.spacing.xl,
@@ -191,21 +199,21 @@ export default function DesignShowcaseScreen() {
       minWidth: 120,
     },
     largeButtonText: {
-      fontSize: theme.fontSizes.lg,
+      fontSize: theme.typography.fontSizes.lg,
     },
     label: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as '500',
       marginBottom: theme.spacing.sm,
     },
     input: {
       borderWidth: 1,
       borderColor: theme.colors.border.medium,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       padding: theme.spacing.md,
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       marginBottom: theme.spacing.lg,
@@ -219,9 +227,9 @@ export default function DesignShowcaseScreen() {
       flex: 1,
       borderWidth: 1,
       borderColor: theme.colors.border.medium,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       padding: theme.spacing.md,
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       minHeight: 80,
@@ -231,14 +239,14 @@ export default function DesignShowcaseScreen() {
       backgroundColor: theme.colors.primary,
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
     sendButtonText: {
       color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontSize: theme.typography.fontSizes.md,
+      fontWeight: theme.typography.fontWeights.medium as '500',
     },
     searchButtonRow: {
       flexDirection: 'row' as const,
@@ -260,10 +268,10 @@ export default function DesignShowcaseScreen() {
       elevation: 1,
     },
     searchButtonLabel: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as '500',
       flex: 1,
     },
     iconShowcase: {
@@ -271,7 +279,7 @@ export default function DesignShowcaseScreen() {
       marginBottom: theme.spacing.md,
     },
     iconLabel: {
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.typography.fontSizes.sm,
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.sm,
     },
@@ -457,6 +465,101 @@ export default function DesignShowcaseScreen() {
                 containerStyle={[styles.button, styles.infoButton]}
               />
             </View>
+          </View>
+        </View>
+
+        {/* Dropdown Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Dropdowns</Text>
+          
+          <View style={styles.card}>
+            <Text style={styles.label}>Basic Dropdown</Text>
+            <Dropdown
+              items={[
+                { value: 'option1', label: 'Option 1' },
+                { value: 'option2', label: 'Option 2' },
+                { value: 'option3', label: 'Option 3' }
+              ]}
+              value={dropdownValue}
+              onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+              placeholder="Select an option"
+            />
+
+            <Text style={styles.label}>Dropdown with Custom Trigger</Text>
+            <Dropdown
+              items={[
+                { value: 'apple', label: 'Apple' },
+                { value: 'android', label: 'Android' },
+                { value: 'windows', label: 'Windows' }
+              ]}
+              value={dropdownWithIconsValue}
+              onChange={(item: DropdownItem) => setDropdownWithIconsValue(item.value as string)}
+              renderTrigger={({ open, selected }: { open: () => void; selected?: DropdownItem }) => (
+                <Pressable
+                  onPress={open}
+                  style={[styles.button, styles.outlineButton, { flexDirection: 'row', alignItems: 'center' }]}
+                >
+                  <Ionicons name="logo-apple" size={16} color={theme.colors.text.primary} style={{ marginRight: theme.spacing.sm }} />
+                  <Text style={[styles.buttonText, styles.outlineButtonText]}>
+                    {selected?.label || 'Select platform'}
+                  </Text>
+                </Pressable>
+              )}
+            />
+
+            <Text style={styles.label}>Dropdown with Different Placements</Text>
+            <View style={styles.row}>
+              <Dropdown
+                items={[
+                  { value: 'top', label: 'Top Placement' },
+                  { value: 'bottom', label: 'Bottom Placement' }
+                ]}
+                value={dropdownValue}
+                onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+                placeholder="Auto placement"
+                placement="auto"
+                dropdownWidth={150}
+              />
+              <Dropdown
+                items={[
+                  { value: 'top', label: 'Top Placement' },
+                  { value: 'bottom', label: 'Bottom Placement' }
+                ]}
+                value={dropdownValue}
+                onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+                placeholder="Top placement"
+                placement="top"
+                dropdownWidth={150}
+              />
+            </View>
+
+            <Text style={styles.label}>Dropdown with Custom Styling</Text>
+            <Dropdown
+              items={[
+                { value: 'react', label: 'React Native' },
+                { value: 'flutter', label: 'Flutter' },
+                { value: 'xamarin', label: 'Xamarin' },
+                { value: 'ionic', label: 'Ionic' },
+                { value: 'cordova', label: 'Cordova' },
+                { value: 'native', label: 'Native iOS/Android' }
+              ]}
+              value={searchableDropdownValue}
+              onChange={(item: DropdownItem) => setSearchableDropdownValue(item.value as string)}
+              placeholder="Select framework..."
+              maxHeight={200}
+            />
+
+            <Text style={styles.label}>Disabled Dropdown</Text>
+            <Dropdown
+              items={[
+                { value: 'enabled', label: 'Enabled Option' },
+                { value: 'disabled', label: 'Disabled Option', disabled: true }
+              ]}
+              value={dropdownValue}
+              onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+              placeholder="Disabled dropdown"
+              disabled={true}
+            />
           </View>
         </View>
 
