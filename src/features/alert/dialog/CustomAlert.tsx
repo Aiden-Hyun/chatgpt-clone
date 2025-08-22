@@ -90,7 +90,7 @@ const createStyles = (theme: any, type: string) => StyleSheet.create({
   },
   container: {
     backgroundColor: theme.colors.background.primary,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borders.radius.lg,
     padding: theme.spacing.lg,
     margin: theme.spacing.lg,
     maxWidth: Dimensions.get('window').width - 40,
@@ -101,21 +101,21 @@ const createStyles = (theme: any, type: string) => StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   title: {
-    fontSize: theme.fontSizes.lg,
-    fontWeight: theme.fontWeights.semibold as '600',
+            fontSize: theme.typography.fontSizes.lg,
+          fontWeight: theme.typography.fontWeights.semibold as '600',
     color: theme.colors.text.primary,
     textAlign: 'center',
-    fontFamily: theme.fontFamily.primary,
+    fontFamily: theme.typography.fontFamily.primary,
   },
   content: {
     marginBottom: theme.spacing.lg,
   },
   message: {
-    fontSize: theme.fontSizes.md,
+    fontSize: theme.typography.fontSizes.md,
     color: theme.colors.text.secondary,
     textAlign: 'center',
     lineHeight: 20,
-    fontFamily: theme.fontFamily.primary,
+    fontFamily: theme.typography.fontFamily.primary,
   },
   actions: {
     flexDirection: 'row',
@@ -126,7 +126,7 @@ const createStyles = (theme: any, type: string) => StyleSheet.create({
     flex: 1,
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: theme.borders.radius.md,
     alignItems: 'center',
   },
   confirmButton: {
@@ -145,14 +145,14 @@ const createStyles = (theme: any, type: string) => StyleSheet.create({
   },
   confirmButtonText: {
     color: theme.colors.text.inverted,
-    fontSize: theme.fontSizes.md,
-    fontWeight: theme.fontWeights.medium as '500',
-    fontFamily: theme.fontFamily.primary,
+    fontSize: theme.typography.fontSizes.md,
+    fontWeight: theme.typography.fontWeights.medium as '500',
+    fontFamily: theme.typography.fontFamily.primary,
   },
   cancelButtonText: {
     color: theme.colors.text.primary,
-    fontSize: theme.fontSizes.md,
-    fontWeight: theme.fontWeights.medium as '500',
-    fontFamily: theme.fontFamily.primary,
+    fontSize: theme.typography.fontSizes.md,
+    fontWeight: theme.typography.fontWeights.medium as '500',
+    fontFamily: theme.typography.fontFamily.primary,
   },
 }); 

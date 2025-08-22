@@ -20,7 +20,7 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({ message }) => {
     },
     messageContainer: {
       backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.round,
+      borderRadius: theme.borders.radius.round,
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
       borderWidth: 0,
@@ -31,10 +31,10 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({ message }) => {
       elevation: 1,
     },
     text: {
-      fontSize: theme.fontSizes.sm,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.sm,
+              fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.secondary,
-      fontWeight: theme.fontWeights.medium as '500',
+              fontWeight: theme.typography.fontWeights.medium as '500',
       textAlign: 'center' as const,
     },
   };

@@ -16,20 +16,20 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
       marginVertical: theme.spacing.xxs,
     },
     text: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
       lineHeight: 24,
       textAlign: 'left',
-      fontWeight: theme.fontWeights.regular as '400',
+      fontWeight: theme.typography.fontWeights.regular as '400',
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.xl,
     },
     cursor: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.regular as '400',
+      fontWeight: theme.typography.fontWeights.regular as '400',
     },
     
     // ✨ MODERN CHATGPT-LIKE MARKDOWN STYLES ✨
@@ -92,7 +92,7 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
     // Body Text
     body: {
       fontSize: 16,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
       lineHeight: 26,
       marginBottom: theme.spacing.md,

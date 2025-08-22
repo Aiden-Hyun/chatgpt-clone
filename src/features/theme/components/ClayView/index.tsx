@@ -78,14 +78,14 @@ export const ClayView: React.FC<ClayViewProps> = ({
   const clayStyles = StyleSheet.create({
     container: {
       backgroundColor: effectiveBackgroundColor,
-      borderRadius: theme.borderRadius.xl * 1.5, // Extra rounded corners for clay effect
+      borderRadius: theme.borders.radius.xl * 1.5, // Extra rounded corners for clay effect
       overflow: 'hidden',
       position: 'relative',
     },
     // Outer shadows - creates the raised clay effect
     outerShadow1: {
       ...StyleSheet.absoluteFillObject,
-      borderRadius: theme.borderRadius.xl * 1.5,
+      borderRadius: theme.borders.radius.xl * 1.5,
       shadowColor,
       shadowOffset: { 
         width: pressed ? -shadowOffset : shadowOffset, 
@@ -97,7 +97,7 @@ export const ClayView: React.FC<ClayViewProps> = ({
     },
     outerShadow2: {
       ...StyleSheet.absoluteFillObject,
-      borderRadius: theme.borderRadius.xl * 1.5,
+      borderRadius: theme.borders.radius.xl * 1.5,
       shadowColor,
       shadowOffset: { 
         width: pressed ? shadowOffset : -shadowOffset, 
@@ -110,32 +110,32 @@ export const ClayView: React.FC<ClayViewProps> = ({
     // Inner shadows - creates the soft, puffy look
     innerShadow1: {
       ...StyleSheet.absoluteFillObject,
-      borderRadius: theme.borderRadius.xl * 1.5,
+      borderRadius: theme.borders.radius.xl * 1.5,
       backgroundColor: 'transparent',
-      borderWidth: 1,
+      borderWidth: theme.borders.widths.thin,
       borderColor: pressed ? shadowColor : highlightColor,
-      borderBottomWidth: pressed ? 0 : 2,
-      borderRightWidth: pressed ? 0 : 2,
-      borderTopWidth: pressed ? 2 : 0,
-      borderLeftWidth: pressed ? 2 : 0,
-      opacity: 0.5,
+      borderBottomWidth: pressed ? 0 : theme.borders.widths.medium,
+      borderRightWidth: pressed ? 0 : theme.borders.widths.medium,
+      borderTopWidth: pressed ? theme.borders.widths.medium : 0,
+      borderLeftWidth: pressed ? theme.borders.widths.medium : 0,
+      opacity: theme.opacity.subtle,
     },
     innerShadow2: {
       ...StyleSheet.absoluteFillObject,
-      borderRadius: theme.borderRadius.xl * 1.5,
+      borderRadius: theme.borders.radius.xl * 1.5,
       backgroundColor: 'transparent',
-      borderWidth: 1,
+      borderWidth: theme.borders.widths.thin,
       borderColor: pressed ? highlightColor : shadowColor,
-      borderBottomWidth: pressed ? 2 : 0,
-      borderRightWidth: pressed ? 2 : 0,
-      borderTopWidth: pressed ? 0 : 2,
-      borderLeftWidth: pressed ? 0 : 2,
-      opacity: 0.3,
+      borderBottomWidth: pressed ? theme.borders.widths.medium : 0,
+      borderRightWidth: pressed ? theme.borders.widths.medium : 0,
+      borderTopWidth: pressed ? 0 : theme.borders.widths.medium,
+      borderLeftWidth: pressed ? 0 : theme.borders.widths.medium,
+      opacity: theme.opacity.ghost,
     },
     // Content container
     content: {
       overflow: 'hidden',
-      borderRadius: theme.borderRadius.xl * 1.5,
+      borderRadius: theme.borders.radius.xl * 1.5,
     },
   });
 

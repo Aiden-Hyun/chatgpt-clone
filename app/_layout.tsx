@@ -109,7 +109,7 @@ function ProtectedRoutes() {
         <Drawer.Screen name="index" />
         <Drawer.Screen name="(auth)" />
         <Drawer.Screen name="settings/index" />
-        <Drawer.Screen name="settings/theme-settings" />
+        <Drawer.Screen name="settings/themes" />
         <Drawer.Screen name="chat/index" />
         <Drawer.Screen name="chat/[roomId]" />
         <Drawer.Screen name="design-showcase" />

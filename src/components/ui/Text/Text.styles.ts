@@ -7,20 +7,20 @@ import { TextSize, TextVariant, TextWeight } from './Text.types';
 export const createTextStyles = (theme: AppTheme) => {
   // Font sizes mapping
   const fontSizes = {
-    xs: theme.fontSizes.xs,
-    sm: theme.fontSizes.sm,
-    md: theme.fontSizes.md,
-    lg: theme.fontSizes.lg,
-    xl: theme.fontSizes.xl,
-    xxl: theme.fontSizes.xxl,
+    xs: theme.typography.fontSizes.xs,
+    sm: theme.typography.fontSizes.sm,
+    md: theme.typography.fontSizes.md,
+    lg: theme.typography.fontSizes.lg,
+    xl: theme.typography.fontSizes.xl,
+    xxl: theme.typography.fontSizes.xxl,
   };
 
   // Font weights mapping
   const fontWeights = {
-    regular: theme.fontWeights.regular,
-    medium: theme.fontWeights.medium,
-    semibold: theme.fontWeights.semibold,
-    bold: theme.fontWeights.bold,
+    regular: theme.typography.fontWeights.regular,
+    medium: theme.typography.fontWeights.medium,
+    semibold: theme.typography.fontWeights.semibold,
+    bold: theme.typography.fontWeights.bold,
   };
 
   // Default styles for each variant
@@ -30,65 +30,65 @@ export const createTextStyles = (theme: AppTheme) => {
       fontWeight: fontWeights.bold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.lg,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     h2: {
       fontSize: fontSizes.xl,
       fontWeight: fontWeights.bold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.md,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     h3: {
       fontSize: fontSizes.lg,
       fontWeight: fontWeights.semibold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     title: {
       fontSize: fontSizes.lg,
       fontWeight: fontWeights.semibold,
       color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     subtitle: {
       fontSize: fontSizes.md,
       fontWeight: fontWeights.medium,
       color: theme.colors.text.secondary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     body: {
       fontSize: fontSizes.md,
       fontWeight: fontWeights.regular,
       color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     caption: {
       fontSize: fontSizes.sm,
       fontWeight: fontWeights.regular,
       color: theme.colors.text.secondary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     label: {
       fontSize: fontSizes.sm,
       fontWeight: fontWeights.medium,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     link: {
       fontSize: fontSizes.md,
       fontWeight: fontWeights.medium,
       color: theme.colors.primary,
       textDecorationLine: 'underline' as const,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     error: {
       fontSize: fontSizes.sm,
       fontWeight: fontWeights.medium,
       color: theme.colors.status.error.primary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     code: {
       fontSize: fontSizes.sm,
@@ -98,7 +98,7 @@ export const createTextStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.background.tertiary,
       paddingHorizontal: theme.spacing.xs,
       paddingVertical: theme.spacing.xxs,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
     },
   };
 
@@ -120,7 +120,7 @@ export const createTextStyles = (theme: AppTheme) => {
   return {
     // Base styles
     text: {
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     
     // Alignment styles

@@ -19,7 +19,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     },
     backButton: {
       padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
     },
     headerTitle: {
       marginBottom: 0, // Remove margin since Text component handles spacing
@@ -46,7 +46,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     currentThemePreview: {
       width: 80,
       height: 80,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       backgroundColor: theme.colors.background.primary,
       marginRight: theme.spacing.md,
       justifyContent: 'center',
@@ -60,13 +60,13 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     previewButton: {
       width: 30,
       height: 12,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
       backgroundColor: theme.colors.primary,
     },
     previewText: {
       width: 20,
       height: 8,
-      borderRadius: theme.borderRadius.xs,
+      borderRadius: theme.borders.radius.xs,
       backgroundColor: theme.colors.text.secondary,
     },
     currentThemeInfo: {
@@ -83,7 +83,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.primary,
       paddingHorizontal: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.round,
+      borderRadius: theme.borders.radius.round,
     },
     currentModeText: {
       color: theme.colors.text.inverted,
@@ -99,8 +99,8 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       width: '48%',
       alignItems: 'center',
       padding: theme.spacing.md,
-      borderRadius: theme.borderRadius.lg,
-      borderWidth: 1,
+      borderRadius: theme.borders.radius.lg,
+      borderWidth: theme.borders.widths.thin,
       borderColor: theme.colors.border.light,
       backgroundColor: theme.colors.background.secondary,
       minHeight: 120,
@@ -122,7 +122,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     previewCard: {
       width: 40,
       height: 20,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
     },
     themeName: {
       textAlign: 'center',

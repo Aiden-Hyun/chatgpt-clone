@@ -43,11 +43,11 @@ export const createSidebarStyles = (theme: AppTheme) => {
     },
     chatItem: {
       marginVertical: 2,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
     },
     chatItemDelete: {
       padding: theme.spacing.xs,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
     },
     subtitleRow: {
       flexDirection: 'row',
@@ -59,7 +59,7 @@ export const createSidebarStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.status.info.background,
       paddingHorizontal: theme.spacing.xs,
       paddingVertical: 2,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
     },
   });
 };

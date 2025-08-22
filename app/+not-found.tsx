@@ -15,8 +15,8 @@ export default function NotFoundScreen() {
       backgroundColor: theme.colors.background.primary,
     },
     title: {
-      fontSize: theme.fontSizes.xxl,
-      fontWeight: theme.fontWeights.bold as '700',
+      fontSize: theme.typography.fontSizes.xxl,
+      fontWeight: theme.typography.fontWeights.bold as '700',
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.lg,
     },
@@ -25,7 +25,7 @@ export default function NotFoundScreen() {
       paddingVertical: 15,
     },
     linkText: {
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       color: theme.colors.status.info.primary,
       textDecorationLine: 'underline',
     },

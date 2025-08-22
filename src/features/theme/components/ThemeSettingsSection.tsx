@@ -18,14 +18,14 @@ export const ThemeSettingsSection: React.FC<ThemeSettingsSectionProps> = () => {
       marginBottom: theme.spacing.xl,
     },
     sectionHeader: {
-      fontSize: theme.fontSizes.xl,
-      fontWeight: theme.fontWeights.bold,
+      fontSize: theme.typography.fontSizes.xl,
+      fontWeight: theme.typography.fontWeights.bold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.md,
       paddingHorizontal: theme.spacing.md,
     },
     description: {
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.typography.fontSizes.sm,
       color: theme.colors.text.secondary,
       marginBottom: theme.spacing.md,
       paddingHorizontal: theme.spacing.md,

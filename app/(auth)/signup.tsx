@@ -5,7 +5,7 @@ import { useToast } from '@/features/alert';
 import { useEmailSignup } from '@/features/auth';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { getButtonSize } from '@/shared/utils/layout';
+
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -122,15 +122,15 @@ export default function SignupScreen() {
               padding: theme.spacing.sm,
               marginRight: theme.spacing.md,
               // Use consistent button size for all platforms
-              minWidth: getButtonSize('action'),
-              minHeight: getButtonSize('action'),
+              minWidth: theme.layout.buttonSizes.action,
+              minHeight: theme.layout.buttonSizes.action,
               justifyContent: 'center',
               alignItems: 'center',
             }}
           >
             <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
           </TouchableOpacity>
-          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
+          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: theme.layout.buttonSizes.header }}>
             {t('auth.create_account')}
           </Text>
         </View>

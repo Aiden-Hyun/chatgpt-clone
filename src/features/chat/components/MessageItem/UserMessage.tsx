@@ -36,8 +36,8 @@ export const UserMessage: React.FC<UserMessageProps> = ({
               multiline
               style={{
                 color: theme.colors.message.userText,
-                fontFamily: theme.fontFamily.primary,
-                fontSize: theme.fontSizes.md,
+                                  fontFamily: theme.typography.fontFamily.primary,
+                fontSize: theme.typography.fontSizes.md,
                 lineHeight: 22,
                 paddingVertical: 4,
                 backgroundColor: 'transparent',

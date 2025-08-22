@@ -1,4 +1,4 @@
-// Default theme - Index file
+// Gradient Neumorphism theme - Index file
 // Exports both light and dark variants along with theme metadata
 
 import { BaseTheme } from '../../theme.types';
@@ -7,10 +7,10 @@ import { lightColors, lightShadows } from './light';
 import { spacing } from '../tokens';
 
 // Theme metadata
-export const defaultThemeMetadata = {
-  id: 'default',
-  name: 'Default',
-  description: 'Clean, minimalist design with sharp corners and professional aesthetics',
+export const gradientNeumorphismThemeMetadata = {
+  id: 'gradient-neumorphism',
+  name: 'Gradient Neumorphism',
+  description: 'Soft UI with gradient backgrounds and subtle shadows',
   version: '1.0.0',
   author: 'ChatGPT Clone Team',
   // Preview image would be imported here if available
@@ -18,10 +18,10 @@ export const defaultThemeMetadata = {
 };
 
 // Use global spacing tokens
-const defaultSpacing = spacing;
+const gradientNeumorphismSpacing = spacing;
 
-// Default typography values (moved from tokens.ts to theme management)
-const defaultTypography = {
+// Gradient Neumorphism typography values (balanced)
+const gradientNeumorphismTypography = {
   fontSizes: {
     xs: 12,
     sm: 14,
@@ -46,11 +46,11 @@ const defaultTypography = {
   },
 };
 
-// Default border values (moved from tokens.ts to theme management)
-const defaultBorders = {
+// Gradient Neumorphism border values (soft and rounded)
+const gradientNeumorphismBorders = {
   radius: {
-    xs: 2,
-    sm: 4,
+    xs: 4,
+    sm: 6,
     md: 8,
     lg: 12,
     xl: 16,
@@ -70,8 +70,8 @@ const defaultBorders = {
   },
 };
 
-// Default layout values
-const defaultLayout = {
+// Gradient Neumorphism layout values (balanced)
+const gradientNeumorphismLayout = {
   buttonSizes: {
     header: 32,
     action: 44,
@@ -139,8 +139,8 @@ const defaultLayout = {
   spacing: spacing,
 };
 
-// Default shadow values
-const defaultShadows = {
+// Gradient Neumorphism shadow values (soft for neumorphic effect)
+const gradientNeumorphismShadows = {
   light: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
@@ -157,29 +157,29 @@ const defaultShadows = {
   },
   heavy: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowRadius: 6,
+    elevation: 5,
   },
   button: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,
   },
   card: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 3,
   },
 };
 
-// Default animation values
-const defaultAnimations = {
+// Gradient Neumorphism animation values (smooth)
+const gradientNeumorphismAnimations = {
   durations: {
     fast: 150,
     normal: 300,
@@ -192,8 +192,8 @@ const defaultAnimations = {
   },
 };
 
-// Default z-index values
-const defaultZIndex = {
+// Gradient Neumorphism z-index values
+const gradientNeumorphismZIndex = {
   base: 0,
   card: 1,
   dropdown: 10,
@@ -204,8 +204,8 @@ const defaultZIndex = {
   navigation: 50,
 };
 
-// Default opacity values
-const defaultOpacity = {
+// Gradient Neumorphism opacity values
+const gradientNeumorphismOpacity = {
   disabled: 0.5,
   overlay: 0.6,
   ghost: 0.7,
@@ -215,12 +215,12 @@ const defaultOpacity = {
   focus: 1.0,
 };
 
-// Default transform values
-const defaultTransforms = {
+// Gradient Neumorphism transform values (subtle)
+const gradientNeumorphismTransforms = {
   scale: {
     pressed: 0.98,
     hover: 1.02,
-    active: 1.05,
+    active: 1.04,
   },
   rotate: {
     loading: '360deg',
@@ -233,8 +233,8 @@ const defaultTransforms = {
   },
 };
 
-// Default transition values
-const defaultTransitions = {
+// Gradient Neumorphism transition values (smooth)
+const gradientNeumorphismTransitions = {
   durations: {
     fast: 150,
     normal: 300,
@@ -248,8 +248,8 @@ const defaultTransitions = {
   },
 };
 
-// Default breakpoint values
-const defaultBreakpoints = {
+// Gradient Neumorphism breakpoint values
+const gradientNeumorphismBreakpoints = {
   mobile: 768,
   tablet: 1024,
   desktop: 1440,
@@ -257,39 +257,51 @@ const defaultBreakpoints = {
 };
 
 // Complete theme objects with all necessary properties
-export const defaultTheme = {
+export const gradientNeumorphismTheme = {
   light: {
     colors: lightColors,
-    spacing: defaultSpacing,
-    typography: defaultTypography,
-    borders: defaultBorders,
-    layout: defaultLayout,
-    shadows: lightShadows,
-    animations: defaultAnimations,
-    zIndex: defaultZIndex,
-    opacity: defaultOpacity,
-    transforms: defaultTransforms,
-    transitions: defaultTransitions,
-    breakpoints: defaultBreakpoints,
+    spacing: gradientNeumorphismSpacing,
+    typography: gradientNeumorphismTypography,
+    borders: gradientNeumorphismBorders,
+    layout: gradientNeumorphismLayout,
+    shadows: {
+      light: lightShadows.light,
+      medium: lightShadows.medium,
+      heavy: lightShadows.heavy,
+      button: gradientNeumorphismShadows.button,
+      card: gradientNeumorphismShadows.card,
+    },
+    animations: gradientNeumorphismAnimations,
+    zIndex: gradientNeumorphismZIndex,
+    opacity: gradientNeumorphismOpacity,
+    transforms: gradientNeumorphismTransforms,
+    transitions: gradientNeumorphismTransitions,
+    breakpoints: gradientNeumorphismBreakpoints,
   } as BaseTheme,
   dark: {
     colors: darkColors,
-    spacing: defaultSpacing,
-    typography: defaultTypography,
-    borders: defaultBorders,
-    layout: defaultLayout,
-    shadows: darkShadows,
-    animations: defaultAnimations,
-    zIndex: defaultZIndex,
-    opacity: defaultOpacity,
-    transforms: defaultTransforms,
-    transitions: defaultTransitions,
-    breakpoints: defaultBreakpoints,
+    spacing: gradientNeumorphismSpacing,
+    typography: gradientNeumorphismTypography,
+    borders: gradientNeumorphismBorders,
+    layout: gradientNeumorphismLayout,
+    shadows: {
+      light: darkShadows.light,
+      medium: darkShadows.medium,
+      heavy: darkShadows.heavy,
+      button: gradientNeumorphismShadows.button,
+      card: gradientNeumorphismShadows.card,
+    },
+    animations: gradientNeumorphismAnimations,
+    zIndex: gradientNeumorphismZIndex,
+    opacity: gradientNeumorphismOpacity,
+    transforms: gradientNeumorphismTransforms,
+    transitions: gradientNeumorphismTransitions,
+    breakpoints: gradientNeumorphismBreakpoints,
   } as BaseTheme,
 };
 
 // Default export for easy importing
 export default {
-  ...defaultThemeMetadata,
-  theme: defaultTheme,
+  ...gradientNeumorphismThemeMetadata,
+  theme: gradientNeumorphismTheme,
 };

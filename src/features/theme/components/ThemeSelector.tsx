@@ -21,8 +21,8 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       padding: theme.spacing.md,
     },
     sectionTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold,
+      fontSize: theme.typography.fontSizes.lg,
+      fontWeight: theme.typography.fontWeights.semibold,
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
     },
@@ -38,9 +38,9 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       width: 100,
       height: 100,
       margin: theme.spacing.xs,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       overflow: 'hidden',
-      borderWidth: 2,
+      borderWidth: theme.borders.widths.medium,
     },
     themeCardSelected: {
       borderColor: theme.colors.primary,
@@ -55,8 +55,8 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       alignItems: 'center',
     },
     themeLabel: {
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium,
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: theme.typography.fontWeights.medium,
       textAlign: 'center',
       padding: theme.spacing.xs,
       backgroundColor: theme.colors.background.secondary,
@@ -65,8 +65,8 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       paddingVertical: theme.spacing.sm,
       paddingHorizontal: theme.spacing.md,
       marginRight: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
-      borderWidth: 1,
+      borderRadius: theme.borders.radius.md,
+      borderWidth: theme.borders.widths.thin,
     },
     modeOptionSelected: {
       backgroundColor: theme.colors.primary,
@@ -77,8 +77,8 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       borderColor: theme.colors.border.light,
     },
     modeText: {
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium,
+      fontSize: theme.typography.fontSizes.md,
+      fontWeight: theme.typography.fontWeights.medium,
     },
     modeTextSelected: {
       color: theme.colors.text.inverted,

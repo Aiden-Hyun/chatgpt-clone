@@ -109,22 +109,22 @@ const createStyles = (theme: any, type: string, position: 'bottom' | 'top') => S
       : type === 'warning' 
       ? theme.colors.status.warning.primary 
       : theme.colors.primary,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borders.radius.lg,
     padding: theme.spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     ...theme.shadows.medium,
   },
   icon: {
-    fontSize: theme.fontSizes.lg,
+            fontSize: theme.typography.fontSizes.lg,
     marginRight: theme.spacing.sm,
   },
   message: {
     flex: 1,
     color: theme.colors.text.inverted,
-    fontSize: theme.fontSizes.md,
-    fontWeight: theme.fontWeights.medium as '500',
-    fontFamily: theme.fontFamily.primary,
+            fontSize: theme.typography.fontSizes.md,
+          fontWeight: theme.typography.fontWeights.medium as '500',
+          fontFamily: theme.typography.fontFamily.primary,
   },
   closeButton: {
     padding: theme.spacing.xs,
@@ -132,7 +132,7 @@ const createStyles = (theme: any, type: string, position: 'bottom' | 'top') => S
   },
   closeText: {
     color: theme.colors.text.inverted,
-    fontSize: theme.fontSizes.sm,
-    fontWeight: theme.fontWeights.bold as '700',
+            fontSize: theme.typography.fontSizes.sm,
+          fontWeight: theme.typography.fontWeights.bold as '700',
   },
 }); 

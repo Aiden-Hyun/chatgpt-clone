@@ -67,15 +67,15 @@ export default function DesignShowcaseScreen() {
       borderColor: theme.colors.border.light,
     },
     backButtonText: {
-      fontSize: theme.fontSizes.lg,
+      fontSize: theme.typography.fontSizes.lg,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as '500',
     },
     headerTitle: {
-      fontSize: theme.fontSizes.xl,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.xl,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as '600',
     },
     content: {
       flex: 1,
@@ -85,19 +85,19 @@ export default function DesignShowcaseScreen() {
       marginBottom: theme.spacing.xxxl,
     },
     sectionTitle: {
-      fontSize: theme.fontSizes.lg,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.lg,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as '600',
       marginBottom: theme.spacing.lg,
     },
     card: {
       backgroundColor: theme.colors.background.secondary,
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borders.radius.lg,
       padding: theme.spacing.xl,
       marginBottom: theme.spacing.lg,
       ...theme.shadows.light,
-      borderWidth: 1,
+      borderWidth: theme.borders.widths.thin,
       borderColor: theme.colors.border.light,
     },
     row: {
@@ -110,7 +110,7 @@ export default function DesignShowcaseScreen() {
     button: {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       marginRight: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
       alignItems: 'center' as const,
@@ -119,9 +119,9 @@ export default function DesignShowcaseScreen() {
       ...theme.shadows.light,
     },
     buttonText: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
+      fontWeight: theme.typography.fontWeights.medium as '500',
     },
     primaryButton: {
       backgroundColor: theme.colors.primary,

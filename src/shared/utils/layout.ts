@@ -1,24 +1,17 @@
-import { layout } from '../../features/theme/themes/tokens';
+import { useAppTheme } from '../../features/theme/theme';
 
 /**
- * Get consistent header height for any screen
- * Returns header height (56px) + platform-specific status bar height
+ * Hook to get header height using theme context
  */
-export const getHeaderHeight = (): number => {
-  //const statusBar = Platform.OS === 'ios' ? layout.statusBarHeight.ios : layout.statusBarHeight.android;
-  return layout.headerHeight + 34;
+export const useHeaderHeight = (): number => {
+  const theme = useAppTheme();
+  return theme.layout.buttonSizes.header + 34; // header button size + status bar
 };
 
 /**
- * Get consistent button size for different use cases
- * @param type - The type of button: 'header', 'action', or 'icon'
+ * Hook to get screen padding using theme context
  */
-export const getButtonSize = (type: 'header' | 'action' | 'icon'): number => {
-  return layout.buttonSizes[type];
+export const useScreenPadding = () => {
+  const theme = useAppTheme();
+  return theme.layout.dimensions.chat.inputPadding;
 };
-
-/**
- * Get consistent screen padding
- * Returns an object with horizontal and vertical padding values
- */
-export const getScreenPadding = () => layout.screenPadding;

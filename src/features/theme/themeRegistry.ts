@@ -3,6 +3,7 @@ import { ThemeWithMetadata } from './theme.types';
 import claymorphismTheme from './themes/claymorphism';
 import defaultTheme from './themes/default';
 import glassmorphismTheme from './themes/glassmorphism';
+import gradientNeumorphismTheme from './themes/gradient-neumorphism';
 
 /**
  * Registry of all available themes
@@ -86,6 +87,11 @@ themeRegistry.register({
 // Register the claymorphism theme
 themeRegistry.register({
   ...claymorphismTheme,
+});
+
+// Register the gradient neumorphism theme
+themeRegistry.register({
+  ...gradientNeumorphismTheme,
 });
 
 export default themeRegistry;

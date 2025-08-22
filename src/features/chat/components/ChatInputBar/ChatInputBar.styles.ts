@@ -56,7 +56,7 @@ export const createChatInputStyles = (theme: AppTheme) => {
       fontSize: 17, // iOS Messages font size
       lineHeight: 22, // iOS Messages line height
       color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
       backgroundColor: 'transparent', // Transparent background
       borderWidth: 0, // No border
       borderRadius: 0, // No border radius

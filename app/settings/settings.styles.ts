@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { AppTheme } from '../../src/features/theme/theme.types';
-import { getButtonSize } from '../../src/shared/utils/layout';
+// import { getButtonSize } from '../../src/shared/utils/layout';
 
 export const createSettingsStyles = (theme: AppTheme) => {
   
@@ -21,10 +21,10 @@ export const createSettingsStyles = (theme: AppTheme) => {
     },
     backButton: {
       padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       // Use consistent button size for all platforms
-      minWidth: getButtonSize('action'),
-      minHeight: getButtonSize('action'),
+      minWidth: theme.layout.buttonSizes.action,
+      minHeight: theme.layout.buttonSizes.action,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -32,7 +32,7 @@ export const createSettingsStyles = (theme: AppTheme) => {
       marginBottom: 0, // Remove margin since Text component handles spacing
     },
     headerSpacer: {
-      width: getButtonSize('header'), // Use consistent button size for centering
+      width: theme.layout.buttonSizes.header, // Use consistent button size for centering
     },
     content: {
       flex: 1,

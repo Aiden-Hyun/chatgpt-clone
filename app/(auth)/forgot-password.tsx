@@ -5,7 +5,7 @@ import { useToast } from '@/features/alert';
 import { usePasswordReset } from '@/features/auth/hooks';
 import { useLanguageContext } from '@/features/language';
 import { useAppTheme } from '@/features/theme/theme';
-import { getButtonSize } from '@/shared/utils/layout';
+
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -82,15 +82,15 @@ export default function ForgotPasswordScreen() {
             style={{
               padding: theme.spacing.sm,
               marginRight: theme.spacing.md,
-              minWidth: getButtonSize('action'),
-              minHeight: getButtonSize('action'),
+              minWidth: theme.layout.buttonSizes.action,
+              minHeight: theme.layout.buttonSizes.action,
               justifyContent: 'center',
               alignItems: 'center',
             }}
           >
             <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
           </TouchableOpacity>
-          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: getButtonSize('header') }}>
+          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: theme.layout.buttonSizes.header }}>
             {t('auth.reset_password')}
           </Text>
         </View>

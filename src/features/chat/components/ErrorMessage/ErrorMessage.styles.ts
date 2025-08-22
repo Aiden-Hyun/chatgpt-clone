@@ -19,7 +19,7 @@ export const createErrorMessageStyles = (theme: AppTheme) => {
     
     errorText: {
       fontSize: 16,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as '500',
       color: theme.colors.status.error.primary,
       marginBottom: 4,
     },

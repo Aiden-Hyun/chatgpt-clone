@@ -4,9 +4,6 @@ import { useThemeContext } from './context/ThemeContext';
 import { AppTheme } from './theme.types';
 import themeRegistry from './themeRegistry';
 
-// Re-export design tokens for convenience
-export { borderRadius, fontFamily, fontSizes, fontWeights, letterSpacing, spacing } from './themes/tokens';
-
 // Re-export theme types
 export * from './theme.types';
 

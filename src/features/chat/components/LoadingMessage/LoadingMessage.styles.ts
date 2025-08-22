@@ -8,12 +8,12 @@ export const createLoadingMessageStyles = (theme: AppTheme) => {
       paddingHorizontal: theme.spacing.lg, // Increased horizontal padding to match AI responses
     },
     loadingText: {
-      fontSize: theme.fontSizes.md, // Smaller, less prominent font
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md, // Smaller, less prominent font
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.secondary, // More subtle color
-      fontWeight: theme.fontWeights.regular as '400',
+      fontWeight: theme.typography.fontWeights.regular as '400',
       marginBottom: theme.spacing.md,
-      lineHeight: theme.fontSizes.md * 1.4, // Proper line height for iOS
+      lineHeight: theme.typography.fontSizes.md * 1.4, // Proper line height for iOS
       textAlign: 'left' as const,
     },
     dotsContainer: {

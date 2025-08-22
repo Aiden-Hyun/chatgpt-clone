@@ -1,25 +1,6 @@
 // Design tokens that remain consistent across all themes
 
-export const fontSizes = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 20,
-  xxl: 24,
-};
-
-export const fontWeights = {
-  regular: '400',
-  medium: '500',
-  semibold: '600',
-  bold: '700',
-} as const;
-
-export const fontFamily = {
-  primary: 'System', // Uses San Francisco on iOS and Roboto on Android
-};
-
+// Global spacing tokens (consistent across all themes)
 export const spacing = {
   xxs: 2,
   xs: 4,
@@ -31,23 +12,8 @@ export const spacing = {
   xxxl: 32,
 };
 
-export const borderRadius = {
-  xs: 2,      // Very slight rounding for Sharp Corners design
-  sm: 2,      // Very slight rounding for Sharp Corners design
-  md: 2,      // Very slight rounding for Sharp Corners design
-  lg: 4,      // Slightly more rounding for larger elements
-  xl: 4,      // Slightly more rounding for larger elements
-  round: 9999, // For circular elements (avatars, etc.)
-};
-
-export const letterSpacing = {
-  tight: 0,
-  normal: 0.2,
-  wide: 0.5,
-};
-
-// Layout constants for consistent spacing and sizing across the app
-export const layout = {
+// Platform-specific constants (keep in tokens.ts)
+export const platformConstants = {
   // Standard header height (56px + status bar)
   headerHeight: 30,
   
@@ -55,13 +21,6 @@ export const layout = {
   statusBarHeight: {
     ios: 44,
     android: 24,
-  },
-  
-  // Standard button sizes for different use cases
-  buttonSizes: {
-    header: 44,    // For header buttons (menu, back, etc.)
-    action: 48,    // For action buttons (submit, save, etc.)
-    icon: 32,      // For icon-only buttons (interactions, etc.)
   },
   
   // Standard screen padding

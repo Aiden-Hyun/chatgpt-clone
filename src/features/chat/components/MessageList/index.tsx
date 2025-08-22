@@ -4,9 +4,9 @@ import { FlashList, FlashListRef } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
 import {
-    AUTOSCROLL_THRESHOLD_PX,
-    CURSOR_BLINK_DURATION_MS,
-    TYPING_ANIMATION_SPEED,
+  AUTOSCROLL_THRESHOLD_PX,
+  CURSOR_BLINK_DURATION_MS,
+  TYPING_ANIMATION_SPEED,
 } from '../../constants';
 import { ChatMessage } from '../../types';
 import { generateMessageId } from '../../utils/messageIdGenerator';
@@ -95,17 +95,17 @@ export const MessageList: React.FC<MessageListProps> = ({
       paddingHorizontal: theme.spacing.xl,
     },
     welcomeText: {
-      fontSize: theme.fontSizes.xl,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.xl,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.secondary,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as '500',
       textAlign: 'center',
-      lineHeight: theme.fontSizes.xl * 1.4,
+      lineHeight: theme.typography.fontSizes.xl * 1.4,
     },
     cursor: {
-      fontSize: theme.fontSizes.xl,
+      fontSize: theme.typography.fontSizes.xl,
       color: theme.colors.text.secondary,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as '500',
     },
   }), [theme]); // Close useMemo with theme dependency
 

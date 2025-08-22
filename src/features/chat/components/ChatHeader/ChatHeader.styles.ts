@@ -1,5 +1,4 @@
 import { Platform, StyleSheet } from "react-native";
-import { getButtonSize, getHeaderHeight } from "../../../../shared/utils/layout";
 import { AppTheme } from "../../../theme/theme.types";
 
 /**
@@ -10,7 +9,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     header: {
       padding: theme.spacing.lg,
-      paddingTop: getHeaderHeight(), // Use utility instead of hardcoded value
+      paddingTop: theme.layout.buttonSizes.header + 34, // header button size + status bar
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
@@ -19,9 +18,9 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       ...theme.shadows.light,
     },
     backButton: {
-      minWidth: getButtonSize('header'),
-      minHeight: getButtonSize('header'),
-      borderRadius: getButtonSize('header') / 2,
+      minWidth: theme.layout.buttonSizes.header,
+      minHeight: theme.layout.buttonSizes.header,
+      borderRadius: theme.layout.buttonSizes.header / 2,
       backgroundColor: "transparent", // Transparent background for cleaner look
       justifyContent: "center",
       alignItems: "center",
@@ -30,9 +29,9 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       padding: 0, // Override Button's default padding
     },
     backButtonText: {
-      fontSize: theme.fontSizes.xl,
+      fontSize: theme.typography.fontSizes.xl,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as "600",
+      fontWeight: theme.typography.fontWeights.semibold as "600",
       textAlign: "center",
       lineHeight: 24,
     },
@@ -41,15 +40,15 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       alignItems: "center",
     },
     title: {
-      fontSize: theme.fontSizes.lg,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.lg,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.semibold as "600",
+      fontWeight: theme.typography.fontWeights.semibold as "600",
     },
     menuButton: {
-      minWidth: getButtonSize('header'),
-      minHeight: getButtonSize('header'),
-      borderRadius: getButtonSize('header') / 2,
+      minWidth: theme.layout.buttonSizes.header,
+      minHeight: theme.layout.buttonSizes.header,
+      borderRadius: theme.layout.buttonSizes.header / 2,
       backgroundColor: "transparent", // Transparent background for cleaner look
       justifyContent: "center",
       alignItems: "center",
@@ -57,9 +56,9 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       padding: 0, // Override Button's default padding
     },
     menuButtonText: {
-      fontSize: theme.fontSizes.xl,
+      fontSize: theme.typography.fontSizes.xl,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as "500",
+      fontWeight: theme.typography.fontWeights.medium as "500",
       textAlign: "center",
       lineHeight: 24,
     },
@@ -69,15 +68,15 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       paddingVertical: theme.spacing.xs,
       paddingHorizontal: theme.spacing.sm, // Reduced padding for more compact look
       backgroundColor: "transparent", // Transparent background
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borders.radius.lg,
       borderWidth: 0, // Borderless model selector
       // Removed shadow for cleaner look
     },
     modelSelectorText: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as "500",
+      fontWeight: theme.typography.fontWeights.medium as "500",
       marginRight: theme.spacing.xs,
     },
     modelMenuOverlay: {
@@ -91,7 +90,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     modelMenuContainer: {
       backgroundColor: theme.colors.background.primary,
 
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       padding: theme.spacing.sm,
       marginTop: Platform.OS === "ios" ? 100 : 80,
       minWidth: 320, // Increased width to accommodate capability icons
@@ -113,7 +112,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     modelMenuItem: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
       marginVertical: 2,
       flexDirection: "row",
       justifyContent: "space-between",
@@ -136,19 +135,19 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       flex: 1,
     },
     modelMenuText: {
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as "500",
-      fontFamily: theme.fontFamily.primary,
+      fontWeight: theme.typography.fontWeights.medium as "500",
+      fontFamily: theme.typography.fontFamily.primary,
     },
     selectedModelMenuText: {
       color: theme.colors.status.info.primary,
-      fontWeight: theme.fontWeights.semibold as "600",
+      fontWeight: theme.typography.fontWeights.semibold as "600",
     },
     modelDescription: {
       fontSize: 11,
       color: theme.colors.text.secondary + "80",
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
       marginTop: 10,
       fontStyle: "italic",
     },
@@ -171,7 +170,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     },
     quickActionsContainer: {
       backgroundColor: theme.colors.background.primary,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       padding: theme.spacing.sm,
       marginTop: Platform.OS === "ios" ? 100 : 60,
       marginRight: 16,
@@ -186,17 +185,17 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
     quickActionsMenuItem: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
-      borderRadius: theme.borderRadius.sm,
+      borderRadius: theme.borders.radius.sm,
       marginVertical: 2,
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
     },
     quickActionsMenuText: {
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.primary,
-      fontWeight: theme.fontWeights.medium as "500",
-      fontFamily: theme.fontFamily.primary,
+      fontWeight: theme.typography.fontWeights.medium as "500",
+      fontFamily: theme.typography.fontFamily.primary,
     },
   });
 };

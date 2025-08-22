@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { getButtonSize } from '../../../../shared/utils/layout';
+// import { getButtonSize } from '../../../../shared/utils/layout';
 import { AppTheme } from '../../../theme/theme.types';
 
 export const createAssistantMessageBarStyles = (theme: AppTheme) => {
@@ -16,19 +16,19 @@ export const createAssistantMessageBarStyles = (theme: AppTheme) => {
       marginBottom: theme.spacing.sm,
     },
     iconButton: {
-      width: getButtonSize('icon'),
-      height: getButtonSize('icon'),
+      width: theme.layout.buttonSizes.icon,
+      height: theme.layout.buttonSizes.icon,
       paddingVertical: 0,
       paddingHorizontal: 0,
-      minHeight: getButtonSize('icon'),
+      minHeight: theme.layout.buttonSizes.icon,
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: theme.spacing.md,
-      borderRadius: getButtonSize('icon') / 2,
+      borderRadius: theme.layout.buttonSizes.icon / 2,
       backgroundColor: 'transparent',
     },
     iconText: {
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.secondary,
     },
     scrollIndicator: {
@@ -37,9 +37,9 @@ export const createAssistantMessageBarStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.sm,
     },
     scrollIcon: {
-      fontSize: theme.fontSizes.xl,
+      fontSize: theme.typography.fontSizes.xl,
       color: theme.colors.text.tertiary,
-      fontWeight: theme.fontWeights.regular as '400',
+      fontWeight: theme.typography.fontWeights.regular as '400',
     },
   });
 }; 

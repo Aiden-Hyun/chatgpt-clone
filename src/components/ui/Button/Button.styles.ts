@@ -10,7 +10,7 @@ export const createButtonStyles = (theme: AppTheme) => {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: theme.borders.radius.md,
   };
 
   // Size variations
@@ -44,11 +44,11 @@ export const createButtonStyles = (theme: AppTheme) => {
 
   // Font sizes for each button size
   const fontSizes = {
-    xs: theme.fontSizes.xs,
-    sm: theme.fontSizes.sm,
-    md: theme.fontSizes.md,
-    lg: theme.fontSizes.lg,
-    xl: theme.fontSizes.xl,
+    xs: theme.typography.fontSizes.xs,
+    sm: theme.typography.fontSizes.sm,
+    md: theme.typography.fontSizes.md,
+    lg: theme.typography.fontSizes.lg,
+    xl: theme.typography.fontSizes.xl,
   };
 
   // Status color mappings
@@ -128,7 +128,7 @@ export const createButtonStyles = (theme: AppTheme) => {
     
     const baseTextStyle = {
       fontSize,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as '600',
       textAlign: 'center' as const,
     };
     

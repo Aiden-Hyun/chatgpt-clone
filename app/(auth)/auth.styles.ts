@@ -22,8 +22,8 @@ export const createAuthStyles = (theme: AppTheme) => {
       paddingVertical: theme.spacing.xxl,
     },
     title: {
-      fontSize: theme.fontSizes.xxl,
-      fontWeight: theme.fontWeights.bold as '700',
+      fontSize: theme.typography.fontSizes.xxl,
+      fontWeight: theme.typography.fontWeights.bold as '700',
       marginBottom: theme.spacing.xxl,
       textAlign: 'center',
       color: theme.colors.text.primary,
@@ -33,14 +33,14 @@ export const createAuthStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.primary,
       paddingVertical: theme.spacing.lg,
       paddingHorizontal: theme.spacing.xl,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       marginBottom: theme.spacing.lg,
       ...theme.shadows.medium,
     },
     googleButtonText: {
       color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontSize: theme.typography.fontSizes.lg,
+      fontWeight: theme.typography.fontWeights.semibold as '600',
       textAlign: 'center',
     },
     divider: {
@@ -51,7 +51,7 @@ export const createAuthStyles = (theme: AppTheme) => {
     },
     dividerText: {
       color: theme.colors.text.tertiary,
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       marginHorizontal: theme.spacing.md,
     },
     button: {
@@ -59,14 +59,14 @@ export const createAuthStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.primary,
       paddingVertical: theme.spacing.lg,
       paddingHorizontal: theme.spacing.xl,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       marginBottom: theme.spacing.md,
       ...theme.shadows.medium,
     },
     buttonText: {
       color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.lg,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontSize: theme.typography.fontSizes.lg,
+      fontWeight: theme.typography.fontWeights.semibold as '600',
       textAlign: 'center',
     },
     buttonDisabled: {
@@ -78,12 +78,12 @@ export const createAuthStyles = (theme: AppTheme) => {
     },
     linkText: {
       color: theme.colors.primary,
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       textAlign: 'center',
     },
     errorText: {
       color: theme.colors.status.error.primary,
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.typography.fontSizes.sm,
       marginTop: -theme.spacing.sm,
       marginBottom: theme.spacing.sm,
     },
@@ -91,14 +91,14 @@ export const createAuthStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.status.warning.primary,
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borders.radius.md,
       marginTop: theme.spacing.md,
       ...theme.shadows.light,
     },
     retryButtonText: {
       color: theme.colors.text.inverted,
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontSize: theme.typography.fontSizes.md,
+      fontWeight: theme.typography.fontWeights.medium as '500',
       textAlign: 'center',
     },
   });

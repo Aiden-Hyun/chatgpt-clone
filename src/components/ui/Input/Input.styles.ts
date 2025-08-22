@@ -7,8 +7,8 @@ import { InputStatus, InputVariant } from './Input.types';
 export const createInputStyles = (theme: AppTheme) => {
   // Base styles for all inputs
   const baseInput = {
-    fontFamily: theme.fontFamily.primary,
-    fontSize: theme.fontSizes.md,
+    fontFamily: theme.typography.fontFamily.primary,
+    fontSize: theme.typography.fontSizes.md,
     color: theme.colors.text.primary,
   };
 
@@ -22,19 +22,19 @@ export const createInputStyles = (theme: AppTheme) => {
     sm: {
       paddingVertical: theme.spacing.xs,
       paddingHorizontal: theme.spacing.sm,
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.typography.fontSizes.sm,
       height: 36,
     },
     md: {
       paddingVertical: theme.spacing.sm,
       paddingHorizontal: theme.spacing.md,
-      fontSize: theme.fontSizes.md,
+      fontSize: theme.typography.fontSizes.md,
       height: 44,
     },
     lg: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
-      fontSize: theme.fontSizes.lg,
+      fontSize: theme.typography.fontSizes.lg,
       height: 52,
     },
   };
@@ -67,37 +67,37 @@ export const createInputStyles = (theme: AppTheme) => {
       case 'default':
         return {
           backgroundColor: 'transparent',
-          borderWidth: 1,
+          borderWidth: theme.borders.widths.thin,
           borderColor: colors.border,
-          borderRadius: theme.borderRadius.md,
+          borderRadius: theme.borders.radius.md,
         };
       case 'filled':
         return {
           backgroundColor: theme.colors.background.secondary,
-          borderWidth: 1,
+          borderWidth: theme.borders.widths.thin,
           borderColor: status !== 'default' ? colors.border : theme.colors.background.secondary,
-          borderRadius: theme.borderRadius.md,
+          borderRadius: theme.borders.radius.md,
         };
       case 'outlined':
         return {
           backgroundColor: 'transparent',
-          borderWidth: 2,
+          borderWidth: theme.borders.widths.medium,
           borderColor: colors.border,
-          borderRadius: theme.borderRadius.md,
+          borderRadius: theme.borders.radius.md,
         };
       case 'underlined':
         return {
           backgroundColor: 'transparent',
-          borderBottomWidth: 1,
+          borderBottomWidth: theme.borders.widths.thin,
           borderBottomColor: colors.border,
           borderRadius: 0,
         };
       case 'search':
         return {
           backgroundColor: theme.colors.background.secondary,
-          borderWidth: 1,
+          borderWidth: theme.borders.widths.thin,
           borderColor: status !== 'default' ? colors.border : theme.colors.background.secondary,
-          borderRadius: theme.borderRadius.round,
+          borderRadius: theme.borders.radius.round,
           paddingLeft: theme.spacing.xl,
         };
       case 'chat':
@@ -130,18 +130,18 @@ export const createInputStyles = (theme: AppTheme) => {
     
     // Additional styles
     label: {
-      fontSize: theme.fontSizes.sm,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: theme.typography.fontWeights.medium as '500',
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
     },
     helperText: {
-      fontSize: theme.fontSizes.xs,
+      fontSize: theme.typography.fontSizes.xs,
       color: theme.colors.text.secondary,
       marginTop: theme.spacing.xs,
     },
     errorText: {
-      fontSize: theme.fontSizes.xs,
+      fontSize: theme.typography.fontSizes.xs,
       color: theme.colors.status.error.primary,
       marginTop: theme.spacing.xs,
     },

@@ -75,22 +75,22 @@ export const createListItemStyles = (theme: AppTheme) => {
     
     // Text styles
     title: {
-      fontSize: theme.fontSizes.md,
-      fontWeight: theme.fontWeights.medium as '500',
+      fontSize: theme.typography.fontSizes.md,
+      fontWeight: theme.typography.fontWeights.medium as '500',
       color: theme.colors.text.primary,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     subtitle: {
-      fontSize: theme.fontSizes.sm,
+      fontSize: theme.typography.fontSizes.sm,
       color: theme.colors.text.secondary,
       marginTop: 2,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     description: {
-      fontSize: theme.fontSizes.xs,
+      fontSize: theme.typography.fontSizes.xs,
       color: theme.colors.text.tertiary,
       marginTop: 2,
-      fontFamily: theme.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
     },
     
     // Element containers
@@ -107,7 +107,7 @@ export const createListItemStyles = (theme: AppTheme) => {
     },
     selectedTitle: {
       color: theme.colors.primary,
-      fontWeight: theme.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as '600',
     },
     disabled: {
       opacity: 0.6,

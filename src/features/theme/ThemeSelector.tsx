@@ -50,7 +50,7 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
               },
               themeMode === themeOption.value && {
                 color: theme.colors.text.inverted,
-                fontWeight: theme.fontWeights.semibold as '600',
+                fontWeight: theme.typography.fontWeights.semibold as '600',
               },
             ]}
           >

@@ -24,11 +24,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   };
 
   const messageStyle = {
-    fontSize: theme.fontSizes.md,
+    fontSize: theme.typography.fontSizes.md,
     color: theme.colors.text.secondary,
     marginTop: theme.spacing.lg,
     textAlign: 'center' as const,
-    fontFamily: theme.fontFamily.primary,
+    fontFamily: theme.typography.fontFamily.primary,
   };
 
   return (

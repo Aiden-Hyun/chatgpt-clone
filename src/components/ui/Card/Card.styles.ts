@@ -8,7 +8,7 @@ export const createCardStyles = (theme: AppTheme) => {
   // Base styles for all cards
   const baseCard = {
     backgroundColor: theme.colors.background.secondary,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borders.radius.lg,
     overflow: 'hidden' as const,
   };
 

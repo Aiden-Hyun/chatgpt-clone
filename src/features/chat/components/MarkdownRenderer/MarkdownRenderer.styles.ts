@@ -5,8 +5,8 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
   return StyleSheet.create({
     // Body Text
     body: {
-      fontSize: theme.fontSizes.md,
-      fontFamily: theme.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
       lineHeight: 20,
       marginBottom: theme.spacing.md,
@@ -260,14 +260,14 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     image: {
       width: '100%',
       height: 480,
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borders.radius.lg,
       backgroundColor: theme.colors.background.tertiary,
     },
     image_container: {
       position: 'relative',
       width: '100%',
       alignSelf: 'stretch',
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borders.radius.lg,
       overflow: 'hidden',
       marginVertical: theme.spacing.md,
       backgroundColor: theme.colors.background.tertiary,
@@ -279,7 +279,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       backgroundColor: 'rgba(26, 32, 44, 0.6)',
       paddingHorizontal: 10,
       paddingVertical: 8,
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borders.radius.lg,
     },
   });
 };
