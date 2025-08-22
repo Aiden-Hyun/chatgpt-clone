@@ -39,7 +39,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
         <ListItem
           variant="settings"
           title={t('settings.language')}
-          leftElement={<Ionicons name="language-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="language-outline" size={24} color={theme.colors.status.info.primary} />}
           rightElement={<LanguageSelector style={styles.languageSelector} />}
         />
         
@@ -47,7 +47,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
           variant="settings"
           title={t('settings.theme')}
           subtitle={getThemeDisplayText()}
-          leftElement={<Ionicons name="color-palette-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="color-palette-outline" size={24} color={theme.colors.status.success.primary} />}
           rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={onNavigateToThemes}
         />
@@ -57,7 +57,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
           variant="settings"
           title="Test Toast"
           subtitle="Tap to test"
-          leftElement={<Ionicons name="notifications-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="notifications-outline" size={24} color={theme.colors.status.warning.primary} />}
           onPress={() => {
             showSuccess('Test toast message!', 5000);
           }}
@@ -66,7 +66,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
         <ListItem
           variant="settings"
           title={t('settings.notifications')}
-          leftElement={<Ionicons name="notifications-circle-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="notifications-circle-outline" size={24} color={theme.colors.status.info.primary} />}
           rightElement={
             <Switch
               value={notificationsEnabled}

@@ -33,21 +33,21 @@ export const DataPrivacySection: React.FC = () => {
         <ListItem
           variant="settings"
           title={t('settings.export_data')}
-          leftElement={<Ionicons name="cloud-download-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="cloud-download-outline" size={24} color={theme.colors.status.success.primary} />}
           rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handleExportData}
         />
         <ListItem
           variant="settings"
           title={t('settings.clear_conversations')}
-          leftElement={<Ionicons name="trash-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="trash-outline" size={24} color={theme.colors.status.error.primary} />}
           rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handleClearConversations}
         />
         <ListItem
           variant="settings"
           title={t('settings.privacy_policy')}
-          leftElement={<Ionicons name="shield-checkmark-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="shield-checkmark-outline" size={24} color={theme.colors.status.info.primary} />}
           rightElement={<Ionicons name="chevron-forward-outline" size={20} color={theme.colors.text.tertiary} />}
           onPress={handlePrivacyPolicy}
         />

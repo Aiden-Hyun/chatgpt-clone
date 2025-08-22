@@ -104,7 +104,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
             variant="settings"
             title={t('settings.name')}
             subtitle={userName || t('settings.not_set')}
-            leftElement={<Ionicons name="person-circle-outline" size={24} color={theme.colors.text.primary} />}
+            leftElement={<Ionicons name="person-circle-outline" size={24} color={theme.colors.status.info.primary} />}
             rightElement={
               <Button 
                 variant="ghost"
@@ -120,7 +120,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
           variant="settings"
           title={t('settings.email')}
           subtitle={email || t('settings.not_set')}
-          leftElement={<Ionicons name="mail-open-outline" size={24} color={theme.colors.text.primary} />}
+          leftElement={<Ionicons name="mail-open-outline" size={24} color={theme.colors.status.success.primary} />}
         />
       </Card>
     </View>
