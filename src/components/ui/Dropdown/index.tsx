@@ -32,6 +32,8 @@ export interface DropdownProps {
   onChange?: (item: DropdownItem) => void;
   /** Optional: render the trigger yourself */
   renderTrigger?: (args: { open: () => void; selected?: DropdownItem }) => React.ReactNode;
+  /** Optional: render each item yourself */
+  renderCustomItem?: (args: { item: DropdownItem; isSelected: boolean }) => React.ReactNode;
   /** Width of dropdown list (defaults to trigger width) */
   dropdownWidth?: number;
   /** Max height before list scrolls */
@@ -60,6 +62,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   value,
   onChange,
   renderTrigger,
+  renderCustomItem,
   dropdownWidth,
   maxHeight = 280,
   placement = "auto",
@@ -242,6 +245,24 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const renderItem = useCallback(
     ({ item }: { item: DropdownItem }) => {
       const isSelected = selected?.value === item.value;
+      
+      // Use custom renderItem if provided
+      if (renderCustomItem) {
+        const customElement = renderCustomItem({ item, isSelected });
+        if (customElement) {
+          return (
+            <Pressable
+              onPress={() => handleSelect(item)}
+              disabled={item.disabled}
+              accessibilityRole="menuitem"
+            >
+              {customElement}
+            </Pressable>
+          );
+        }
+      }
+      
+      // Default rendering
       return (
         <Pressable
           onPress={() => handleSelect(item)}
@@ -268,7 +289,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         </Pressable>
       );
     },
-    [handleSelect, itemStyle, itemTextStyle, selected?.value, selectedItemStyle, selectedItemTextStyle]
+    [handleSelect, itemStyle, itemTextStyle, selected?.value, selectedItemStyle, selectedItemTextStyle, renderCustomItem]
   );
 
   const keyExtractor = useCallback((it: DropdownItem) => String(it.value), []);
