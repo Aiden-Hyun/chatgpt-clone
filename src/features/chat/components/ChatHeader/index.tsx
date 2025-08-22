@@ -3,7 +3,7 @@ import { Button, Dropdown } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../../components';
 import { useLanguageContext } from '../../../language';
 import { useAppTheme } from '../../../theme/theme';
@@ -40,7 +40,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   showModelSelection = true,
 }) => {
   const navigation = useNavigation();
-  const [isQuickActionsVisible, setIsQuickActionsVisible] = useState(false);
+
   const theme = useAppTheme();
   const { t } = useLanguageContext();
   const styles = React.useMemo(() => createChatHeaderStyles(theme), [theme]);
@@ -53,17 +53,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const selectedModelLabel = selectedModelInfo?.label ?? selectedModel ?? DEFAULT_MODEL;
 
   const handleSettings = () => {
-    setIsQuickActionsVisible(false);
     onSettings();
   };
 
   const handleDesignShowcase = () => {
-    setIsQuickActionsVisible(false);
     router.push('/design-showcase');
   };
 
   const handleLogout = () => {
-    setIsQuickActionsVisible(false);
     onLogout();
   };
 
@@ -173,59 +170,68 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <View style={styles.titleContainer} />
       )}
       
-      {/* More Options Button (Right) */}
-      <Button
-        variant="ghost"
-        size="sm"
-        leftIcon={<Ionicons name="ellipsis-vertical-outline" size={24} color={theme.colors.text.primary} />}
-        onPress={() => {
-          console.log('🔍 [ChatHeader] More options button pressed');
-          setIsQuickActionsVisible(!isQuickActionsVisible);
-        }}
-        containerStyle={styles.menuButton}
-      />
+
 
 
 
       {/* Quick Actions Menu Dropdown */}
-      <Modal
-        visible={isQuickActionsVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsQuickActionsVisible(false)}
-      >
-        <TouchableOpacity 
-          style={styles.quickActionsOverlay} 
-          onPress={() => setIsQuickActionsVisible(false)} 
-          activeOpacity={1}
-        >
-          <View style={styles.quickActionsContainer}>
-            <Button
-              variant="ghost"
-              size="sm"
-              label={t('menu.settings')}
-              onPress={handleSettings}
-              containerStyle={styles.quickActionsMenuItem}
-            />
-
-            <Button
-              variant="ghost"
-              size="sm"
-              label={t('menu.design_showcase')}
-              onPress={handleDesignShowcase}
-              containerStyle={styles.quickActionsMenuItem}
-            />
-
-            <Button
-              variant="ghost"
-              size="sm"
-              label={t('menu.logout')}
-              onPress={handleLogout}
-              containerStyle={styles.quickActionsMenuItem}
-            />
+      <Dropdown
+        items={[
+          {
+            value: 'settings',
+            label: t('menu.settings'),
+            disabled: false,
+          },
+          {
+            value: 'design_showcase',
+            label: t('menu.design_showcase'),
+            disabled: false,
+          },
+          {
+            value: 'logout',
+            label: t('menu.logout'),
+            disabled: false,
+          },
+        ]}
+        onChange={(item: DropdownItem) => {
+          switch (item.value) {
+            case 'settings':
+              handleSettings();
+              break;
+            case 'design_showcase':
+              handleDesignShowcase();
+              break;
+            case 'logout':
+              handleLogout();
+              break;
+          }
+        }}
+        renderTrigger={({ open }) => (
+          <Button
+            variant="ghost"
+            size="sm"
+            leftIcon={<Ionicons name="ellipsis-vertical-outline" size={24} color={theme.colors.text.primary} />}
+            onPress={() => {
+              console.log('🔍 [ChatHeader] More options button pressed');
+              open();
+            }}
+            containerStyle={styles.menuButton}
+          />
+        )}
+        renderCustomItem={({ item, isSelected }) => (
+          <View style={styles.quickActionsMenuItem}>
+            <Text style={styles.quickActionsMenuText}>
+              {item.label}
+            </Text>
           </View>
-        </TouchableOpacity>
-      </Modal>
+        )}
+        menuStyle={styles.quickActionsContainer}
+        itemStyle={styles.quickActionsMenuItem}
+        itemTextStyle={styles.quickActionsMenuText}
+        maxHeight={200}
+        dropdownWidth={180}
+        placement="bottom"
+      />
     </View>
   );
 };
