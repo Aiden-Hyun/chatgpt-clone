@@ -33,6 +33,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     },
     section: {
       marginTop: theme.spacing.xl,
+      marginBottom: theme.spacing.xl,
     },
     sectionTitle: {
       marginBottom: theme.spacing.md,
@@ -42,16 +43,32 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     currentThemeCard: {
       flexDirection: 'row',
       alignItems: 'center',
+      //padding: theme.spacing.lg,
+      justifyContent: 'flex-start',
     },
     currentThemePreview: {
-      width: 80,
-      height: 80,
-      borderRadius: theme.borders.radius.md,
-      backgroundColor: theme.colors.background.primary,
-      marginRight: theme.spacing.md,
+      width: 200,
+      height: 100,
+      //marginRight: theme.spacing.md,
+      //marginLeft: theme.spacing.md,
       justifyContent: 'center',
       alignItems: 'center',
-      overflow: 'hidden',
+      flexShrink: 0, // Prevent preview from shrinking
+    },
+    // Current theme color palette styles
+    currentColorPalette: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      gap: theme.spacing.sm,
+    },
+    currentColorSwatch: {
+      width: 36,
+      height: 56,
+      borderRadius: theme.borders.radius.xs,
+      borderWidth: 1,
+      borderColor: theme.borders.colors.light,
     },
     previewContent: {
       alignItems: 'center',
@@ -71,12 +88,18 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     },
     currentThemeInfo: {
       flex: 1,
+      minWidth: 0, // Allow text to wrap
+      width: '100%',
     },
     currentThemeName: {
-      marginBottom: theme.spacing.xs,
+      marginBottom: theme.spacing.md,
     },
     currentThemeDescription: {
-      marginBottom: theme.spacing.sm,
+      marginBottom: theme.spacing.lg,
+      flex: 1,
+      flexShrink: 1,
+      minWidth: 0, // Allow text to wrap
+      width: '50%',
     },
     currentModeBadge: {
       alignSelf: 'flex-start',
@@ -84,6 +107,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       paddingHorizontal: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
       borderRadius: theme.borders.radius.round,
+      marginTop: theme.spacing.sm,
     },
     currentModeText: {
       color: theme.colors.text.inverted,
@@ -91,29 +115,46 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     
     // Theme Selection Section
     themeGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
+      flexDirection: 'column',
       gap: theme.spacing.md,
     },
     themeCard: {
-      width: '48%',
+      width: '100%',
+      flexDirection: 'row',
       alignItems: 'center',
-      padding: theme.spacing.md,
+      padding: theme.spacing.lg,
       borderRadius: theme.borders.radius.lg,
       borderWidth: theme.borders.widths.thin,
       borderColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.secondary,
-      minHeight: 120,
+      minHeight: 80, // Reduced height since we're using horizontal layout
     },
     themeCardSelected: {
       borderColor: theme.colors.primary,
+      borderWidth: theme.borders.widths.medium,
       backgroundColor: theme.colors.interactive.hover.primary,
     },
     themePreview: {
-      marginBottom: theme.spacing.sm,
+      marginRight: theme.spacing.md,
       height: 60,
       justifyContent: 'center',
       alignItems: 'center',
+      width: 120, // Fixed width for color palette
+    },
+    // Color palette styles
+    colorPalette: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      paddingHorizontal: theme.spacing.sm,
+    },
+    colorSwatch: {
+      width: 20,
+      height: 24,
+      borderRadius: theme.borders.radius.xs,
+      borderWidth: 1,
+      borderColor: theme.borders.colors.light,
     },
     previewElements: {
       alignItems: 'center',
@@ -125,7 +166,8 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       borderRadius: theme.borders.radius.sm,
     },
     themeName: {
-      textAlign: 'center',
+      flex: 1,
+      textAlign: 'left',
     },
     selectedIndicator: {
       position: 'absolute',

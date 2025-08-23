@@ -5,7 +5,7 @@ import React from 'react';
 import { SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import { useAppTheme, useThemeMode, useThemeStyle } from '../../../src/features/theme';
-import { ThemeMode } from '../../../src/features/theme/theme.types';
+import { ThemeMode, ThemeWithMetadata } from '../../../src/features/theme/theme.types';
 import { createThemeSettingsStyles } from './themes.styles';
 
 export default function ThemeSettingsScreen() {
@@ -30,6 +30,18 @@ export default function ThemeSettingsScreen() {
     return availableThemes.find(t => t.id === themeStyle);
   };
 
+  // Function to extract the 5 main colors from a theme
+  const getThemeColors = (themeOption: ThemeWithMetadata) => {
+    const lightTheme = themeOption.theme.light.colors;
+    return {
+      primary: lightTheme.primary,
+      secondary: lightTheme.secondary,
+      background: lightTheme.background.primary,
+      text: lightTheme.text.primary,
+      accent: lightTheme.status.info.primary, // Using info color as accent
+    };
+  };
+
   const currentTheme = getCurrentTheme();
 
   return (
@@ -52,14 +64,34 @@ export default function ThemeSettingsScreen() {
           <Text variant="h3" weight="semibold" style={styles.sectionTitle}>Current Theme</Text>
           <Card variant="default" padding="lg" containerStyle={styles.currentThemeCard}>
             <View style={styles.currentThemePreview}>
-              <View style={styles.previewContent}>
-                <View style={styles.previewButton} />
-                <View style={styles.previewText} />
-              </View>
+              {currentTheme && (
+                <>
+                  {/* Color palette display for current theme */}
+                  <View style={styles.currentColorPalette}>
+                    {(() => {
+                      const colors = getThemeColors(currentTheme);
+                      return (
+                        <>
+                          <View style={[styles.currentColorSwatch, { backgroundColor: colors.primary }]} />
+                          <View style={[styles.currentColorSwatch, { backgroundColor: colors.secondary }]} />
+                          <View style={[styles.currentColorSwatch, { backgroundColor: colors.background }]} />
+                          <View style={[styles.currentColorSwatch, { backgroundColor: colors.text }]} />
+                          <View style={[styles.currentColorSwatch, { backgroundColor: colors.accent }]} />
+                        </>
+                      );
+                    })()}
+                  </View>
+                </>
+              )}
             </View>
             <View style={styles.currentThemeInfo}>
               <Text variant="title" weight="semibold" style={styles.currentThemeName}>{currentTheme?.name || 'Default'}</Text>
-              <Text variant="body" style={styles.currentThemeDescription}>
+              <Text 
+                variant="body" 
+                style={styles.currentThemeDescription}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
                 {currentTheme?.description || 'Clean and modern design'}
               </Text>
               <View style={styles.currentModeBadge}>
@@ -77,6 +109,8 @@ export default function ThemeSettingsScreen() {
           <View style={styles.themeGrid}>
             {availableThemes.map((themeOption) => {
               const isSelected = themeOption.id === themeStyle;
+              const colors = getThemeColors(themeOption);
+              
               return (
                 <TouchableOpacity
                   key={themeOption.id}
@@ -88,9 +122,13 @@ export default function ThemeSettingsScreen() {
                   activeOpacity={0.7}
                 >
                   <View style={styles.themePreview}>
-                    <View style={styles.previewElements}>
-                      <View style={[styles.previewButton, { backgroundColor: themeOption.theme.light.colors.primary }]} />
-                      <View style={[styles.previewCard, { backgroundColor: themeOption.theme.light.colors.background.secondary }]} />
+                    {/* Color palette display */}
+                    <View style={styles.colorPalette}>
+                      <View style={[styles.colorSwatch, { backgroundColor: colors.primary }]} />
+                      <View style={[styles.colorSwatch, { backgroundColor: colors.secondary }]} />
+                      <View style={[styles.colorSwatch, { backgroundColor: colors.background }]} />
+                      <View style={[styles.colorSwatch, { backgroundColor: colors.text }]} />
+                      <View style={[styles.colorSwatch, { backgroundColor: colors.accent }]} />
                     </View>
                   </View>
                   <Text variant="body" weight="medium" style={styles.themeName}>{themeOption.name}</Text>
