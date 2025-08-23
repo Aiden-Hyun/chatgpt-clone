@@ -48,6 +48,40 @@ const defaultTypography = {
 
 // Default border values (moved from tokens.ts to theme management)
 const defaultBorders = {
+  colors: {
+    light: '#E2E8F0',      // Very light gray
+    medium: '#CBD5E0',     // Light gray
+    dark: '#A0AEC0',       // Medium gray
+  },
+  radius: {
+    xs: 2,
+    sm: 4,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    round: 50,
+  },
+  widths: {
+    none: 0,
+    thin: 1,
+    light: 1,
+    medium: 2,
+    heavy: 3,
+  },
+  styles: {
+    solid: 'solid',
+    dashed: 'dashed',
+    dotted: 'dotted',
+  },
+};
+
+// Dark border values
+const darkBorders = {
+  colors: {
+    light: '#4A5568',      // Medium gray
+    medium: '#718096',     // Light gray
+    dark: '#A0AEC0',       // Medium light gray
+  },
   radius: {
     xs: 2,
     sm: 4,
@@ -139,44 +173,7 @@ const defaultLayout = {
   spacing: spacing,
 };
 
-// Default shadow values
-const defaultShadows = {
-  light: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  medium: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  heavy: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  button: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  card: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-};
+
 
 // Default animation values
 const defaultAnimations = {
@@ -276,7 +273,7 @@ export const defaultTheme = {
     colors: darkColors,
     spacing: defaultSpacing,
     typography: defaultTypography,
-    borders: defaultBorders,
+    borders: darkBorders,
     layout: defaultLayout,
     shadows: darkShadows,
     animations: defaultAnimations,

@@ -74,7 +74,7 @@ export default function ForgotPasswordScreen() {
           paddingHorizontal: theme.spacing.md,
           paddingVertical: theme.spacing.md,
           borderBottomWidth: 1,
-          borderBottomColor: theme.colors.border.light,
+          borderBottomColor: theme.borders.colors.light,
           backgroundColor: theme.colors.background.primary,
         }}>
           <TouchableOpacity 

@@ -20,7 +20,6 @@ export const lightColors = {
     primary: '#F9FAFB',    // Off-white for primary glass panels
     secondary: '#F3F4F6',  // Light gray for secondary glass panels
     tertiary: '#E5E7EB',   // Medium light gray for tertiary glass panels
-    overlay: '#D1D5DB',    // Medium gray for overlay glass panels
   },
   
   // Claymorphism specific colors
@@ -54,12 +53,7 @@ export const lightColors = {
     inverted: '#FFFFFF',   // White
   },
   
-  // Border colors - Subtle borders to define clay edges
-  border: {
-    light: '#E5E7EB',      // Light gray
-    medium: '#D1D5DB',     // Medium light gray
-    dark: '#9CA3AF',       // Medium gray
-  },
+
   
   // Status colors - Soft pastels for status indicators
   status: {
@@ -165,12 +159,7 @@ export const lightColors = {
     assistantText: '#111827', // Almost black text
   },
 
-  // Shadow colors - Soft shadows for clay effect
-  shadow: {
-    light: 'rgba(0, 0, 0, 0.07)',
-    medium: 'rgba(0, 0, 0, 0.13)',
-    dark: 'rgba(0, 0, 0, 0.2)',
-  },
+
 
   // Code syntax highlighting colors - Pastel-inspired
   syntax: {
@@ -211,5 +200,19 @@ export const lightShadows = {
     shadowOpacity: 0.2,
     shadowRadius: 16,
     elevation: 8,
+  },
+  button: {
+    shadowColor: 'rgba(0, 0, 0, 0.15)',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  card: {
+    shadowColor: 'rgba(0, 0, 0, 0.1)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
   },
 };

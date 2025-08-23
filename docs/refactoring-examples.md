@@ -131,7 +131,7 @@ inputLabel: {
 input: {
   backgroundColor: theme.colors.background.secondary,
   borderWidth: 1,
-  borderColor: theme.colors.border.light,
+        borderColor: theme.borders.colors.light,
   borderRadius: 8,
   paddingHorizontal: 16,
   paddingVertical: 12,
@@ -204,7 +204,7 @@ card: {
 cardHeader: {
   padding: 16,
   borderBottomWidth: 1,
-  borderBottomColor: theme.colors.border.light,
+  borderBottomColor: theme.borders.colors.light,
 },
 cardTitle: {
   fontSize: 18,
@@ -221,7 +221,7 @@ cardText: {
 cardFooter: {
   padding: 16,
   borderTopWidth: 1,
-  borderTopColor: theme.colors.border.light,
+        borderTopColor: theme.borders.colors.light,
   flexDirection: 'row',
   justifyContent: 'flex-end',
 },
@@ -291,7 +291,7 @@ listItem: {
   paddingVertical: 12,
   paddingHorizontal: 16,
   borderBottomWidth: 1,
-  borderBottomColor: theme.colors.border.light,
+  borderBottomColor: theme.borders.colors.light,
 },
 selectedListItem: {
   backgroundColor: theme.colors.background.secondary,

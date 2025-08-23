@@ -16,7 +16,7 @@ export const createSettingsStyles = (theme: AppTheme) => {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {

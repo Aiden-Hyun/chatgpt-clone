@@ -42,7 +42,7 @@ export const createInputStyles = (theme: AppTheme) => {
   // Status color mappings
   const statusColors = {
     default: {
-      border: theme.colors.border.medium,
+      border: theme.borders.colors.medium,
       background: 'transparent',
     },
     success: {

@@ -19,7 +19,7 @@ export const createChatInputStyles = (theme: AppTheme) => {
       height: theme.layout.dimensions.chat.sendButtonSize * 3, // Use theme-based height
       backgroundColor: theme.colors.background.primary,
       borderTopWidth: theme.borders.widths.thin / 2, // Use theme border width
-      borderTopColor: theme.colors.border.light,
+      borderTopColor: theme.borders.colors.light,
       paddingTop: theme.spacing.md,
       paddingBottom: theme.spacing.lg, // Consistent padding for all platforms
     },

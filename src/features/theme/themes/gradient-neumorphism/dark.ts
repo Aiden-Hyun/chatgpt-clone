@@ -33,7 +33,6 @@ export const darkColors = {
     primary: 'rgba(45, 55, 72, 0.5)',
     secondary: 'rgba(45, 55, 72, 0.4)',
     tertiary: 'rgba(45, 55, 72, 0.3)',
-    overlay: 'rgba(45, 55, 72, 0.25)',
   },
   
   // Claymorphism specific colors - For compatibility
@@ -64,12 +63,7 @@ export const darkColors = {
     inverted: '#2d3748',        // Dark for inverted text
   },
   
-  // Border colors - Subtle borders for dark gradient elements
-  border: {
-    light: 'rgba(255, 255, 255, 0.2)',      // Light border
-    medium: 'rgba(255, 255, 255, 0.15)',    // Medium border
-    dark: 'rgba(255, 255, 255, 0.1)',       // Dark border
-  },
+
   
   // Status colors - Dark gradient-compatible
   status: {
@@ -175,12 +169,7 @@ export const darkColors = {
     assistantText: '#f7fafc',      // Light text for dark gradients
   },
 
-  // Shadow colors - Enhanced for dark gradient backgrounds
-  shadow: {
-    light: 'rgba(255, 255, 255, 0.2)',  // Light shadow for highlights
-    medium: 'rgba(0, 0, 0, 0.6)',       // Medium shadow for depth
-    dark: 'rgba(0, 0, 0, 0.8)',         // Dark shadow for depth
-  },
+
 
   // Code syntax highlighting colors - Dark theme
   syntax: {
@@ -221,6 +210,20 @@ export const darkShadows = {
     shadowOpacity: 1,
     shadowRadius: 75,
     elevation: 25,
+  },
+  button: {
+    shadowColor: '#1a202c',
+    shadowOffset: { width: 12, height: 12 },
+    shadowOpacity: 1,
+    shadowRadius: 36,
+    elevation: 12,
+  },
+  card: {
+    shadowColor: '#1a202c',
+    shadowOffset: { width: 18, height: 18 },
+    shadowOpacity: 1,
+    shadowRadius: 54,
+    elevation: 18,
   },
   // Classic neumorphic dual shadow system for dark theme
   neumorphic: {

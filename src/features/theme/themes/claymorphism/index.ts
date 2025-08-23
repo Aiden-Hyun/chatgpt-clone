@@ -2,9 +2,9 @@
 // Exports both light and dark variants along with theme metadata
 
 import { BaseTheme } from '../../theme.types';
+import { spacing } from '../tokens';
 import { darkColors, darkShadows } from './dark';
 import { lightColors, lightShadows } from './light';
-import { spacing } from '../tokens';
 
 // Theme metadata
 export const claymorphismThemeMetadata = {
@@ -48,6 +48,40 @@ const claymorphismTypography = {
 
 // Claymorphism border values (extra rounded for the clay effect)
 const claymorphismBorders = {
+  colors: {
+    light: '#E5E7EB',      // Light gray
+    medium: '#D1D5DB',     // Medium light gray
+    dark: '#9CA3AF',       // Medium gray
+  },
+  radius: {
+    xs: 8,    // Significantly more rounded
+    sm: 12,   // Significantly more rounded
+    md: 16,   // Significantly more rounded
+    lg: 24,   // Significantly more rounded
+    xl: 32,   // Significantly more rounded
+    round: 9999, // For circular elements (avatars, etc.)
+  },
+  widths: {
+    none: 0,
+    thin: 1,
+    light: 1,
+    medium: 2,
+    heavy: 3,
+  },
+  styles: {
+    solid: 'solid',
+    dashed: 'dashed',
+    dotted: 'dotted',
+  },
+};
+
+// Dark mode borders for claymorphism
+const claymorphismDarkBorders = {
+  colors: {
+    light: '#374151',      // Medium gray
+    medium: '#4B5563',     // Medium light gray
+    dark: '#6B7280',       // Light gray
+  },
   radius: {
     xs: 8,    // Significantly more rounded
     sm: 12,   // Significantly more rounded
@@ -276,7 +310,7 @@ export const claymorphismTheme = {
     colors: darkColors,
     spacing: claymorphismSpacing,
     typography: claymorphismTypography,
-    borders: claymorphismBorders,
+    borders: claymorphismDarkBorders,
     layout: claymorphismLayout,
     shadows: darkShadows,
     animations: claymorphismAnimations,

@@ -119,7 +119,7 @@ export const createListItemStyles = (theme: AppTheme) => {
     // Border
     border: {
       borderBottomWidth: theme.borders.widths.thin,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
     },
   };
 };

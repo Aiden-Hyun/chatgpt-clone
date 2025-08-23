@@ -8,11 +8,11 @@ type DeepPartial<T> = {
 
 // Required color structure (ALL color properties that themes can customize)
 export interface RequiredColors {
-  // Primary colors - Can vary dramatically between themes
+  // Core colors
   primary: string;
   secondary: string;
   
-  // Background colors - Can vary between themes
+  // Background colors
   background: {
     primary: string;
     secondary: string;
@@ -20,34 +20,7 @@ export interface RequiredColors {
     avatar: string;
   };
   
-  // Glass panel colors - For glassmorphism theme compatibility
-  glass: {
-    primary: string;
-    secondary: string;
-    tertiary: string;
-    overlay: string;
-  };
-  
-  // Claymorphism specific colors - For claymorphism theme compatibility
-  claymorphism: {
-    background: string;
-    shadow: string;
-    highlight: string;
-    palette: {
-      red: string;
-      orange: string;
-      yellow: string;
-      green: string;
-      teal: string;
-      cyan: string;
-      blue: string;
-      indigo: string;
-      purple: string;
-      pink: string;
-    };
-  };
-  
-  // Text colors - Can vary between themes
+  // Text colors
   text: {
     primary: string;
     secondary: string;
@@ -56,100 +29,32 @@ export interface RequiredColors {
     inverted: string;
   };
   
-  // Border colors - Can vary between themes
-  border: {
-    light: string;
-    medium: string;
-    dark: string;
-  };
-  
-  // Status colors - Can vary between themes
+  // Status colors
   status: {
-    success: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      background: string;
-      border: string;
-    };
-    error: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      background: string;
-      border: string;
-    };
-    warning: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      background: string;
-      border: string;
-    };
-    info: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      background: string;
-      border: string;
-    };
-    neutral: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      background: string;
-      border: string;
-    };
+    success: ColorVariant;
+    error: ColorVariant;
+    warning: ColorVariant;
+    info: ColorVariant;
+    neutral: ColorVariant;
   };
   
-  // Interactive States - Can vary between themes
+  // Interactive states
   interactive: {
-    hover: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-    };
-    pressed: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-    };
-    focus: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-    };
-    disabled: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-    };
+    hover: ColorShade;
+    pressed: ColorShade;
+    focus: ColorShade;
+    disabled: ColorShade;
   };
   
-  // Feedback Colors - Can vary between themes
+  // Feedback colors
   feedback: {
-    loading: {
-      primary: string;
-      secondary: string;
-      pulse: string;
-    };
-    highlight: {
-      primary: string;
-      secondary: string;
-      tertiary: string;
-    };
-    selection: {
-      primary: string;
-      secondary: string;
-    };
-    overlay: {
-      light: string;
-      medium: string;
-      dark: string;
-    };
+    loading: { primary: string; secondary: string; pulse: string; };
+    highlight: ColorShade;
+    selection: { primary: string; secondary: string; };
+    overlay: { light: string; medium: string; dark: string; };
   };
   
-  // Button colors - Can vary between themes
+  // Component colors
   button: {
     primary: string;
     secondary: string;
@@ -159,7 +64,6 @@ export interface RequiredColors {
     disabledText: string;
   };
   
-  // Message bubbles - Can vary between themes
   message: {
     user: string;
     assistant: string;
@@ -167,14 +71,6 @@ export interface RequiredColors {
     assistantText: string;
   };
 
-  // Shadow colors - Can vary between themes
-  shadow: {
-    light: string;
-    medium: string;
-    dark: string;
-  };
-
-  // Code syntax highlighting colors - Can vary between themes
   syntax: {
     keyword: string;
     string: string;
@@ -189,7 +85,44 @@ export interface RequiredColors {
     tag: string;
     attribute: string;
   };
+  
+  // Theme-specific colors (generic structure)
+  glass: ColorShade;
+  claymorphism: {
+    background: string;
+    shadow: string;
+    highlight: string;
+    palette: ColorPalette;
+  };
 }
+
+// Reusable color type definitions
+type ColorVariant = {
+  primary: string;
+  secondary: string;
+  tertiary: string;
+  background: string;
+  border: string;
+};
+
+type ColorShade = {
+  primary: string;
+  secondary: string;
+  tertiary: string;
+};
+
+type ColorPalette = {
+  red: string;
+  orange: string;
+  yellow: string;
+  green: string;
+  teal: string;
+  cyan: string;
+  blue: string;
+  indigo: string;
+  purple: string;
+  pink: string;
+};
 
 // Required spacing structure (moved from tokens.ts to theme management)
 export interface RequiredSpacing {
@@ -295,6 +228,13 @@ export interface RequiredBreakpoints {
 
 // Required border structure (combines border radius and border properties)
 export interface RequiredBorders {
+  // Border colors
+  colors: {
+    light: string;
+    medium: string;
+    dark: string;
+  };
+  
   // Border radius properties (moved from tokens.ts)
   radius: {
     xs: number;

@@ -14,8 +14,7 @@ export const createChatHeaderStyles = (theme: AppTheme) => {
       justifyContent: "space-between",
       alignItems: "center",
       backgroundColor: theme.colors.background.primary,
-      borderBottomWidth: 0, // Borderless header
-      ...theme.shadows.light,
+      borderBottomWidth: 0.001, // Borderless header
     },
     backButton: {
       minWidth: theme.layout.buttonSizes.header,

@@ -44,7 +44,7 @@ export const createCardStyles = (theme: AppTheme) => {
       case 'outlined':
         return {
           borderWidth: theme.borders.widths.thin,
-          borderColor: theme.colors.border.light,
+          borderColor: theme.borders.colors.light,
           // No shadows for outlined cards
         };
       case 'flat':
@@ -76,7 +76,7 @@ export const createCardStyles = (theme: AppTheme) => {
     },
     header: {
       borderBottomWidth: theme.borders.widths.thin,
-      borderBottomColor: theme.colors.border.light,
+              borderBottomColor: theme.borders.colors.light,
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
     },
@@ -85,7 +85,7 @@ export const createCardStyles = (theme: AppTheme) => {
     },
     footer: {
       borderTopWidth: theme.borders.widths.thin,
-      borderTopColor: theme.colors.border.light,
+              borderTopColor: theme.borders.colors.light,
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
     },

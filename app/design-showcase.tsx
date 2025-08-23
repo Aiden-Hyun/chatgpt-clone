@@ -59,7 +59,7 @@ export default function DesignShowcaseScreen() {
       alignItems: 'center' as const,
       padding: theme.spacing.lg,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+              borderBottomColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {
@@ -72,7 +72,7 @@ export default function DesignShowcaseScreen() {
       marginRight: theme.spacing.md,
       ...theme.shadows.light,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
     },
     backButtonText: {
       fontSize: theme.typography.fontSizes.lg,
@@ -106,7 +106,7 @@ export default function DesignShowcaseScreen() {
       marginBottom: theme.spacing.lg,
       ...theme.shadows.light,
       borderWidth: theme.borders.widths.thin,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
     },
     row: {
       flexDirection: 'row' as const,
@@ -140,7 +140,7 @@ export default function DesignShowcaseScreen() {
     secondaryButton: {
       backgroundColor: theme.colors.background.primary,
       borderWidth: 1,
-      borderColor: theme.colors.border.medium,
+      borderColor: theme.borders.colors.medium,
     },
     secondaryButtonText: {
       color: theme.colors.text.primary,
@@ -210,7 +210,7 @@ export default function DesignShowcaseScreen() {
     },
     input: {
       borderWidth: 1,
-      borderColor: theme.colors.border.medium,
+      borderColor: theme.borders.colors.medium,
       borderRadius: theme.borders.radius.md,
       padding: theme.spacing.md,
       fontSize: theme.typography.fontSizes.md,
@@ -226,7 +226,7 @@ export default function DesignShowcaseScreen() {
     chatInput: {
       flex: 1,
       borderWidth: 1,
-      borderColor: theme.colors.border.medium,
+      borderColor: theme.borders.colors.medium,
       borderRadius: theme.borders.radius.md,
       padding: theme.spacing.md,
       fontSize: theme.typography.fontSizes.md,
@@ -400,7 +400,7 @@ export default function DesignShowcaseScreen() {
               <Switch
                 value={switchValue}
                 onValueChange={setSwitchValue}
-                trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
+                trackColor={{ false: theme.borders.colors.light, true: theme.colors.primary }}
                 thumbColor={switchValue ? theme.colors.button.text : theme.colors.text.secondary}
               />
             </View>

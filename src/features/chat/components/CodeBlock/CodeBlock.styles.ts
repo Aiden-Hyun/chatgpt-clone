@@ -16,7 +16,7 @@ export const createCodeBlockStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.syntax?.background || theme.colors.background.tertiary,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       marginVertical: theme.spacing.lg,
       overflow: 'hidden',
     },
@@ -30,7 +30,7 @@ export const createCodeBlockStyles = (theme: AppTheme) => {
       paddingVertical: theme.spacing.sm,
       backgroundColor: theme.colors.background.secondary,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
       
     },
     
@@ -73,7 +73,7 @@ export const createCodeBlockStyles = (theme: AppTheme) => {
     lineNumbers: {
       paddingRight: theme.spacing.md,
       borderRightWidth: 1,
-      borderRightColor: theme.colors.border.light,
+      borderRightColor: theme.borders.colors.light,
       marginRight: theme.spacing.md,
     },
     

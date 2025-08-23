@@ -20,7 +20,6 @@ export const darkColors = {
     primary: 'rgba(30, 41, 59, 0.5)',       // Slate-800 with 50% transparency for primary glass panels
     secondary: 'rgba(30, 41, 59, 0.4)',     // Slate-800 with 40% transparency for secondary glass panels
     tertiary: 'rgba(30, 41, 59, 0.3)',      // Slate-800 with 30% transparency for tertiary glass panels
-    overlay: 'rgba(30, 41, 59, 0.25)',      // Slate-800 with 25% transparency for overlay glass panels
   },
   
   // Claymorphism specific colors - For compatibility with claymorphism theme
@@ -54,12 +53,7 @@ export const darkColors = {
     inverted: 'rgba(15, 23, 42, 1)',        // Slate-900, fully opaque
   },
   
-  // Border colors - More pronounced borders to define glass edges
-  border: {
-    light: 'rgba(148, 163, 184, 0.5)',      // Slate-400 with 50% transparency for light borders
-    medium: 'rgba(100, 116, 139, 0.4)',     // Slate-500 with 40% transparency for medium borders
-    dark: 'rgba(71, 85, 105, 0.3)',         // Slate-600 with 30% transparency for dark borders
-  },
+
   
   // Status colors - More vibrant with higher transparency
   status: {
@@ -165,12 +159,7 @@ export const darkColors = {
     assistantText: 'rgba(248, 250, 252, 1)', // Light text, fully opaque for readability
   },
 
-  // Shadow colors - Enhanced shadows for depth
-  shadow: {
-    light: 'rgba(139, 92, 246, 0.2)',
-    medium: 'rgba(139, 92, 246, 0.3)',
-    dark: 'rgba(139, 92, 246, 0.4)',
-  },
+
 
   // Code syntax highlighting colors - More vibrant VS Code Dark+ inspired
   syntax: {
@@ -211,5 +200,19 @@ export const darkShadows = {
     shadowOpacity: 0.5,
     shadowRadius: 24,
     elevation: 12,
+  },
+  button: {
+    shadowColor: 'rgba(139, 92, 246, 0.4)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  card: {
+    shadowColor: 'rgba(139, 92, 246, 0.3)',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
   },
 };

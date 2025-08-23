@@ -225,7 +225,7 @@ export const MyComponent = () => {
 // Based on theme
 <View style={[
   styles.container,
-  { borderColor: isError ? theme.colors.status.error.primary : theme.colors.border.light }
+  { borderColor: isError ? theme.colors.status.error.primary : theme.borders.colors.light }
 ]} />
 ```
 

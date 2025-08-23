@@ -127,7 +127,7 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
       padding: theme.spacing.lg,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       marginVertical: theme.spacing.lg,
       lineHeight: 22,
       overflow: 'hidden',
@@ -140,7 +140,7 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
       padding: theme.spacing.lg,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       marginVertical: theme.spacing.lg,
       lineHeight: 22,
       overflow: 'hidden',
@@ -156,7 +156,7 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
       paddingVertical: 2,
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
     },
     
     // Lists - Modern Styling
@@ -196,7 +196,7 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
     // Tables - Clean Modern Look
     table: {
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       borderRadius: 8,
       marginVertical: theme.spacing.lg,
       overflow: 'hidden',
@@ -213,14 +213,14 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
       fontSize: 14,
       color: theme.colors.text.secondary,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
     },
     td: {
       padding: theme.spacing.md,
       fontSize: 14,
       color: theme.colors.text.primary,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
     },
     
     // Links - Styled Like ChatGPT
@@ -232,7 +232,7 @@ export const createAssistantMessageStyles = (theme: AppTheme) => {
     
     // Horizontal Rules
     hr: {
-      backgroundColor: theme.colors.border.light,
+      backgroundColor: theme.borders.colors.light,
       height: 1,
       marginVertical: theme.spacing.xl,
       borderWidth: 0,

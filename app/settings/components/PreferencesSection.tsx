@@ -71,7 +71,7 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
-              trackColor={{ false: theme.colors.border.light, true: theme.colors.primary }}
+              trackColor={{ false: theme.borders.colors.light, true: theme.colors.primary }}
               thumbColor={notificationsEnabled ? theme.colors.button.text : theme.colors.text.secondary}
             />
           }

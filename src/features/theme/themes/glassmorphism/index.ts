@@ -2,9 +2,9 @@
 // Exports both light and dark variants along with theme metadata
 
 import { BaseTheme } from '../../theme.types';
+import { spacing } from '../tokens';
 import { darkColors, darkShadows } from './dark';
 import { lightColors, lightShadows } from './light';
-import { spacing } from '../tokens';
 
 // Theme metadata
 export const glassmorphismThemeMetadata = {
@@ -48,6 +48,40 @@ const glassmorphismTypography = {
 
 // Glassmorphism border values (subtle and refined)
 const glassmorphismBorders = {
+  colors: {
+    light: 'rgba(255, 255, 255, 0.6)',      // White with 60% transparency for light borders
+    medium: 'rgba(226, 232, 240, 0.4)',     // Light gray with 40% transparency for medium borders
+    dark: 'rgba(203, 213, 225, 0.3)',       // Medium gray with 30% transparency for dark borders
+  },
+  radius: {
+    xs: 4,
+    sm: 6,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    round: 50,
+  },
+  widths: {
+    none: 0,
+    thin: 1,
+    light: 1,
+    medium: 2,
+    heavy: 3,
+  },
+  styles: {
+    solid: 'solid',
+    dashed: 'dashed',
+    dotted: 'dotted',
+  },
+};
+
+// Dark mode borders for glassmorphism
+const glassmorphismDarkBorders = {
+  colors: {
+    light: 'rgba(148, 163, 184, 0.5)',      // Slate-400 with 50% transparency for light borders
+    medium: 'rgba(100, 116, 139, 0.4)',     // Slate-500 with 40% transparency for medium borders
+    dark: 'rgba(71, 85, 105, 0.3)',         // Slate-600 with 30% transparency for dark borders
+  },
   radius: {
     xs: 4,
     sm: 6,
@@ -276,7 +310,7 @@ export const glassmorphismTheme = {
     colors: darkColors,
     spacing: glassmorphismSpacing,
     typography: glassmorphismTypography,
-    borders: glassmorphismBorders,
+    borders: glassmorphismDarkBorders,
     layout: glassmorphismLayout,
     shadows: darkShadows,
     animations: glassmorphismAnimations,

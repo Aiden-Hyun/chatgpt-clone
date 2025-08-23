@@ -12,7 +12,7 @@ export const createDropdownStyles = (theme: AppTheme) => {
       paddingVertical: theme.spacing.md,
       borderRadius: theme.borders.radius.md,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.primary,
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
@@ -41,10 +41,9 @@ export const createDropdownStyles = (theme: AppTheme) => {
       padding: theme.spacing.sm,
       ...theme.shadows.medium,
       overflow: 'hidden',
-      //zIndex: theme.zIndex.dropdown,
-      zIndex: 1000 ,
+      zIndex: theme.zIndex.dropdown,
       //borderWidth: theme.borders.widths.thin,
-      //borderColor: theme.colors.border.light,
+      //borderColor: theme.borders.colors.light,
     },
     list: {
       // maxHeight is controlled by the maxHeight prop passed to FlatList

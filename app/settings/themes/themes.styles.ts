@@ -14,7 +14,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {
@@ -101,7 +101,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       padding: theme.spacing.md,
       borderRadius: theme.borders.radius.lg,
       borderWidth: theme.borders.widths.thin,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.secondary,
       minHeight: 120,
     },

@@ -11,7 +11,7 @@ export const createSidebarStyles = (theme: AppTheme) => {
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
     },
     chatHistory: {
       flex: 1,
@@ -21,7 +21,7 @@ export const createSidebarStyles = (theme: AppTheme) => {
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
       borderTopWidth: 1,
-      borderTopColor: theme.colors.border.light,
+      borderTopColor: theme.borders.colors.light,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',

@@ -100,7 +100,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       padding: theme.spacing.lg,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       marginVertical: theme.spacing.lg,
       lineHeight: 22,
       overflow: 'hidden',
@@ -115,7 +115,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       padding: theme.spacing.lg,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       marginVertical: theme.spacing.lg,
       lineHeight: 22,
       overflow: 'hidden',
@@ -133,7 +133,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       paddingVertical: 2,
       borderRadius: 6,
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
     },
     
     // Lists - Modern Styling
@@ -173,7 +173,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     // Tables - Clean Modern Look with Responsive Support
     table: {
       borderWidth: 1,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
       borderRadius: 8,
       marginVertical: theme.spacing.lg,
       overflow: 'hidden',
@@ -191,7 +191,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     tr: {
       flexDirection: 'row',
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border.light,
+      borderBottomColor: theme.borders.colors.light,
       maxHeight: 130,
     },
     scrollContainer: {
@@ -208,7 +208,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       fontSize: 14,
       color: theme.colors.text.secondary,
       borderRightWidth: 1,
-      borderRightColor: theme.colors.border.light,
+      borderRightColor: theme.borders.colors.light,
       minWidth: 0,
       // On mobile, prevent text wrapping and ensure minimum width
       ...(isMobile && {
@@ -224,7 +224,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       fontSize: 14,
       color: theme.colors.text.primary,
       borderRightWidth: 1,
-      borderRightColor: theme.colors.border.light,
+      borderRightColor: theme.borders.colors.light,
       maxWidth: 250,
       minWidth: 0,
       // On mobile, prevent text wrapping and ensure minimum width
@@ -250,7 +250,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
     
     // Horizontal Rules
     hr: {
-      backgroundColor: theme.colors.border.light,
+      backgroundColor: theme.borders.colors.light,
       height: 1,
       marginVertical: theme.spacing.xl,
       borderWidth: 0,

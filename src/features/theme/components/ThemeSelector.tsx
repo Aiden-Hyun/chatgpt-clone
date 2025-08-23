@@ -15,6 +15,18 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
   const { themeMode, setThemeMode } = useThemeMode();
   const { themeStyle, setThemeStyle, availableThemes } = useThemeStyle();
 
+  // Function to extract the 5 main colors from a theme
+  const getThemeColors = (themeOption: ThemeWithMetadata) => {
+    const lightTheme = themeOption.theme.light.colors;
+    return {
+      primary: lightTheme.primary,
+      secondary: lightTheme.secondary,
+      background: lightTheme.background.primary,
+      text: lightTheme.text.primary,
+      accent: lightTheme.status.info.primary, // Using info color as accent
+    };
+  };
+
   // Create styles using current theme
   const styles = StyleSheet.create({
     container: {
@@ -22,7 +34,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
     },
     sectionTitle: {
       fontSize: theme.typography.fontSizes.lg,
-      fontWeight: theme.typography.fontWeights.semibold,
+      fontWeight: theme.typography.fontWeights.semibold as '600',
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.sm,
     },
@@ -35,18 +47,20 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       marginHorizontal: -theme.spacing.xs,
     },
     themeCard: {
-      width: 100,
-      height: 100,
+      width: 140,
+      height: 160,
       margin: theme.spacing.xs,
       borderRadius: theme.borders.radius.md,
       overflow: 'hidden',
       borderWidth: theme.borders.widths.medium,
+      backgroundColor: theme.colors.background.secondary,
     },
     themeCardSelected: {
       borderColor: theme.colors.primary,
+      borderWidth: theme.borders.widths.medium,
     },
     themeCardUnselected: {
-      borderColor: 'transparent',
+      borderColor: theme.borders.colors.light,
     },
     themePreview: {
       flex: 1,
@@ -54,12 +68,27 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    colorPalette: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      marginBottom: theme.spacing.xs,
+    },
+    colorSwatch: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: theme.borders.colors.light,
+    },
     themeLabel: {
       fontSize: theme.typography.fontSizes.sm,
-      fontWeight: theme.typography.fontWeights.medium,
+      fontWeight: theme.typography.fontWeights.medium as '500',
       textAlign: 'center',
       padding: theme.spacing.xs,
-      backgroundColor: theme.colors.background.secondary,
+      backgroundColor: theme.colors.background.tertiary,
+      color: theme.colors.text.primary,
     },
     modeOption: {
       paddingVertical: theme.spacing.sm,
@@ -74,11 +103,11 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
     },
     modeOptionUnselected: {
       backgroundColor: theme.colors.background.secondary,
-      borderColor: theme.colors.border.light,
+      borderColor: theme.borders.colors.light,
     },
     modeText: {
       fontSize: theme.typography.fontSizes.md,
-      fontWeight: theme.typography.fontWeights.medium,
+      fontWeight: theme.typography.fontWeights.medium as '500',
     },
     modeTextSelected: {
       color: theme.colors.text.inverted,
@@ -95,9 +124,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
         <View style={styles.optionsContainer}>
           {availableThemes.map((themeOption: ThemeWithMetadata) => {
             const isSelected = themeOption.id === themeStyle;
-            const previewStyle = {
-              backgroundColor: themeOption.theme.light.colors.background.primary,
-            };
+            const colors = getThemeColors(themeOption);
             
             return (
               <TouchableOpacity
@@ -108,14 +135,34 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
                 ]}
                 onPress={() => setThemeStyle(themeOption.id)}
               >
-                <View style={[styles.themePreview, previewStyle]}>
-                  {/* Theme preview content could go here */}
+                <View style={styles.themePreview}>
+                  {/* Color palette display */}
+                  <View style={styles.colorPalette}>
+                    <View style={[styles.colorSwatch, { backgroundColor: colors.primary }]} />
+                    <View style={[styles.colorSwatch, { backgroundColor: colors.secondary }]} />
+                    <View style={[styles.colorSwatch, { backgroundColor: colors.background }]} />
+                    <View style={[styles.colorSwatch, { backgroundColor: colors.text }]} />
+                    <View style={[styles.colorSwatch, { backgroundColor: colors.accent }]} />
+                  </View>
+                  
+                  {/* Theme preview element */}
                   <View
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: themeOption.theme.light.colors.primary,
+                      width: 50,
+                      height: 30,
+                      borderRadius: theme.borders.radius.sm,
+                      backgroundColor: colors.primary,
+                      marginBottom: theme.spacing.xs,
+                    }}
+                  />
+                  
+                  {/* Small accent element */}
+                  <View
+                    style={{
+                      width: 30,
+                      height: 20,
+                      borderRadius: theme.borders.radius.xs,
+                      backgroundColor: colors.accent,
                     }}
                   />
                 </View>

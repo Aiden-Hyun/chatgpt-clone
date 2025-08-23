@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  Dimensions,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Modal,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useAppTheme } from '../../theme/theme';
 
@@ -141,7 +141,7 @@ const createStyles = (theme: any, type: string) => StyleSheet.create({
   cancelButton: {
     backgroundColor: theme.colors.background.secondary,
     borderWidth: 1,
-    borderColor: theme.colors.border.medium,
+            borderColor: theme.borders.colors.medium,
   },
   confirmButtonText: {
     color: theme.colors.text.inverted,

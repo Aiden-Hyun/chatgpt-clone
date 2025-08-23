@@ -33,7 +33,6 @@ export const lightColors = {
     primary: 'rgba(255, 255, 255, 0.35)',
     secondary: 'rgba(255, 255, 255, 0.25)',
     tertiary: 'rgba(255, 255, 255, 0.2)',
-    overlay: 'rgba(255, 255, 255, 0.15)',
   },
   
   // Claymorphism specific colors - For compatibility
@@ -64,12 +63,7 @@ export const lightColors = {
     inverted: '#ffffff',        // White for inverted text
   },
   
-  // Border colors - Subtle borders for gradient elements
-  border: {
-    light: 'rgba(255, 255, 255, 0.6)',      // Light border
-    medium: 'rgba(226, 232, 240, 0.4)',     // Medium border
-    dark: 'rgba(203, 213, 225, 0.3)',       // Dark border
-  },
+
   
   // Status colors - Gradient-compatible
   status: {
@@ -175,12 +169,7 @@ export const lightColors = {
     assistantText: '#2d3748',      // Dark text for light gradients
   },
 
-  // Shadow colors - Enhanced for gradient backgrounds
-  shadow: {
-    light: 'rgba(255, 255, 255, 0.8)',  // Light shadow for highlights
-    medium: 'rgba(90, 90, 90, 0.6)',    // Medium shadow for depth
-    dark: 'rgba(90, 90, 90, 0.8)',      // Dark shadow for depth
-  },
+
 
   // Code syntax highlighting colors - Enhanced
   syntax: {
@@ -221,6 +210,20 @@ export const lightShadows = {
     shadowOpacity: 1,
     shadowRadius: 75,
     elevation: 25,
+  },
+  button: {
+    shadowColor: '#bebebe',
+    shadowOffset: { width: 12, height: 12 },
+    shadowOpacity: 1,
+    shadowRadius: 36,
+    elevation: 12,
+  },
+  card: {
+    shadowColor: '#bebebe',
+    shadowOffset: { width: 18, height: 18 },
+    shadowOpacity: 1,
+    shadowRadius: 54,
+    elevation: 18,
   },
   // Classic neumorphic dual shadow system
   neumorphic: {

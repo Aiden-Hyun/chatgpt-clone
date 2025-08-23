@@ -3,11 +3,11 @@
 
 // Design tokens that are specific to the light variant of the default theme
 export const lightColors = {
-  // Primary colors - Minimal palette
+  // Core colors
   primary: '#2D3748',      // Dark gray-blue
   secondary: '#4A5568',    // Medium gray
   
-  // Background colors - Clean whites and grays
+  // Background colors
   background: {
     primary: '#FFFFFF',    // Pure white
     secondary: '#F7FAFC',  // Very light gray
@@ -15,37 +15,7 @@ export const lightColors = {
     avatar: '#E2E8F0',     // Subtle gray
   },
   
-  // Glass panel colors - For compatibility with glassmorphism theme
-  glass: {
-    primary: '#FFFFFF',    // White for primary glass panels
-    secondary: '#F7FAFC',  // Very light gray for secondary glass panels
-    tertiary: '#EDF2F7',   // Light gray for tertiary glass panels
-    overlay: '#E2E8F0',    // Subtle gray for overlay glass panels
-  },
-  
-  // Claymorphism specific colors - For compatibility with claymorphism theme
-  claymorphism: {
-    // Base colors for clay elements
-    background: '#FFFFFF',     // Default clay color (white)
-    shadow: 'rgba(0, 0, 0, 0.1)',  // Shadow color
-    highlight: 'rgba(255, 255, 255, 0.8)', // Highlight color
-    
-    // Neutral palette for clay elements
-    palette: {
-      red: '#FED7D7',      // Soft red
-      orange: '#FEEBC8',   // Soft orange
-      yellow: '#FEF5E7',   // Soft yellow
-      green: '#C6F6D5',    // Soft green
-      teal: '#B2F5EA',     // Soft teal
-      cyan: '#BEE3F8',     // Soft cyan
-      blue: '#BEE3F8',     // Soft blue
-      indigo: '#C6F6D5',   // Soft indigo
-      purple: '#E9D8FD',   // Soft purple
-      pink: '#FED7E2',     // Soft pink
-    },
-  },
-  
-  // Text colors - High contrast for readability
+  // Text colors
   text: {
     primary: '#1A202C',    // Almost black
     secondary: '#4A5568',  // Dark gray
@@ -54,14 +24,7 @@ export const lightColors = {
     inverted: '#FFFFFF',   // White
   },
   
-  // Border colors - Subtle and minimal
-  border: {
-    light: '#E2E8F0',      // Very light gray
-    medium: '#CBD5E0',     // Light gray
-    dark: '#A0AEC0',       // Medium gray
-  },
-  
-  // Status colors - Muted and professional
+  // Status colors
   status: {
     success: {
       primary: '#38A169',   // Muted green
@@ -100,7 +63,7 @@ export const lightColors = {
     },
   },
   
-  // Interactive States - Subtle feedback
+  // Interactive states
   interactive: {
     hover: {
       primary: 'rgba(45, 55, 72, 0.04)',
@@ -124,7 +87,7 @@ export const lightColors = {
     },
   },
   
-  // Feedback Colors - Minimal and clean
+  // Feedback colors
   feedback: {
     loading: {
       primary: '#A0AEC0',
@@ -147,7 +110,7 @@ export const lightColors = {
     },
   },
   
-  // Button colors - Clean and minimal
+  // Component colors
   button: {
     primary: '#2D3748',     // Dark gray-blue
     secondary: '#F7FAFC',   // Light gray
@@ -157,7 +120,6 @@ export const lightColors = {
     disabledText: '#A0AEC0', // Medium gray
   },
   
-  // Message bubbles - Clean and minimal
   message: {
     user: '#2D3748',        // Dark gray-blue
     assistant: '#FFFFFF',   // White
@@ -165,14 +127,6 @@ export const lightColors = {
     assistantText: '#1A202C', // Dark text
   },
 
-  // Shadow colors - Subtle shadows for depth
-  shadow: {
-    light: 'rgba(0, 0, 0, 0.05)',
-    medium: 'rgba(0, 0, 0, 0.1)',
-    dark: 'rgba(0, 0, 0, 0.15)',
-  },
-
-  // Code syntax highlighting colors - VS Code Light+ inspired
   syntax: {
     keyword: '#0000FF',      // Blue for keywords (const, let, function, etc.)
     string: '#A31515',       // Red for strings
@@ -186,6 +140,31 @@ export const lightColors = {
     builtin: '#0000FF',      // Blue for built-in functions
     tag: '#800000',          // Dark red for HTML tags
     attribute: '#FF0000',    // Red for attributes
+  },
+  
+  // Theme-specific colors (generic structure)
+  glass: {
+    primary: '#FFFFFF',    // White for primary glass panels
+    secondary: '#F7FAFC',  // Very light gray for secondary glass panels
+    tertiary: '#EDF2F7',   // Light gray for tertiary glass panels
+  },
+  
+  claymorphism: {
+    background: '#FFFFFF',     // Default clay color (white)
+    shadow: 'rgba(0, 0, 0, 0.1)',  // Shadow color
+    highlight: 'rgba(255, 255, 255, 0.8)', // Highlight color
+    palette: {
+      red: '#FED7D7',      // Soft red
+      orange: '#FEEBC8',   // Soft orange
+      yellow: '#FEF5E7',   // Soft yellow
+      green: '#C6F6D5',    // Soft green
+      teal: '#B2F5EA',     // Soft teal
+      cyan: '#BEE3F8',     // Soft cyan
+      blue: '#BEE3F8',     // Soft blue
+      indigo: '#C6F6D5',   // Soft indigo
+      purple: '#E9D8FD',   // Soft purple
+      pink: '#FED7E2',     // Soft pink
+    },
   },
 };
 
@@ -211,5 +190,19 @@ export const lightShadows = {
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+  button: {
+    shadowColor: 'rgba(26, 32, 44, 0.1)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  card: {
+    shadowColor: 'rgba(26, 32, 44, 0.08)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 4,
   },
 };

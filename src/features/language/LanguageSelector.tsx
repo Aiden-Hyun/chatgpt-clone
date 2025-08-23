@@ -128,7 +128,7 @@ const createLanguageSelectorStyles = (theme: any) => ({
     backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borders.radius.md,
     borderWidth: theme.borders.widths.thin,
-    borderColor: theme.colors.border.light,
+            borderColor: theme.borders.colors.light,
     minWidth: 100,
   },
   selectorText: {
