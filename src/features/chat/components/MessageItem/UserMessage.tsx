@@ -27,23 +27,14 @@ export const UserMessage: React.FC<UserMessageProps> = ({
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
-      <View style={{ alignItems: 'flex-end' }}>
+      <View style={styles.contentContainer}>
         {isEditing ? (
           <View style={styles.bubbleEdit}>
             <TextInput
               value={draft}
               onChangeText={setDraft}
               multiline
-              style={{
-                color: theme.colors.message.userText,
-                                  fontFamily: theme.typography.fontFamily.primary,
-                fontSize: theme.typography.fontSizes.md,
-                lineHeight: 22,
-                paddingVertical: 4,
-                backgroundColor: 'transparent',
-                borderWidth: 0,
-                outlineStyle: 'none' as any,
-              }}
+              style={styles.textInput}
             />
             <View style={styles.actionRow}>
               <Button
@@ -67,7 +58,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
             <View style={[styles.bubble, !isLastInGroup && styles.bubbleCompact]}>
               <Text style={styles.text}>{message.content}</Text>
             </View>
-            <View style={{ flexDirection: 'row', marginTop: 6, gap: 12 }}>
+            <View style={styles.buttonRow}>
               <Button
                 variant="ghost"
                 size="sm"
@@ -81,14 +72,14 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                   }
                   console.log('[USER-MSG] copy');
                 }}
-                containerStyle={{ padding: 4 }}
+                containerStyle={styles.iconButton}
               />
               <Button
                 variant="ghost"
                 size="sm"
                 leftIcon={<Ionicons name="create-outline" size={18} color={theme.colors.text.secondary} />}
                 onPress={() => { console.log('[USER-MSG] edit'); setIsEditing(true); setDraft(message.content); }}
-                containerStyle={{ padding: 4 }}
+                containerStyle={styles.iconButton}
               />
             </View>
           </>

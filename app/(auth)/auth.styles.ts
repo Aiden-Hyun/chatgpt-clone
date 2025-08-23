@@ -103,5 +103,5 @@ export const createAuthStyles = (theme: AppTheme) => {
     },
   });
 };
-
 export default createAuthStyles;
+

@@ -12,11 +12,14 @@ export const createUserMessageStyles = (theme: AppTheme) => {
     compact: {
       marginVertical: theme.spacing.xxs,
     },
+    contentContainer: {
+      alignItems: 'flex-end',
+    },
     bubble: {
       backgroundColor: theme.colors.message.user,
       borderRadius: theme.borders.radius.lg,
       padding: theme.spacing.md,
-      maxWidth: '80%',
+      //maxWidth: '80vw',
       minWidth: 40,
       alignSelf: 'flex-end',
       ...theme.shadows.light,
@@ -40,6 +43,16 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       alignSelf: 'flex-end',
       ...theme.shadows.light,
     },
+    textInput: {
+      color: theme.colors.message.userText,
+      fontFamily: theme.typography.fontFamily.primary,
+      fontSize: theme.typography.fontSizes.md,
+      lineHeight: 22,
+      paddingVertical: 4,
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      outlineStyle: 'none' as any,
+    },
     actionRow: {
       flexDirection: 'row',
       justifyContent: 'flex-end',
@@ -47,11 +60,21 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.sm,
     },
     actionButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 14,
+      paddingVertical: 0,
+      paddingHorizontal: 0,
       borderWidth: theme.borders.widths.medium,
       borderRadius: theme.borders.radius.sm,
       backgroundColor: 'transparent',
+    },
+    buttonRow: {
+      flexDirection: 'row',
+      marginTop: 0,
+      gap: 0,
+    },
+    iconButton: {
+      //padding: 0,
+      paddingVertical: 0,
+      paddingHorizontal: 3,
     },
   });
 };

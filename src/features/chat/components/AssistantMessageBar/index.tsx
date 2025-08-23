@@ -42,7 +42,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<Ionicons name="refresh-outline" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="refresh-outline" size={16} color={theme.colors.text.secondary} />}
           onPress={handleRegeneratePress}
           containerStyle={styles.iconButton}
         />
@@ -53,7 +53,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
           leftIcon={
             <Ionicons 
               name="thumbs-up-outline" 
-              size={20} 
+              size={16} 
               color={isLiked ? theme.colors.primary : theme.colors.text.secondary} 
             />
           }
@@ -67,7 +67,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
           leftIcon={
             <Ionicons 
               name="thumbs-down-outline" 
-              size={20} 
+              size={16} 
               color={isDisliked ? theme.colors.status.error.primary : theme.colors.text.secondary} 
             />
           }
@@ -78,7 +78,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<Ionicons name="volume-high-outline" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="volume-high-outline" size={16} color={theme.colors.text.secondary} />}
           onPress={onAudio}
           containerStyle={styles.iconButton}
         />
@@ -86,7 +86,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<Ionicons name="copy-outline" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="copy-outline" size={16} color={theme.colors.text.secondary} />}
           onPress={() => {
             onCopy?.();
           }}
@@ -96,7 +96,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
         <Button
           variant="ghost"
           size="sm"
-          leftIcon={<Ionicons name="share-outline" size={20} color={theme.colors.text.secondary} />}
+          leftIcon={<Ionicons name="share-outline" size={16} color={theme.colors.text.secondary} />}
           onPress={async () => {
             try { await onShare?.(); } catch {}
           }}

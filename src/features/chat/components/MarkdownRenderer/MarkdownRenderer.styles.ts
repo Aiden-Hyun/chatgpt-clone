@@ -9,7 +9,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
       lineHeight: 20,
-      marginBottom: theme.spacing.md,
+      marginBottom: 0,
       fontWeight: '400',
     },
     
@@ -18,7 +18,7 @@ export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean 
       fontSize: 16,
       color: theme.colors.text.primary,
       lineHeight: 20,
-      marginBottom: theme.spacing.lg,
+      marginBottom: 0,
       fontWeight: '400',
     },
     

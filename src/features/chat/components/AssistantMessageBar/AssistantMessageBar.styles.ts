@@ -6,25 +6,25 @@ export const createAssistantMessageBarStyles = (theme: AppTheme) => {
   
   return StyleSheet.create({
     container: {
-      marginTop: theme.spacing.md,
-      marginBottom: theme.spacing.lg,
+      marginTop: theme.spacing.sm,
+      marginBottom: 0,
     },
     buttonRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      marginBottom: theme.spacing.sm,
+      marginBottom: 0,
     },
     iconButton: {
-      width: theme.layout.buttonSizes.icon,
-      height: theme.layout.buttonSizes.icon,
+      width: 28,
+      height: 28,
       paddingVertical: 0,
       paddingHorizontal: 0,
-      minHeight: theme.layout.buttonSizes.icon,
+      minHeight: 28,
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: theme.spacing.md,
-      borderRadius: theme.layout.buttonSizes.icon / 2,
+      marginRight: theme.spacing.sm,
+      borderRadius: 14,
       backgroundColor: 'transparent',
     },
     iconText: {
