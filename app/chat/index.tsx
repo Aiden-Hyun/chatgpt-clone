@@ -61,8 +61,8 @@ export default function NewChatScreen() {
           router.replace(`/chat/${newRoomId}`);
         } catch (error) {
           console.error('❌ [NewChatScreen] Error in createNewChat:', error);
-          hasAttemptedCreation.current = false; // Reset to allow retry
-          
+          hasAttemptedCreation.current = false; // Allow manual retry on next focus
+
           // If we get a 401 or permission error, redirect to auth
           if (error instanceof Error && (
             error.message.includes('401') || 
@@ -72,9 +72,10 @@ export default function NewChatScreen() {
             console.log('🚨 [NewChatScreen] Auth error detected, redirecting to auth');
             router.replace('/auth');
           } else {
-            // For other errors, go back to home
-            console.log('🔍 [NewChatScreen] Other error, redirecting to home');
-            router.replace('/');
+            // Avoid redirecting to '/' which immediately redirects back to '/chat', causing a loop
+            console.log('🔍 [NewChatScreen] Non-auth error creating room. Staying on /chat to avoid redirect loop.');
+            // Optionally, you could show a toast or error UI here.
+            return;
           }
         }
       };

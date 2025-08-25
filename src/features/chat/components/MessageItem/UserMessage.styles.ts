@@ -19,7 +19,7 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.message.user,
       borderRadius: theme.borders.radius.lg,
       padding: theme.spacing.md,
-      //maxWidth: '80vw',
+      maxWidth: '80vw',
       minWidth: 40,
       alignSelf: 'flex-end',
       ...theme.shadows.light,

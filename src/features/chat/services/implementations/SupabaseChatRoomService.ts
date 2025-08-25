@@ -5,11 +5,17 @@ import { IChatRoomService } from '../interfaces/IChatRoomService';
 export class SupabaseChatRoomService implements IChatRoomService {
   async createRoom(userId: string, model: string): Promise<number | null> {
     // Consolidated from legacy/createChatRoom.ts
-    const defaultName = `Chat ${new Date().toLocaleString()}`;
+    // Make the default name unique to avoid user-level unique constraint collisions
+    const randomSuffix = Math.random().toString(36).slice(2, 6);
+    const defaultName = `Chat ${new Date().toLocaleString()} • ${randomSuffix}`;
 
+    // Use upsert to gracefully handle rare race conditions creating the same name simultaneously
     const { data, error } = await supabase
       .from('chatrooms')
-      .insert({ name: defaultName, user_id: userId, model })
+      .upsert(
+        { name: defaultName, user_id: userId, model },
+        { onConflict: 'user_id,name' }
+      )
       .select('id')
       .single();
 

@@ -35,7 +35,7 @@ export const useUserInfo = (): UserInfo => {
           .from('profiles')
           .select('display_name')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
         
         if (profileError) {
           // Profile might not exist yet, that's okay
