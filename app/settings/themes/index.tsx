@@ -15,7 +15,13 @@ export default function ThemeSettingsScreen() {
   const styles = createThemeSettingsStyles(theme);
 
   const handleBack = () => {
-    router.back();
+    try {
+      // Go back to settings page directly
+      router.replace('/settings');
+    } catch (error) {
+      // Fallback to settings page if anything goes wrong
+      router.replace('/settings');
+    }
   };
 
   const handleThemeSelect = (themeId: string) => {

@@ -51,6 +51,8 @@ export const useSettingsNavigation = () => {
   };
 
   const navigateToThemes = () => {
+    // Don't overwrite the original previous route - just navigate to themes
+    // The themes page will handle going back to settings
     router.push('/settings/themes');
   };
 

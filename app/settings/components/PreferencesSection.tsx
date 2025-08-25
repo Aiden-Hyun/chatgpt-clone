@@ -25,8 +25,25 @@ export const PreferencesSection: React.FC<PreferencesSectionProps> = ({
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
 
   const getThemeDisplayText = () => {
-    const styleText = themeStyle === 'default' ? 'Default' : 
-                     themeStyle === 'glassmorphism' ? 'Glassmorphism' : 'Claymorphism';
+    let styleText: string;
+    switch (themeStyle) {
+      case 'default':
+        styleText = 'Default';
+        break;
+      case 'glassmorphism':
+        styleText = 'Glassmorphism';
+        break;
+      case 'claymorphism':
+        styleText = 'Claymorphism';
+        break;
+      case 'gradient-neumorphism':
+        styleText = 'Gradient Neumorphism';
+        break;
+      default:
+        styleText = 'Default';
+        break;
+    }
+    
     const modeText = themeMode === 'system' ? 'System' : 
                     themeMode === 'light' ? 'Light' : 'Dark';
     return `${styleText} • ${modeText}`;
