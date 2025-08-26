@@ -4,7 +4,9 @@ export class UserSession {
     public readonly isAuthenticated: boolean,
     public readonly permissions: string[],
     public readonly lastActivity: Date,
-    public readonly expiresAt: Date
+    public readonly expiresAt: Date,
+    public readonly refreshToken?: string,
+    public readonly accessToken?: string
   ) {}
 
   isExpired(): boolean {
@@ -30,16 +32,23 @@ export class UserSession {
     return minutesUntilExpiry <= minutes;
   }
 
-  refresh(): UserSession {
-    const newExpiresAt = new Date();
-    newExpiresAt.setHours(newExpiresAt.getHours() + 24); // 24 hour session
-    
+  canRefresh(): boolean {
+    return !this.isExpired() && !!this.refreshToken;
+  }
+
+  needsRefresh(): boolean {
+    return this.isExpiringSoon(15); // 15 minutes before expiry
+  }
+
+  refresh(newExpiryTime: Date): UserSession {
     return new UserSession(
       this.userId,
       this.isAuthenticated,
       this.permissions,
       new Date(), // Update last activity
-      newExpiresAt
+      newExpiryTime,
+      this.refreshToken,
+      this.accessToken
     );
   }
 
@@ -49,6 +58,30 @@ export class UserSession {
       this.isAuthenticated,
       this.permissions,
       new Date(),
+      this.expiresAt,
+      this.refreshToken,
+      this.accessToken
+    );
+  }
+
+  withTokens(accessToken: string, refreshToken: string): UserSession {
+    return new UserSession(
+      this.userId,
+      this.isAuthenticated,
+      this.permissions,
+      this.lastActivity,
+      this.expiresAt,
+      refreshToken,
+      accessToken
+    );
+  }
+
+  withoutTokens(): UserSession {
+    return new UserSession(
+      this.userId,
+      this.isAuthenticated,
+      this.permissions,
+      this.lastActivity,
       this.expiresAt
     );
   }
