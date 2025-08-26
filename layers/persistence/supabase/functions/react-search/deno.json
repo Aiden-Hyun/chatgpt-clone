@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"],
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "types": ["@types/node"]
+  },
+  "imports": {
+    "jsr:@openai/openai": "npm:@openai/openai@^4.0.0"
+  },
+  "tasks": {
+    "dev": "deno run --allow-net --allow-env --allow-read --watch main.ts"
+  }
+}

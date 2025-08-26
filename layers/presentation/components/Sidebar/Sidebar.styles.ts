@@ -1,0 +1,65 @@
+import { StyleSheet } from 'react-native';
+import { AppTheme } from '../../../business/theme/theme.types';
+
+export const createSidebarStyles = (theme: AppTheme) => {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background.primary,
+    },
+    header: {
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.borders.colors.light,
+    },
+    chatHistory: {
+      flex: 1,
+      paddingHorizontal: theme.spacing.sm,
+    },
+    userProfile: {
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      borderTopWidth: 1,
+      borderTopColor: theme.borders.colors.light,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    userInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    userName: {
+      marginLeft: theme.spacing.sm,
+      color: theme.colors.text.primary,
+    },
+    settingsButton: {
+      marginLeft: theme.spacing.sm,
+    },
+    newChatButton: {
+      width: '100%',
+    },
+    chatItem: {
+      marginVertical: 2,
+      borderRadius: theme.borders.radius.md,
+    },
+    chatItemDelete: {
+      padding: theme.spacing.xs,
+      borderRadius: theme.borders.radius.sm,
+    },
+    subtitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: theme.spacing.xs,
+      gap: theme.spacing.xs,
+    },
+    draftBadge: {
+      backgroundColor: theme.colors.status.info.background,
+      paddingHorizontal: theme.spacing.xs,
+      paddingVertical: 2,
+      borderRadius: theme.borders.radius.sm,
+    },
+  });
+};
