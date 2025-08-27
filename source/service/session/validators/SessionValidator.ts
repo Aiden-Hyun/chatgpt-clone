@@ -1,8 +1,16 @@
-import { UserSession } from '../../../business/session/entities/UserSession';
 import { ValidationResult } from '../../auth/validators/EmailValidator';
 
+// Service layer validator - uses interface instead of concrete business entity
+export interface SessionData {
+  userId: string;
+  isAuthenticated: boolean;
+  permissions: string[];
+  lastActivity: Date;
+  expiresAt: Date;
+}
+
 export class SessionValidator {
-  static validateSession(session: UserSession): ValidationResult {
+  static validateSession(session: SessionData | null): ValidationResult {
     if (!session) {
       return { isValid: false, error: 'Session is null' };
     }
@@ -30,18 +38,18 @@ export class SessionValidator {
     return { isValid: true, error: null };
   }
 
-  static shouldRefreshSession(session: UserSession, thresholdMinutes: number = 15): boolean {
-    if (!session || session.isExpired()) {
+  static shouldRefreshSession(session: SessionData | null, thresholdMinutes: number = 15): boolean {
+    if (!session || this.isExpired(session)) {
       return false;
     }
 
-    const timeUntilExpiry = session.getTimeUntilExpiry();
+    const timeUntilExpiry = this.getTimeUntilExpiry(session);
     const thresholdMs = thresholdMinutes * 60 * 1000;
     
     return timeUntilExpiry <= thresholdMs;
   }
 
-  static isSessionSecure(session: UserSession): boolean {
+  static isSessionSecure(session: SessionData | null): boolean {
     if (!session) {
       return false;
     }
@@ -92,18 +100,18 @@ export class SessionValidator {
     return true;
   }
 
-  static isSessionExpiringSoon(session: UserSession, minutes: number = 30): boolean {
-    if (!session || session.isExpired()) {
+  static isSessionExpiringSoon(session: SessionData | null, minutes: number = 30): boolean {
+    if (!session || this.isExpired(session)) {
       return false;
     }
 
-    const timeUntilExpiry = session.getTimeUntilExpiry();
+    const timeUntilExpiry = this.getTimeUntilExpiry(session);
     const thresholdMs = minutes * 60 * 1000;
     
     return timeUntilExpiry <= thresholdMs;
   }
 
-  static getSessionHealth(session: UserSession): {
+  static getSessionHealth(session: SessionData | null): {
     status: 'healthy' | 'warning' | 'critical' | 'expired';
     message: string;
     timeRemaining?: number;
@@ -112,11 +120,11 @@ export class SessionValidator {
       return { status: 'expired', message: 'No session found' };
     }
 
-    if (session.isExpired()) {
+    if (this.isExpired(session)) {
       return { status: 'expired', message: 'Session has expired' };
     }
 
-    const timeRemaining = session.getTimeUntilExpiry();
+    const timeRemaining = this.getTimeUntilExpiry(session);
     const hoursRemaining = timeRemaining / (1000 * 60 * 60);
 
     if (hoursRemaining < 1) {
@@ -140,5 +148,16 @@ export class SessionValidator {
       message: 'Session is healthy',
       timeRemaining 
     };
+  }
+
+  // Helper methods for pure service layer functionality
+  private static isExpired(session: SessionData): boolean {
+    const now = new Date();
+    return now >= session.expiresAt;
+  }
+
+  private static getTimeUntilExpiry(session: SessionData): number {
+    const now = new Date();
+    return session.expiresAt.getTime() - now.getTime();
   }
 }

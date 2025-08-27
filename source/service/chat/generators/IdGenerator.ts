@@ -1,4 +1,6 @@
-export class IdGenerator {
+import { IIdGenerator } from '../interfaces/IIdGenerator';
+
+export class IdGenerator implements IIdGenerator {
   generateMessageId(): string {
     const timestamp = Date.now().toString(36);
     const random = Math.random().toString(36).substring(2, 8);

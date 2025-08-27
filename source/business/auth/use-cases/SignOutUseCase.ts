@@ -1,6 +1,6 @@
-import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
+import { IUserRepository } from '../interfaces/IUserRepository';
 
 export interface SignOutResult {
   success: boolean;
@@ -9,8 +9,8 @@ export interface SignOutResult {
 
 export class SignOutUseCase {
   constructor(
-    private sessionRepository: SessionRepository,
-    private userRepository: UserRepository
+    private sessionRepository: ISessionRepository,
+    private userRepository: IUserRepository
   ) {}
 
   async execute(): Promise<SignOutResult> {

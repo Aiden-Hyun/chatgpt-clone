@@ -1,7 +1,7 @@
-import { MessageEntity } from '../entities/Message';
-import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { Session } from '@supabase/supabase-js';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { MessageEntity } from '../entities/Message';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 
 export interface DeleteMessageParams {
   messageId: string;
@@ -18,8 +18,8 @@ export interface DeleteMessageResult {
 
 export class DeleteMessageUseCase {
   constructor(
-    private messageRepository: MessageRepository,
-    private logger: Logger
+    private messageRepository: IMessageRepository,
+    private logger: ILogger
   ) {}
 
   async execute(params: DeleteMessageParams): Promise<DeleteMessageResult> {

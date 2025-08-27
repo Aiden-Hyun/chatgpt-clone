@@ -1,12 +1,11 @@
-import { MessageEntity, MessageRole } from '../entities/Message';
-import { ChatRoomEntity } from '../entities/ChatRoom';
-import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
-import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
-import { AIProvider } from '../../../persistence/chat/adapters/AIProvider';
-import { MessageValidator } from '../../../service/chat/validators/MessageValidator';
-import { IdGenerator } from '../../../service/chat/generators/IdGenerator';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { Session } from '@supabase/supabase-js';
+import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
+import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { MessageEntity, MessageRole } from '../entities/Message';
+import { IAIProvider } from '../interfaces/IAIProvider';
+import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 
 export interface SendMessageParams {
   content: string;
@@ -26,12 +25,12 @@ export interface SendMessageResult {
 
 export class SendMessageUseCase {
   constructor(
-    private messageRepository: MessageRepository,
-    private chatRoomRepository: ChatRoomRepository,
-    private aiProvider: AIProvider,
-    private messageValidator: MessageValidator,
-    private idGenerator: IdGenerator,
-    private logger: Logger
+    private messageRepository: IMessageRepository,
+    private chatRoomRepository: IChatRoomRepository,
+    private aiProvider: IAIProvider,
+    private messageValidator: IMessageValidator,
+    private idGenerator: IIdGenerator,
+    private logger: ILogger
   ) {}
 
   async execute(params: SendMessageParams): Promise<SendMessageResult> {

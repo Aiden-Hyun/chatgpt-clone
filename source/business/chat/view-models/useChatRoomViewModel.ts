@@ -1,11 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../../../src/features/auth/context/AuthContext';
-import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
+import { ChatRoom } from '../entities/ChatRoom';
 import { CreateRoomUseCase } from '../use-cases/CreateRoomUseCase';
-import { UpdateRoomUseCase } from '../use-cases/UpdateRoomUseCase';
 import { DeleteRoomUseCase } from '../use-cases/DeleteRoomUseCase';
 import { ListRoomsUseCase } from '../use-cases/ListRoomsUseCase';
-import { ChatRoom } from '../entities/ChatRoom';
+import { UpdateRoomUseCase } from '../use-cases/UpdateRoomUseCase';
 
 export interface ChatRoomState {
   rooms: ChatRoom[];
@@ -25,7 +24,14 @@ export interface ChatRoomActions {
   refreshRooms: () => Promise<void>;
 }
 
-export function useChatRoomViewModel(): ChatRoomState & ChatRoomActions {
+interface ChatRoomViewModelDependencies {
+  createRoomUseCase: CreateRoomUseCase;
+  updateRoomUseCase: UpdateRoomUseCase;
+  deleteRoomUseCase: DeleteRoomUseCase;
+  listRoomsUseCase: ListRoomsUseCase;
+}
+
+export function useChatRoomViewModel(dependencies: ChatRoomViewModelDependencies): ChatRoomState & ChatRoomActions {
   const { session } = useAuth();
   
   const [state, setState] = useState<ChatRoomState>({
@@ -37,12 +43,13 @@ export function useChatRoomViewModel(): ChatRoomState & ChatRoomActions {
     deletingRoom: false,
   });
 
-  // Initialize dependencies
-  const chatRoomRepository = new ChatRoomRepository();
-  const createRoomUseCase = new CreateRoomUseCase(chatRoomRepository);
-  const updateRoomUseCase = new UpdateRoomUseCase(chatRoomRepository);
-  const deleteRoomUseCase = new DeleteRoomUseCase(chatRoomRepository);
-  const listRoomsUseCase = new ListRoomsUseCase(chatRoomRepository);
+  // Destructure injected dependencies
+  const {
+    createRoomUseCase,
+    updateRoomUseCase,
+    deleteRoomUseCase,
+    listRoomsUseCase
+  } = dependencies;
 
   const createRoom = useCallback(async (model: string, name?: string) => {
     if (!session) {

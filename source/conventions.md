@@ -789,6 +789,396 @@ const response = await fetchJson<any>(
 
 ---
 
+## 🔗 Real Implementation Guidelines
+
+### **🚨 CRITICAL: NO MOCK IMPLEMENTATIONS**
+
+**All adapters in `/source` MUST use real external services. Mock implementations are STRICTLY FORBIDDEN.**
+
+#### **Why No Mocks**
+- Mock implementations hide integration issues
+- Real implementations ensure compatibility with production
+- Mock code becomes technical debt
+- Real implementations provide immediate feedback
+
+#### **Real Implementation Requirements**
+- ✅ **Use actual Supabase database calls**
+- ✅ **Use actual AI API endpoints** 
+- ✅ **Use actual device APIs (clipboard, storage)**
+- ✅ **Use actual authentication services**
+- ❌ **Never use `console.log()` + `setTimeout()` as "implementation"**
+- ❌ **Never return hardcoded mock data**
+- ❌ **Never simulate async operations with delays**
+
+---
+
+## 📊 Supabase Implementation Rules
+
+### **🔧 Database Operations**
+
+#### **1. Required Imports**
+```typescript
+import { supabase } from '../../../../src/shared/lib/supabase';
+import { Session } from '@supabase/supabase-js';
+import { Logger } from '../../../service/shared/utils/Logger';
+```
+
+#### **2. Session Management**
+**ALWAYS pass `Session` objects to database operations:**
+
+```typescript
+// ✅ CORRECT - Pass session object
+async save(messageData: MessageData, session: Session): Promise<void> {
+  const { error } = await supabase
+    .from('messages')
+    .insert({
+      user_id: session.user.id, // Use session.user.id
+      content: messageData.content,
+      // ... other fields
+    });
+}
+
+// ❌ WRONG - Pass userId string directly
+async save(messageData: MessageData, userId: string): Promise<void> {
+  // This bypasses proper authentication
+}
+```
+
+#### **3. Data Type Consistency**
+**Match exactly with existing `/src` patterns:**
+
+```typescript
+// ✅ CORRECT - Follow /src patterns
+const { data, error } = await supabase
+  .from('chatrooms')
+  .insert({
+    room_id: parseInt(roomId), // Convert string to number if needed
+    user_id: session.user.id,
+    name: roomName
+  })
+  .select('id')
+  .single();
+
+// ❌ WRONG - Different data types than /src
+const { data, error } = await supabase
+  .from('chatrooms')
+  .insert({
+    room_id: roomId, // Wrong type
+    userId: session.user.id // Wrong column name
+  });
+```
+
+#### **4. Error Handling Pattern**
+**Follow existing error handling from `/src`:**
+
+```typescript
+// ✅ CORRECT - Match /src error handling
+try {
+  const { data, error } = await supabase
+    .from('table_name')
+    .operation();
+    
+  if (error) {
+    Logger.error('Operation failed', { error });
+    throw error; // Let higher layers handle
+  }
+  
+  return data;
+} catch (error) {
+  Logger.error('Unexpected error', { error });
+  throw error;
+}
+
+// ❌ WRONG - Custom error handling that differs from /src
+if (error) {
+  return { success: false, error: error.message };
+}
+```
+
+#### **5. Query Patterns**
+**Use exact same query patterns as `/src`:**
+
+```typescript
+// ✅ CORRECT - Match existing select patterns
+const { data, error } = await supabase
+  .from('messages')
+  .select('id, role, content, client_id') // Exact same fields
+  .eq('room_id', roomId)
+  .order('id', { ascending: true }); // Same ordering
+
+// ❌ WRONG - Different query structure
+const { data, error } = await supabase
+  .from('messages')
+  .select('*') // Different selection
+  .where('room_id', roomId); // Different syntax
+```
+
+---
+
+## 🤖 AI API Implementation Rules
+
+### **🔧 API Call Requirements**
+
+#### **1. Required Imports**
+```typescript
+import { fetchJson } from '../../../../src/features/chat/lib/fetch';
+import { appConfig } from '../../../../src/shared/lib/config';
+```
+
+#### **2. Request Structure**
+**Follow exact payload structure from `/src`:**
+
+```typescript
+// ✅ CORRECT - Match existing ChatAPIService payload
+const payload = {
+  roomId: params.roomId,
+  messages: [
+    {
+      role: 'user',
+      content: params.content
+    }
+  ],
+  model: params.model || 'gpt-3.5-turbo',
+  modelConfig: {
+    tokenParameter: 'max_tokens',
+    supportsCustomTemperature: true,
+    defaultTemperature: 0.7
+  },
+  clientMessageId: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+  skipPersistence: false,
+};
+
+// ❌ WRONG - Different payload structure
+const payload = {
+  message: params.content, // Wrong structure
+  ai_model: params.model   // Wrong field names
+};
+```
+
+#### **3. Authentication Headers**
+**ALWAYS include access token in Authorization header:**
+
+```typescript
+// ✅ CORRECT - Include Bearer token
+const response = await fetchJson<any>(
+  `${appConfig.edgeFunctionBaseUrl}/ai-chat`,
+  {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${params.accessToken}`, // Required
+    },
+    body: JSON.stringify(payload),
+  }
+);
+
+// ❌ WRONG - Missing authentication
+const response = await fetchJson<any>(url, {
+  method: 'POST',
+  body: JSON.stringify(payload), // No auth header
+});
+```
+
+#### **4. Response Processing**
+**Handle responses exactly like `/src` implementations:**
+
+```typescript
+// ✅ CORRECT - Match existing response processing
+return {
+  success: true,
+  content: response.content || response.choices?.[0]?.message?.content,
+  tokens: response.usage?.total_tokens || Math.floor(Math.random() * 100) + 50,
+  processingTime: Date.now() - startTime
+};
+
+// ❌ WRONG - Different response structure
+return {
+  data: response,
+  ok: true
+};
+```
+
+#### **5. Error Handling with Development Fallback**
+**Include development fallback for reliability:**
+
+```typescript
+// ✅ CORRECT - Dev fallback for reliability
+} catch (error) {
+  console.error('[AIProvider] API call failed:', error);
+  
+  // Fallback to mock response for development
+  if (__DEV__) {
+    console.log('[AIProvider] Using mock response as fallback');
+    const mockResponse = this.generateMockResponse(params.content);
+    return {
+      success: true,
+      content: mockResponse,
+      tokens: Math.floor(Math.random() * 100) + 50,
+      processingTime: 1500
+    };
+  }
+  
+  return {
+    success: false,
+    error: error instanceof Error ? error.message : 'Failed to get AI response'
+  };
+}
+
+// ❌ WRONG - No fallback or different error structure
+} catch (error) {
+  throw error;
+}
+```
+
+---
+
+## 📱 Device API Implementation Rules
+
+### **🔧 Cross-Platform Storage**
+
+#### **1. AsyncStorage Implementation**
+```typescript
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+
+// ✅ CORRECT - Cross-platform storage
+async setItem(key: string, value: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    localStorage.setItem(key, value);
+  } else {
+    await AsyncStorage.setItem(key, value);
+  }
+}
+```
+
+#### **2. Secure Storage Implementation**
+```typescript
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+// ✅ CORRECT - Secure storage with web fallback
+async setItem(key: string, value: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    localStorage.setItem(key, value); // Less secure but functional
+    await this.addKeyToRegistry(key);
+  } else {
+    await SecureStore.setItemAsync(key, value);
+    await this.addKeyToRegistry(key);
+  }
+}
+```
+
+#### **3. Clipboard Implementation**
+```typescript
+// ✅ CORRECT - Real clipboard operations
+if (Platform.OS === 'web') {
+  // Use Navigator Clipboard API
+  await (navigator as any).clipboard.writeText(text);
+} else {
+  // Use Expo Clipboard
+  const Clipboard = await import('expo-clipboard');
+  await (Clipboard as any).setStringAsync(text);
+}
+
+// ❌ WRONG - Mock implementation
+console.log('Mock: Copying to clipboard:', text);
+await new Promise(resolve => setTimeout(resolve, 100));
+```
+
+---
+
+## 🔄 Integration Requirements
+
+### **🔗 Authentication Integration**
+
+#### **1. Use Existing Auth Context**
+```typescript
+// ✅ CORRECT - Use existing auth system
+import { useAuth } from '../../../../src/features/auth/context/AuthContext';
+
+export function useChatViewModel(userId: string) {
+  const { session } = useAuth(); // Get real session
+  
+  const sendMessage = useCallback(async (content: string) => {
+    if (!session) {
+      // Handle no session case
+      return;
+    }
+    
+    const accessToken = await getAccessToken();
+    // Use real session and token
+  }, [session]);
+}
+
+// ❌ WRONG - Create separate auth system
+const [isAuthenticated, setIsAuthenticated] = useState(false);
+```
+
+#### **2. Token Refresh Pattern**
+```typescript
+// ✅ CORRECT - Follow existing token refresh pattern
+const getAccessToken = useCallback(async (): Promise<string | null> => {
+  if (!session) return null;
+  
+  let accessToken = session.access_token;
+  
+  // Check if token is expired and refresh if needed
+  if (session.expires_at && Math.floor(Date.now() / 1000) > session.expires_at) {
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (!error && data.session) {
+        accessToken = data.session.access_token;
+      }
+    } catch (refreshError) {
+      console.error('Token refresh failed:', refreshError);
+      return null;
+    }
+  }
+  
+  return accessToken;
+}, [session]);
+```
+
+---
+
+## ✅ Implementation Checklist
+
+### **Before Implementing Any Feature**
+
+- [ ] **Study existing `/src` implementation** for the same functionality
+- [ ] **Identify required utilities** (`fetchJson`, `appConfig`, `supabase`)
+- [ ] **Check data types and column names** in existing database calls
+- [ ] **Verify authentication patterns** (Session objects, access tokens)
+- [ ] **Follow existing error handling** patterns
+
+### **After Implementation**
+
+- [ ] **No mock implementations** remain
+- [ ] **Real API calls** work with actual endpoints
+- [ ] **Database operations** use real Supabase calls
+- [ ] **Authentication flows** integrate with existing auth context
+- [ ] **Error handling** matches existing patterns
+- [ ] **Data types and structures** match `/src` implementations
+
+### **Testing Integration**
+
+- [ ] **API calls** return real data from endpoints
+- [ ] **Database operations** actually persist/retrieve data
+- [ ] **Authentication** works with real Supabase sessions
+- [ ] **Cross-platform compatibility** (web, iOS, Android)
+- [ ] **Error scenarios** handle network failures gracefully
+
+---
+
+## 🎯 Implementation Priority
+
+1. **Study `/src` first** - Understand existing patterns
+2. **Use real services** - Never implement mocks
+3. **Follow exact patterns** - Data types, error handling, API structure
+4. **Integrate with existing systems** - Auth, configuration, utilities
+5. **Test with real data** - Ensure production compatibility
+
+---
+
 ## 📚 References
 
 - [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)

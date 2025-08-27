@@ -3,32 +3,26 @@ import { GetSessionUseCase } from '../use-cases/GetSessionUseCase';
 import { RefreshSessionUseCase } from '../use-cases/RefreshSessionUseCase';
 import { ValidateSessionUseCase } from '../use-cases/ValidateSessionUseCase';
 import { UpdateSessionActivityUseCase } from '../use-cases/UpdateSessionActivityUseCase';
-import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
 import { UserSession } from '../entities/UserSession';
 
-export function useSessionViewModel() {
+interface SessionViewModelDependencies {
+  getSessionUseCase: GetSessionUseCase;
+  refreshSessionUseCase: RefreshSessionUseCase;
+  validateSessionUseCase: ValidateSessionUseCase;
+  updateActivityUseCase: UpdateSessionActivityUseCase;
+}
+
+export function useSessionViewModel(dependencies: SessionViewModelDependencies) {
   const [session, setSession] = useState<UserSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize use cases
-  const getSessionUseCase = new GetSessionUseCase(
-    new SessionRepository(),
-    new UserRepository()
-  );
-
-  const refreshSessionUseCase = new RefreshSessionUseCase(
-    new SessionRepository(),
-    new UserRepository()
-  );
-
-  const validateSessionUseCase = new ValidateSessionUseCase(
-    new SessionRepository()
-  );
-
-  const updateActivityUseCase = new UpdateSessionActivityUseCase(
-    new SessionRepository()
-  );
+  // Destructure injected dependencies
+  const {
+    getSessionUseCase,
+    refreshSessionUseCase,
+    validateSessionUseCase,
+    updateActivityUseCase
+  } = dependencies;
 
   // Load initial session
   useEffect(() => {

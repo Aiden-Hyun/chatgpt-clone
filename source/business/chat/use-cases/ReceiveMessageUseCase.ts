@@ -1,8 +1,8 @@
+import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
 import { MessageEntity, MessageRole } from '../entities/Message';
-import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
-import { AIProvider } from '../../../persistence/chat/adapters/AIProvider';
-import { IdGenerator } from '../../../service/chat/generators/IdGenerator';
-import { Logger } from '../../../service/shared/utils/Logger';
+import { IAIProvider } from '../interfaces/IAIProvider';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 
 export interface ReceiveMessageParams {
   roomId: string;
@@ -19,10 +19,10 @@ export interface ReceiveMessageResult {
 
 export class ReceiveMessageUseCase {
   constructor(
-    private messageRepository: MessageRepository,
-    private aiProvider: AIProvider,
-    private idGenerator: IdGenerator,
-    private logger: Logger
+    private messageRepository: IMessageRepository,
+    private aiProvider: IAIProvider,
+    private idGenerator: IIdGenerator,
+    private logger: ILogger
   ) {}
 
   async execute(params: ReceiveMessageParams): Promise<ReceiveMessageResult> {

@@ -1,8 +1,8 @@
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
+import { Logger } from '../../../service/shared/utils/Logger';
 import { User } from '../entities/User';
+import { IUserRepository } from '../interfaces/IUserRepository';
 
 export interface SignUpResult {
   success: boolean;
@@ -13,13 +13,14 @@ export interface SignUpResult {
 
 export class SignUpUseCase {
   constructor(
-    private userRepository: UserRepository
+    private userRepository: IUserRepository
   ) {}
 
   async execute(request: { 
     email: string; 
     password: string; 
-    displayName: string; 
+    displayName: string;
+    confirmPassword?: string;
   }): Promise<SignUpResult> {
     try {
       // Business validation
@@ -31,6 +32,11 @@ export class SignUpUseCase {
       const passwordValidation = PasswordValidator.validate(request.password);
       if (!passwordValidation.isValid) {
         return { success: false, error: passwordValidation.error };
+      }
+
+      // Password confirmation validation (business rule)
+      if (request.confirmPassword && request.password !== request.confirmPassword) {
+        return { success: false, error: 'Passwords do not match' };
       }
 
       if (request.displayName.length < 2) {

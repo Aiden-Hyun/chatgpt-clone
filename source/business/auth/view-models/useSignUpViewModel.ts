@@ -1,13 +1,9 @@
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
 import { SignUpUseCase } from '../use-cases/SignUpUseCase';
 
-export function useSignUpViewModel() {
-  const signUpUseCase = new SignUpUseCase(
-    new UserRepository()
-  );
+export function useSignUpViewModel(signUpUseCase: SignUpUseCase) {
 
-  const signUp = async (email: string, password: string, displayName: string) => {
-    const result = await signUpUseCase.execute({ email, password, displayName });
+  const signUp = async (email: string, password: string, displayName: string, confirmPassword?: string) => {
+    const result = await signUpUseCase.execute({ email, password, displayName, confirmPassword });
     
     if (result.success) {
       if (result.requiresEmailVerification) {

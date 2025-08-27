@@ -1,12 +1,6 @@
-import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
 import { SignOutUseCase } from '../use-cases/SignOutUseCase';
 
-export function useSignOutViewModel() {
-  const signOutUseCase = new SignOutUseCase(
-    new SessionRepository(),
-    new UserRepository()
-  );
+export function useSignOutViewModel(signOutUseCase: SignOutUseCase) {
 
   const signOut = async () => {
     const result = await signOutUseCase.execute();

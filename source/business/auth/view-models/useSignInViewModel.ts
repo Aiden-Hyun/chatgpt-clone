@@ -1,16 +1,9 @@
-import { useState, useCallback } from 'react';
-import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
+import { useCallback, useState, useMemo } from 'react';
 import { SignInUseCase } from '../use-cases/SignInUseCase';
 
-export function useSignInViewModel() {
+export function useSignInViewModel(signInUseCase: SignInUseCase) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const signInUseCase = new SignInUseCase(
-    new UserRepository(),
-    new SessionRepository()
-  );
 
   const signIn = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
@@ -37,7 +30,7 @@ export function useSignInViewModel() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [signInUseCase]);
 
   const clearError = useCallback(() => {
     setError(null);

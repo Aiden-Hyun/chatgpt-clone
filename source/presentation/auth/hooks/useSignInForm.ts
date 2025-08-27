@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSignInViewModel } from '../../../business/auth/view-models/useSignInViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function useSignInForm() {
   const [email, setEmail] = useState('');
@@ -7,7 +8,8 @@ export function useSignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const signInViewModel = useSignInViewModel();
+  const useCaseFactory = useUseCaseFactory();
+  const signInViewModel = useSignInViewModel(useCaseFactory.createSignInUseCase());
 
   const handleEmailChange = (text: string) => {
     setEmail(text);

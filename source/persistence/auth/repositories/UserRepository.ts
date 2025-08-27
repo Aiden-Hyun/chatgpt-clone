@@ -1,22 +1,10 @@
 import { User } from '../../../business/auth/entities/User';
+import { AuthResult, CreateUserResult, IUserRepository } from '../../../business/auth/interfaces/IUserRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { SupabaseAuthAdapter } from '../adapters/SupabaseAuthAdapter';
 import { UserMapper } from '../mappers/UserMapper';
 
-export interface AuthResult {
-  success: boolean;
-  user?: User;
-  error?: string;
-}
-
-export interface CreateUserResult {
-  success: boolean;
-  user?: User;
-  requiresEmailVerification?: boolean;
-  error?: string;
-}
-
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   constructor(
     private authAdapter: SupabaseAuthAdapter = new SupabaseAuthAdapter(),
     private userMapper: UserMapper = new UserMapper()

@@ -1,19 +1,14 @@
-import { useState, useCallback } from 'react';
-import { MessageEntity } from '../entities/Message';
-import { ChatRoomEntity } from '../entities/ChatRoom';
-import { SendMessageUseCase } from '../use-cases/SendMessageUseCase';
-import { ReceiveMessageUseCase } from '../use-cases/ReceiveMessageUseCase';
-import { DeleteMessageUseCase } from '../use-cases/DeleteMessageUseCase';
-import { CopyMessageUseCase } from '../use-cases/CopyMessageUseCase';
-import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
-import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
-import { AIProvider } from '../../../persistence/chat/adapters/AIProvider';
-import { ClipboardAdapter } from '../../../persistence/chat/adapters/ClipboardAdapter';
-import { MessageValidator } from '../../../service/chat/validators/MessageValidator';
-import { IdGenerator } from '../../../service/chat/generators/IdGenerator';
-import { Logger } from '../../../service/shared/utils/Logger';
+import { useCallback, useState } from 'react';
 import { useAuth } from '../../../../src/features/auth/context/AuthContext';
 import { supabase } from '../../../../src/shared/lib/supabase';
+import { ChatRoomEntity } from '../entities/ChatRoom';
+import { MessageEntity } from '../entities/Message';
+import { CopyMessageUseCase } from '../use-cases/CopyMessageUseCase';
+import { DeleteMessageUseCase } from '../use-cases/DeleteMessageUseCase';
+import { ReceiveMessageUseCase } from '../use-cases/ReceiveMessageUseCase';
+import { SendMessageUseCase } from '../use-cases/SendMessageUseCase';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
 
 export interface ChatState {
   messages: MessageEntity[];
@@ -33,7 +28,19 @@ export interface ChatActions {
   loadMessages: (roomId: string) => Promise<void>;
 }
 
-export function useChatViewModel(userId: string): ChatState & ChatActions {
+interface ChatViewModelDependencies {
+  sendMessageUseCase: SendMessageUseCase;
+  receiveMessageUseCase: ReceiveMessageUseCase;
+  deleteMessageUseCase: DeleteMessageUseCase;
+  copyMessageUseCase: CopyMessageUseCase;
+  messageRepository: IMessageRepository;
+  chatRoomRepository: IChatRoomRepository;
+}
+
+export function useChatViewModel(
+  userId: string,
+  dependencies: ChatViewModelDependencies
+): ChatState & ChatActions {
   const { session } = useAuth();
   
   const [state, setState] = useState<ChatState>({
@@ -65,42 +72,15 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
     return accessToken;
   }, [session]);
 
-  // Initialize dependencies
-  const messageRepository = new MessageRepository();
-  const chatRoomRepository = new ChatRoomRepository();
-  const aiProvider = new AIProvider();
-  const clipboardAdapter = new ClipboardAdapter();
-  const messageValidator = new MessageValidator();
-  const idGenerator = new IdGenerator();
-  const logger = new Logger();
-
-  // Initialize use cases
-  const sendMessageUseCase = new SendMessageUseCase(
+  // Destructure injected dependencies
+  const {
+    sendMessageUseCase,
+    receiveMessageUseCase,
+    deleteMessageUseCase,
+    copyMessageUseCase,
     messageRepository,
-    chatRoomRepository,
-    aiProvider,
-    messageValidator,
-    idGenerator,
-    logger
-  );
-
-  const receiveMessageUseCase = new ReceiveMessageUseCase(
-    messageRepository,
-    aiProvider,
-    idGenerator,
-    logger
-  );
-
-  const deleteMessageUseCase = new DeleteMessageUseCase(
-    messageRepository,
-    logger
-  );
-
-  const copyMessageUseCase = new CopyMessageUseCase(
-    messageRepository,
-    clipboardAdapter,
-    logger
-  );
+    chatRoomRepository
+  } = dependencies;
 
   const sendMessage = useCallback(async (content: string, model?: string) => {
     if (!state.currentRoom) {

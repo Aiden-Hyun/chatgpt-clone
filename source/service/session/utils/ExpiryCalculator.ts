@@ -1,4 +1,8 @@
-import { UserSession } from '../../../business/session/entities/UserSession';
+// Service layer utility - pure functions only, no business entity dependencies
+export interface SessionTimeData {
+  expiresAt: Date;
+  lastActivity: Date;
+}
 
 export class ExpiryCalculator {
   static calculateExpiryTime(durationHours: number = 24): Date {
@@ -7,15 +11,15 @@ export class ExpiryCalculator {
     return now;
   }
 
-  static calculateRefreshTime(session: UserSession, bufferMinutes: number = 15): Date {
-    const expiryTime = session.expiresAt;
+  static calculateRefreshTime(sessionData: SessionTimeData, bufferMinutes: number = 15): Date {
+    const expiryTime = sessionData.expiresAt;
     const bufferMs = bufferMinutes * 60 * 1000;
     return new Date(expiryTime.getTime() - bufferMs);
   }
 
-  static getTimeUntilExpiry(session: UserSession): number {
+  static getTimeUntilExpiry(sessionData: SessionTimeData): number {
     const now = new Date();
-    return session.expiresAt.getTime() - now.getTime();
+    return sessionData.expiresAt.getTime() - now.getTime();
   }
 
   static formatTimeRemaining(milliseconds: number): string {
@@ -51,34 +55,34 @@ export class ExpiryCalculator {
     }
   }
 
-  static isExpiringWithin(session: UserSession, timeMinutes: number): boolean {
-    const timeUntilExpiry = this.getTimeUntilExpiry(session);
+  static isExpiringWithin(sessionData: SessionTimeData, timeMinutes: number): boolean {
+    const timeUntilExpiry = this.getTimeUntilExpiry(sessionData);
     const thresholdMs = timeMinutes * 60 * 1000;
     return timeUntilExpiry <= thresholdMs;
   }
 
-  static getOptimalRefreshTime(session: UserSession): Date {
+  static getOptimalRefreshTime(sessionData: SessionTimeData): Date {
     // Refresh when 15 minutes remain or when 25% of session time is left, whichever is earlier
-    const timeUntilExpiry = this.getTimeUntilExpiry(session);
-    const sessionDuration = session.expiresAt.getTime() - session.lastActivity.getTime();
+    const timeUntilExpiry = this.getTimeUntilExpiry(sessionData);
+    const sessionDuration = sessionData.expiresAt.getTime() - sessionData.lastActivity.getTime();
     const twentyFivePercent = sessionDuration * 0.25;
     const fifteenMinutes = 15 * 60 * 1000;
     
     const refreshThreshold = Math.min(twentyFivePercent, fifteenMinutes);
-    const refreshTime = new Date(session.expiresAt.getTime() - refreshThreshold);
+    const refreshTime = new Date(sessionData.expiresAt.getTime() - refreshThreshold);
     
     return refreshTime;
   }
 
-  static shouldRefreshNow(session: UserSession): boolean {
+  static shouldRefreshNow(sessionData: SessionTimeData): boolean {
     const now = new Date();
-    const optimalRefreshTime = this.getOptimalRefreshTime(session);
+    const optimalRefreshTime = this.getOptimalRefreshTime(sessionData);
     return now >= optimalRefreshTime;
   }
 
-  static getSessionAge(session: UserSession): number {
+  static getSessionAge(sessionData: SessionTimeData): number {
     const now = new Date();
-    return now.getTime() - session.lastActivity.getTime();
+    return now.getTime() - sessionData.lastActivity.getTime();
   }
 
   static formatSessionAge(milliseconds: number): string {

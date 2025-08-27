@@ -1,10 +1,10 @@
-import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
-import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
-import { User } from '../entities/User';
+import { Logger } from '../../../service/shared/utils/Logger';
 import { UserSession } from '../../session/entities/UserSession';
+import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
+import { User } from '../entities/User';
+import { IUserRepository } from '../interfaces/IUserRepository';
 
 export interface SignInResult {
   success: boolean;
@@ -16,8 +16,8 @@ export interface SignInResult {
 
 export class SignInUseCase {
   constructor(
-    private userRepository: UserRepository,
-    private sessionRepository: SessionRepository
+    private userRepository: IUserRepository,
+    private sessionRepository: ISessionRepository
   ) {}
 
   async execute(request: { email: string; password: string }): Promise<SignInResult> {

@@ -1,9 +1,6 @@
-export interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-}
+import { IMessageValidator, ValidationResult } from '../interfaces/IMessageValidator';
 
-export class MessageValidator {
+export class MessageValidator implements IMessageValidator {
   private readonly MAX_CONTENT_LENGTH = 10000; // 10KB
   private readonly MIN_CONTENT_LENGTH = 1;
   private readonly FORBIDDEN_WORDS = ['spam', 'hack', 'exploit']; // Example forbidden words

@@ -1,31 +1,26 @@
-// Chat Feature - Business Layer
-export { MessageEntity, Message, MessageRole, MessageMetadata } from './entities/Message';
-export { ChatRoomEntity, ChatRoom } from './entities/ChatRoom';
+// Business Layer - Chat Feature
+// Exports for external use
 
-export { SendMessageUseCase } from './use-cases/SendMessageUseCase';
-export { ReceiveMessageUseCase } from './use-cases/ReceiveMessageUseCase';
-export { DeleteMessageUseCase } from './use-cases/DeleteMessageUseCase';
+// Entities
+export { ChatRoom } from './entities/ChatRoom';
+export { MessageEntity, MessageRole } from './entities/Message';
+
+// Interfaces
+export type { AIMessageParams, AIResponse, IAIProvider } from './interfaces/IAIProvider';
+export type { CreateRoomResult, DeleteRoomResult, IChatRoomRepository, UpdateRoomResult } from './interfaces/IChatRoomRepository';
+export type { ClipboardResult, IClipboardAdapter } from './interfaces/IClipboardAdapter';
+export type { IMessageRepository, SaveMessageResult } from './interfaces/IMessageRepository';
+
+// Use Cases
 export { CopyMessageUseCase } from './use-cases/CopyMessageUseCase';
-
-// Room Management Use Cases
 export { CreateRoomUseCase } from './use-cases/CreateRoomUseCase';
-export { UpdateRoomUseCase } from './use-cases/UpdateRoomUseCase';
+export { DeleteMessageUseCase } from './use-cases/DeleteMessageUseCase';
 export { DeleteRoomUseCase } from './use-cases/DeleteRoomUseCase';
 export { ListRoomsUseCase } from './use-cases/ListRoomsUseCase';
+export { ReceiveMessageUseCase } from './use-cases/ReceiveMessageUseCase';
+export { SendMessageUseCase } from './use-cases/SendMessageUseCase';
+export { UpdateRoomUseCase } from './use-cases/UpdateRoomUseCase';
 
-export { useChatViewModel } from './view-models/useChatViewModel';
+// View Models
 export { useChatRoomViewModel } from './view-models/useChatRoomViewModel';
-
-// Types
-export type { SendMessageParams, SendMessageResult } from './use-cases/SendMessageUseCase';
-export type { ReceiveMessageParams, ReceiveMessageResult } from './use-cases/ReceiveMessageUseCase';
-export type { DeleteMessageParams, DeleteMessageResult } from './use-cases/DeleteMessageUseCase';
-export type { CopyMessageParams, CopyMessageResult } from './use-cases/CopyMessageUseCase';
-export type { ChatState, ChatActions } from './view-models/useChatViewModel';
-
-// Room Management Types
-export type { CreateRoomParams, CreateRoomResult } from './use-cases/CreateRoomUseCase';
-export type { UpdateRoomParams, UpdateRoomResult } from './use-cases/UpdateRoomUseCase';
-export type { DeleteRoomParams, DeleteRoomResult } from './use-cases/DeleteRoomUseCase';
-export type { ListRoomsParams, ListRoomsResult } from './use-cases/ListRoomsUseCase';
-export type { ChatRoomState, ChatRoomActions } from './view-models/useChatRoomViewModel';
+export { useChatViewModel } from './view-models/useChatViewModel';

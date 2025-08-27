@@ -1,7 +1,7 @@
-import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
+import { Session } from '@supabase/supabase-js';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { ChatRoom } from '../entities/ChatRoom';
-import { Session } from '@supabase/supabase-js';
+import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
 
 export interface UpdateRoomParams {
   roomId: string;
@@ -18,7 +18,8 @@ export interface UpdateRoomResult {
 
 export class UpdateRoomUseCase {
   constructor(
-    private chatRoomRepository: ChatRoomRepository
+    private chatRoomRepository: IChatRoomRepository,
+    private logger: Logger
   ) {}
 
   async execute(params: UpdateRoomParams): Promise<UpdateRoomResult> {

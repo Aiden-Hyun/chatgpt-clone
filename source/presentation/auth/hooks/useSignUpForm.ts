@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSignUpViewModel } from '../../../business/auth/view-models/useSignUpViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function useSignUpForm() {
   const [email, setEmail] = useState('');
@@ -9,7 +10,8 @@ export function useSignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const signUpViewModel = useSignUpViewModel();
+  const useCaseFactory = useUseCaseFactory();
+  const signUpViewModel = useSignUpViewModel(useCaseFactory.createSignUpUseCase());
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -32,7 +34,7 @@ export function useSignUpForm() {
   };
 
   const handleSubmit = async () => {
-    // Presentation-level validation
+    // UI-level validation only (empty fields)
     if (!displayName.trim()) {
       setError('Display name is required');
       return;
@@ -53,16 +55,13 @@ export function useSignUpForm() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+    // Password matching validation - pass to business layer
     setIsLoading(true);
     setError(null);
 
     try {
-      await signUpViewModel.signUp(email, password, displayName);
+      // Pass confirmPassword to business layer for validation
+      await signUpViewModel.signUp(email, password, displayName, confirmPassword);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign up failed');
     } finally {

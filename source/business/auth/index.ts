@@ -1,15 +1,18 @@
-// Auth Feature - Business Layer
+// Business Layer - Auth Feature
+// Exports for external use
+
+// Entities
 export { User } from './entities/User';
 
+// Interfaces
+export type { AuthResult, CreateUserResult, IUserRepository, SignOutResult } from './interfaces/IUserRepository';
+
+// Use Cases
 export { SignInUseCase } from './use-cases/SignInUseCase';
-export { SignUpUseCase } from './use-cases/SignUpUseCase';
 export { SignOutUseCase } from './use-cases/SignOutUseCase';
+export { SignUpUseCase } from './use-cases/SignUpUseCase';
 
+// View Models
 export { useSignInViewModel } from './view-models/useSignInViewModel';
-export { useSignUpViewModel } from './view-models/useSignUpViewModel';
 export { useSignOutViewModel } from './view-models/useSignOutViewModel';
-
-// Types
-export type { SignInResult } from './use-cases/SignInUseCase';
-export type { SignUpResult } from './use-cases/SignUpUseCase';
-export type { SignOutResult } from './use-cases/SignOutUseCase';
+export { useSignUpViewModel } from './view-models/useSignUpViewModel';

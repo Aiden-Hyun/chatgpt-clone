@@ -1,7 +1,7 @@
-import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
-import { Logger } from '../../../service/shared/utils/Logger';
-import { ChatRoom } from '../entities/ChatRoom';
 import { Session } from '@supabase/supabase-js';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { ChatRoom } from '../entities/ChatRoom';
+import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
 
 export interface CreateRoomParams {
   name?: string;
@@ -17,12 +17,13 @@ export interface CreateRoomResult {
 
 export class CreateRoomUseCase {
   constructor(
-    private chatRoomRepository: ChatRoomRepository
+    private chatRoomRepository: IChatRoomRepository,
+    private logger: ILogger
   ) {}
 
   async execute(params: CreateRoomParams): Promise<CreateRoomResult> {
     try {
-      Logger.info('CreateRoomUseCase: Creating new chat room', { 
+      this.logger.info('CreateRoomUseCase: Creating new chat room', { 
         userId: params.session.user.id, 
         model: params.model,
         name: params.name 
@@ -65,7 +66,7 @@ export class CreateRoomUseCase {
       };
 
     } catch (error) {
-      Logger.error('CreateRoomUseCase: Failed to create room', { 
+      this.logger.error('CreateRoomUseCase: Failed to create room', { 
         error, 
         userId: params.session.user.id 
       });

@@ -1,8 +1,8 @@
-import { MessageEntity } from '../entities/Message';
-import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
-import { ClipboardAdapter } from '../../../persistence/chat/adapters/ClipboardAdapter';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { Session } from '@supabase/supabase-js';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { MessageEntity } from '../entities/Message';
+import { IClipboardAdapter } from '../interfaces/IClipboardAdapter';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 
 export interface CopyMessageParams {
   messageId: string;
@@ -20,9 +20,9 @@ export interface CopyMessageResult {
 
 export class CopyMessageUseCase {
   constructor(
-    private messageRepository: MessageRepository,
-    private clipboardAdapter: ClipboardAdapter,
-    private logger: Logger
+    private messageRepository: IMessageRepository,
+    private clipboardAdapter: IClipboardAdapter,
+    private logger: ILogger
   ) {}
 
   async execute(params: CopyMessageParams): Promise<CopyMessageResult> {
