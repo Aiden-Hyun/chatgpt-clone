@@ -16,7 +16,9 @@ export interface AIMessageParams {
   accessToken: string;
 }
 
-export class AIProvider {
+import { IAIProvider } from '../../../business/chat/interfaces/IAIProvider';
+
+export class AIProvider implements IAIProvider {
   async sendMessage(params: AIMessageParams): Promise<AIResponse> {
     try {
       const startTime = Date.now();

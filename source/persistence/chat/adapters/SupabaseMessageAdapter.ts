@@ -1,10 +1,16 @@
-import { supabase } from '../../../../src/shared/lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import { supabase } from '../../../../src/shared/lib/supabase';
 import { MessageData } from '../mappers/MessageMapper';
 
 export interface SaveResult {
   success: boolean;
   data?: MessageData;
+  error?: string;
+}
+
+export interface GetMessagesResult {
+  success: boolean;
+  data?: MessageData[];
   error?: string;
 }
 
@@ -108,6 +114,45 @@ export class SupabaseMessageAdapter {
     } catch (error) {
       console.error('[SupabaseMessageAdapter] Unexpected error:', error);
       return []; // Return empty array like existing implementation
+    }
+  }
+
+  async getRecentByRoomId(roomId: string, limit: number, session: Session): Promise<GetMessagesResult> {
+    try {
+      console.log(`[SupabaseMessageAdapter] Loading recent messages for room: ${roomId}, limit: ${limit}`);
+
+      const { data, error } = await supabase
+        .from('messages')
+        .select('id, role, content, client_id, created_at')
+        .eq('room_id', parseInt(roomId)) // Convert string to number
+        .eq('user_id', session.user.id) // Ensure user owns the messages
+        .order('id', { ascending: false }) // Get most recent first
+        .limit(limit); // Apply limit
+
+      if (error) {
+        console.error('[SupabaseMessageAdapter] Query error:', error);
+        return { success: false, error: 'Failed to load recent messages' };
+      }
+
+      console.log(`[SupabaseMessageAdapter] Loaded ${data?.length || 0} recent messages`);
+      
+      // Map to MessageData format and reverse to get chronological order
+      const messages = (data || []).reverse().map(row => ({
+        id: row.client_id || `db:${row.id}`, // Use client_id or generate db:id
+        content: row.content,
+        role: row.role,
+        timestamp: row.created_at,
+        room_id: roomId, // Keep as string for our format
+        user_id: session.user.id,
+        is_deleted: false,
+        metadata: null
+      }));
+
+      return { success: true, data: messages };
+
+    } catch (error) {
+      console.error('[SupabaseMessageAdapter] Unexpected error:', error);
+      return { success: false, error: 'Unexpected error loading recent messages' };
     }
   }
 

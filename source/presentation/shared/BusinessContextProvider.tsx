@@ -8,6 +8,7 @@ import { UseCaseFactory } from '../../business/shared/UseCaseFactory';
 interface BusinessContextValue {
   useCaseFactory: UseCaseFactory;
   businessProvider: BusinessLayerProvider;
+  getAccessToken: () => Promise<string | null>;
 }
 
 const BusinessContext = createContext<BusinessContextValue | null>(null);
@@ -24,11 +25,28 @@ export function BusinessContextProvider({ children }: BusinessContextProviderPro
   // Create business provider once and memoize
   const businessProvider = useMemo(() => new BusinessLayerProvider(), []);
   
+  // Access token helper can be enhanced to use session repo/use case later
+  const getAccessToken = useMemo(() => async (): Promise<string | null> => {
+    try {
+      const result = await businessProvider
+        .getSessionRepository()
+        .refresh();
+      if (result.success && result.session) {
+        return result.session.accessToken || null;
+      }
+      const current = await businessProvider.getSessionRepository().get();
+      return current?.accessToken || null;
+    } catch {
+      return null;
+    }
+  }, [businessProvider]);
+  
   // Create context value with stable reference
   const contextValue = useMemo(() => ({
     useCaseFactory: businessProvider.getUseCaseFactory(),
-    businessProvider
-  }), [businessProvider]);
+    businessProvider,
+    getAccessToken
+  }), [businessProvider, getAccessToken]);
 
   return (
     <BusinessContext.Provider value={contextValue}>

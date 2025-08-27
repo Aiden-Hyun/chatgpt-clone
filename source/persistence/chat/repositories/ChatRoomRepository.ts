@@ -1,27 +1,11 @@
-import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
-import { ChatRoomMapper } from '../mappers/ChatRoomMapper';
-import { SupabaseChatRoomAdapter } from '../adapters/SupabaseChatRoomAdapter';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { Session } from '@supabase/supabase-js';
+import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { CreateRoomResult, DeleteRoomResult, IChatRoomRepository, UpdateRoomResult } from '../../../business/chat/interfaces/IChatRoomRepository';
+import { Logger } from '../../../service/shared/utils/Logger';
+import { SupabaseChatRoomAdapter } from '../adapters/SupabaseChatRoomAdapter';
+import { ChatRoomMapper } from '../mappers/ChatRoomMapper';
 
-export interface CreateRoomResult {
-  success: boolean;
-  room?: ChatRoom;
-  error?: string;
-}
-
-export interface UpdateRoomResult {
-  success: boolean;
-  room?: ChatRoom;
-  error?: string;
-}
-
-export interface DeleteRoomResult {
-  success: boolean;
-  error?: string;
-}
-
-export class ChatRoomRepository {
+export class ChatRoomRepository implements IChatRoomRepository {
   constructor(
     private chatRoomAdapter: SupabaseChatRoomAdapter = new SupabaseChatRoomAdapter(),
     private chatRoomMapper: ChatRoomMapper = new ChatRoomMapper()
@@ -115,7 +99,7 @@ export class ChatRoomRepository {
     }
   }
 
-  async listByUserId(session: Session): Promise<ChatRoom[]> {
+  async listByUserId(userId: string, session: Session): Promise<ChatRoom[]> {
     try {
       Logger.info('ChatRoomRepository: Getting chat rooms for user', { userId: session.user.id });
 

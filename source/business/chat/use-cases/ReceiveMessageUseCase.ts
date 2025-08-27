@@ -1,3 +1,4 @@
+import { Session } from '@supabase/supabase-js';
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
 import { MessageEntity, MessageRole } from '../entities/Message';
@@ -9,6 +10,7 @@ export interface ReceiveMessageParams {
   userId: string;
   model?: string;
   context?: string;
+  session: Session;
 }
 
 export interface ReceiveMessageResult {
@@ -30,7 +32,7 @@ export class ReceiveMessageUseCase {
       this.logger.info('ReceiveMessageUseCase: Starting message receive', { roomId: params.roomId });
 
       // Get conversation context
-      const context = await this.buildContext(params.roomId, params.context);
+      const context = await this.buildContext(params.roomId, params.session, params.context);
 
       // Get AI response
       const aiResponse = await this.aiProvider.sendMessage({
@@ -60,7 +62,7 @@ export class ReceiveMessageUseCase {
       });
 
       // Save message
-      await this.messageRepository.save(message);
+      await this.messageRepository.save(message, params.session);
 
       this.logger.info('ReceiveMessageUseCase: Message received successfully', {
         roomId: params.roomId,
@@ -81,13 +83,13 @@ export class ReceiveMessageUseCase {
     }
   }
 
-  private async buildContext(roomId: string, customContext?: string): Promise<string> {
+  private async buildContext(roomId: string, session: Session, customContext?: string): Promise<string> {
     if (customContext) {
       return customContext;
     }
 
     // Get recent messages for context
-    const recentMessages = await this.messageRepository.getRecentByRoomId(roomId, 10);
+    const recentMessages = await this.messageRepository.getRecentByRoomId(roomId, 10, session);
     
     if (recentMessages.length === 0) {
       return 'Hello! How can I help you today?';

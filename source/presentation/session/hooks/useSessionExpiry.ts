@@ -1,13 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSessionViewModel } from '../../../business/session/view-models/useSessionViewModel';
 import { ExpiryCalculator } from '../../../service/session/utils/ExpiryCalculator';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function useSessionExpiry() {
   const [isExpiringSoon, setIsExpiringSoon] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const sessionViewModel = useSessionViewModel();
+  const useCaseFactory = useUseCaseFactory();
+  const sessionViewModel = useSessionViewModel({
+    getSessionUseCase: useCaseFactory.createGetSessionUseCase(),
+    refreshSessionUseCase: useCaseFactory.createRefreshSessionUseCase(),
+    validateSessionUseCase: useCaseFactory.createValidateSessionUseCase(),
+    updateActivityUseCase: useCaseFactory.createUpdateSessionActivityUseCase()
+  });
   
   useEffect(() => {
     const checkExpiry = () => {

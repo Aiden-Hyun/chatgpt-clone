@@ -21,6 +21,9 @@ import { SendMessageUseCase } from '../chat/use-cases/SendMessageUseCase';
 import { ReceiveMessageUseCase } from '../chat/use-cases/ReceiveMessageUseCase';
 import { DeleteMessageUseCase } from '../chat/use-cases/DeleteMessageUseCase';
 import { CopyMessageUseCase } from '../chat/use-cases/CopyMessageUseCase';
+import { EditMessageUseCase } from '../chat/use-cases/EditMessageUseCase';
+import { ResendMessageUseCase } from '../chat/use-cases/ResendMessageUseCase';
+import { RegenerateAssistantUseCase } from '../chat/use-cases/RegenerateAssistantUseCase';
 import { CreateRoomUseCase } from '../chat/use-cases/CreateRoomUseCase';
 import { UpdateRoomUseCase } from '../chat/use-cases/UpdateRoomUseCase';
 import { DeleteRoomUseCase } from '../chat/use-cases/DeleteRoomUseCase';
@@ -105,6 +108,35 @@ export class UseCaseFactory {
     return new CopyMessageUseCase(
       this.messageRepository,
       this.clipboardAdapter,
+      this.logger
+    );
+  }
+
+  createEditMessageUseCase(): EditMessageUseCase {
+    return new EditMessageUseCase(
+      this.messageRepository,
+      this.chatRoomRepository,
+      this.messageValidator,
+      this.logger
+    );
+  }
+
+  createResendMessageUseCase(): ResendMessageUseCase {
+    return new ResendMessageUseCase(
+      this.messageRepository,
+      this.chatRoomRepository,
+      this.aiProvider,
+      this.idGenerator,
+      this.logger
+    );
+  }
+
+  createRegenerateAssistantUseCase(): RegenerateAssistantUseCase {
+    return new RegenerateAssistantUseCase(
+      this.messageRepository,
+      this.chatRoomRepository,
+      this.aiProvider,
+      this.idGenerator,
       this.logger
     );
   }

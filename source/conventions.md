@@ -1,16 +1,40 @@
 # 🏗️ ChatGPT Clone - Architecture Conventions
 
+## 🚨 CRITICAL: Anti-Pattern Prevention
+
+**This architecture was refactored to eliminate major design antipatterns. Follow these patterns strictly to prevent regression.**
+
+### ❌ **FORBIDDEN ANTIPATTERNS**
+
+1. **Service Locator Pattern** - Never use global service containers
+2. **Mixed Dependency Injection** - Be consistent across all layers  
+3. **Business Objects in React Hooks** - Use context-based injection
+4. **Business Logic in UI** - Keep validation in business layer
+5. **Direct Service Instantiation** - Always use interfaces and factories
+
+### ✅ **REQUIRED PATTERNS**
+
+1. **Constructor Dependency Injection** - All dependencies injected via constructor
+2. **Interface Abstractions** - All cross-layer dependencies use interfaces
+3. **Factory Pattern** - Use UseCaseFactory for business object creation
+4. **React Context Injection** - Use BusinessContextProvider for UI dependencies
+5. **Result Pattern** - Consistent error handling with Result<T> types
+
+---
+
 ## 📋 Table of Contents
 1. [Architecture Overview](#architecture-overview)
-2. [Folder Structure](#folder-structure)
-3. [Naming Conventions](#naming-conventions)
-4. [Layer Responsibilities](#layer-responsibilities)
-5. [Feature-Based Organization](#feature-based-organization)
-6. [Import/Export Patterns](#importexport-patterns)
-7. [Code Organization Rules](#code-organization-rules)
-8. [Git Workflow](#git-workflow)
-9. [TypeScript Conventions](#typescript-conventions)
-10. [Testing Conventions](#testing-conventions)
+2. [Dependency Injection Patterns](#dependency-injection-patterns)
+3. [Folder Structure](#folder-structure)
+4. [Naming Conventions](#naming-conventions)
+5. [Layer Responsibilities](#layer-responsibilities)
+6. [Feature-Based Organization](#feature-based-organization)
+7. [Import/Export Patterns](#importexport-patterns)
+8. [Code Organization Rules](#code-organization-rules)
+9. [Error Handling Patterns](#error-handling-patterns)
+10. [Git Workflow](#git-workflow)
+11. [TypeScript Conventions](#typescript-conventions)
+12. [Testing Conventions](#testing-conventions)
 
 ---
 
@@ -38,6 +62,187 @@ We follow a **5-layer architecture** with clear separation of concerns:
 - Higher layers can depend on lower layers
 - Lower layers **NEVER** depend on higher layers
 - Cross-layer dependencies are forbidden
+
+---
+
+## 🔌 Dependency Injection Patterns
+
+### **Overview**
+We use **Constructor Dependency Injection** with **Factory Pattern** to eliminate service locator antipatterns and ensure testable, maintainable code.
+
+### **Core Components**
+
+#### **1. BusinessLayerProvider**
+```typescript
+// ✅ CORRECT - Single source of truth for business dependencies
+export class BusinessLayerProvider {
+  constructor() {
+    this.initializeDependencies();
+    this.useCaseFactory = new UseCaseFactory(/* injected deps */);
+  }
+}
+```
+
+#### **2. UseCaseFactory**
+```typescript
+// ✅ CORRECT - Factory creates use cases with injected dependencies
+export class UseCaseFactory {
+  constructor(
+    private userRepository: IUserRepository,
+    private messageValidator: IMessageValidator,
+    // ... all dependencies injected
+  ) {}
+
+  createSignInUseCase(): SignInUseCase {
+    return new SignInUseCase(this.userRepository, this.sessionRepository);
+  }
+}
+```
+
+#### **3. React Context Provider**
+```typescript
+// ✅ CORRECT - Context provides dependencies to React components
+export function BusinessContextProvider({ children }: Props) {
+  const businessProvider = useMemo(() => new BusinessLayerProvider(), []);
+  
+  return (
+    <BusinessContext.Provider value={{ useCaseFactory: businessProvider.getUseCaseFactory() }}>
+      {children}
+    </BusinessContext.Provider>
+  );
+}
+```
+
+### **Layer-by-Layer DI Rules**
+
+#### **Presentation Layer**
+```typescript
+// ✅ CORRECT - Use context to get factory, inject into view models
+export function useSignInForm() {
+  const useCaseFactory = useUseCaseFactory();
+  const signInViewModel = useSignInViewModel(
+    useCaseFactory.createSignInUseCase()
+  );
+  // ...
+}
+
+// ❌ WRONG - Never create use cases directly
+export function useSignInForm() {
+  const signInUseCase = new SignInUseCase(/* ... */); // ❌ Antipattern
+}
+```
+
+#### **Business Layer**
+```typescript
+// ✅ CORRECT - View models receive use cases via dependency injection
+export function useSignInViewModel(signInUseCase: SignInUseCase) {
+  const signIn = useCallback(async (email, password) => {
+    return await signInUseCase.execute({ email, password });
+  }, [signInUseCase]); // ✅ Proper dependency in array
+}
+
+// ❌ WRONG - Never create dependencies inside view models
+export function useSignInViewModel() {
+  const container = DependencyContainer.getInstance(); // ❌ Service Locator
+  const signInUseCase = new SignInUseCase(/* ... */); // ❌ Direct instantiation
+}
+```
+
+#### **Use Cases**
+```typescript
+// ✅ CORRECT - All dependencies injected via constructor
+export class SignInUseCase {
+  constructor(
+    private userRepository: IUserRepository,        // ✅ Interface
+    private sessionRepository: ISessionRepository   // ✅ Interface
+  ) {}
+}
+
+// ❌ WRONG - Never use service locator or direct instantiation
+export class SignInUseCase {
+  async execute() {
+    const repo = ServiceLocator.get('UserRepository'); // ❌ Service Locator
+    const session = new SessionRepository();           // ❌ Direct instantiation
+  }
+}
+```
+
+#### **Service Layer**
+```typescript
+// ✅ CORRECT - Service classes implement interfaces
+export class Logger implements ILogger {
+  info(message: string, context?: LogContext): void {
+    // Implementation
+  }
+}
+
+// ✅ CORRECT - Services are stateless utilities
+export class MessageValidator implements IMessageValidator {
+  validateContent(content: string): ValidationResult {
+    // Pure validation logic
+  }
+}
+```
+
+#### **Persistence Layer**
+```typescript
+// ✅ CORRECT - Repositories implement business interfaces
+export class UserRepository implements IUserRepository {
+  constructor(
+    private authAdapter: SupabaseAuthAdapter = new SupabaseAuthAdapter(),
+    private userMapper: UserMapper = new UserMapper()
+  ) {}
+}
+
+// ✅ CORRECT - Adapters handle external service integration
+export class SupabaseAuthAdapter {
+  async signIn(email: string, password: string): Promise<SupabaseAuthResult> {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    // Handle response
+  }
+}
+```
+
+### **Interface Design Rules**
+
+#### **Business Layer Interfaces** (Define contracts for business needs)
+```typescript
+// ✅ CORRECT - Business-focused interface
+export interface IUserRepository {
+  authenticate(email: string, password: string): Promise<AuthResult>;
+  create(userData: CreateUserData): Promise<CreateUserResult>;
+  findByEmail(email: string): Promise<User | null>;
+}
+```
+
+#### **Service Layer Interfaces** (Define utility contracts)
+```typescript
+// ✅ CORRECT - Service utility interface
+export interface ILogger {
+  info(message: string, context?: LogContext): void;
+  error(message: string, context?: LogContext): void;
+  child(prefix: string): ILogger;
+}
+```
+
+### **Dependency Resolution Order**
+1. **Service Layer** - Initialize first (no dependencies)
+2. **Persistence Layer** - Depends on service layer
+3. **Business Layer** - Depends on persistence + service layers  
+4. **Presentation Layer** - Depends on business layer
+
+### **Testing with DI**
+```typescript
+// ✅ CORRECT - Easy to mock with DI
+const mockUserRepository = {
+  authenticate: jest.fn().mockResolvedValue({ success: true, user: mockUser })
+} as IUserRepository;
+
+const signInUseCase = new SignInUseCase(mockUserRepository, mockSessionRepository);
+
+// ❌ WRONG - Hard to test with service locator
+// ServiceLocator.register('UserRepository', mockUserRepository); // Global state issues
+```
 
 ---
 
@@ -506,6 +711,193 @@ import { Logger } from '../../../service/shared/utils/Logger';
 - **Small size**: 10-30 lines maximum
 - **Descriptive names**: Clear intent
 - **Pure functions**: When possible
+
+---
+
+## 🚨 Error Handling Patterns
+
+### **Result Pattern Implementation**
+We use a consistent **Result<T>** pattern instead of exceptions for predictable error handling.
+
+#### **Standard Result Types**
+```typescript
+// ✅ CORRECT - Use Result pattern for predictable errors
+export type Result<T> = Success<T> | Failure;
+
+export interface Success<T> {
+  success: true;
+  data: T;
+  error?: never;
+}
+
+export interface Failure {
+  success: false;
+  data?: never;
+  error: string;
+  isNetworkError?: boolean;
+}
+```
+
+#### **Creating Results**
+```typescript
+// ✅ CORRECT - Use helper functions
+import { createSuccess, createFailure } from '../shared/types/Result';
+
+// Success case
+return createSuccess(userData);
+
+// Failure case
+return createFailure('User not found');
+
+// Network error case  
+return createFailure('Connection failed', true);
+```
+
+#### **Consuming Results**
+```typescript
+// ✅ CORRECT - Use type guards for safety
+const result = await userRepository.authenticate(email, password);
+
+if (isSuccess(result)) {
+  // TypeScript knows result.data exists
+  console.log('User:', result.data);
+} else {
+  // TypeScript knows result.error exists
+  console.error('Error:', result.error);
+  if (result.isNetworkError) {
+    // Handle network-specific errors
+  }
+}
+```
+
+#### **Converting Legacy Patterns**
+```typescript
+// ✅ CORRECT - Convert existing patterns to Result<T>
+import { fromLegacyResult } from '../shared/types/Result';
+
+const legacyResponse = { success: true, data: user, error: null };
+const result = fromLegacyResult(legacyResponse);
+```
+
+### **Error Handling by Layer**
+
+#### **Presentation Layer**
+```typescript
+// ✅ CORRECT - Handle UI-specific concerns only
+export function useSignInForm() {
+  const [error, setError] = useState<string | null>(null);
+  
+  const handleSubmit = async () => {
+    // Only validate empty fields (UI concern)
+    if (!email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    
+    // Pass to business layer for business validation
+    try {
+      await signInViewModel.signIn(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign in failed');
+    }
+  };
+}
+
+// ❌ WRONG - Business validation in UI
+if (password.length < 8) {
+  setError('Password too short'); // Business rule in UI layer
+}
+```
+
+#### **Business Layer**
+```typescript
+// ✅ CORRECT - Handle business rule validation
+export class SignUpUseCase {
+  async execute(request: SignUpRequest): Promise<Result<User>> {
+    // Business validation
+    if (request.password !== request.confirmPassword) {
+      return createFailure('Passwords do not match');
+    }
+    
+    const emailValidation = EmailValidator.validate(request.email);
+    if (!emailValidation.isValid) {
+      return createFailure(emailValidation.error);
+    }
+    
+    // Delegate to persistence layer
+    const result = await this.userRepository.create(request);
+    return result;
+  }
+}
+```
+
+#### **Service Layer**
+```typescript
+// ✅ CORRECT - Return validation results, don't throw
+export class MessageValidator implements IMessageValidator {
+  validateContent(content: string): ValidationResult {
+    if (content.length === 0) {
+      return { isValid: false, error: 'Content cannot be empty' };
+    }
+    
+    if (content.length > this.MAX_CONTENT_LENGTH) {
+      return { isValid: false, error: 'Content too long' };
+    }
+    
+    return { isValid: true };
+  }
+}
+```
+
+#### **Persistence Layer**
+```typescript
+// ✅ CORRECT - Handle external service errors
+export class SupabaseAuthAdapter {
+  async signIn(email: string, password: string): Promise<SupabaseAuthResult> {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) {
+        // Convert Supabase error to our format
+        const isNetworkError = this.isNetworkError(error);
+        return { success: false, error: error.message, isNetworkError };
+      }
+      
+      return { success: true, data, user: data.user, session: data.session };
+    } catch (error) {
+      // Handle unexpected errors
+      const errorMessage = error instanceof Error ? error.message : 'Unexpected error';
+      return { success: false, error: errorMessage, isNetworkError: true };
+    }
+  }
+}
+```
+
+### **Logging Patterns**
+```typescript
+// ✅ CORRECT - Structured logging with context
+this.logger.info('SignInUseCase: Starting authentication', { 
+  email: request.email,
+  timestamp: new Date().toISOString()
+});
+
+this.logger.error('SignInUseCase: Authentication failed', { 
+  email: request.email,
+  error: result.error,
+  isNetworkError: result.isNetworkError
+});
+
+// ❌ WRONG - Unstructured logging
+console.log('Login attempt'); // No context
+throw new Error('Login failed'); // Throws instead of returning Result
+```
+
+### **Error Boundaries**
+- **Never throw exceptions** across layer boundaries
+- **Always return Result<T>** for operations that can fail
+- **Log errors** at the layer where they occur
+- **Transform errors** when crossing layer boundaries
+- **Preserve error context** (network errors, validation errors, etc.)
 
 ---
 

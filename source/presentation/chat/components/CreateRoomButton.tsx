@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Modal, TextInput } from 'react-native';
-import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
+import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../../../src/features/auth/context/AuthContext';
 import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export interface CreateRoomButtonProps {
   onRoomCreated?: (room: ChatRoom) => void;
@@ -9,7 +11,14 @@ export interface CreateRoomButtonProps {
 }
 
 export function CreateRoomButton({ onRoomCreated, style }: CreateRoomButtonProps) {
-  const { createRoom, creatingRoom } = useChatRoomViewModel();
+  const { session } = useAuth();
+  const useCaseFactory = useUseCaseFactory();
+  const { createRoom, creatingRoom } = useChatRoomViewModel({
+    createRoomUseCase: useCaseFactory.createCreateRoomUseCase(),
+    updateRoomUseCase: useCaseFactory.createUpdateRoomUseCase(),
+    deleteRoomUseCase: useCaseFactory.createDeleteRoomUseCase(),
+    listRoomsUseCase: useCaseFactory.createListRoomsUseCase()
+  }, session);
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo');

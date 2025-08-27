@@ -20,6 +20,10 @@ export interface MessageMetadata {
   tokens?: number;
   processingTime?: number;
   error?: string;
+  isEdited?: boolean;
+  editedAt?: Date;
+  replyToMessageId?: string;
+  supersededByMessageId?: string;
 }
 
 export class MessageEntity implements Message {
@@ -92,5 +96,40 @@ export class MessageEntity implements Message {
 
   canBeCopied(): boolean {
     return !this.isDeleted && this.content.length > 0;
+  }
+
+  editContent(newContent: string): void {
+    this.content = newContent;
+    this.metadata = {
+      ...this.metadata,
+      isEdited: true,
+      editedAt: new Date()
+    };
+  }
+
+  canBeEdited(userId: string): boolean {
+    return this.isUserMessage() && this.userId === userId && !this.isDeleted;
+  }
+
+  markAsSuperseded(supersededByMessageId: string): void {
+    this.metadata = {
+      ...this.metadata,
+      supersededByMessageId
+    };
+  }
+
+  linkToUserMessage(replyToMessageId: string): void {
+    this.metadata = {
+      ...this.metadata,
+      replyToMessageId
+    };
+  }
+
+  isEdited(): boolean {
+    return this.metadata?.isEdited === true;
+  }
+
+  isSuperseded(): boolean {
+    return !!this.metadata?.supersededByMessageId;
   }
 }

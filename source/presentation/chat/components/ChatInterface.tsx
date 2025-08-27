@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
+import { useAuth } from '../../../../src/features/auth/context/AuthContext';
 import { useChatViewModel } from '../../../business/chat/view-models/useChatViewModel';
-import { MessageList } from './MessageList';
-import { ChatInput } from './ChatInput';
+import { useBusinessContext } from '../../shared/BusinessContextProvider';
 import { ChatHeader } from './ChatHeader';
+import { ChatInput } from './ChatInput';
+import { MessageList } from './MessageList';
 
 interface ChatInterfaceProps {
   roomId: string;
@@ -11,19 +13,36 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ roomId, userId }: ChatInterfaceProps) {
+  const { session } = useAuth();
+  const { useCaseFactory, getAccessToken } = useBusinessContext();
   const {
     messages,
     currentRoom,
     isLoading,
     error,
     inputValue,
+    pendingByMessageId,
     sendMessage,
     deleteMessage,
     copyMessage,
+    editMessage,
+    resendMessage,
+    regenerateAssistant,
     setInputValue,
     clearError,
     loadMessages
-  } = useChatViewModel(userId);
+  } = useChatViewModel(userId, {
+    sendMessageUseCase: useCaseFactory.createSendMessageUseCase(),
+    receiveMessageUseCase: useCaseFactory.createReceiveMessageUseCase(),
+    deleteMessageUseCase: useCaseFactory.createDeleteMessageUseCase(),
+    copyMessageUseCase: useCaseFactory.createCopyMessageUseCase(),
+    editMessageUseCase: useCaseFactory.createEditMessageUseCase(),
+    resendMessageUseCase: useCaseFactory.createResendMessageUseCase(),
+    regenerateAssistantUseCase: useCaseFactory.createRegenerateAssistantUseCase(),
+    messageRepository: useCaseFactory['messageRepository'] ?? (useCaseFactory as any),
+    chatRoomRepository: useCaseFactory['chatRoomRepository'] ?? (useCaseFactory as any),
+    getAccessToken
+  }, session);
 
   useEffect(() => {
     loadMessages(roomId);
@@ -63,6 +82,18 @@ export function ChatInterface({ roomId, userId }: ChatInterfaceProps) {
     Alert.alert('Success', 'Message copied to clipboard');
   };
 
+  const handleEditMessage = async (messageId: string, newContent: string) => {
+    await editMessage(messageId, newContent);
+  };
+
+  const handleResendMessage = async (userMessageId: string) => {
+    await resendMessage(userMessageId);
+  };
+
+  const handleRegenerateAssistant = async (targetId: string) => {
+    await regenerateAssistant(targetId);
+  };
+
   return (
     <View style={styles.container}>
       <ChatHeader 
@@ -75,6 +106,11 @@ export function ChatInterface({ roomId, userId }: ChatInterfaceProps) {
         messages={messages}
         onDeleteMessage={handleDeleteMessage}
         onCopyMessage={handleCopyMessage}
+        onEditMessage={handleEditMessage}
+        onResendMessage={handleResendMessage}
+        onRegenerateAssistant={handleRegenerateAssistant}
+        pendingByMessageId={pendingByMessageId}
+        currentUserId={userId}
         isLoading={isLoading}
       />
       

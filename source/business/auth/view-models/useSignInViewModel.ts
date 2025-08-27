@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import { SignInUseCase } from '../use-cases/SignInUseCase';
 
 export function useSignInViewModel(signInUseCase: SignInUseCase) {
@@ -13,7 +13,6 @@ export function useSignInViewModel(signInUseCase: SignInUseCase) {
       const result = await signInUseCase.execute({ email, password });
       
       if (result.success) {
-        console.log('useSignInViewModel: Sign in successful', { userId: result.user?.id });
         return { success: true, user: result.user, session: result.session };
       } else {
         setError(result.error || 'Sign in failed');

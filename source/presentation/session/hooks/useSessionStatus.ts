@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSessionViewModel } from '../../../business/session/view-models/useSessionViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function useSessionStatus() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const sessionViewModel = useSessionViewModel();
+  const useCaseFactory = useUseCaseFactory();
+  const sessionViewModel = useSessionViewModel({
+    getSessionUseCase: useCaseFactory.createGetSessionUseCase(),
+    refreshSessionUseCase: useCaseFactory.createRefreshSessionUseCase(),
+    validateSessionUseCase: useCaseFactory.createValidateSessionUseCase(),
+    updateActivityUseCase: useCaseFactory.createUpdateSessionActivityUseCase()
+  });
   
   const refreshSession = async () => {
     setIsLoading(true);

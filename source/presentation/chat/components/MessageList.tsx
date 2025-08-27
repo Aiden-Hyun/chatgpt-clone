@@ -7,6 +7,11 @@ interface MessageListProps {
   messages: MessageEntity[];
   onDeleteMessage: (messageId: string) => void;
   onCopyMessage: (messageId: string) => void;
+  onEditMessage: (messageId: string, newContent: string) => void;
+  onResendMessage: (userMessageId: string) => void;
+  onRegenerateAssistant: (targetId: string) => void;
+  pendingByMessageId: Record<string, boolean>;
+  currentUserId: string;
   isLoading: boolean;
 }
 
@@ -14,6 +19,11 @@ export function MessageList({
   messages, 
   onDeleteMessage, 
   onCopyMessage, 
+  onEditMessage,
+  onResendMessage,
+  onRegenerateAssistant,
+  pendingByMessageId,
+  currentUserId,
   isLoading 
 }: MessageListProps) {
   const renderMessage = ({ item }: { item: MessageEntity }) => (
@@ -21,6 +31,11 @@ export function MessageList({
       message={item}
       onDelete={() => onDeleteMessage(item.id)}
       onCopy={() => onCopyMessage(item.id)}
+      onEdit={(newContent) => onEditMessage(item.id, newContent)}
+      onResend={() => onResendMessage(item.id)}
+      onRegenerate={() => onRegenerateAssistant(item.id)}
+      isPending={pendingByMessageId[item.id] || false}
+      currentUserId={currentUserId}
     />
   );
 

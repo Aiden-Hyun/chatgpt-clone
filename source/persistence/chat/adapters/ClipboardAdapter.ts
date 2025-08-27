@@ -9,7 +9,9 @@ export interface ClipboardResult {
  * Real implementation using Expo Clipboard for native and Navigator API for web
  * Follows the patterns from /src/shared/lib/clipboard.ts
  */
-export class ClipboardAdapter {
+import { IClipboardAdapter } from '../../../business/chat/interfaces/IClipboardAdapter';
+
+export class ClipboardAdapter implements IClipboardAdapter {
   async copyToClipboard(text: string): Promise<ClipboardResult> {
     try {
       console.log('[ClipboardAdapter] Copying to clipboard:', { textLength: text.length });

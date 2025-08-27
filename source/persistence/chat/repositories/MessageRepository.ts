@@ -1,8 +1,9 @@
-import { MessageEntity, Message } from '../../../business/chat/entities/Message';
-import { MessageMapper } from '../mappers/MessageMapper';
-import { SupabaseMessageAdapter } from '../adapters/SupabaseMessageAdapter';
-import { Logger } from '../../../service/shared/utils/Logger';
 import { Session } from '@supabase/supabase-js';
+import { MessageEntity } from '../../../business/chat/entities/Message';
+import { IMessageRepository } from '../../../business/chat/interfaces/IMessageRepository';
+import { Logger } from '../../../service/shared/utils/Logger';
+import { SupabaseMessageAdapter } from '../adapters/SupabaseMessageAdapter';
+import { MessageMapper } from '../mappers/MessageMapper';
 
 export interface SaveMessageResult {
   success: boolean;
@@ -16,7 +17,7 @@ export interface GetMessagesResult {
   error?: string;
 }
 
-export class MessageRepository {
+export class MessageRepository implements IMessageRepository {
   constructor(
     private messageAdapter: SupabaseMessageAdapter = new SupabaseMessageAdapter(),
     private messageMapper: MessageMapper = new MessageMapper(),
@@ -93,11 +94,11 @@ export class MessageRepository {
     }
   }
 
-  async getRecentByRoomId(roomId: string, limit: number = 50): Promise<MessageEntity[]> {
+  async getRecentByRoomId(roomId: string, limit: number, session: Session): Promise<MessageEntity[]> {
     try {
       this.logger.info('MessageRepository: Getting recent messages by room ID', { roomId, limit });
 
-      const result = await this.messageAdapter.getRecentByRoomId(roomId, limit);
+      const result = await this.messageAdapter.getRecentByRoomId(roomId, limit, session);
       
       if (result.success && result.data) {
         return result.data.map(messageData => this.messageMapper.toEntity(messageData));
@@ -110,15 +111,18 @@ export class MessageRepository {
     }
   }
 
-  async delete(messageId: string, session: Session): Promise<boolean> {
+  async delete(messageId: string, session: Session): Promise<{ success: boolean; error?: string; }> {
     try {
       this.logger.info('MessageRepository: Deleting message', { messageId });
 
       await this.messageAdapter.delete(messageId, session);
-      return true;
+      return { success: true };
     } catch (error) {
       this.logger.error('MessageRepository: Error deleting message', { error, messageId });
-      return false;
+      return { 
+        success: false, 
+        error: 'Failed to delete message'
+      };
     }
   }
 

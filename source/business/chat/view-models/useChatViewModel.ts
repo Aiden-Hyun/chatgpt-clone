@@ -1,14 +1,16 @@
+import { Session } from '@supabase/supabase-js';
 import { useCallback, useState } from 'react';
-import { useAuth } from '../../../../src/features/auth/context/AuthContext';
-import { supabase } from '../../../../src/shared/lib/supabase';
 import { ChatRoomEntity } from '../entities/ChatRoom';
 import { MessageEntity } from '../entities/Message';
+import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 import { CopyMessageUseCase } from '../use-cases/CopyMessageUseCase';
 import { DeleteMessageUseCase } from '../use-cases/DeleteMessageUseCase';
+import { EditMessageUseCase } from '../use-cases/EditMessageUseCase';
 import { ReceiveMessageUseCase } from '../use-cases/ReceiveMessageUseCase';
+import { RegenerateAssistantUseCase } from '../use-cases/RegenerateAssistantUseCase';
+import { ResendMessageUseCase } from '../use-cases/ResendMessageUseCase';
 import { SendMessageUseCase } from '../use-cases/SendMessageUseCase';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
 
 export interface ChatState {
   messages: MessageEntity[];
@@ -16,6 +18,7 @@ export interface ChatState {
   isLoading: boolean;
   error: string | null;
   inputValue: string;
+  pendingByMessageId: Record<string, boolean>;
 }
 
 export interface ChatActions {
@@ -23,6 +26,9 @@ export interface ChatActions {
   receiveMessage: (context?: string, model?: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   copyMessage: (messageId: string) => Promise<void>;
+  editMessage: (messageId: string, newContent: string) => Promise<void>;
+  resendMessage: (userMessageId: string, model?: string) => Promise<void>;
+  regenerateAssistant: (targetId: string, model?: string) => Promise<void>;
   setInputValue: (value: string) => void;
   clearError: () => void;
   loadMessages: (roomId: string) => Promise<void>;
@@ -33,44 +39,28 @@ interface ChatViewModelDependencies {
   receiveMessageUseCase: ReceiveMessageUseCase;
   deleteMessageUseCase: DeleteMessageUseCase;
   copyMessageUseCase: CopyMessageUseCase;
+  editMessageUseCase: EditMessageUseCase;
+  resendMessageUseCase: ResendMessageUseCase;
+  regenerateAssistantUseCase: RegenerateAssistantUseCase;
   messageRepository: IMessageRepository;
   chatRoomRepository: IChatRoomRepository;
+  getAccessToken: () => Promise<string | null>;
 }
 
 export function useChatViewModel(
   userId: string,
-  dependencies: ChatViewModelDependencies
+  dependencies: ChatViewModelDependencies,
+  session: Session | null
 ): ChatState & ChatActions {
-  const { session } = useAuth();
   
   const [state, setState] = useState<ChatState>({
     messages: [],
     currentRoom: null,
     isLoading: false,
     error: null,
-    inputValue: ''
+    inputValue: '',
+    pendingByMessageId: {}
   });
-
-  // Helper function to get fresh access token
-  const getAccessToken = useCallback(async (): Promise<string | null> => {
-    if (!session) return null;
-    
-    let accessToken = session.access_token;
-
-    // Check if token is expired and refresh if needed
-    if (session.expires_at && Math.floor(Date.now() / 1000) > session.expires_at) {
-      try {
-        const { data, error } = await supabase.auth.refreshSession();
-        if (!error && data.session) {
-          accessToken = data.session.access_token;
-        }
-      } catch {
-        // Continue with existing token
-      }
-    }
-
-    return accessToken;
-  }, [session]);
 
   // Destructure injected dependencies
   const {
@@ -78,6 +68,9 @@ export function useChatViewModel(
     receiveMessageUseCase,
     deleteMessageUseCase,
     copyMessageUseCase,
+    editMessageUseCase,
+    resendMessageUseCase,
+    regenerateAssistantUseCase,
     messageRepository,
     chatRoomRepository
   } = dependencies;
@@ -96,7 +89,7 @@ export function useChatViewModel(
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const accessToken = await getAccessToken();
+      const accessToken = await dependencies.getAccessToken();
       if (!accessToken) {
         setState(prev => ({ ...prev, error: 'Failed to get access token', isLoading: false }));
         return;
@@ -132,7 +125,7 @@ export function useChatViewModel(
         isLoading: false
       }));
     }
-  }, [state.currentRoom, userId, session, getAccessToken]);
+  }, [state.currentRoom, userId, session, dependencies]);
 
   const receiveMessage = useCallback(async (context?: string, model?: string) => {
     if (!state.currentRoom) {
@@ -143,11 +136,17 @@ export function useChatViewModel(
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      if (!session) {
+        setState(prev => ({ ...prev, error: 'Authentication required', isLoading: false }));
+        return;
+      }
+
       const result = await receiveMessageUseCase.execute({
         roomId: state.currentRoom.id,
         userId,
         context,
-        model
+        model,
+        session
       });
 
       if (result.success && result.message) {
@@ -170,7 +169,7 @@ export function useChatViewModel(
         isLoading: false
       }));
     }
-  }, [state.currentRoom, userId]);
+  }, [state.currentRoom, userId, session]);
 
   const deleteMessage = useCallback(async (messageId: string) => {
     if (!state.currentRoom) {
@@ -286,7 +285,173 @@ export function useChatViewModel(
         isLoading: false
       }));
     }
-  }, [userId, session]);
+  }, [userId, session, chatRoomRepository, messageRepository]);
+
+  const editMessage = useCallback(async (messageId: string, newContent: string) => {
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
+    setState(prev => ({ 
+      ...prev, 
+      pendingByMessageId: { ...prev.pendingByMessageId, [messageId]: true },
+      error: null 
+    }));
+
+    try {
+      const result = await editMessageUseCase.execute({
+        messageId,
+        newContent,
+        session
+      });
+
+      if (result.success && result.message) {
+        setState(prev => ({
+          ...prev,
+          messages: prev.messages.map(msg => 
+            msg.id === messageId ? result.message! : msg
+          ),
+          pendingByMessageId: { ...prev.pendingByMessageId, [messageId]: false }
+        }));
+      } else {
+        setState(prev => ({
+          ...prev,
+          error: result.error || 'Failed to edit message',
+          pendingByMessageId: { ...prev.pendingByMessageId, [messageId]: false }
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        error: 'Failed to edit message',
+        pendingByMessageId: { ...prev.pendingByMessageId, [messageId]: false }
+      }));
+    }
+  }, [session, editMessageUseCase]);
+
+  const resendMessage = useCallback(async (userMessageId: string, model?: string) => {
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
+    setState(prev => ({ 
+      ...prev, 
+      pendingByMessageId: { ...prev.pendingByMessageId, [userMessageId]: true },
+      error: null 
+    }));
+
+    try {
+      const accessToken = await dependencies.getAccessToken();
+      if (!accessToken) {
+        setState(prev => ({ 
+          ...prev, 
+          error: 'Failed to get access token',
+          pendingByMessageId: { ...prev.pendingByMessageId, [userMessageId]: false }
+        }));
+        return;
+      }
+
+      const result = await resendMessageUseCase.execute({
+        userMessageId,
+        session,
+        model,
+        accessToken
+      });
+
+      if (result.success && result.assistantMessage) {
+        setState(prev => ({
+          ...prev,
+          messages: [...prev.messages, result.assistantMessage!],
+          pendingByMessageId: { ...prev.pendingByMessageId, [userMessageId]: false }
+        }));
+      } else {
+        setState(prev => ({
+          ...prev,
+          error: result.error || 'Failed to resend message',
+          pendingByMessageId: { ...prev.pendingByMessageId, [userMessageId]: false }
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        error: 'Failed to resend message',
+        pendingByMessageId: { ...prev.pendingByMessageId, [userMessageId]: false }
+      }));
+    }
+  }, [session, dependencies, resendMessageUseCase]);
+
+  const regenerateAssistant = useCallback(async (targetId: string, model?: string) => {
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
+    setState(prev => ({ 
+      ...prev, 
+      pendingByMessageId: { ...prev.pendingByMessageId, [targetId]: true },
+      error: null 
+    }));
+
+    try {
+      const accessToken = await dependencies.getAccessToken();
+      if (!accessToken) {
+        setState(prev => ({ 
+          ...prev, 
+          error: 'Failed to get access token',
+          pendingByMessageId: { ...prev.pendingByMessageId, [targetId]: false }
+        }));
+        return;
+      }
+
+      const result = await regenerateAssistantUseCase.execute({
+        targetId,
+        session,
+        model,
+        accessToken
+      });
+
+      if (result.success && result.newAssistantMessage) {
+        setState(prev => {
+          let updatedMessages = prev.messages;
+
+          // Update superseded message if it exists
+          if (result.supersededMessage) {
+            updatedMessages = updatedMessages.map(msg =>
+              msg.id === result.supersededMessage!.id ? result.supersededMessage! : msg
+            );
+          }
+
+          // Add or replace the assistant message
+          const existingIndex = updatedMessages.findIndex(msg => msg.id === result.newAssistantMessage!.id);
+          if (existingIndex >= 0) {
+            updatedMessages[existingIndex] = result.newAssistantMessage!;
+          } else {
+            updatedMessages = [...updatedMessages, result.newAssistantMessage!];
+          }
+
+          return {
+            ...prev,
+            messages: updatedMessages,
+            pendingByMessageId: { ...prev.pendingByMessageId, [targetId]: false }
+          };
+        });
+      } else {
+        setState(prev => ({
+          ...prev,
+          error: result.error || 'Failed to regenerate response',
+          pendingByMessageId: { ...prev.pendingByMessageId, [targetId]: false }
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        error: 'Failed to regenerate response',
+        pendingByMessageId: { ...prev.pendingByMessageId, [targetId]: false }
+      }));
+    }
+  }, [session, dependencies, regenerateAssistantUseCase]);
 
   return {
     ...state,
@@ -294,6 +459,9 @@ export function useChatViewModel(
     receiveMessage,
     deleteMessage,
     copyMessage,
+    editMessage,
+    resendMessage,
+    regenerateAssistant,
     setInputValue,
     clearError,
     loadMessages

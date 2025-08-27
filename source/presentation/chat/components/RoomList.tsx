@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../../../src/features/auth/context/AuthContext';
 import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export interface RoomListProps {
   onRoomSelect?: (room: ChatRoom) => void;
@@ -9,6 +11,8 @@ export interface RoomListProps {
 }
 
 export function RoomList({ onRoomSelect, onRoomDelete }: RoomListProps) {
+  const { session } = useAuth();
+  const useCaseFactory = useUseCaseFactory();
   const { 
     rooms, 
     loading, 
@@ -17,7 +21,12 @@ export function RoomList({ onRoomSelect, onRoomDelete }: RoomListProps) {
     deleteRoom, 
     refreshRooms, 
     clearError 
-  } = useChatRoomViewModel();
+  } = useChatRoomViewModel({
+    createRoomUseCase: useCaseFactory.createCreateRoomUseCase(),
+    updateRoomUseCase: useCaseFactory.createUpdateRoomUseCase(),
+    deleteRoomUseCase: useCaseFactory.createDeleteRoomUseCase(),
+    listRoomsUseCase: useCaseFactory.createListRoomsUseCase()
+  }, session);
 
   const handleDeleteRoom = (room: ChatRoom) => {
     Alert.alert(
