@@ -1,51 +1,95 @@
-import { ChatRoomEntity, ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { RoomData, RoomWithLastMessage } from '../adapters/SupabaseChatRoomAdapter';
 
 export interface ChatRoomData {
-  id: string;
+  id: string; // Domain uses string, adapter uses number
   name: string;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-  is_active: boolean;
-  message_count: number;
-  last_message_id?: string;
-  last_message_timestamp?: string;
+  model: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  lastMessage?: string;
+  lastActivity?: Date;
 }
 
 export class ChatRoomMapper {
-  toData(entity: ChatRoomEntity): ChatRoomData {
+  /**
+   * Convert from domain entity to persistence data
+   */
+  toData(chatRoom: ChatRoom): ChatRoomData {
     return {
-      id: entity.id,
-      name: entity.name,
-      user_id: entity.userId,
-      created_at: entity.createdAt.toISOString(),
-      updated_at: entity.updatedAt.toISOString(),
-      is_active: entity.isActive,
-      message_count: entity.messageCount,
-      last_message_id: entity.lastMessageId,
-      last_message_timestamp: entity.lastMessageTimestamp?.toISOString()
+      id: chatRoom.id,
+      name: chatRoom.name,
+      model: chatRoom.model,
+      userId: chatRoom.userId,
+      createdAt: chatRoom.createdAt,
+      updatedAt: chatRoom.updatedAt,
+      lastMessage: chatRoom.lastMessage,
+      lastActivity: chatRoom.lastActivity,
     };
   }
 
-  toEntity(data: ChatRoomData): ChatRoomEntity {
-    return new ChatRoomEntity({
+  /**
+   * Convert from persistence data to domain entity
+   */
+  toEntity(data: ChatRoomData): ChatRoom {
+    return new ChatRoom({
       id: data.id,
       name: data.name,
-      userId: data.user_id,
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
-      isActive: data.is_active,
-      messageCount: data.message_count,
-      lastMessageId: data.last_message_id,
-      lastMessageTimestamp: data.last_message_timestamp ? new Date(data.last_message_timestamp) : undefined
+      model: data.model,
+      userId: data.userId,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      lastMessage: data.lastMessage,
+      lastActivity: data.lastActivity,
     });
   }
 
-  toDataList(entities: ChatRoomEntity[]): ChatRoomData[] {
-    return entities.map(entity => this.toData(entity));
+  /**
+   * Convert from Supabase adapter data to domain entity
+   */
+  fromSupabaseData(data: RoomData): ChatRoom {
+    return new ChatRoom({
+      id: data.id.toString(), // Convert number to string
+      name: data.name,
+      model: data.model,
+      userId: data.user_id,
+      createdAt: new Date(data.created_at),
+      updatedAt: new Date(data.updated_at),
+    });
   }
 
-  toEntityList(dataList: ChatRoomData[]): ChatRoomEntity[] {
-    return dataList.map(data => this.toEntity(data));
+  /**
+   * Convert from Supabase adapter data with last message to domain entity
+   */
+  fromSupabaseDataWithLastMessage(data: RoomWithLastMessage): ChatRoom {
+    return new ChatRoom({
+      id: data.id.toString(), // Convert number to string
+      name: data.name,
+      model: data.model,
+      userId: data.user_id,
+      createdAt: new Date(data.created_at),
+      updatedAt: new Date(data.updated_at),
+      lastMessage: data.last_message,
+      lastActivity: data.last_activity ? new Date(data.last_activity) : undefined,
+    });
+  }
+
+  /**
+   * Convert domain entity ID to adapter format
+   */
+  toAdapterRoomId(domainId: string): number {
+    const numericId = parseInt(domainId, 10);
+    if (isNaN(numericId)) {
+      throw new Error(`Invalid room ID format: ${domainId}. Expected numeric string.`);
+    }
+    return numericId;
+  }
+
+  /**
+   * Convert adapter room ID to domain format
+   */
+  fromAdapterRoomId(adapterId: number): string {
+    return adapterId.toString();
   }
 }
