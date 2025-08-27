@@ -98,14 +98,14 @@ export class SessionMapper {
       ? new Date(supabaseSession.expires_at * 1000) // Supabase uses seconds, we use milliseconds
       : new Date(Date.now() + 24 * 60 * 60 * 1000); // Default 24 hours
 
-    return new UserSession({
-      userId: user.id,
-      isAuthenticated: true,
+    return new UserSession(
+      user.id,
+      true,
       permissions,
-      lastActivity: new Date(),
+      new Date(),
       expiresAt,
-      accessToken: supabaseSession.access_token,
-      refreshToken: supabaseSession.refresh_token,
-    });
+      supabaseSession.refresh_token,
+      supabaseSession.access_token
+    );
   }
 }

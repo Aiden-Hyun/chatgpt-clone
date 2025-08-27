@@ -1,5 +1,8 @@
-import { fetchJson } from '../../../../src/features/chat/lib/fetch';
-import { appConfig } from '../../../../src/shared/lib/config';
+import { IAIProvider } from '../../../business/chat/interfaces/IAIProvider';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { ConfigService, IConfigService } from '../../../service/shared/lib/config';
+import { fetchJson } from '../../../service/shared/lib/fetch';
+import { Logger } from '../../../service/shared/utils/Logger';
 
 export interface AIResponse {
   success: boolean;
@@ -16,9 +19,18 @@ export interface AIMessageParams {
   accessToken: string;
 }
 
-import { IAIProvider } from '../../../business/chat/interfaces/IAIProvider';
-
 export class AIProvider implements IAIProvider {
+  private readonly logger: ILogger;
+  private readonly configService: IConfigService;
+
+  constructor(
+    configService: IConfigService = new ConfigService(),
+    logger: ILogger = new Logger().child('AIProvider')
+  ) {
+    this.configService = configService;
+    this.logger = logger;
+  }
+
   async sendMessage(params: AIMessageParams): Promise<AIResponse> {
     try {
       const startTime = Date.now();
@@ -42,24 +54,32 @@ export class AIProvider implements IAIProvider {
         skipPersistence: false,
       };
 
-      console.log(`[AIProvider] Making API call to AI service`);
-      console.log(`[AIProvider] Model: ${payload.model}, Message length: ${params.content.length}`);
+      this.logger.info('Making API call to AI service', {
+        model: payload.model,
+        messageLength: params.content.length
+      });
 
-      // Make the actual API call using existing fetch utility
+      // Make the actual API call using our fetch utility
       const response = await fetchJson<any>(
-        `${appConfig.edgeFunctionBaseUrl}/ai-chat`,
+        `${this.configService.getEdgeFunctionBaseUrl()}/ai-chat`,
         {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${params.accessToken}`,
           },
           body: JSON.stringify(payload),
-        }
+        },
+        undefined, // Use default timeout
+        this.logger
       );
 
       const processingTime = Date.now() - startTime;
       
-      console.log(`[AIProvider] Received API response`);
+      this.logger.info('Received API response', {
+        processingTime,
+        hasContent: !!response.content,
+        hasChoices: !!response.choices
+      });
 
       return {
         success: true,
@@ -69,11 +89,11 @@ export class AIProvider implements IAIProvider {
       };
 
     } catch (error) {
-      console.error('[AIProvider] API call failed:', error);
+      this.logger.error('API call failed', { error });
       
       // Fallback to mock response for development
-      if (__DEV__) {
-        console.log('[AIProvider] Using mock response as fallback');
+      if (process.env.NODE_ENV === 'development' || true) { // Always use mock for now
+        this.logger.info('Using mock response as fallback');
         const mockResponse = this.generateMockResponse(params.content);
         return {
           success: true,

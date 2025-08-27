@@ -276,6 +276,11 @@ Use consistent **Result<T>** pattern instead of exceptions for predictable error
 - Export implementations from persistence layer
 - Re-export commonly used types
 
+### **Stateful Test Harnesses**
+- Test components or harnesses must maintain state to mimic real-world persistence.
+- Use `AsyncStorage` or other mechanisms to store and reuse identifiers (like room IDs) across sessions.
+- Avoid "reset-on-refresh" behavior in tests for persistent features, as it can mask underlying bugs.
+
 ---
 
 ## 🧪 Testing Conventions

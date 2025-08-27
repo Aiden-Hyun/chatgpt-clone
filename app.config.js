@@ -5,6 +5,9 @@ export default {
     name: 'chatgpt-clone',
     slug: 'chatgpt-clone',
     version: '1.0.0',
+    plugins: [
+      'expo-secure-store'
+    ],
     extra: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,

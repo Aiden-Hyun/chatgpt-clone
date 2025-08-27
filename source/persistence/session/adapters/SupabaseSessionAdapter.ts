@@ -1,4 +1,4 @@
-import { supabase } from '../../../../src/shared/lib/supabase';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 export interface SupabaseSessionResult {
   success: boolean;

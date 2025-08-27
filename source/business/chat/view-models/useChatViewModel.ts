@@ -104,14 +104,32 @@ export function useChatViewModel(
         accessToken
       });
 
+      console.log('[useChatViewModel] SendMessage result:', {
+        success: result.success,
+        hasUserMessage: !!result.userMessage,
+        hasAssistantMessage: !!result.assistantMessage,
+        error: result.error
+      });
+
       if (result.success && result.userMessage && result.assistantMessage) {
+        // Both user and assistant messages created successfully
         setState(prev => ({
           ...prev,
           messages: [...prev.messages, result.userMessage, result.assistantMessage],
           inputValue: '',
           isLoading: false
         }));
+      } else if (result.userMessage) {
+        // User message was saved but AI failed - show user message and error
+        setState(prev => ({
+          ...prev,
+          messages: [...prev.messages, result.userMessage],
+          inputValue: '',
+          error: result.error || 'AI response failed',
+          isLoading: false
+        }));
       } else {
+        // Complete failure
         setState(prev => ({
           ...prev,
           error: result.error || 'Failed to send message',
@@ -141,12 +159,19 @@ export function useChatViewModel(
         return;
       }
 
+      const accessToken = await dependencies.getAccessToken();
+      if (!accessToken) {
+        setState(prev => ({ ...prev, error: 'Failed to get access token', isLoading: false }));
+        return;
+      }
+
       const result = await receiveMessageUseCase.execute({
         roomId: state.currentRoom.id,
         userId,
         context,
         model,
-        session
+        session,
+        accessToken
       });
 
       if (result.success && result.message) {
@@ -253,7 +278,10 @@ export function useChatViewModel(
   }, []);
 
   const loadMessages = useCallback(async (roomId: string) => {
+    console.log('[useChatViewModel] loadMessages called', { roomId, hasSession: !!session, userId });
+    
     if (!session) {
+      console.log('[useChatViewModel] No session, setting auth error');
       setState(prev => ({ ...prev, error: 'Authentication required' }));
       return;
     }
@@ -261,10 +289,15 @@ export function useChatViewModel(
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      console.log('[useChatViewModel] Loading room and messages...');
       const room = await chatRoomRepository.getById(roomId, session);
+      console.log('[useChatViewModel] Room loaded:', room);
+      
       const messages = await messageRepository.getByRoomId(roomId, session);
+      console.log('[useChatViewModel] Messages loaded:', messages?.length || 0, 'messages');
 
       if (room && room.userId === userId) {
+        console.log('[useChatViewModel] Setting room and messages in state');
         setState(prev => ({
           ...prev,
           currentRoom: room,
@@ -272,6 +305,7 @@ export function useChatViewModel(
           isLoading: false
         }));
       } else {
+        console.log('[useChatViewModel] Room access denied or not found', { room, userId });
         setState(prev => ({
           ...prev,
           error: 'Chat room not found or access denied',
@@ -279,6 +313,7 @@ export function useChatViewModel(
         }));
       }
     } catch (error) {
+      console.error('[useChatViewModel] Error loading messages:', error);
       setState(prev => ({
         ...prev,
         error: 'Failed to load messages',

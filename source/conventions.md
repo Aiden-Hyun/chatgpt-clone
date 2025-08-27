@@ -244,6 +244,33 @@ const signInUseCase = new SignInUseCase(mockUserRepository, mockSessionRepositor
 // ServiceLocator.register('UserRepository', mockUserRepository); // Global state issues
 ```
 
+### **Exposing Dependencies to the Presentation Layer**
+While repositories and other dependencies are private within the `UseCaseFactory`, view models in the Presentation Layer sometimes need direct access (e.g., to load initial data).
+
+```typescript
+// ✅ CORRECT - Add public getter methods to the factory for required dependencies.
+export class UseCaseFactory {
+  // ... constructor ...
+
+  // Getter methods for repositories (needed by view models)
+  public getMessageRepository(): IMessageRepository {
+    return this.messageRepository;
+  }
+}
+
+// ✅ CORRECT - Use the getter in the Presentation Layer.
+// ChatInterface.tsx
+const { useCaseFactory } = useBusinessContext();
+const { messages, loadMessages } = useChatViewModel(userId, {
+  //... use cases ...
+  messageRepository: useCaseFactory.getMessageRepository(), // Correctly injected
+  //...
+});
+
+// ❌ WRONG - Attempting to access private members directly.
+const repo = useCaseFactory['messageRepository']; // Fails, as it's private.
+```
+
 ---
 
 ## 📁 Folder Structure
@@ -873,6 +900,34 @@ export class SupabaseAuthAdapter {
 }
 ```
 
+### **State Updates with Partial Success**
+When a use case involves multiple steps (e.g., save a user message, then get an AI response), the state updates in the view model must account for partial success.
+
+```typescript
+// ✅ CORRECT - Handle cases where the user's action succeeded but a follow-up action failed.
+const result = await sendMessageUseCase.execute(...);
+
+if (result.success) {
+  // Full success: update with both messages
+  setState(prev => ({ ...prev, messages: [...prev.messages, result.userMessage, result.assistantMessage] }));
+} else if (result.userMessage) {
+  // Partial success: User message was saved, but AI failed.
+  // Update the UI with the user's message and show an error.
+  setState(prev => ({ ...prev, messages: [...prev.messages, result.userMessage], error: result.error }));
+} else {
+  // Total failure
+  setState(prev => ({ ...prev, error: result.error }));
+}
+
+// ❌ WRONG - Treating partial success as total failure. This makes the user's message disappear.
+if (result.success) {
+  setState(prev => ({ ...prev, messages: [...prev.messages, result.userMessage, result.assistantMessage] }));
+} else {
+  // If the AI failed, result.success is false, and the user's own message is never shown.
+  setState(prev => ({ ...prev, error: result.error }));
+}
+```
+
 ### **Logging Patterns**
 ```typescript
 // ✅ CORRECT - Structured logging with context
@@ -1026,6 +1081,43 @@ describe('SignInUseCase', () => {
 });
 ```
 
+### **Stateful Test Harnesses**
+When creating temporary components for testing features (`TestChatInterface.tsx`), ensure they correctly mimic real-world state persistence to avoid misleading bugs.
+
+```typescript
+// ✅ CORRECT - Use AsyncStorage or another mechanism to persist IDs across reloads.
+const storageKey = `test_room_${userId}`;
+
+useEffect(() => {
+  const setupTestRoom = async () => {
+    // 1. Try to get a saved room ID from storage.
+    const savedRoomId = await AsyncStorage.getItem(storageKey);
+    if (savedRoomId) {
+      // 2. Verify the room still exists.
+      const roomExists = await verifyRoomExists(savedRoomId);
+      if (roomExists) {
+        setRoomId(savedRoomId);
+        return; // Reuse the existing room.
+      }
+    }
+    // 3. If no valid room is found, create a new one and save its ID.
+    const newRoom = await createNewRoom();
+    await AsyncStorage.setItem(storageKey, newRoom.id);
+    setRoomId(newRoom.id);
+  };
+  setupTestRoom();
+}, []);
+
+
+// ❌ WRONG - Creating a new resource on every component mount.
+useEffect(() => {
+  // This creates a new, empty room every time the component renders or the app refreshes.
+  // It masks the fact that persistence is working, because you are always loading an empty room.
+  const newRoom = await createNewRoom();
+  setRoomId(newRoom.id);
+}, []);
+```
+
 ### **Test Structure**
 - **Arrange**: Set up test data and mocks
 - **Act**: Execute the function being tested
@@ -1041,6 +1133,34 @@ describe('SignInUseCase', () => {
 - Keep functions small and focused
 - Avoid deep nesting
 - Use early returns to reduce complexity
+
+### **State Updates with Partial Success**
+When a use case involves multiple steps (e.g., save a user message, then get an AI response), the state updates in the view model must account for partial success.
+
+```typescript
+// ✅ CORRECT - Handle cases where the user's action succeeded but a follow-up action failed.
+const result = await sendMessageUseCase.execute(...);
+
+if (result.success) {
+  // Full success: update with both messages
+  setState(prev => ({ ...prev, messages: [...prev.messages, result.userMessage, result.assistantMessage] }));
+} else if (result.userMessage) {
+  // Partial success: User message was saved, but AI failed.
+  // Update the UI with the user's message and show an error.
+  setState(prev => ({ ...prev, messages: [...prev.messages, result.userMessage], error: result.error }));
+} else {
+  // Total failure
+  setState(prev => ({ ...prev, error: result.error }));
+}
+
+// ❌ WRONG - Treating partial success as total failure. This makes the user's message disappear.
+if (result.success) {
+  setState(prev => ({ ...prev, messages: [...prev.messages, result.userMessage, result.assistantMessage] }));
+} else {
+  // If the AI failed, result.success is false, and the user's own message is never shown.
+  setState(prev => ({ ...prev, error: result.error }));
+}
+```
 
 ### **Performance**
 - Lazy load components when possible

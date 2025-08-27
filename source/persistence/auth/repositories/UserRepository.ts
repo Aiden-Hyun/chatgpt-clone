@@ -1,12 +1,22 @@
 import { User } from '../../../business/auth/entities/User';
-import { AuthResult, CreateUserResult, IUserRepository } from '../../../business/auth/interfaces/IUserRepository';
+import {
+    AuthResult,
+    CreateUserResult,
+    IUserRepository,
+    RefreshTokenResult,
+    RequestResetResult,
+    ResetPasswordResult,
+    SocialAuthResult
+} from '../../../business/auth/interfaces/IUserRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { SocialAuthAdapter } from '../adapters/SocialAuthAdapter';
 import { SupabaseAuthAdapter } from '../adapters/SupabaseAuthAdapter';
 import { UserMapper } from '../mappers/UserMapper';
 
 export class UserRepository implements IUserRepository {
   constructor(
     private authAdapter: SupabaseAuthAdapter = new SupabaseAuthAdapter(),
+    private socialAuthAdapter: SocialAuthAdapter = new SocialAuthAdapter(),
     private userMapper: UserMapper = new UserMapper()
   ) {}
 
@@ -16,6 +26,21 @@ export class UserRepository implements IUserRepository {
       return userData ? this.userMapper.toDomain(userData) : null;
     } catch (error) {
       Logger.error('Failed to find user by email', { error, email });
+      return null;
+    }
+  }
+
+  async findById(userId: string): Promise<User | null> {
+    try {
+      // This would typically query the user profile table
+      // For now, we'll use the current user method if it matches
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (currentUser && currentUser.id === userId) {
+        return this.userMapper.toDomain(currentUser);
+      }
+      return null;
+    } catch (error) {
+      Logger.error('Failed to find user by ID', { error, userId });
       return null;
     }
   }
@@ -97,6 +122,145 @@ export class UserRepository implements IUserRepository {
     } catch (error) {
       Logger.error('Failed to sign out', { error });
       return { success: false, error: 'Failed to sign out' };
+    }
+  }
+
+  async refreshToken(refreshToken: string): Promise<RefreshTokenResult> {
+    try {
+      return await this.authAdapter.refreshToken(refreshToken);
+    } catch (error) {
+      Logger.error('Failed to refresh token', { error });
+      return { 
+        success: false, 
+        error: 'Failed to refresh token',
+        isNetworkError: true 
+      };
+    }
+  }
+
+  async requestPasswordReset(email: string): Promise<RequestResetResult> {
+    try {
+      Logger.info('UserRepository: Requesting password reset', { email });
+      
+      // Use Supabase auth to request password reset
+      const result = await this.authAdapter.requestPasswordReset(email);
+      
+      if (result.success) {
+        Logger.info('UserRepository: Password reset request successful', { email });
+        return { success: true };
+      } else {
+        Logger.warn('UserRepository: Password reset request failed', { 
+          email, 
+          error: result.error 
+        });
+        return {
+          success: false,
+          error: result.error,
+          isNetworkError: result.isNetworkError
+        };
+      }
+    } catch (error) {
+      Logger.error('UserRepository: Password reset request failed', { error, email });
+      return {
+        success: false,
+        error: 'Failed to request password reset',
+        isNetworkError: true
+      };
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<ResetPasswordResult> {
+    try {
+      Logger.info('UserRepository: Resetting password');
+      
+      // Use Supabase auth to reset password
+      const result = await this.authAdapter.resetPassword(token, newPassword);
+      
+      if (result.success) {
+        Logger.info('UserRepository: Password reset successful');
+        return { success: true };
+      } else {
+        Logger.warn('UserRepository: Password reset failed', { error: result.error });
+        return {
+          success: false,
+          error: result.error,
+          isNetworkError: result.isNetworkError
+        };
+      }
+    } catch (error) {
+      Logger.error('UserRepository: Password reset failed', { error });
+      return {
+        success: false,
+        error: 'Failed to reset password',
+        isNetworkError: true
+      };
+    }
+  }
+
+  async authenticateWithProvider(provider: string, options?: any): Promise<SocialAuthResult> {
+    try {
+      Logger.info('UserRepository: Authenticating with social provider', { provider });
+      
+      const result = await this.socialAuthAdapter.authenticateWithProvider(provider, options);
+      
+      if (result.success && result.user) {
+        // Map the user data to our domain model
+        const user = this.userMapper.toDomain(result.user);
+        
+        return {
+          success: true,
+          user,
+          session: result.session,
+          providerData: result.providerData
+        };
+      } else {
+        return {
+          success: false,
+          error: result.error,
+          isNetworkError: result.isNetworkError,
+          requiresAdditionalInfo: result.requiresAdditionalInfo,
+          providerData: result.providerData
+        };
+      }
+    } catch (error) {
+      Logger.error('UserRepository: Social authentication failed', { error, provider });
+      return {
+        success: false,
+        error: 'Social authentication failed',
+        isNetworkError: true
+      };
+    }
+  }
+
+  async completeSocialAuth(provider: string, data: any): Promise<SocialAuthResult> {
+    try {
+      Logger.info('UserRepository: Completing social authentication', { provider });
+      
+      const result = await this.socialAuthAdapter.completeSocialAuth(provider, data);
+      
+      if (result.success && result.user) {
+        // Map the user data to our domain model
+        const user = this.userMapper.toDomain(result.user);
+        
+        return {
+          success: true,
+          user,
+          session: result.session
+        };
+      } else {
+        return {
+          success: false,
+          error: result.error,
+          isNetworkError: result.isNetworkError
+        };
+      }
+    } catch (error) {
+      Logger.error('UserRepository: Failed to complete social auth', { error, provider });
+      return {
+        success: false,
+        error: 'Failed to complete social authentication',
+        isNetworkError: true
+      };
     }
   }
 

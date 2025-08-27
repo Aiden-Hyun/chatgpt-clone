@@ -1,4 +1,4 @@
-import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { ChatRoomEntity } from '../../../business/chat/entities/ChatRoom';
 import { RoomData, RoomWithLastMessage } from '../adapters/SupabaseChatRoomAdapter';
 
 export interface ChatRoomData {
@@ -16,7 +16,7 @@ export class ChatRoomMapper {
   /**
    * Convert from domain entity to persistence data
    */
-  toData(chatRoom: ChatRoom): ChatRoomData {
+  toData(chatRoom: ChatRoomEntity): ChatRoomData {
     return {
       id: chatRoom.id,
       name: chatRoom.name,
@@ -32,8 +32,8 @@ export class ChatRoomMapper {
   /**
    * Convert from persistence data to domain entity
    */
-  toEntity(data: ChatRoomData): ChatRoom {
-    return new ChatRoom({
+  toEntity(data: ChatRoomData): ChatRoomEntity {
+    return new ChatRoomEntity({
       id: data.id,
       name: data.name,
       model: data.model,
@@ -48,8 +48,8 @@ export class ChatRoomMapper {
   /**
    * Convert from Supabase adapter data to domain entity
    */
-  fromSupabaseData(data: RoomData): ChatRoom {
-    return new ChatRoom({
+  fromSupabaseData(data: RoomData): ChatRoomEntity {
+    return new ChatRoomEntity({
       id: data.id.toString(), // Convert number to string
       name: data.name,
       model: data.model,
@@ -62,8 +62,8 @@ export class ChatRoomMapper {
   /**
    * Convert from Supabase adapter data with last message to domain entity
    */
-  fromSupabaseDataWithLastMessage(data: RoomWithLastMessage): ChatRoom {
-    return new ChatRoom({
+  fromSupabaseDataWithLastMessage(data: RoomWithLastMessage): ChatRoomEntity {
+    return new ChatRoomEntity({
       id: data.id.toString(), // Convert number to string
       name: data.name,
       model: data.model,

@@ -1,4 +1,4 @@
-import { supabase } from '../../../../src/shared/lib/supabase';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 export interface SupabaseAuthResult {
   success: boolean;
@@ -271,6 +271,164 @@ export class SupabaseAuthAdapter {
     } catch (error) {
       console.error('[SupabaseAuthAdapter] Unexpected refresh error:', error);
       return { success: false, error: 'Failed to refresh session' };
+    }
+  }
+
+  async refreshToken(refreshToken: string): Promise<{ 
+    success: boolean; 
+    session?: any; 
+    accessToken?: string; 
+    error?: string; 
+    isNetworkError?: boolean; 
+  }> {
+    try {
+      console.log('[SupabaseAuthAdapter] Refreshing token with provided refresh token');
+      
+      const { data, error } = await supabase.auth.refreshSession({
+        refresh_token: refreshToken
+      });
+      
+      if (error) {
+        console.error('[SupabaseAuthAdapter] Token refresh error:', error);
+        
+        // Check if this is a network error
+        const isNetworkError = error.message?.toLowerCase().includes('network') ||
+                              error.message?.toLowerCase().includes('fetch') ||
+                              error.message?.toLowerCase().includes('connection') ||
+                              error.message?.toLowerCase().includes('timeout') ||
+                              !navigator.onLine;
+        
+        return { 
+          success: false, 
+          error: error.message,
+          isNetworkError 
+        };
+      }
+      
+      if (data.session) {
+        console.log('[SupabaseAuthAdapter] Token refreshed successfully');
+        return { 
+          success: true, 
+          session: data.session,
+          accessToken: data.session.access_token
+        };
+      } else {
+        return { 
+          success: false, 
+          error: 'No session data returned from token refresh' 
+        };
+      }
+    } catch (error) {
+      console.error('[SupabaseAuthAdapter] Unexpected token refresh error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Token refresh failed';
+      
+      const isNetworkError = errorMessage.toLowerCase().includes('network') ||
+                            errorMessage.toLowerCase().includes('fetch') ||
+                            errorMessage.toLowerCase().includes('connection') ||
+                            errorMessage.toLowerCase().includes('timeout') ||
+                            !navigator.onLine;
+      
+      return { 
+        success: false, 
+        error: errorMessage,
+        isNetworkError 
+      };
+    }
+  }
+
+  async requestPasswordReset(email: string): Promise<{ 
+    success: boolean; 
+    error?: string; 
+    isNetworkError?: boolean; 
+  }> {
+    try {
+      console.log('[SupabaseAuthAdapter] Requesting password reset for:', email);
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+      
+      if (error) {
+        console.error('[SupabaseAuthAdapter] Password reset request error:', error);
+        
+        const isNetworkError = error.message?.toLowerCase().includes('network') ||
+                              error.message?.toLowerCase().includes('fetch') ||
+                              error.message?.toLowerCase().includes('connection') ||
+                              error.message?.toLowerCase().includes('timeout') ||
+                              !navigator.onLine;
+        
+        return { 
+          success: false, 
+          error: error.message,
+          isNetworkError 
+        };
+      }
+      
+      console.log('[SupabaseAuthAdapter] Password reset request successful');
+      return { success: true };
+    } catch (error) {
+      console.error('[SupabaseAuthAdapter] Unexpected password reset request error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Password reset request failed';
+      
+      const isNetworkError = errorMessage.toLowerCase().includes('network') ||
+                            errorMessage.toLowerCase().includes('fetch') ||
+                            errorMessage.toLowerCase().includes('connection') ||
+                            errorMessage.toLowerCase().includes('timeout') ||
+                            !navigator.onLine;
+      
+      return { 
+        success: false, 
+        error: errorMessage,
+        isNetworkError 
+      };
+    }
+  }
+
+  async resetPassword(accessToken: string, newPassword: string): Promise<{ 
+    success: boolean; 
+    error?: string; 
+    isNetworkError?: boolean; 
+  }> {
+    try {
+      console.log('[SupabaseAuthAdapter] Resetting password');
+      
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) {
+        console.error('[SupabaseAuthAdapter] Password reset error:', error);
+        
+        const isNetworkError = error.message?.toLowerCase().includes('network') ||
+                              error.message?.toLowerCase().includes('fetch') ||
+                              error.message?.toLowerCase().includes('connection') ||
+                              error.message?.toLowerCase().includes('timeout') ||
+                              !navigator.onLine;
+        
+        return { 
+          success: false, 
+          error: error.message,
+          isNetworkError 
+        };
+      }
+      
+      console.log('[SupabaseAuthAdapter] Password reset successful');
+      return { success: true };
+    } catch (error) {
+      console.error('[SupabaseAuthAdapter] Unexpected password reset error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Password reset failed';
+      
+      const isNetworkError = errorMessage.toLowerCase().includes('network') ||
+                            errorMessage.toLowerCase().includes('fetch') ||
+                            errorMessage.toLowerCase().includes('connection') ||
+                            errorMessage.toLowerCase().includes('timeout') ||
+                            !navigator.onLine;
+      
+      return { 
+        success: false, 
+        error: errorMessage,
+        isNetworkError 
+      };
     }
   }
 }

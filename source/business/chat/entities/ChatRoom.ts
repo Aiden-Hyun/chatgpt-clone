@@ -1,52 +1,56 @@
 export interface ChatRoom {
   id: string;
   name: string;
+  model: string;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
   messageCount: number;
-  lastMessageId?: string;
-  lastMessageTimestamp?: Date;
+  lastMessage?: string;
+  lastActivity?: Date;
 }
 
 export class ChatRoomEntity implements ChatRoom {
   id: string;
   name: string;
+  model: string;
   userId: string;
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
   messageCount: number;
-  lastMessageId?: string;
-  lastMessageTimestamp?: Date;
+  lastMessage?: string;
+  lastActivity?: Date;
 
   constructor(params: {
     id: string;
     name: string;
+    model: string;
     userId: string;
     createdAt?: Date;
     updatedAt?: Date;
     isActive?: boolean;
     messageCount?: number;
-    lastMessageId?: string;
-    lastMessageTimestamp?: Date;
+    lastMessage?: string;
+    lastActivity?: Date;
   }) {
     this.id = params.id;
     this.name = params.name;
+    this.model = params.model;
     this.userId = params.userId;
     this.createdAt = params.createdAt || new Date();
     this.updatedAt = params.updatedAt || new Date();
     this.isActive = params.isActive ?? true;
     this.messageCount = params.messageCount || 0;
-    this.lastMessageId = params.lastMessageId;
-    this.lastMessageTimestamp = params.lastMessageTimestamp;
+    this.lastMessage = params.lastMessage;
+    this.lastActivity = params.lastActivity;
   }
 
   // Business methods
   updateLastMessage(messageId: string, timestamp: Date): void {
-    this.lastMessageId = messageId;
-    this.lastMessageTimestamp = timestamp;
+    this.lastMessage = messageId;
+    this.lastActivity = timestamp;
     this.updatedAt = new Date();
     this.messageCount++;
   }

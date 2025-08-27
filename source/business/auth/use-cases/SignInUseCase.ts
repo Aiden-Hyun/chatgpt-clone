@@ -51,16 +51,15 @@ export class SignInUseCase {
       }
 
       // Create UserSession entity from Supabase auth result
-      const session = new UserSession({
-        userId: authResult.user.id,
-        isAuthenticated: true,
-        permissions: authResult.user.permissions,
-        lastActivity: new Date(),
-        expiresAt: this.calculateExpiryTime(),
-        // Note: In real implementation, we'd get these from Supabase session
-        accessToken: 'will-be-set-by-existing-auth-context',
-        refreshToken: 'will-be-set-by-existing-auth-context'
-      });
+      const session = new UserSession(
+        authResult.user.id,
+        true,
+        authResult.user.permissions || ['user'],
+        new Date(),
+        this.calculateExpiryTime(),
+        'will-be-set-by-existing-auth-context', // refreshToken
+        'will-be-set-by-existing-auth-context'  // accessToken
+      );
 
       // Save session to local storage
       await this.sessionRepository.save(session);

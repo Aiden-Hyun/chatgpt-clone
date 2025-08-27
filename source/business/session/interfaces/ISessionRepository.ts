@@ -6,8 +6,13 @@ export interface RefreshResult {
   error?: string;
 }
 
+export interface SaveSessionResult {
+  success: boolean;
+  error?: string;
+}
+
 export interface ISessionRepository {
-  save(session: UserSession): Promise<void>;
+  save(session: UserSession): Promise<SaveSessionResult>;
   get(): Promise<UserSession | null>;
   clear(): Promise<void>;
   refresh(refreshToken?: string): Promise<RefreshResult>;

@@ -1,5 +1,5 @@
-import { supabase } from '../../../../src/shared/lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 export interface RoomData {
   id: number;

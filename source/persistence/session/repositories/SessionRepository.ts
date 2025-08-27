@@ -1,4 +1,5 @@
 import { UserSession } from '../../../business/session/entities/UserSession';
+import { ISessionRepository, RefreshResult, SaveSessionResult } from '../../../business/session/interfaces/ISessionRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { LocalStorageAdapter } from '../adapters/LocalStorageAdapter';
 import { SecureStorageAdapter } from '../adapters/SecureStorageAdapter';
@@ -6,13 +7,7 @@ import { SupabaseSessionAdapter } from '../adapters/SupabaseSessionAdapter';
 import { SessionMapper } from '../mappers/SessionMapper';
 import { TokenRepository } from './TokenRepository';
 
-export interface RefreshResult {
-  success: boolean;
-  session?: UserSession;
-  error?: string;
-}
-
-export class SessionRepository {
+export class SessionRepository implements ISessionRepository {
   constructor(
     private storageAdapter: LocalStorageAdapter = new LocalStorageAdapter(),
     private secureStorageAdapter: SecureStorageAdapter = new SecureStorageAdapter(),
@@ -21,7 +16,7 @@ export class SessionRepository {
     private tokenRepository: TokenRepository = new TokenRepository()
   ) {}
 
-  async save(session: UserSession): Promise<void> {
+  async save(session: UserSession): Promise<SaveSessionResult> {
     try {
       const sessionData = this.sessionMapper.toStorage(session);
       await this.storageAdapter.setItem('user_session', sessionData);
@@ -35,9 +30,13 @@ export class SessionRepository {
       }
       
       Logger.debug('Session saved successfully', { userId: session.userId });
+      return { success: true };
     } catch (error) {
       Logger.error('Failed to save session', { error });
-      throw error;
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to save session' 
+      };
     }
   }
 
@@ -137,21 +136,31 @@ export class SessionRepository {
     }
   }
 
-  async updateLastActivity(session: UserSession): Promise<void> {
+  async updateLastActivity(userId: string): Promise<void> {
     try {
-      const updatedSession = session.updateLastActivity();
-      await this.save(updatedSession);
-      Logger.debug('Session last activity updated', { userId: session.userId });
+      const session = await this.get();
+      if (session && session.userId === userId) {
+        const updatedSession = session.updateLastActivity();
+        await this.save(updatedSession);
+        Logger.debug('Session last activity updated', { userId });
+      } else {
+        Logger.warn('Cannot update last activity: session not found or user mismatch', { userId });
+      }
     } catch (error) {
       Logger.error('Failed to update session last activity', { error });
       throw error;
     }
   }
 
-  async isValid(): Promise<boolean> {
+  async isValid(session: UserSession): Promise<boolean> {
     try {
-      const session = await this.get();
-      return session !== null && session.isActive();
+      if (!session || !session.isActive) {
+        return false;
+      }
+      
+      // Check if session is expired
+      const now = new Date();
+      return session.expiresAt > now;
     } catch (error) {
       Logger.error('Failed to check session validity', { error });
       return false;

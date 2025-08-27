@@ -2,12 +2,14 @@
 // Follows layered architecture: Presentation layer manages its dependencies
 
 import React, { createContext, useContext, useMemo } from 'react';
+import { IClipboardAdapter } from '../../business/chat/interfaces/IClipboardAdapter';
 import { BusinessLayerProvider } from '../../business/shared/BusinessLayerProvider';
 import { UseCaseFactory } from '../../business/shared/UseCaseFactory';
 
 interface BusinessContextValue {
   useCaseFactory: UseCaseFactory;
   businessProvider: BusinessLayerProvider;
+  clipboard: IClipboardAdapter;
   getAccessToken: () => Promise<string | null>;
 }
 
@@ -45,6 +47,7 @@ export function BusinessContextProvider({ children }: BusinessContextProviderPro
   const contextValue = useMemo(() => ({
     useCaseFactory: businessProvider.getUseCaseFactory(),
     businessProvider,
+    clipboard: businessProvider.getClipboardAdapter(),
     getAccessToken
   }), [businessProvider, getAccessToken]);
 

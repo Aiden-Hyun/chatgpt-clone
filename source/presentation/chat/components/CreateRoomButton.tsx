@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../../../../src/features/auth/context/AuthContext';
 import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
 import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
+import { useAuth } from '../../auth/context/BridgeAuthContext';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export interface CreateRoomButtonProps {

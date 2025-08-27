@@ -15,6 +15,36 @@ export class Logger implements ILogger {
     this.currentLevel = level;
   }
 
+  // Instance methods that implement ILogger interface
+  debug(message: string, context?: LogContext): void {
+    if (Logger.shouldLog(LogLevel.DEBUG)) {
+      console.log(`[DEBUG] ${message}`, context || '');
+    }
+  }
+
+  info(message: string, context?: LogContext): void {
+    if (Logger.shouldLog(LogLevel.INFO)) {
+      console.log(`[INFO] ${message}`, context || '');
+    }
+  }
+
+  warn(message: string, context?: LogContext): void {
+    if (Logger.shouldLog(LogLevel.WARN)) {
+      console.warn(`[WARN] ${message}`, context || '');
+    }
+  }
+
+  error(message: string, context?: LogContext): void {
+    if (Logger.shouldLog(LogLevel.ERROR)) {
+      console.error(`[ERROR] ${message}`, context || '');
+    }
+  }
+
+  child(prefix: string): ILogger {
+    return new ChildLogger(prefix);
+  }
+
+  // Static methods for convenience (backwards compatibility)
   static debug(message: string, context?: LogContext): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
       console.log(`[DEBUG] ${message}`, context || '');
@@ -64,7 +94,7 @@ export class Logger implements ILogger {
     });
   }
 
-  private static shouldLog(level: LogLevel): boolean {
+  public static shouldLog(level: LogLevel): boolean {
     return level >= this.currentLevel || this.isDevelopment;
   }
 
@@ -73,24 +103,34 @@ export class Logger implements ILogger {
   }
 }
 
-class ChildLogger extends Logger {
-  constructor(private prefix: string) {
-    super();
-  }
+class ChildLogger implements ILogger {
+  constructor(private prefix: string) {}
 
   debug(message: string, context?: LogContext): void {
-    super.debug(`[${this.prefix}] ${message}`, context);
+    if (Logger.shouldLog(LogLevel.DEBUG)) {
+      console.log(`[DEBUG] [${this.prefix}] ${message}`, context || '');
+    }
   }
 
   info(message: string, context?: LogContext): void {
-    super.info(`[${this.prefix}] ${message}`, context);
+    if (Logger.shouldLog(LogLevel.INFO)) {
+      console.log(`[INFO] [${this.prefix}] ${message}`, context || '');
+    }
   }
 
   warn(message: string, context?: LogContext): void {
-    super.warn(`[${this.prefix}] ${message}`, context);
+    if (Logger.shouldLog(LogLevel.WARN)) {
+      console.warn(`[WARN] [${this.prefix}] ${message}`, context || '');
+    }
   }
 
   error(message: string, context?: LogContext): void {
-    super.error(`[${this.prefix}] ${message}`, context);
+    if (Logger.shouldLog(LogLevel.ERROR)) {
+      console.error(`[ERROR] [${this.prefix}] ${message}`, context || '');
+    }
+  }
+
+  child(prefix: string): ILogger {
+    return new ChildLogger(`${this.prefix}:${prefix}`);
   }
 }

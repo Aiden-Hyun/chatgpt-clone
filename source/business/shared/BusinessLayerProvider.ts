@@ -2,27 +2,30 @@
 // Follows layered architecture: Business layer owns its dependency configuration
 
 import { IUserRepository } from '../auth/interfaces/IUserRepository';
-import { ISessionRepository } from '../session/interfaces/ISessionRepository';
-import { IMessageRepository } from '../chat/interfaces/IMessageRepository';
-import { IChatRoomRepository } from '../chat/interfaces/IChatRoomRepository';
 import { IAIProvider } from '../chat/interfaces/IAIProvider';
+import { IChatRoomRepository } from '../chat/interfaces/IChatRoomRepository';
 import { IClipboardAdapter } from '../chat/interfaces/IClipboardAdapter';
+import { IMessageRepository } from '../chat/interfaces/IMessageRepository';
+import { ISessionRepository } from '../session/interfaces/ISessionRepository';
+
+// Import config service
+import { ConfigService } from '../../service/shared/lib/config';
 
 // Import concrete implementations from persistence layer
 import { UserRepository } from '../../persistence/auth/repositories/UserRepository';
-import { SessionRepository } from '../../persistence/session/repositories/SessionRepository';
-import { MessageRepository } from '../../persistence/chat/repositories/MessageRepository';
-import { ChatRoomRepository } from '../../persistence/chat/repositories/ChatRoomRepository';
 import { AIProvider } from '../../persistence/chat/adapters/AIProvider';
 import { ClipboardAdapter } from '../../persistence/chat/adapters/ClipboardAdapter';
+import { ChatRoomRepository } from '../../persistence/chat/repositories/ChatRoomRepository';
+import { MessageRepository } from '../../persistence/chat/repositories/MessageRepository';
+import { SessionRepository } from '../../persistence/session/repositories/SessionRepository';
 
 // Import service layer utilities  
-import { ILogger } from '../../service/shared/interfaces/ILogger';
-import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
-import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
-import { Logger } from '../../service/shared/utils/Logger';
-import { MessageValidator } from '../../service/chat/validators/MessageValidator';
 import { IdGenerator } from '../../service/chat/generators/IdGenerator';
+import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
+import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
+import { MessageValidator } from '../../service/chat/validators/MessageValidator';
+import { ILogger } from '../../service/shared/interfaces/ILogger';
+import { Logger } from '../../service/shared/utils/Logger';
 
 import { UseCaseFactory } from './UseCaseFactory';
 
@@ -72,12 +75,15 @@ export class BusinessLayerProvider {
     this.messageValidator = new MessageValidator();
     this.idGenerator = new IdGenerator();
     
+    // Create config service
+    const configService = new ConfigService(this.logger);
+    
     // Initialize persistence layer dependencies (depend on service layer)
     this.userRepository = new UserRepository();
     this.sessionRepository = new SessionRepository();
     this.messageRepository = new MessageRepository();
     this.chatRoomRepository = new ChatRoomRepository();
-    this.aiProvider = new AIProvider();
+    this.aiProvider = new AIProvider(configService, this.logger);
     this.clipboardAdapter = new ClipboardAdapter();
   }
 

@@ -1,37 +1,45 @@
 // Use Case Factory - Creates configured use cases with proper DI
 // Follows layered architecture: Business layer factory for business objects
 
+import { IAuthEventEmitter } from '../auth/interfaces/IAuthEventEmitter';
 import { IUserRepository } from '../auth/interfaces/IUserRepository';
-import { ISessionRepository } from '../session/interfaces/ISessionRepository';
-import { IMessageRepository } from '../chat/interfaces/IMessageRepository';
-import { IChatRoomRepository } from '../chat/interfaces/IChatRoomRepository';
 import { IAIProvider } from '../chat/interfaces/IAIProvider';
+import { IChatRoomRepository } from '../chat/interfaces/IChatRoomRepository';
 import { IClipboardAdapter } from '../chat/interfaces/IClipboardAdapter';
+import { IMessageRepository } from '../chat/interfaces/IMessageRepository';
+import { ISessionRepository } from '../session/interfaces/ISessionRepository';
 
 // Service layer interfaces
-import { ILogger } from '../../service/shared/interfaces/ILogger';
-import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
 import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
+import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
+import { ILogger } from '../../service/shared/interfaces/ILogger';
 
 // Use Cases
+import { CheckAuthorizationUseCase } from '../auth/use-cases/CheckAuthorizationUseCase';
+import { MonitorAuthStateUseCase } from '../auth/use-cases/MonitorAuthStateUseCase';
+import { RefreshTokenUseCase } from '../auth/use-cases/RefreshTokenUseCase';
+import { RequestPasswordResetUseCase } from '../auth/use-cases/RequestPasswordResetUseCase';
+import { ResetPasswordUseCase } from '../auth/use-cases/ResetPasswordUseCase';
 import { SignInUseCase } from '../auth/use-cases/SignInUseCase';
-import { SignUpUseCase } from '../auth/use-cases/SignUpUseCase';
 import { SignOutUseCase } from '../auth/use-cases/SignOutUseCase';
-import { SendMessageUseCase } from '../chat/use-cases/SendMessageUseCase';
-import { ReceiveMessageUseCase } from '../chat/use-cases/ReceiveMessageUseCase';
-import { DeleteMessageUseCase } from '../chat/use-cases/DeleteMessageUseCase';
+import { SignUpUseCase } from '../auth/use-cases/SignUpUseCase';
+import { SocialAuthUseCase } from '../auth/use-cases/SocialAuthUseCase';
 import { CopyMessageUseCase } from '../chat/use-cases/CopyMessageUseCase';
-import { EditMessageUseCase } from '../chat/use-cases/EditMessageUseCase';
-import { ResendMessageUseCase } from '../chat/use-cases/ResendMessageUseCase';
-import { RegenerateAssistantUseCase } from '../chat/use-cases/RegenerateAssistantUseCase';
 import { CreateRoomUseCase } from '../chat/use-cases/CreateRoomUseCase';
-import { UpdateRoomUseCase } from '../chat/use-cases/UpdateRoomUseCase';
+import { DeleteMessageUseCase } from '../chat/use-cases/DeleteMessageUseCase';
 import { DeleteRoomUseCase } from '../chat/use-cases/DeleteRoomUseCase';
+import { EditMessageUseCase } from '../chat/use-cases/EditMessageUseCase';
 import { ListRoomsUseCase } from '../chat/use-cases/ListRoomsUseCase';
+import { ReceiveMessageUseCase } from '../chat/use-cases/ReceiveMessageUseCase';
+import { RegenerateAssistantUseCase } from '../chat/use-cases/RegenerateAssistantUseCase';
+import { ResendMessageUseCase } from '../chat/use-cases/ResendMessageUseCase';
+import { SendMessageUseCase } from '../chat/use-cases/SendMessageUseCase';
+import { UpdateRoomUseCase } from '../chat/use-cases/UpdateRoomUseCase';
+import { AutoLogoutUseCase } from '../session/use-cases/AutoLogoutUseCase';
 import { GetSessionUseCase } from '../session/use-cases/GetSessionUseCase';
 import { RefreshSessionUseCase } from '../session/use-cases/RefreshSessionUseCase';
-import { ValidateSessionUseCase } from '../session/use-cases/ValidateSessionUseCase';
 import { UpdateSessionActivityUseCase } from '../session/use-cases/UpdateSessionActivityUseCase';
+import { ValidateSessionUseCase } from '../session/use-cases/ValidateSessionUseCase';
 
 /**
  * Factory for creating use cases with injected dependencies
@@ -48,6 +56,7 @@ export class UseCaseFactory {
     // Adapter dependencies (injected)
     private aiProvider: IAIProvider,
     private clipboardAdapter: IClipboardAdapter,
+    private authEventEmitter: IAuthEventEmitter,
     
     // Service dependencies (injected)
     private logger: ILogger,
@@ -73,6 +82,20 @@ export class UseCaseFactory {
     return new SignOutUseCase(
       this.sessionRepository,
       this.userRepository
+    );
+  }
+
+  createRefreshTokenUseCase(): RefreshTokenUseCase {
+    return new RefreshTokenUseCase(
+      this.userRepository,
+      this.sessionRepository
+    );
+  }
+
+  createMonitorAuthStateUseCase(): MonitorAuthStateUseCase {
+    return new MonitorAuthStateUseCase(
+      this.authEventEmitter,
+      this.sessionRepository
     );
   }
 
@@ -144,8 +167,7 @@ export class UseCaseFactory {
   // Room Use Cases
   createCreateRoomUseCase(): CreateRoomUseCase {
     return new CreateRoomUseCase(
-      this.chatRoomRepository,
-      this.logger
+      this.chatRoomRepository
     );
   }
 
@@ -187,7 +209,8 @@ export class UseCaseFactory {
 
   createValidateSessionUseCase(): ValidateSessionUseCase {
     return new ValidateSessionUseCase(
-      this.sessionRepository
+      this.sessionRepository,
+      this.createRefreshTokenUseCase()
     );
   }
 
@@ -195,5 +218,46 @@ export class UseCaseFactory {
     return new UpdateSessionActivityUseCase(
       this.sessionRepository
     );
+  }
+
+  createAutoLogoutUseCase(): AutoLogoutUseCase {
+    return new AutoLogoutUseCase(
+      this.sessionRepository,
+      this.createSignOutUseCase()
+    );
+  }
+
+  createRequestPasswordResetUseCase(): RequestPasswordResetUseCase {
+    return new RequestPasswordResetUseCase(
+      this.userRepository
+    );
+  }
+
+  createResetPasswordUseCase(): ResetPasswordUseCase {
+    return new ResetPasswordUseCase(
+      this.userRepository
+    );
+  }
+
+  createSocialAuthUseCase(): SocialAuthUseCase {
+    return new SocialAuthUseCase(
+      this.userRepository,
+      this.sessionRepository
+    );
+  }
+
+  createCheckAuthorizationUseCase(): CheckAuthorizationUseCase {
+    return new CheckAuthorizationUseCase(
+      this.sessionRepository
+    );
+  }
+
+  // Getter methods for repositories (needed by view models)
+  getMessageRepository(): IMessageRepository {
+    return this.messageRepository;
+  }
+
+  getChatRoomRepository(): IChatRoomRepository {
+    return this.chatRoomRepository;
   }
 }

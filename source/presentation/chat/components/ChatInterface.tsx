@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
-import { useAuth } from '../../../../src/features/auth/context/AuthContext';
+import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
 import { useChatViewModel } from '../../../business/chat/view-models/useChatViewModel';
+import { useAuth } from '../../auth/context/BridgeAuthContext';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 import { ChatHeader } from './ChatHeader';
 import { ChatInput } from './ChatInput';
@@ -39,8 +40,8 @@ export function ChatInterface({ roomId, userId }: ChatInterfaceProps) {
     editMessageUseCase: useCaseFactory.createEditMessageUseCase(),
     resendMessageUseCase: useCaseFactory.createResendMessageUseCase(),
     regenerateAssistantUseCase: useCaseFactory.createRegenerateAssistantUseCase(),
-    messageRepository: useCaseFactory['messageRepository'] ?? (useCaseFactory as any),
-    chatRoomRepository: useCaseFactory['chatRoomRepository'] ?? (useCaseFactory as any),
+    messageRepository: useCaseFactory.getMessageRepository(),
+    chatRoomRepository: useCaseFactory.getChatRoomRepository(),
     getAccessToken
   }, session);
 
@@ -100,6 +101,18 @@ export function ChatInterface({ roomId, userId }: ChatInterfaceProps) {
         roomName={currentRoom?.getDisplayName() || 'Chat'}
         messageCount={messages.length}
         isLoading={isLoading}
+        selectedModel={currentRoom?.model || DEFAULT_MODEL}
+        onModelChange={async (model) => {
+          if (!currentRoom) return;
+          const result = await useCaseFactory.createUpdateRoomUseCase().execute({
+            roomId: currentRoom.id,
+            model,
+            session
+          });
+          if (!result.success) {
+            Alert.alert('Error', result.error || 'Failed to update model');
+          }
+        }}
       />
       
       <MessageList

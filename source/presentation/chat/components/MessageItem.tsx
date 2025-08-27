@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
-import { MessageEntity, MessageRole } from '../../../business/chat/entities/Message';
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MessageEntity } from '../../../business/chat/entities/Message';
 import { MessageFormatter } from '../../../service/chat/utils/MessageFormatter';
+import { MarkdownRenderer } from '../../components/MarkdownRenderer';
 
 interface MessageItemProps {
   message: MessageEntity;
@@ -165,13 +166,15 @@ export function MessageItem({
           </View>
         </View>
       ) : (
-        <Text style={[
-          styles.content,
+        <View style={[
+          styles.contentContainer,
           isDeleted && styles.deletedContent,
           isUserMessage ? styles.userContent : styles.assistantContent
         ]}>
-          {message.getDisplayContent()}
-        </Text>
+          <MarkdownRenderer>
+            {MessageFormatter.formatForDisplay(message.getDisplayContent())}
+          </MarkdownRenderer>
+        </View>
       )}
       
       {message.metadata && (
@@ -276,6 +279,9 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 16,
     lineHeight: 22,
+  },
+  contentContainer: {
+    flex: 1,
   },
   userContent: {
     color: '#FFFFFF',

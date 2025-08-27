@@ -11,6 +11,7 @@ export interface ReceiveMessageParams {
   model?: string;
   context?: string;
   session: Session;
+  accessToken: string;
 }
 
 export interface ReceiveMessageResult {
@@ -38,7 +39,8 @@ export class ReceiveMessageUseCase {
       const aiResponse = await this.aiProvider.sendMessage({
         content: context,
         roomId: params.roomId,
-        model: params.model || 'gpt-3.5-turbo'
+        model: params.model || 'gpt-3.5-turbo',
+        accessToken: params.accessToken
       });
 
       if (!aiResponse.success) {
