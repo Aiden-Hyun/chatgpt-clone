@@ -1,0 +1,1 @@
+export { IStorageAdapter } from './IStorageAdapter';

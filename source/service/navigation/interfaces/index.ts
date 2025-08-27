@@ -1,0 +1,1 @@
+export { INavigationStateAdapter } from './INavigationStateAdapter';

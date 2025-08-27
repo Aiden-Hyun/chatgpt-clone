@@ -1,0 +1,1 @@
+export { formatTranslation } from './languageFormatter';

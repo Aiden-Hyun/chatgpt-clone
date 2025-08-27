@@ -2,14 +2,25 @@
 // Follows layered architecture: Presentation layer manages its dependencies
 
 import React, { createContext, useContext, useMemo } from 'react';
+import { IAlertService, IToastService } from '../../business/alert/interfaces';
 import { IClipboardAdapter } from '../../business/chat/interfaces/IClipboardAdapter';
+import { ILanguageService } from '../../business/language/interfaces/ILanguageService';
+import { INavigationService, INavigationTracker } from '../../business/navigation/interfaces';
 import { BusinessLayerProvider } from '../../business/shared/BusinessLayerProvider';
 import { UseCaseFactory } from '../../business/shared/UseCaseFactory';
+import { ISecureStorageService, IStorageService } from '../../business/storage/interfaces';
 
 interface BusinessContextValue {
   useCaseFactory: UseCaseFactory;
   businessProvider: BusinessLayerProvider;
   clipboard: IClipboardAdapter;
+  languageService: ILanguageService;
+  toastService: IToastService;
+  alertService: IAlertService;
+  navigationService: INavigationService;
+  navigationTracker: INavigationTracker;
+  storageService: IStorageService;
+  secureStorageService: ISecureStorageService;
   getAccessToken: () => Promise<string | null>;
 }
 
@@ -48,6 +59,13 @@ export function BusinessContextProvider({ children }: BusinessContextProviderPro
     useCaseFactory: businessProvider.getUseCaseFactory(),
     businessProvider,
     clipboard: businessProvider.getClipboardAdapter(),
+    languageService: businessProvider.getLanguageService(),
+    toastService: businessProvider.getToastService(),
+    alertService: businessProvider.getAlertService(),
+    navigationService: businessProvider.getNavigationService(),
+    navigationTracker: businessProvider.getNavigationTracker(),
+    storageService: businessProvider.getStorageService(),
+    secureStorageService: businessProvider.getSecureStorageService(),
     getAccessToken
   }), [businessProvider, getAccessToken]);
 

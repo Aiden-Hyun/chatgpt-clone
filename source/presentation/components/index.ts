@@ -1,5 +1,5 @@
-// Presentation layer components
-export { CodeBlock } from './CodeBlock';
-export { CodeStyler } from './CodeStyler';
-export { MarkdownRenderer } from './MarkdownRenderer';
-
+// Export all components from the presentation layer
+export * from './ui';
+export * from './CodeBlock';
+export * from './CodeStyler';
+export * from './MarkdownRenderer';
