@@ -1,146 +1,168 @@
-// Note: This is a mock implementation for React Native
-// In a real implementation, you would use Expo SecureStore
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
+/**
+ * Real implementation using Expo SecureStore for native and localStorage for web
+ * Follows security best practices for sensitive data storage
+ * Note: SecureStore is only available on native platforms, falls back to localStorage on web
+ */
 export class SecureStorageAdapter {
-  private storage: Map<string, string> = new Map();
+  private readonly KEYS_STORAGE_KEY = '__secure_storage_keys__';
 
   async setItem(key: string, value: string): Promise<void> {
     try {
-      // Mock implementation - replace with actual SecureStore call
-      // await SecureStore.setItemAsync(key, value);
+      console.log('[SecureStorageAdapter] Setting secure item:', { key, valueLength: value.length });
       
-      this.storage.set(key, value);
+      if (Platform.OS === 'web') {
+        // On web, use localStorage (less secure but functional)
+        localStorage.setItem(key, value);
+        await this.addKeyToRegistry(key);
+      } else {
+        // On native, use Expo SecureStore
+        await SecureStore.setItemAsync(key, value);
+        await this.addKeyToRegistry(key);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 50));
+      console.log('[SecureStorageAdapter] Secure item set successfully:', { key });
     } catch (error) {
-      console.error('Failed to save to secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to set secure item:', { key, error });
       throw error;
     }
   }
 
   async getItem(key: string): Promise<string | null> {
     try {
-      // Mock implementation - replace with actual SecureStore call
-      // return await SecureStore.getItemAsync(key);
+      console.log('[SecureStorageAdapter] Getting secure item:', { key });
       
-      const value = this.storage.get(key) || null;
+      let value: string | null;
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 30));
+      if (Platform.OS === 'web') {
+        value = localStorage.getItem(key);
+      } else {
+        value = await SecureStore.getItemAsync(key);
+      }
       
+      console.log('[SecureStorageAdapter] Secure item retrieved:', { key, hasValue: !!value });
       return value;
     } catch (error) {
-      console.error('Failed to get from secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to get secure item:', { key, error });
       return null;
     }
   }
 
   async removeItem(key: string): Promise<void> {
     try {
-      // Mock implementation - replace with actual SecureStore call
-      // await SecureStore.deleteItemAsync(key);
+      console.log('[SecureStorageAdapter] Removing secure item:', { key });
       
-      this.storage.delete(key);
+      if (Platform.OS === 'web') {
+        localStorage.removeItem(key);
+        await this.removeKeyFromRegistry(key);
+      } else {
+        await SecureStore.deleteItemAsync(key);
+        await this.removeKeyFromRegistry(key);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 40));
+      console.log('[SecureStorageAdapter] Secure item removed successfully:', { key });
     } catch (error) {
-      console.error('Failed to remove from secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to remove secure item:', { key, error });
       throw error;
     }
   }
 
   async clear(): Promise<void> {
     try {
-      // Mock implementation - replace with actual SecureStore call
-      // Note: SecureStore doesn't have a clear method, so you'd need to
-      // track all keys and remove them individually
+      console.log('[SecureStorageAdapter] Clearing all secure items');
       
-      this.storage.clear();
+      const keys = await this.getAllKeys();
+      await this.multiRemove(keys);
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Clear the keys registry itself
+      if (Platform.OS === 'web') {
+        localStorage.removeItem(this.KEYS_STORAGE_KEY);
+      } else {
+        try {
+          await SecureStore.deleteItemAsync(this.KEYS_STORAGE_KEY);
+        } catch {
+          // Keys registry might not exist, ignore error
+        }
+      }
+      
+      console.log('[SecureStorageAdapter] All secure items cleared successfully');
     } catch (error) {
-      console.error('Failed to clear secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to clear secure storage:', error);
       throw error;
     }
   }
 
   async getAllKeys(): Promise<string[]> {
     try {
-      // Mock implementation - replace with actual SecureStore call
-      // Note: SecureStore doesn't have a getAllKeys method, so you'd need to
-      // maintain your own list of keys
+      console.log('[SecureStorageAdapter] Getting all secure keys');
       
-      const keys = Array.from(this.storage.keys());
+      let keysData: string | null;
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 60));
+      if (Platform.OS === 'web') {
+        keysData = localStorage.getItem(this.KEYS_STORAGE_KEY);
+      } else {
+        keysData = await SecureStore.getItemAsync(this.KEYS_STORAGE_KEY);
+      }
       
+      const keys = keysData ? JSON.parse(keysData) : [];
+      console.log('[SecureStorageAdapter] Secure keys retrieved:', { count: keys.length });
       return keys;
     } catch (error) {
-      console.error('Failed to get all keys from secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to get all secure keys:', error);
       return [];
     }
   }
 
   async multiGet(keys: string[]): Promise<Array<[string, string | null]>> {
     try {
-      // Mock implementation - replace with actual SecureStore calls
-      // const values = await Promise.all(
-      //   keys.map(key => SecureStore.getItemAsync(key))
-      // );
+      console.log('[SecureStorageAdapter] Multi-getting secure items:', { keys });
       
-      const values: Array<[string, string | null]> = keys.map(key => [
-        key,
-        this.storage.get(key) || null
-      ]);
+      const values: Array<[string, string | null]> = [];
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 80));
+      // SecureStore doesn't have multiGet, so we do individual gets
+      for (const key of keys) {
+        const value = await this.getItem(key);
+        values.push([key, value]);
+      }
       
+      console.log('[SecureStorageAdapter] Secure multi-get completed:', { count: values.length });
       return values;
     } catch (error) {
-      console.error('Failed to multi-get from secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to multi-get secure items:', { keys, error });
       return keys.map(key => [key, null]);
     }
   }
 
   async multiSet(keyValuePairs: Array<[string, string]>): Promise<void> {
     try {
-      // Mock implementation - replace with actual SecureStore calls
-      // await Promise.all(
-      //   keyValuePairs.map(([key, value]) => SecureStore.setItemAsync(key, value))
-      // );
+      console.log('[SecureStorageAdapter] Multi-setting secure items:', { count: keyValuePairs.length });
       
-      keyValuePairs.forEach(([key, value]) => {
-        this.storage.set(key, value);
-      });
+      // SecureStore doesn't have multiSet, so we do individual sets
+      for (const [key, value] of keyValuePairs) {
+        await this.setItem(key, value);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 70));
+      console.log('[SecureStorageAdapter] Secure multi-set completed successfully');
     } catch (error) {
-      console.error('Failed to multi-set in secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to multi-set secure items:', { error });
       throw error;
     }
   }
 
   async multiRemove(keys: string[]): Promise<void> {
     try {
-      // Mock implementation - replace with actual SecureStore calls
-      // await Promise.all(
-      //   keys.map(key => SecureStore.deleteItemAsync(key))
-      // );
+      console.log('[SecureStorageAdapter] Multi-removing secure items:', { keys });
       
-      keys.forEach(key => {
-        this.storage.delete(key);
-      });
+      // SecureStore doesn't have multiRemove, so we do individual removes
+      for (const key of keys) {
+        await this.removeItem(key);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 90));
+      console.log('[SecureStorageAdapter] Secure multi-remove completed successfully');
     } catch (error) {
-      console.error('Failed to multi-remove from secure storage:', error);
+      console.error('[SecureStorageAdapter] Failed to multi-remove secure items:', { keys, error });
       throw error;
     }
   }
@@ -148,11 +170,8 @@ export class SecureStorageAdapter {
   // Helper method to check if secure storage is available
   async isAvailable(): Promise<boolean> {
     try {
-      // Mock implementation - replace with actual check
-      // In a real implementation, you might try to set and get a test value
-      
       const testKey = '__test_secure_storage__';
-      const testValue = 'test';
+      const testValue = 'test_value';
       
       await this.setItem(testKey, testValue);
       const retrieved = await this.getItem(testKey);
@@ -160,8 +179,47 @@ export class SecureStorageAdapter {
       
       return retrieved === testValue;
     } catch (error) {
-      console.error('Secure storage is not available:', error);
+      console.error('[SecureStorageAdapter] Secure storage is not available:', error);
       return false;
+    }
+  }
+
+  // Private helper to maintain keys registry (since SecureStore doesn't have getAllKeys)
+  private async addKeyToRegistry(key: string): Promise<void> {
+    try {
+      if (key === this.KEYS_STORAGE_KEY) return; // Don't track the registry key itself
+      
+      const keys = await this.getAllKeys();
+      if (!keys.includes(key)) {
+        keys.push(key);
+        const keysData = JSON.stringify(keys);
+        
+        if (Platform.OS === 'web') {
+          localStorage.setItem(this.KEYS_STORAGE_KEY, keysData);
+        } else {
+          await SecureStore.setItemAsync(this.KEYS_STORAGE_KEY, keysData);
+        }
+      }
+    } catch (error) {
+      console.warn('[SecureStorageAdapter] Failed to add key to registry:', { key, error });
+    }
+  }
+
+  private async removeKeyFromRegistry(key: string): Promise<void> {
+    try {
+      if (key === this.KEYS_STORAGE_KEY) return; // Don't track the registry key itself
+      
+      const keys = await this.getAllKeys();
+      const updatedKeys = keys.filter(k => k !== key);
+      const keysData = JSON.stringify(updatedKeys);
+      
+      if (Platform.OS === 'web') {
+        localStorage.setItem(this.KEYS_STORAGE_KEY, keysData);
+      } else {
+        await SecureStore.setItemAsync(this.KEYS_STORAGE_KEY, keysData);
+      }
+    } catch (error) {
+      console.warn('[SecureStorageAdapter] Failed to remove key from registry:', { key, error });
     }
   }
 }

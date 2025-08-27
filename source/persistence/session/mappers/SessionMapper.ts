@@ -79,4 +79,33 @@ export class SessionMapper {
       updates.expiresAt ?? session.expiresAt
     );
   }
+
+  /**
+   * Map from Supabase session object to UserSession domain entity
+   * Follows patterns from /src/features/auth/context/AuthContext.tsx
+   */
+  fromSupabaseSession(supabaseSession: any): UserSession {
+    if (!supabaseSession || !supabaseSession.user) {
+      throw new Error('Invalid Supabase session data');
+    }
+
+    // Extract user info from Supabase session
+    const user = supabaseSession.user;
+    const permissions = user.user_metadata?.permissions || ['user']; // Default to 'user' permission
+    
+    // Calculate expiry from Supabase session
+    const expiresAt = supabaseSession.expires_at 
+      ? new Date(supabaseSession.expires_at * 1000) // Supabase uses seconds, we use milliseconds
+      : new Date(Date.now() + 24 * 60 * 60 * 1000); // Default 24 hours
+
+    return new UserSession({
+      userId: user.id,
+      isAuthenticated: true,
+      permissions,
+      lastActivity: new Date(),
+      expiresAt,
+      accessToken: supabaseSession.access_token,
+      refreshToken: supabaseSession.refresh_token,
+    });
+  }
 }

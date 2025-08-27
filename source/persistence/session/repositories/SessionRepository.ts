@@ -2,6 +2,7 @@ import { UserSession } from '../../../business/session/entities/UserSession';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { LocalStorageAdapter } from '../adapters/LocalStorageAdapter';
 import { SecureStorageAdapter } from '../adapters/SecureStorageAdapter';
+import { SupabaseSessionAdapter } from '../adapters/SupabaseSessionAdapter';
 import { SessionMapper } from '../mappers/SessionMapper';
 import { TokenRepository } from './TokenRepository';
 
@@ -15,6 +16,7 @@ export class SessionRepository {
   constructor(
     private storageAdapter: LocalStorageAdapter = new LocalStorageAdapter(),
     private secureStorageAdapter: SecureStorageAdapter = new SecureStorageAdapter(),
+    private supabaseAdapter: SupabaseSessionAdapter = new SupabaseSessionAdapter(),
     private sessionMapper: SessionMapper = new SessionMapper(),
     private tokenRepository: TokenRepository = new TokenRepository()
   ) {}
@@ -82,21 +84,56 @@ export class SessionRepository {
     }
   }
 
-  async refresh(refreshToken: string): Promise<RefreshResult> {
+  async refresh(refreshToken?: string): Promise<RefreshResult> {
     try {
+      Logger.info('SessionRepository: Refreshing session', { hasRefreshToken: !!refreshToken });
+      
       // Call Supabase to refresh the session
       const refreshData = await this.supabaseAdapter.refreshSession(refreshToken);
       
-      if (refreshData.success) {
-        const newSession = this.sessionMapper.toDomain(refreshData.session);
+      if (refreshData.success && refreshData.session) {
+        // Map Supabase session to our domain session
+        const newSession = this.sessionMapper.fromSupabaseSession(refreshData.session);
         await this.save(newSession);
+        
+        Logger.info('SessionRepository: Session refreshed successfully', { userId: newSession.userId });
         return { success: true, session: newSession };
       } else {
+        Logger.warn('SessionRepository: Session refresh failed', { error: refreshData.error });
         return { success: false, error: refreshData.error };
       }
     } catch (error) {
-      Logger.error('Session refresh failed', { error });
+      Logger.error('SessionRepository: Session refresh failed', { error });
       return { success: false, error: 'Refresh failed' };
+    }
+  }
+
+  async syncWithSupabase(): Promise<RefreshResult> {
+    try {
+      Logger.info('SessionRepository: Syncing with Supabase session');
+      
+      // Get current session from Supabase
+      const supabaseData = await this.supabaseAdapter.getCurrentSession();
+      
+      if (supabaseData.success && supabaseData.session) {
+        // Map Supabase session to our domain session
+        const session = this.sessionMapper.fromSupabaseSession(supabaseData.session);
+        await this.save(session);
+        
+        Logger.info('SessionRepository: Synced with Supabase successfully', { userId: session.userId });
+        return { success: true, session };
+      } else if (supabaseData.success && !supabaseData.session) {
+        // No session in Supabase, clear local session
+        await this.clear();
+        Logger.info('SessionRepository: No Supabase session, cleared local session');
+        return { success: false, error: 'No active session' };
+      } else {
+        Logger.warn('SessionRepository: Failed to sync with Supabase', { error: supabaseData.error });
+        return { success: false, error: supabaseData.error };
+      }
+    } catch (error) {
+      Logger.error('SessionRepository: Failed to sync with Supabase', { error });
+      return { success: false, error: 'Sync failed' };
     }
   }
 

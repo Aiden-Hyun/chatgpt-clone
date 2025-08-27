@@ -1,138 +1,156 @@
-// Note: This is a mock implementation for React Native
-// In a real implementation, you would use AsyncStorage or SecureStore
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
+/**
+ * Real implementation using React Native AsyncStorage and Web localStorage
+ * Follows the patterns from /src/shared/lib/mobileStorage.ts
+ */
 export class LocalStorageAdapter {
-  private storage: Map<string, string> = new Map();
-
   async setItem(key: string, value: string): Promise<void> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // await AsyncStorage.setItem(key, value);
+      console.log('[LocalStorageAdapter] Setting item:', { key, valueLength: value.length });
       
-      this.storage.set(key, value);
+      if (Platform.OS === 'web') {
+        localStorage.setItem(key, value);
+      } else {
+        await AsyncStorage.setItem(key, value);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 50));
+      console.log('[LocalStorageAdapter] Item set successfully:', { key });
     } catch (error) {
-      console.error('Failed to set item in storage:', error);
+      console.error('[LocalStorageAdapter] Failed to set item:', { key, error });
       throw error;
     }
   }
 
   async getItem(key: string): Promise<string | null> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // const value = await AsyncStorage.getItem(key);
+      console.log('[LocalStorageAdapter] Getting item:', { key });
       
-      const value = this.storage.get(key) || null;
+      let value: string | null;
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 30));
+      if (Platform.OS === 'web') {
+        value = localStorage.getItem(key);
+      } else {
+        value = await AsyncStorage.getItem(key);
+      }
       
+      console.log('[LocalStorageAdapter] Item retrieved:', { key, hasValue: !!value });
       return value;
     } catch (error) {
-      console.error('Failed to get item from storage:', error);
+      console.error('[LocalStorageAdapter] Failed to get item:', { key, error });
       return null;
     }
   }
 
   async removeItem(key: string): Promise<void> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // await AsyncStorage.removeItem(key);
+      console.log('[LocalStorageAdapter] Removing item:', { key });
       
-      this.storage.delete(key);
+      if (Platform.OS === 'web') {
+        localStorage.removeItem(key);
+      } else {
+        await AsyncStorage.removeItem(key);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 40));
+      console.log('[LocalStorageAdapter] Item removed successfully:', { key });
     } catch (error) {
-      console.error('Failed to remove item from storage:', error);
+      console.error('[LocalStorageAdapter] Failed to remove item:', { key, error });
       throw error;
     }
   }
 
   async clear(): Promise<void> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // await AsyncStorage.clear();
+      console.log('[LocalStorageAdapter] Clearing all items');
       
-      this.storage.clear();
+      if (Platform.OS === 'web') {
+        localStorage.clear();
+      } else {
+        await AsyncStorage.clear();
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 100));
+      console.log('[LocalStorageAdapter] All items cleared successfully');
     } catch (error) {
-      console.error('Failed to clear storage:', error);
+      console.error('[LocalStorageAdapter] Failed to clear storage:', error);
       throw error;
     }
   }
 
   async getAllKeys(): Promise<string[]> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // const keys = await AsyncStorage.getAllKeys();
+      console.log('[LocalStorageAdapter] Getting all keys');
       
-      const keys = Array.from(this.storage.keys());
+      let keys: string[];
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 60));
+      if (Platform.OS === 'web') {
+        keys = Object.keys(localStorage);
+      } else {
+        keys = await AsyncStorage.getAllKeys();
+      }
       
+      console.log('[LocalStorageAdapter] Keys retrieved:', { count: keys.length });
       return keys;
     } catch (error) {
-      console.error('Failed to get all keys from storage:', error);
+      console.error('[LocalStorageAdapter] Failed to get all keys:', error);
       return [];
     }
   }
 
   async multiGet(keys: string[]): Promise<Array<[string, string | null]>> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // const values = await AsyncStorage.multiGet(keys);
+      console.log('[LocalStorageAdapter] Multi-getting items:', { keys });
       
-      const values: Array<[string, string | null]> = keys.map(key => [
-        key,
-        this.storage.get(key) || null
-      ]);
+      let values: Array<[string, string | null]>;
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 80));
+      if (Platform.OS === 'web') {
+        values = keys.map(key => [key, localStorage.getItem(key)]);
+      } else {
+        values = await AsyncStorage.multiGet(keys);
+      }
       
+      console.log('[LocalStorageAdapter] Multi-get completed:', { count: values.length });
       return values;
     } catch (error) {
-      console.error('Failed to multi-get from storage:', error);
+      console.error('[LocalStorageAdapter] Failed to multi-get:', { keys, error });
       return keys.map(key => [key, null]);
     }
   }
 
   async multiSet(keyValuePairs: Array<[string, string]>): Promise<void> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // await AsyncStorage.multiSet(keyValuePairs);
+      console.log('[LocalStorageAdapter] Multi-setting items:', { count: keyValuePairs.length });
       
-      keyValuePairs.forEach(([key, value]) => {
-        this.storage.set(key, value);
-      });
+      if (Platform.OS === 'web') {
+        keyValuePairs.forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
+      } else {
+        await AsyncStorage.multiSet(keyValuePairs);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 70));
+      console.log('[LocalStorageAdapter] Multi-set completed successfully');
     } catch (error) {
-      console.error('Failed to multi-set in storage:', error);
+      console.error('[LocalStorageAdapter] Failed to multi-set:', { error });
       throw error;
     }
   }
 
   async multiRemove(keys: string[]): Promise<void> {
     try {
-      // Mock implementation - replace with actual AsyncStorage call
-      // await AsyncStorage.multiRemove(keys);
+      console.log('[LocalStorageAdapter] Multi-removing items:', { keys });
       
-      keys.forEach(key => {
-        this.storage.delete(key);
-      });
+      if (Platform.OS === 'web') {
+        keys.forEach(key => {
+          localStorage.removeItem(key);
+        });
+      } else {
+        await AsyncStorage.multiRemove(keys);
+      }
       
-      // Simulate async operation
-      await new Promise(resolve => setTimeout(resolve, 90));
+      console.log('[LocalStorageAdapter] Multi-remove completed successfully');
     } catch (error) {
-      console.error('Failed to multi-remove from storage:', error);
+      console.error('[LocalStorageAdapter] Failed to multi-remove:', { keys, error });
       throw error;
     }
   }
