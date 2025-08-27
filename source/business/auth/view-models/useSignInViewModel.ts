@@ -1,24 +1,52 @@
+import { useState, useCallback } from 'react';
 import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
 import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
 import { SignInUseCase } from '../use-cases/SignInUseCase';
 
 export function useSignInViewModel() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const signInUseCase = new SignInUseCase(
     new UserRepository(),
     new SessionRepository()
   );
 
-  const signIn = async (email: string, password: string) => {
-    const result = await signInUseCase.execute({ email, password });
-    
-    if (result.success) {
-      // Navigate to main app
-      // Note: In a real app, you'd use a navigation service here
-      console.log('Sign in successful, navigating to main app');
-    } else {
-      throw new Error(result.error);
-    }
-  };
+  const signIn = useCallback(async (email: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
 
-  return { signIn };
+    try {
+      const result = await signInUseCase.execute({ email, password });
+      
+      if (result.success) {
+        console.log('useSignInViewModel: Sign in successful', { userId: result.user?.id });
+        return { success: true, user: result.user, session: result.session };
+      } else {
+        setError(result.error || 'Sign in failed');
+        return { 
+          success: false, 
+          error: result.error,
+          isNetworkError: result.isNetworkError 
+        };
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Sign in failed';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return { 
+    signIn, 
+    isLoading, 
+    error, 
+    clearError 
+  };
 }

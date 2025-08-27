@@ -82,24 +82,33 @@ export class UserRepository {
     }
   }
 
-  async updateProfile(userId: string, updates: {
+  async updateProfile(updates: {
     displayName?: string;
     avatarUrl?: string;
-  }): Promise<boolean> {
+  }): Promise<{ success: boolean; error?: string }> {
     try {
-      return await this.authAdapter.updateUserProfile(userId, updates);
+      return await this.authAdapter.updateUserProfile(updates);
     } catch (error) {
-      Logger.error('Failed to update user profile', { error, userId });
-      return false;
+      Logger.error('Failed to update user profile', { error });
+      return { success: false, error: 'Failed to update user profile' };
     }
   }
 
-  async deleteUser(userId: string): Promise<boolean> {
+  async deleteUser(): Promise<{ success: boolean; error?: string }> {
     try {
-      return await this.authAdapter.deleteUser(userId);
+      return await this.authAdapter.deleteUser();
     } catch (error) {
-      Logger.error('Failed to delete user', { error, userId });
-      return false;
+      Logger.error('Failed to delete user', { error });
+      return { success: false, error: 'Failed to delete user' };
+    }
+  }
+
+  async signOut(): Promise<{ success: boolean; error?: string }> {
+    try {
+      return await this.authAdapter.signOut();
+    } catch (error) {
+      Logger.error('Failed to sign out', { error });
+      return { success: false, error: 'Failed to sign out' };
     }
   }
 

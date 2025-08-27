@@ -11,6 +11,7 @@ export interface SignInResult {
   user?: User;
   session?: UserSession;
   error?: string;
+  isNetworkError?: boolean;
 }
 
 export class SignInUseCase {
@@ -21,6 +22,8 @@ export class SignInUseCase {
 
   async execute(request: { email: string; password: string }): Promise<SignInResult> {
     try {
+      Logger.info('SignInUseCase: Starting sign in process', { email: request.email });
+
       // Business validation
       const emailValidation = EmailValidator.validate(request.email);
       if (!emailValidation.isValid) {
@@ -32,31 +35,37 @@ export class SignInUseCase {
         return { success: false, error: passwordValidation.error };
       }
 
-      // Business rule: Check if user exists
-      const existingUser = await this.userRepository.findByEmail(request.email);
-      if (!existingUser) {
-        return { success: false, error: 'User not found' };
-      }
-
-      // Business rule: Attempt authentication
+      // Authenticate with Supabase - this handles user existence check internally
       const authResult = await this.userRepository.authenticate(request.email, request.password);
       if (!authResult.success) {
-        return { success: false, error: authResult.error };
+        Logger.warn('SignInUseCase: Authentication failed', { email: request.email, error: authResult.error });
+        return { 
+          success: false, 
+          error: authResult.error,
+          isNetworkError: (authResult as any).isNetworkError 
+        };
       }
 
-      // Business rule: Create session
+      if (!authResult.user) {
+        return { success: false, error: 'No user data returned from authentication' };
+      }
+
+      // Create UserSession entity from Supabase auth result
       const session = new UserSession({
         userId: authResult.user.id,
         isAuthenticated: true,
         permissions: authResult.user.permissions,
         lastActivity: new Date(),
-        expiresAt: this.calculateExpiryTime()
+        expiresAt: this.calculateExpiryTime(),
+        // Note: In real implementation, we'd get these from Supabase session
+        accessToken: 'will-be-set-by-existing-auth-context',
+        refreshToken: 'will-be-set-by-existing-auth-context'
       });
 
-      // Save session
+      // Save session to local storage
       await this.sessionRepository.save(session);
 
-      Logger.info('User signed in successfully', { userId: authResult.user.id });
+      Logger.info('SignInUseCase: User signed in successfully', { userId: authResult.user.id });
 
       return { 
         success: true, 
@@ -65,7 +74,7 @@ export class SignInUseCase {
       };
 
     } catch (error) {
-      Logger.error('Sign in failed', { error, email: request.email });
+      Logger.error('SignInUseCase: Sign in failed', { error, email: request.email });
       return { success: false, error: 'Authentication failed' };
     }
   }
