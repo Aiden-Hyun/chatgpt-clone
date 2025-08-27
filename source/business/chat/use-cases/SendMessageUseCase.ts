@@ -6,12 +6,15 @@ import { AIProvider } from '../../../persistence/chat/adapters/AIProvider';
 import { MessageValidator } from '../../../service/chat/validators/MessageValidator';
 import { IdGenerator } from '../../../service/chat/generators/IdGenerator';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { Session } from '@supabase/supabase-js';
 
 export interface SendMessageParams {
   content: string;
   roomId: string;
   userId: string;
   model?: string;
+  session: Session;
+  accessToken: string;
 }
 
 export interface SendMessageResult {
@@ -45,7 +48,7 @@ export class SendMessageUseCase {
       }
 
       // Check if room exists and user has access
-      const room = await this.chatRoomRepository.getById(params.roomId);
+      const room = await this.chatRoomRepository.getById(params.roomId, params.session);
       if (!room || room.userId !== params.userId) {
         return {
           success: false,
@@ -63,17 +66,18 @@ export class SendMessageUseCase {
       });
 
       // Save user message
-      await this.messageRepository.save(userMessage);
+      await this.messageRepository.save(userMessage, params.session);
 
       // Update room with new message
       room.updateLastMessage(userMessage.id, userMessage.timestamp);
-      await this.chatRoomRepository.update(room);
+      await this.chatRoomRepository.update(room, params.session);
 
       // Get AI response
       const aiResponse = await this.aiProvider.sendMessage({
         content: params.content,
         roomId: params.roomId,
-        model: params.model || 'gpt-3.5-turbo'
+        model: params.model || 'gpt-3.5-turbo',
+        accessToken: params.accessToken
       });
 
       if (!aiResponse.success) {
@@ -98,11 +102,11 @@ export class SendMessageUseCase {
       });
 
       // Save assistant message
-      await this.messageRepository.save(assistantMessage);
+      await this.messageRepository.save(assistantMessage, params.session);
 
       // Update room with assistant message
       room.updateLastMessage(assistantMessage.id, assistantMessage.timestamp);
-      await this.chatRoomRepository.update(room);
+      await this.chatRoomRepository.update(room, params.session);
 
       this.logger.info('SendMessageUseCase: Message sent successfully', {
         roomId: params.roomId,

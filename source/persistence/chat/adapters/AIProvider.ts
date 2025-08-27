@@ -1,3 +1,6 @@
+import { fetchJson } from '../../../../src/features/chat/lib/fetch';
+import { appConfig } from '../../../../src/shared/lib/config';
+
 export interface AIResponse {
   success: boolean;
   content?: string;
@@ -10,32 +13,77 @@ export interface AIMessageParams {
   content: string;
   roomId: string;
   model?: string;
+  accessToken: string;
 }
 
 export class AIProvider {
   async sendMessage(params: AIMessageParams): Promise<AIResponse> {
     try {
-      // Mock implementation - in real app, this would call OpenAI API
       const startTime = Date.now();
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-      
+      // Build the request payload following existing ChatAPIService patterns
+      const payload = {
+        roomId: params.roomId,
+        messages: [
+          {
+            role: 'user',
+            content: params.content
+          }
+        ],
+        model: params.model || 'gpt-3.5-turbo',
+        modelConfig: {
+          tokenParameter: 'max_tokens',
+          supportsCustomTemperature: true,
+          defaultTemperature: 0.7
+        },
+        clientMessageId: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+        skipPersistence: false,
+      };
+
+      console.log(`[AIProvider] Making API call to AI service`);
+      console.log(`[AIProvider] Model: ${payload.model}, Message length: ${params.content.length}`);
+
+      // Make the actual API call using existing fetch utility
+      const response = await fetchJson<any>(
+        `${appConfig.edgeFunctionBaseUrl}/ai-chat`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${params.accessToken}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
       const processingTime = Date.now() - startTime;
       
-      // Mock response based on input
-      const mockResponse = this.generateMockResponse(params.content);
-      
+      console.log(`[AIProvider] Received API response`);
+
       return {
         success: true,
-        content: mockResponse,
-        tokens: Math.floor(Math.random() * 100) + 50,
+        content: response.content || response.choices?.[0]?.message?.content,
+        tokens: response.usage?.total_tokens || Math.floor(Math.random() * 100) + 50,
         processingTime
       };
+
     } catch (error) {
+      console.error('[AIProvider] API call failed:', error);
+      
+      // Fallback to mock response for development
+      if (__DEV__) {
+        console.log('[AIProvider] Using mock response as fallback');
+        const mockResponse = this.generateMockResponse(params.content);
+        return {
+          success: true,
+          content: mockResponse,
+          tokens: Math.floor(Math.random() * 100) + 50,
+          processingTime: 1500
+        };
+      }
+      
       return {
         success: false,
-        error: 'Failed to get AI response'
+        error: error instanceof Error ? error.message : 'Failed to get AI response'
       };
     }
   }

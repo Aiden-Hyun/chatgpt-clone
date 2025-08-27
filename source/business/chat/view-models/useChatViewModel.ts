@@ -12,6 +12,8 @@ import { ClipboardAdapter } from '../../../persistence/chat/adapters/ClipboardAd
 import { MessageValidator } from '../../../service/chat/validators/MessageValidator';
 import { IdGenerator } from '../../../service/chat/generators/IdGenerator';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { useAuth } from '../../../../src/features/auth/context/AuthContext';
+import { supabase } from '../../../../src/shared/lib/supabase';
 
 export interface ChatState {
   messages: MessageEntity[];
@@ -32,6 +34,8 @@ export interface ChatActions {
 }
 
 export function useChatViewModel(userId: string): ChatState & ChatActions {
+  const { session } = useAuth();
+  
   const [state, setState] = useState<ChatState>({
     messages: [],
     currentRoom: null,
@@ -39,6 +43,27 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
     error: null,
     inputValue: ''
   });
+
+  // Helper function to get fresh access token
+  const getAccessToken = useCallback(async (): Promise<string | null> => {
+    if (!session) return null;
+    
+    let accessToken = session.access_token;
+
+    // Check if token is expired and refresh if needed
+    if (session.expires_at && Math.floor(Date.now() / 1000) > session.expires_at) {
+      try {
+        const { data, error } = await supabase.auth.refreshSession();
+        if (!error && data.session) {
+          accessToken = data.session.access_token;
+        }
+      } catch {
+        // Continue with existing token
+      }
+    }
+
+    return accessToken;
+  }, [session]);
 
   // Initialize dependencies
   const messageRepository = new MessageRepository();
@@ -83,14 +108,27 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
       return;
     }
 
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        setState(prev => ({ ...prev, error: 'Failed to get access token', isLoading: false }));
+        return;
+      }
+
       const result = await sendMessageUseCase.execute({
         content,
         roomId: state.currentRoom.id,
         userId,
-        model
+        model,
+        session,
+        accessToken
       });
 
       if (result.success && result.userMessage && result.assistantMessage) {
@@ -114,7 +152,7 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
         isLoading: false
       }));
     }
-  }, [state.currentRoom, userId]);
+  }, [state.currentRoom, userId, session, getAccessToken]);
 
   const receiveMessage = useCallback(async (context?: string, model?: string) => {
     if (!state.currentRoom) {
@@ -160,11 +198,17 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
       return;
     }
 
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
     try {
       const result = await deleteMessageUseCase.execute({
         messageId,
         userId,
-        roomId: state.currentRoom.id
+        roomId: state.currentRoom.id,
+        session
       });
 
       if (result.success && result.message) {
@@ -186,7 +230,7 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
         error: 'Failed to delete message'
       }));
     }
-  }, [state.currentRoom, userId]);
+  }, [state.currentRoom, userId, session]);
 
   const copyMessage = useCallback(async (messageId: string) => {
     if (!state.currentRoom) {
@@ -194,11 +238,17 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
       return;
     }
 
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
     try {
       const result = await copyMessageUseCase.execute({
         messageId,
         userId,
-        roomId: state.currentRoom.id
+        roomId: state.currentRoom.id,
+        session
       });
 
       if (!result.success) {
@@ -213,7 +263,7 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
         error: 'Failed to copy message'
       }));
     }
-  }, [state.currentRoom, userId]);
+  }, [state.currentRoom, userId, session]);
 
   const setInputValue = useCallback((value: string) => {
     setState(prev => ({ ...prev, inputValue: value }));
@@ -224,11 +274,16 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
   }, []);
 
   const loadMessages = useCallback(async (roomId: string) => {
+    if (!session) {
+      setState(prev => ({ ...prev, error: 'Authentication required' }));
+      return;
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const room = await chatRoomRepository.getById(roomId);
-      const messages = await messageRepository.getByRoomId(roomId);
+      const room = await chatRoomRepository.getById(roomId, session);
+      const messages = await messageRepository.getByRoomId(roomId, session);
 
       if (room && room.userId === userId) {
         setState(prev => ({
@@ -251,7 +306,7 @@ export function useChatViewModel(userId: string): ChatState & ChatActions {
         isLoading: false
       }));
     }
-  }, [userId]);
+  }, [userId, session]);
 
   return {
     ...state,

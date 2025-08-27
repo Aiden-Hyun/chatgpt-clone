@@ -1,11 +1,13 @@
 import { MessageEntity } from '../entities/Message';
 import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { Session } from '@supabase/supabase-js';
 
 export interface DeleteMessageParams {
   messageId: string;
   userId: string;
   roomId: string;
+  session: Session;
 }
 
 export interface DeleteMessageResult {
@@ -28,7 +30,7 @@ export class DeleteMessageUseCase {
       });
 
       // Get message
-      const message = await this.messageRepository.getById(params.messageId);
+      const message = await this.messageRepository.getById(params.messageId, params.session);
       if (!message) {
         return {
           success: false,
@@ -56,7 +58,7 @@ export class DeleteMessageUseCase {
       message.markAsDeleted();
 
       // Save updated message
-      await this.messageRepository.update(message);
+      await this.messageRepository.update(message, params.session);
 
       this.logger.info('DeleteMessageUseCase: Message deleted successfully', {
         messageId: params.messageId,

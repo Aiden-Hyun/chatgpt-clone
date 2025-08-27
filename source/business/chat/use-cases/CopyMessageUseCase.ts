@@ -2,11 +2,13 @@ import { MessageEntity } from '../entities/Message';
 import { MessageRepository } from '../../../persistence/chat/repositories/MessageRepository';
 import { ClipboardAdapter } from '../../../persistence/chat/adapters/ClipboardAdapter';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { Session } from '@supabase/supabase-js';
 
 export interface CopyMessageParams {
   messageId: string;
   userId: string;
   roomId: string;
+  session: Session;
 }
 
 export interface CopyMessageResult {
@@ -31,7 +33,7 @@ export class CopyMessageUseCase {
       });
 
       // Get message
-      const message = await this.messageRepository.getById(params.messageId);
+      const message = await this.messageRepository.getById(params.messageId, params.session);
       if (!message) {
         return {
           success: false,

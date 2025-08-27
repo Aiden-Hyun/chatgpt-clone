@@ -670,6 +670,125 @@ describe('SignInUseCase', () => {
 
 ---
 
+## 🔍 Learning from Existing Codebase
+
+### **How to Study `/src` for Implementation Patterns**
+
+When implementing new features or understanding how to make API calls, **always study the existing `/src` directory first**:
+
+#### **1. API Call Patterns**
+```bash
+# Study how API calls are made
+grep -r "fetchJson" src/
+grep -r "supabase.from" src/
+grep -r "await fetch" src/
+```
+
+#### **2. Service Implementation Examples**
+- **Chat API**: `src/features/chat/services/implementations/ChatAPIService.ts`
+- **Supabase Services**: `src/features/chat/services/implementations/SupabaseMessageService.ts`
+- **Fetch Utility**: `src/features/chat/lib/fetch.ts`
+
+#### **3. Configuration Management**
+- **App Config**: `src/shared/lib/config.ts`
+- **Supabase Client**: `src/shared/lib/supabase/index.ts`
+- **Constants**: `src/shared/lib/constants.ts`
+
+#### **4. Authentication Patterns**
+- **Session Management**: `src/features/auth/`
+- **Token Handling**: Look for `accessToken` usage in services
+- **Authorization Headers**: Study how `Authorization: Bearer` is used
+
+#### **5. Error Handling Patterns**
+```typescript
+// Study existing error handling in /src
+try {
+  const response = await fetchJson(url, options);
+  return response;
+} catch (error) {
+  console.error('[ServiceName] API call failed:', error);
+  throw new Error('Failed to complete operation');
+}
+```
+
+#### **6. Database Operations**
+```typescript
+// Study Supabase patterns in /src
+const { data, error } = await supabase
+  .from('table_name')
+  .select('*')
+  .eq('column', value);
+
+if (error) {
+  console.error('Database error:', error);
+  return { success: false, error: error.message };
+}
+```
+
+### **🚨 CRITICAL RULE: NEVER MODIFY `/src`**
+
+**Under NO circumstances should you modify, edit, delete, or change ANY files in the `/src` directory.**
+
+#### **Why This Rule Exists**
+- `/src` contains the **existing working codebase**
+- It serves as a **reference implementation** for patterns
+- Modifying it could **break the existing application**
+- It's the **source of truth** for current architecture
+
+#### **What You CAN Do**
+- ✅ **Read and study** `/src` files
+- ✅ **Copy patterns** from `/src` to your implementation
+- ✅ **Reference** `/src` for API call examples
+- ✅ **Learn** from existing service implementations
+- ✅ **Use** the same configuration and utilities
+
+#### **What You MUST NOT Do**
+- ❌ **Edit** any files in `/src`
+- ❌ **Delete** any files in `/src`
+- ❌ **Move** files within `/src`
+- ❌ **Rename** files in `/src`
+- ❌ **Add** new files to `/src`
+- ❌ **Modify** imports in `/src`
+
+#### **Implementation Strategy**
+1. **Study** `/src` for patterns and examples
+2. **Implement** your feature in `source/` following those patterns
+3. **Use** the same utilities and configurations from `/src`
+4. **Test** your implementation against the existing patterns
+5. **Keep** `/src` as your reference, never modify it
+
+### **Example: Learning API Call Pattern**
+
+```typescript
+// 1. Study the pattern in /src
+// src/features/chat/services/implementations/ChatAPIService.ts
+const response = await fetchJson<any>(
+  `${appConfig.edgeFunctionBaseUrl}/ai-chat`,
+  {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  }
+);
+
+// 2. Implement the same pattern in source/
+// source/persistence/chat/adapters/AIProvider.ts
+const response = await fetchJson<any>(
+  `${appConfig.edgeFunctionBaseUrl}/ai-chat`,
+  {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${params.accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  }
+);
+```
+
+---
+
 ## 📚 References
 
 - [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)

@@ -2,6 +2,7 @@ import { MessageEntity, Message } from '../../../business/chat/entities/Message'
 import { MessageMapper } from '../mappers/MessageMapper';
 import { SupabaseMessageAdapter } from '../adapters/SupabaseMessageAdapter';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { Session } from '@supabase/supabase-js';
 
 export interface SaveMessageResult {
   success: boolean;
@@ -22,25 +23,17 @@ export class MessageRepository {
     private logger: Logger = new Logger()
   ) {}
 
-  async save(message: MessageEntity): Promise<SaveMessageResult> {
+  async save(message: MessageEntity, session: Session): Promise<SaveMessageResult> {
     try {
       this.logger.info('MessageRepository: Saving message', { messageId: message.id });
 
       const messageData = this.messageMapper.toData(message);
-      const result = await this.messageAdapter.save(messageData);
+      await this.messageAdapter.save(messageData, session);
 
-      if (result.success) {
-        const savedMessage = this.messageMapper.toEntity(result.data!);
-        return {
-          success: true,
-          message: savedMessage
-        };
-      } else {
-        return {
-          success: false,
-          error: result.error
-        };
-      }
+      return {
+        success: true,
+        message: message
+      };
     } catch (error) {
       this.logger.error('MessageRepository: Error saving message', { error, messageId: message.id });
       return {
@@ -50,25 +43,17 @@ export class MessageRepository {
     }
   }
 
-  async update(message: MessageEntity): Promise<SaveMessageResult> {
+  async update(message: MessageEntity, session: Session): Promise<SaveMessageResult> {
     try {
       this.logger.info('MessageRepository: Updating message', { messageId: message.id });
 
       const messageData = this.messageMapper.toData(message);
-      const result = await this.messageAdapter.update(messageData);
+      await this.messageAdapter.update(messageData, session);
 
-      if (result.success) {
-        const updatedMessage = this.messageMapper.toEntity(result.data!);
-        return {
-          success: true,
-          message: updatedMessage
-        };
-      } else {
-        return {
-          success: false,
-          error: result.error
-        };
-      }
+      return {
+        success: true,
+        message: message
+      };
     } catch (error) {
       this.logger.error('MessageRepository: Error updating message', { error, messageId: message.id });
       return {
@@ -78,14 +63,14 @@ export class MessageRepository {
     }
   }
 
-  async getById(messageId: string): Promise<MessageEntity | null> {
+  async getById(messageId: string, session: Session): Promise<MessageEntity | null> {
     try {
       this.logger.info('MessageRepository: Getting message by ID', { messageId });
 
-      const result = await this.messageAdapter.getById(messageId);
+      const messageData = await this.messageAdapter.getById(messageId, session);
       
-      if (result.success && result.data) {
-        return this.messageMapper.toEntity(result.data);
+      if (messageData) {
+        return this.messageMapper.toEntity(messageData);
       }
       
       return null;
@@ -95,17 +80,13 @@ export class MessageRepository {
     }
   }
 
-  async getByRoomId(roomId: string): Promise<MessageEntity[]> {
+  async getByRoomId(roomId: string, session: Session): Promise<MessageEntity[]> {
     try {
       this.logger.info('MessageRepository: Getting messages by room ID', { roomId });
 
-      const result = await this.messageAdapter.getByRoomId(roomId);
+      const messageDataArray = await this.messageAdapter.getByRoomId(roomId, session);
       
-      if (result.success && result.data) {
-        return result.data.map(messageData => this.messageMapper.toEntity(messageData));
-      }
-      
-      return [];
+      return messageDataArray.map(messageData => this.messageMapper.toEntity(messageData));
     } catch (error) {
       this.logger.error('MessageRepository: Error getting messages by room ID', { error, roomId });
       return [];
@@ -129,12 +110,12 @@ export class MessageRepository {
     }
   }
 
-  async delete(messageId: string): Promise<boolean> {
+  async delete(messageId: string, session: Session): Promise<boolean> {
     try {
       this.logger.info('MessageRepository: Deleting message', { messageId });
 
-      const result = await this.messageAdapter.delete(messageId);
-      return result.success;
+      await this.messageAdapter.delete(messageId, session);
+      return true;
     } catch (error) {
       this.logger.error('MessageRepository: Error deleting message', { error, messageId });
       return false;
