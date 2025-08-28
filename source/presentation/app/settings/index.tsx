@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui';
+import { Button } from '../../../components/ui';
 import { Platform, SafeAreaView, ScrollView } from 'react-native';
-import { CustomAlert, useCustomAlert } from '../../src/features/alert';
-import { useLogout, useUserInfo } from '../../src/features/auth';
-import { useLanguageContext } from '../../src/features/language';
-import { useAppTheme } from '../../src/features/theme/theme';
+import { CustomAlert, useCustomAlert } from '../../../alert/dialog';
+import { useLogout, useUserInfo } from '../../../auth/hooks';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import {
   AboutSection,
   AccountSection,
@@ -87,4 +87,4 @@ export default function SettingsScreen() {
       />
     </SafeAreaView>
   );
-} 
+}

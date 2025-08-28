@@ -1,8 +1,8 @@
-import { Button, Text } from '@/components/ui';
+import { Button, Text } from '../../../../components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
-import { useAppTheme } from '../../../src/features/theme/theme';
+import { useAppTheme } from '../../../../theme/hooks/useTheme';
 import { createSettingsStyles } from '../settings.styles';
 
 interface SettingsHeaderProps {

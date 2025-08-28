@@ -1,12 +1,15 @@
-import { LoadingWrapper } from '@/components/LoadingWrapper';
-import { useAuth } from '@/features/auth';
-import { DEFAULT_MODEL } from '@/features/chat/constants';
-import { ServiceFactory } from '@/features/chat/services/core';
+import { LoadingWrapper } from '../../../components/LoadingWrapper';
+import { useAuth } from '../../../auth/hooks/useAuth';
+import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
+// Note: ServiceFactory doesn't exist in source yet, will need to be created
+// import { ServiceFactory } from '../../../business/chat/services/core';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
+import { useBusinessContext } from '../../../presentation/shared/BusinessContextProvider';
 
 export default function NewChatScreen() {
   const { session, isLoading } = useAuth();
+  const { useCaseFactory } = useBusinessContext();
   
   const hasAttemptedCreation = useRef(false);
 
@@ -47,14 +50,25 @@ export default function NewChatScreen() {
           hasAttemptedCreation.current = true;
 
           // Create a real room up front and navigate directly to it
-          const chatRoomService = ServiceFactory.createChatRoomService();
+          // TODO: Replace with UseCaseFactory
+          // const chatRoomService = ServiceFactory.createChatRoomService();
+          // console.log('🔍 [NewChatScreen] About to create room with model:', DEFAULT_MODEL);
+          // const newRoomId = await chatRoomService.createRoom(session.user.id, DEFAULT_MODEL);
+          
+          // Use CreateRoomUseCase from business layer instead
+          const createRoomUseCase = useCaseFactory.createCreateRoomUseCase();
           console.log('🔍 [NewChatScreen] About to create room with model:', DEFAULT_MODEL);
-          const newRoomId = await chatRoomService.createRoom(session.user.id, DEFAULT_MODEL);
-          console.log('🔍 [NewChatScreen] Room created with ID:', newRoomId);
-
-          if (!newRoomId) {
+          const result = await createRoomUseCase.execute({
+            userId: session.user.id,
+            model: DEFAULT_MODEL
+          });
+          
+          if (!result.success || !result.data) {
             throw new Error('Failed to create new chat room');
           }
+          
+          const newRoomId = result.data.id;
+          console.log('🔍 [NewChatScreen] Room created with ID:', newRoomId);
 
           console.log('✅ [NewChatScreen] Successfully created room:', newRoomId);
           console.log('🔍 [NewChatScreen] Navigating to room:', newRoomId, 'at:', new Date().toISOString());
@@ -83,7 +97,7 @@ export default function NewChatScreen() {
       // Reset the guard and create room
       hasAttemptedCreation.current = false;
       createNewChat();
-    }, [session, isLoading])
+    }, [session, isLoading, useCaseFactory])
   );
 
   // Show loading only when auth is loading or when we're creating a room
@@ -95,4 +109,4 @@ export default function NewChatScreen() {
       <></>
     </LoadingWrapper>
   );
-} 
+}

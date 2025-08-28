@@ -1,293 +1,199 @@
-import { Button, Card, FormWrapper, Input, LoadingScreen, Text } from '@/components';
-import { useToast } from '@/features/alert';
-import { useAuth } from '@/features/auth';
-import { useEmailSignin } from '@/features/auth/hooks';
-import { LanguageSelector, useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
-import { useLoadingState } from '@/shared/hooks';
-import Constants from 'expo-constants';
-import { router, usePathname } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View
-} from 'react-native';
-
-import { supabase } from '@/shared/lib/supabase';
+import { Button, Card, FormWrapper, Input, LoadingScreen, Text } from '../../../components';
+import { useToast } from '../../../alert/toast/ToastContext';
+import { useAuth } from '../../../auth/hooks/useAuth';
+import { useEmailSignin } from '../../../auth/hooks/useEmailSignin';
+import { LanguageSelector, useLanguageContext } from '../../../language';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
+import { useLoadingState } from '../../../shared/hooks/useLoadingState';
+import React, { useEffect, useState } from 'react';
+import { Linking, View } from 'react-native';
+import { router } from 'expo-router';
 import { createAuthStyles } from './auth.styles';
+// TODO: Need to replace with proper supabase client from source
+// import { supabase } from '@/shared/lib/supabase';
 
 export default function AuthScreen() {
-  const { session } = useAuth();
-  
+  const { t } = useLanguageContext();
+  const theme = useAppTheme();
+  const { session, isLoading: authLoading } = useAuth();
+  const { showError } = useToast();
+  const { signin, isLoading: signinLoading } = useEmailSignin();
+  const { isLoading, startLoading, stopLoading } = useLoadingState();
+  const styles = createAuthStyles(theme);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  
-  const { signIn, isLoading: isSigningIn } = useEmailSignin();
-  const { loading, stopLoading } = useLoadingState({ initialLoading: true });
-  const { loading: signingInWithGoogle, startLoading: startSigningInWithGoogle, stopLoading: stopSigningInWithGoogle } = useLoadingState();
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const { showSuccess, showError } = useToast();
-  
-  const pathname = usePathname();
-  const theme = useAppTheme();
-  const styles = createAuthStyles(theme);
-  const navigationAttempted = useRef(false);
-  const { t } = useLanguageContext();
-  
-  // Note: We're no longer using refs with our new Input component
-
-  // Session check logic
-  const checkSession = useCallback(async () => {
-    try {
-      if (session) {
-        showSuccess(t('auth.login_successful') || 'Login successful!');
-        router.replace('/');
-      } else {
-        stopLoading();
-      }
-    } catch (error) {
-      console.error(error);
-      showError(t('auth.network_error'));
-      stopLoading();
-    }
-  }, [session, showSuccess, showError, t, stopLoading]);
-
+  // Handle deep links for password reset
   useEffect(() => {
-    checkSession();
-  }, [checkSession]);
+    const handleDeepLink = async (url: string) => {
+      // TODO: Replace with proper supabase client from source
+      // if (url.includes('type=recovery')) {
+      //   const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+      //   if (error) {
+      //     showError(t('auth.password_reset_failed'));
+      //   } else {
+      //     router.replace('/chat');
+      //   }
+      // }
+    };
 
-  // Monitor pathname changes to detect navigation
+    // Listen for deep links
+    const subscription = Linking.addEventListener('url', ({ url }) => handleDeepLink(url));
+
+    // Check for initial URL
+    Linking.getInitialURL().then(url => {
+      if (url) handleDeepLink(url);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [showError, t]);
+
+  // Redirect if already authenticated
   useEffect(() => {
-    if (navigationAttempted.current) {
-      navigationAttempted.current = false;
+    if (session) {
+      router.replace('/chat');
     }
-  }, [pathname]);
+  }, [session]);
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (value: string) => {
+    if (!value.trim()) {
+      setEmailError(t('auth.email_required'));
+      return false;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {};
-
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email address';
+    if (!emailRegex.test(value)) {
+      setEmailError(t('auth.invalid_email'));
+      return false;
     }
 
-    if (!password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setEmailError(null);
+    return true;
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      startSigningInWithGoogle();
-      await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${Constants.linkingUri}`,
-          queryParams: {
-            prompt: 'select_account',
-          },
-        },
-      });
-    } catch {
-      showError(t('auth.google_login_failed'));
-      stopSigningInWithGoogle();
+  const validatePassword = (value: string) => {
+    if (!value.trim()) {
+      setPasswordError(t('auth.password_required'));
+      return false;
     }
+
+    setPasswordError(null);
+    return true;
   };
 
-  const handleEmailSignin = async () => {
-    Keyboard.dismiss();
-    
-    if (!validateForm()) {
+  const handleSignIn = async () => {
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isEmailValid || !isPasswordValid) {
       return;
     }
 
     try {
-      const result = await signIn(email, password);
-      
-      if (result.success) {
-        showSuccess(t('auth.login_successful') || 'Login successful!');
-        router.replace('/');
-      } else {
-        // Show appropriate localized message based on error type
-        if (result.isNetworkError) {
-          showError(t('auth.network_error'));
-        } else {
-          showError(t('auth.check_credentials'));
-        }
-      }
+      startLoading();
+      await signin(email, password);
+      // Navigation will be handled by auth state change
     } catch (error) {
-      // Check if this is a network error in the UI catch block
-      const isNetworkError = !navigator.onLine ||
-                            (error instanceof Error && 
-                             (error.message.toLowerCase().includes('network') ||
-                              error.message.toLowerCase().includes('fetch') ||
-                              error.message.toLowerCase().includes('connection')));
-      
-      if (isNetworkError) {
-        showError(t('auth.network_error'));
-      } else {
-        showError(t('auth.unexpected_error'));
-      }
+      showError(t('auth.signin_failed'));
+    } finally {
+      stopLoading();
     }
-  };
-
-  const handleEmailSubmit = () => {
-    // We're no longer using refs to focus
-    // Focus is handled automatically by the Input component
-  };
-
-  const handlePasswordSubmit = () => {
-    handleEmailSignin();
   };
 
   const handleForgotPassword = () => {
-    try {
-      router.push('/forgot-password');
-    } catch (error) {
-      console.error('Navigation error:', error);
-    }
+    router.push('/forgot-password');
   };
 
-  const handleGoToSignup = () => {
-    try {
-      router.push('/signup');
-    } catch (error) {
-      console.error('Navigation error:', error);
-    }
+  const handleSignUp = () => {
+    router.push('/signup');
   };
 
-  if (loading) {
-    return <LoadingScreen message={t('common.loading')} />;
+  if (authLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <LoadingScreen />
+        <Text style={styles.loadingText}>{t('auth.checking_session')}</Text>
+      </View>
+    );
   }
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.container}>
-          <Card variant="flat" padding="lg" containerStyle={{ width: '100%', maxWidth: 400 }}>
-            <Text variant="h1" center>{t('auth.welcome')}</Text>
-            
-            {/* Google Login Button */}
-            <Button
-              variant="primary"
-              size="lg"
-              label={signingInWithGoogle ? t('auth.redirecting') : `🔍 ${t('auth.login_with_google')}`}
-              onPress={handleGoogleLogin}
-              disabled={signingInWithGoogle}
-              isLoading={signingInWithGoogle}
-              fullWidth
-              containerStyle={{ marginTop: theme.spacing.lg }}
-            />
-            
-            {/* Divider */}
-            <View style={styles.divider}>
-              <Text variant="caption" color={theme.colors.text.tertiary}>{t('auth.or')}</Text>
-            </View>
-            
-            {/* Email/Password Form */}
-            <FormWrapper onSubmit={handleEmailSignin} style={{ width: '100%' }}>
-              <Input
-                label={t('auth.email')}
-                placeholder={t('auth.email')}
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (errors.email) {
-                    setErrors(prev => ({ ...prev, email: undefined }));
-                  }
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!isSigningIn}
-                variant="filled"
-                returnKeyType="next"
-                onSubmitEditing={handleEmailSubmit}
-                blurOnSubmit={false}
-                errorText={errors.email}
-                status={errors.email ? 'error' : 'default'}
-              />
-              
-              <Input
-                label={t('auth.password')}
-                placeholder={t('auth.password')}
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (errors.password) {
-                    setErrors(prev => ({ ...prev, password: undefined }));
-                  }
-                }}
-                secureTextEntry
-                autoCapitalize="none"
-                editable={!isSigningIn}
-                variant="filled"
-                returnKeyType="done"
-                onSubmitEditing={handlePasswordSubmit}
-                errorText={errors.password}
-                status={errors.password ? 'error' : 'default'}
-              />
-            </FormWrapper>
-            
-            {/* Sign In Button */}
-            <Button
-              variant="primary"
-              size="lg"
-              label={isSigningIn ? t('auth.signing_in') : t('auth.sign_in_with_email')}
-              onPress={handleEmailSignin}
-              disabled={isSigningIn}
-              isLoading={isSigningIn}
-              fullWidth
-              containerStyle={{ marginTop: theme.spacing.md }}
-            />
-            
-            {/* Links */}
-            <Button
-              variant="link"
-              size="md"
-              label={t('auth.forgot_password')}
-              onPress={handleForgotPassword}
-              disabled={isSigningIn}
-              containerStyle={{ marginTop: theme.spacing.sm }}
-            />
-            
-            <Button
-              variant="link"
-              size="md"
-              label={t('auth.no_account_link')}
-              onPress={handleGoToSignup}
-              disabled={isSigningIn}
-              containerStyle={{ marginTop: theme.spacing.sm }}
-            />
-            
-            {/* Language Selector */}
-            <View style={{ marginTop: theme.spacing.xl, alignItems: 'center' }}>
-              <LanguageSelector />
-            </View>
-          </Card>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <FormWrapper>
+      <Text variant="h1" weight="bold" style={styles.title}>
+        {t('auth.welcome')}
+      </Text>
+
+      <Card variant="elevated" padding="lg" containerStyle={styles.googleButton}>
+        <Text variant="button" style={styles.googleButtonText}>
+          {t('auth.continue_with_google')}
+        </Text>
+      </Card>
+
+      <View style={styles.divider}>
+        <View style={{ flex: 1, height: 1, backgroundColor: theme.colors.borders.light }} />
+        <Text style={styles.dividerText}>{t('auth.or')}</Text>
+        <View style={{ flex: 1, height: 1, backgroundColor: theme.colors.borders.light }} />
+      </View>
+
+      <Input
+        placeholder={t('auth.email')}
+        value={email}
+        onChangeText={(text) => {
+          setEmail(text);
+          if (emailError) validateEmail(text);
+        }}
+        error={emailError}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        leftIcon="mail-outline"
+      />
+
+      <Input
+        placeholder={t('auth.password')}
+        value={password}
+        onChangeText={(text) => {
+          setPassword(text);
+          if (passwordError) validatePassword(text);
+        }}
+        error={passwordError}
+        secureTextEntry
+        leftIcon="lock-closed-outline"
+      />
+
+      <Button
+        label={isLoading || signinLoading ? t('auth.signing_in') : t('auth.sign_in')}
+        onPress={handleSignIn}
+        disabled={isLoading || signinLoading || !email.trim() || !password.trim()}
+        isLoading={isLoading || signinLoading}
+        fullWidth
+        containerStyle={styles.button}
+      />
+
+      <Button
+        variant="ghost"
+        label={t('auth.forgot_password')}
+        onPress={handleForgotPassword}
+        fullWidth
+        containerStyle={styles.linkButton}
+      />
+
+      <Button
+        variant="ghost"
+        label={t('auth.need_account')}
+        onPress={handleSignUp}
+        fullWidth
+        containerStyle={styles.linkButton}
+      />
+
+      {/* Language selector */}
+      <View style={{ marginTop: theme.spacing.xl }}>
+        <LanguageSelector />
+      </View>
+    </FormWrapper>
   );
 }

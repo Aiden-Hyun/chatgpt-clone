@@ -1,227 +1,155 @@
-
-import { FormWrapper } from '@/components/FormWrapper';
-import { Button, Input, Text } from '@/components/ui';
-import { useToast } from '@/features/alert';
-import { useEmailSignup } from '@/features/auth';
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
-
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { FormWrapper } from '../../../components/FormWrapper';
+import { Button, Input, Text } from '../../../components/ui';
+import { useToast } from '../../../alert/toast/ToastContext';
+import { useEmailSignup } from '../../../auth/hooks/useEmailSignup';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
+import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
-  const { signUp, isLoading } = useEmailSignup();
-  const { showSuccess, showError } = useToast();
+  const { showError } = useToast();
+  const { signup, isLoading } = useEmailSignup();
+  const styles = createSignupStyles(theme);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<{
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  }>({});
+  
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
 
-  const validateForm = () => {
-    const newErrors: typeof errors = {};
-
-    // Email validation
-    if (!email.trim()) {
-      newErrors.email = t('auth.email_required');
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = t('auth.email_invalid');
+  const validateEmail = (value: string) => {
+    if (!value.trim()) {
+      setEmailError(t('auth.email_required'));
+      return false;
     }
 
-    // Password validation
-    if (!password) {
-      newErrors.password = t('auth.password_required');
-    } else if (password.length < 6) {
-      newErrors.password = t('auth.password_too_short');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setEmailError(t('auth.invalid_email'));
+      return false;
     }
 
-    // Confirm password validation
-    if (!confirmPassword) {
-      newErrors.confirmPassword = t('auth.confirm_password_required');
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = t('auth.passwords_dont_match');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setEmailError(null);
+    return true;
   };
 
-  const handleSignup = async () => {
-    if (!validateForm()) {
+  const validatePassword = (value: string) => {
+    if (!value.trim()) {
+      setPasswordError(t('auth.password_required'));
+      return false;
+    }
+
+    if (value.length < 6) {
+      setPasswordError(t('auth.password_too_short'));
+      return false;
+    }
+
+    setPasswordError(null);
+    return true;
+  };
+
+  const validateConfirmPassword = (value: string) => {
+    if (!value.trim()) {
+      setConfirmPasswordError(t('auth.confirm_password_required'));
+      return false;
+    }
+
+    if (value !== password) {
+      setConfirmPasswordError(t('auth.passwords_dont_match'));
+      return false;
+    }
+
+    setConfirmPasswordError(null);
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    const isConfirmPasswordValid = validateConfirmPassword(confirmPassword);
+
+    if (!isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
       return;
     }
 
     try {
-      await signUp(email.trim(), password);
-      showSuccess(t('auth.account_created'));
-      router.replace('/auth');
-    } catch (error: any) {
-      console.error('Signup error:', error);
-      
-      // Handle specific error cases
-      if (error?.message?.includes('email')) {
-        setErrors(prev => ({ ...prev, email: t('auth.email_already_exists') }));
-      } else if (error?.message?.includes('password')) {
-        setErrors(prev => ({ ...prev, password: t('auth.password_too_weak') }));
-      } else {
-        showError(t('auth.signup_failed'));
-      }
+      await signup(email, password);
+      // Navigation will be handled by auth state change
+    } catch (error) {
+      showError(t('auth.signup_failed'));
     }
   };
 
-  const handleGoBack = () => {
-    try {
-      const canGoBack = (router as any).canGoBack?.() ?? false;
-      if (canGoBack) {
-        router.back();
-      } else {
-        router.replace('/auth');
-      }
-    } catch {
-      router.replace('/auth');
-    }
-  };
-
-  const handleEmailSubmit = () => {
-    // Focus next input (password)
-    // This will be handled by the form
-  };
-
-  const handlePasswordSubmit = () => {
-    // Focus next input (confirm password)
-    // This will be handled by the form
+  const handleBackToSignIn = () => {
+    router.replace('/auth');
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
-      <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        {/* Header with Back Button */}
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: theme.spacing.md,
-          paddingVertical: theme.spacing.md,
-          borderBottomWidth: 1,
-          borderBottomColor: theme.borders.colors.light,
-          backgroundColor: theme.colors.background.primary,
-        }}>
-          <TouchableOpacity 
-            onPress={handleGoBack} 
-            style={{
-              padding: theme.spacing.sm,
-              marginRight: theme.spacing.md,
-              // Use consistent button size for all platforms
-              minWidth: theme.layout.buttonSizes.action,
-              minHeight: theme.layout.buttonSizes.action,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
-          </TouchableOpacity>
-          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: theme.layout.buttonSizes.header }}>
-            {t('auth.create_account')}
-          </Text>
-        </View>
-
-        <ScrollView 
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.container}>
-            <FormWrapper onSubmit={handleSignup} style={{ width: '100%' }}>
-              <Input
-                placeholder={t('auth.email')}
-                value={email}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (errors.email) {
-                    setErrors(prev => ({ ...prev, email: undefined }));
-                  }
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!isLoading}
-                variant="filled"
-                returnKeyType="next"
-                onSubmitEditing={handleEmailSubmit}
-                blurOnSubmit={false}
-                onFocus={() => console.log('Email input focused on signup')}
-                onBlur={() => console.log('Email input blurred on signup')}
-                status={errors.email ? 'error' : 'default'}
-                errorText={errors.email}
-              />
-              
-              <Input
-                placeholder={t('auth.password')}
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  if (errors.password) {
-                    setErrors(prev => ({ ...prev, password: undefined }));
-                  }
-                }}
-                secureTextEntry
-                autoCapitalize="none"
-                editable={!isLoading}
-                variant="filled"
-                returnKeyType="next"
-                onSubmitEditing={handlePasswordSubmit}
-                blurOnSubmit={false}
-                status={errors.password ? 'error' : 'default'}
-                errorText={errors.password}
-              />
-              
-              <Input
-                placeholder={t('auth.confirm_password')}
-                value={confirmPassword}
-                onChangeText={(text) => {
-                  setConfirmPassword(text);
-                  if (errors.confirmPassword) {
-                    setErrors(prev => ({ ...prev, confirmPassword: undefined }));
-                  }
-                }}
-                secureTextEntry
-                autoCapitalize="none"
-                editable={!isLoading}
-                variant="filled"
-                returnKeyType="done"
-                onSubmitEditing={handleSignup}
-                status={errors.confirmPassword ? 'error' : 'default'}
-                errorText={errors.confirmPassword}
-              />
-              
-              <Button
-                label={isLoading ? t('common.loading') : t('auth.sign_up')}
-                onPress={handleSignup}
-                disabled={isLoading}
-                isLoading={isLoading}
-                fullWidth
-              />
-            </FormWrapper>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <FormWrapper>
+      <Text variant="h1" weight="bold" style={styles.title}>
+        {t('auth.create_account')}
+      </Text>
+      
+      <Input
+        placeholder={t('auth.email')}
+        value={email}
+        onChangeText={(text) => {
+          setEmail(text);
+          if (emailError) validateEmail(text);
+        }}
+        error={emailError}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        leftIcon="mail-outline"
+      />
+      
+      <Input
+        placeholder={t('auth.password')}
+        value={password}
+        onChangeText={(text) => {
+          setPassword(text);
+          if (passwordError) validatePassword(text);
+          if (confirmPassword && confirmPasswordError) validateConfirmPassword(confirmPassword);
+        }}
+        error={passwordError}
+        secureTextEntry
+        leftIcon="lock-closed-outline"
+      />
+      
+      <Input
+        placeholder={t('auth.confirm_password')}
+        value={confirmPassword}
+        onChangeText={(text) => {
+          setConfirmPassword(text);
+          if (confirmPasswordError) validateConfirmPassword(text);
+        }}
+        error={confirmPasswordError}
+        secureTextEntry
+        leftIcon="lock-closed-outline"
+      />
+      
+      <Button
+        label={isLoading ? t('auth.creating_account') : t('auth.create_account')}
+        onPress={handleSubmit}
+        disabled={isLoading || !email.trim() || !password.trim() || !confirmPassword.trim()}
+        isLoading={isLoading}
+        fullWidth
+        containerStyle={styles.button}
+      />
+      
+      <Button
+        variant="ghost"
+        label={t('auth.already_have_account')}
+        onPress={handleBackToSignIn}
+        fullWidth
+        containerStyle={styles.linkButton}
+      />
+    </FormWrapper>
   );
 }
-
-const styles = {
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center' as const,
-  },
-}; 

@@ -1,61 +1,55 @@
 # Missing Components and Logic
 
-This file lists components, hooks, and logic that are imported from `/src` but don't have direct equivalents in the `/source` directory yet. These need to be implemented before the migration can be completed.
+This file lists components, hooks, and logic that are needed to complete the migration from `/src` to `/source`.
 
-## Chat Features
+## Components
 
-1. **ServiceFactory** - `ServiceFactory.createChatRoomService()`
-   - Used in: `source/presentation/app/chat/index.tsx`
-   - Functionality: Creates chat room services
-   - Replacement: Should use `UseCaseFactory` from `/source/business/shared/UseCaseFactory.ts`
-
-2. **LoadingWrapper** - `LoadingWrapper` component
-   - Used in: `source/presentation/app/chat/index.tsx`
-   - Functionality: Shows loading state
-   - Replacement: Use `LoadingWrapper` from `/source/presentation/components/LoadingWrapper.tsx`
-
-## UI Components
-
-1. **UI Components** - `@/components/ui`
-   - Used in: Multiple files in `source/presentation/app`
-   - Functionality: Basic UI components like Button, Card, Text, etc.
-   - Replacement: Use components from `/source/presentation/components/ui`
-
-## Layout Utilities
-
-1. **getButtonSize** - `@/shared/utils/layout`
-   - Used in: `source/presentation/app/settings/settings.styles.ts` (commented out)
-   - Functionality: Gets consistent button sizes
-   - Replacement: Use theme system from `/source/presentation/theme`
-
-## Authentication
-
-1. **useUserInfo** - `useUserInfo` hook
-   - Used in: `source/presentation/app/settings/index.tsx`
-   - Functionality: Gets user information
-   - Replacement: Create a hook that uses the session repository or user repository from `/source/business`
-
-## Supabase Integration
-
-1. **supabase** - `@/shared/lib/supabase`
+1. **LoadingState Hook**:
+   - File: `source/shared/hooks/useLoadingState.ts`
    - Used in: `source/presentation/app/(auth)/auth.tsx`
-   - Functionality: Direct Supabase client access
-   - Replacement: Should use repositories and use cases from `/source/business` instead of direct Supabase access
+   - Functionality: Manages loading states
+
+2. **Supabase Client**:
+   - File: `source/service/shared/lib/supabase.ts`
+   - Used in: `source/presentation/app/(auth)/auth.tsx` (commented out)
+   - Functionality: Provides access to Supabase client
+
+## Business Logic
+
+1. **ServiceFactory**:
+   - File: `source/business/chat/services/core/ServiceFactory.ts`
+   - Used in: `source/presentation/app/chat/index.tsx` (replaced with UseCaseFactory)
+   - Functionality: Creates services for chat functionality
+
+2. **CreateRoomUseCase**:
+   - File: `source/business/chat/use-cases/CreateRoomUseCase.ts`
+   - Used in: `source/presentation/app/chat/index.tsx`
+   - Functionality: Creates a new chat room
 
 ## Implementation Plan
 
-To complete the migration, follow these steps:
+1. **For useLoadingState**:
+   - Create a simple hook that manages loading state
+   - Implement in `source/shared/hooks/useLoadingState.ts`
 
-1. For each missing component/logic:
-   - Check if there's an equivalent in `/source` that can be used directly
-   - If not, implement the missing functionality following the layered architecture principles
-   - Update imports in all affected files
+2. **For Supabase Client**:
+   - Create a service that provides access to Supabase
+   - Implement in `source/service/shared/lib/supabase.ts`
+   - Make sure it follows the layered architecture principles
 
-2. Focus on implementing:
-   - Business layer use cases for chat room creation
-   - UI components for loading and display
-   - Authentication hooks that use the business layer
+3. **For CreateRoomUseCase**:
+   - Ensure the use case is properly implemented in the business layer
+   - Make sure it's registered in the UseCaseFactory
 
-3. Test each implementation to ensure it works correctly with the existing code
+## Testing
 
-4. Once all missing components are implemented, test the entire application to ensure everything works together
+After implementing these components, test the following functionality:
+1. Authentication flow (sign in, sign up, forgot password)
+2. Chat room creation
+3. Navigation between screens
+
+## Notes
+
+- The migration is mostly complete, with most files updated to use the correct import paths
+- Some functionality has been commented out or replaced with alternatives
+- The remaining components should be implemented following the layered architecture principles
