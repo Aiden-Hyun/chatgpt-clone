@@ -13,5 +13,7 @@ export default {
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
       edgeFunctionBaseUrl: process.env.EDGE_FUNCTION_BASE_URL,
     },
+    // Change the root directory to source/presentation/app
+    root: './source/presentation/app',
   },
 };

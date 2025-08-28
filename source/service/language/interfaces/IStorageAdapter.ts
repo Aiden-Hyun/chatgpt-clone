@@ -1,4 +1,4 @@
-import { Result } from '../../../business/shared/Result';
+import { Result } from '../../../business/shared/types/Result';
 
 /**
  * Interface for storage operations related to language settings

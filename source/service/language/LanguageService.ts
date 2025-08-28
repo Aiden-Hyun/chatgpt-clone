@@ -1,7 +1,7 @@
 import { DEFAULT_LANGUAGE } from '../../business/language/constants';
 import { Language } from '../../business/language/entities';
 import { ILanguageRepository, ILanguageService } from '../../business/language/interfaces';
-import { Result } from '../../business/shared/Result';
+import { Result } from '../../business/shared/types/Result';
 import { ILogger } from '../shared/interfaces/ILogger';
 import { formatTranslation } from './utils/languageFormatter';
 
