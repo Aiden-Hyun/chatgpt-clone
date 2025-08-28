@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
-import { useComponentStyles } from '../hooks/useComponentStyles';
+import { useAppTheme } from '../../../features/theme/theme';
 import createCardStyles from './Card.styles';
 import { CardProps } from './Card.types';
 
@@ -44,7 +44,8 @@ export const Card = ({
   children,
   ...rest
 }: CardProps) => {
-  const styles = useComponentStyles(createCardStyles);
+  const theme = useAppTheme();
+  const styles = createCardStyles(theme);
 
   // Combine styles based on props
   const cardStyle = [

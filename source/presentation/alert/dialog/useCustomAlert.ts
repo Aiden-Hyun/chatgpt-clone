@@ -1,7 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
-import { AlertType } from '../../../business/alert/constants/alertConstants';
-import { AlertOptions } from '../../../business/alert/entities/AlertDialog';
-import { useBusinessContext } from '../../shared/BusinessContextProvider';
+import { useState, useCallback } from 'react';
 
 interface AlertState {
   visible: boolean;
@@ -11,92 +8,103 @@ interface AlertState {
   onCancel?: () => void;
   confirmText: string;
   cancelText: string;
-  type: AlertType;
+  type: 'success' | 'error' | 'warning' | 'info';
 }
 
 export const useCustomAlert = () => {
-  const { alertService } = useBusinessContext();
-  const [alertState, setAlertState] = useState<AlertState>({
+  const [alert, setAlert] = useState<AlertState>({
     visible: false,
     title: '',
     message: '',
     confirmText: 'OK',
     cancelText: 'Cancel',
-    type: AlertType.INFO,
+    type: 'info',
   });
-  
-  // Update local state when alert service state changes
-  useEffect(() => {
-    const currentAlert = alertService.getCurrentAlert();
-    const visible = alertService.isVisible();
-    
-    if (currentAlert) {
-      setAlertState({
-        visible,
-        title: currentAlert.getTitle(),
-        message: currentAlert.getMessage(),
-        onConfirm: currentAlert.getOnConfirm(),
-        onCancel: currentAlert.getOnCancel(),
-        confirmText: currentAlert.getConfirmText(),
-        cancelText: currentAlert.getCancelText(),
-        type: currentAlert.getType(),
-      });
-    } else {
-      setAlertState(prev => ({
-        ...prev,
-        visible,
-      }));
-    }
-  }, [alertService]);
-  
-  // Delegate to the alert service
+
   const showAlert = useCallback((
     title: string,
     message: string,
-    options?: AlertOptions & { type?: AlertType }
+    options?: {
+      onConfirm?: () => void;
+      onCancel?: () => void;
+      confirmText?: string;
+      cancelText?: string;
+      type?: 'success' | 'error' | 'warning' | 'info';
+    }
   ) => {
-    const type = options?.type || AlertType.INFO;
-    alertService.showAlert(title, message, type, options);
-  }, [alertService]);
-  
+    setAlert({
+      visible: true,
+      title,
+      message,
+      onConfirm: options?.onConfirm,
+      onCancel: options?.onCancel,
+      confirmText: options?.confirmText || 'OK',
+      cancelText: options?.cancelText || 'Cancel',
+      type: options?.type || 'info',
+    });
+  }, []);
+
   const hideAlert = useCallback(() => {
-    alertService.hideAlert();
-  }, [alertService]);
-  
+    setAlert(prev => ({
+      ...prev,
+      visible: false,
+    }));
+  }, []);
+
   const showSuccessAlert = useCallback((
     title: string,
     message: string,
-    options?: AlertOptions
+    options?: {
+      onConfirm?: () => void;
+      onCancel?: () => void;
+      confirmText?: string;
+      cancelText?: string;
+    }
   ) => {
-    alertService.showSuccessAlert(title, message, options);
-  }, [alertService]);
-  
+    showAlert(title, message, { ...options, type: 'success' });
+  }, [showAlert]);
+
   const showErrorAlert = useCallback((
     title: string,
     message: string,
-    options?: AlertOptions
+    options?: {
+      onConfirm?: () => void;
+      onCancel?: () => void;
+      confirmText?: string;
+      cancelText?: string;
+    }
   ) => {
-    alertService.showErrorAlert(title, message, options);
-  }, [alertService]);
-  
+    showAlert(title, message, { ...options, type: 'error' });
+  }, [showAlert]);
+
   const showWarningAlert = useCallback((
     title: string,
     message: string,
-    options?: AlertOptions
+    options?: {
+      onConfirm?: () => void;
+      onCancel?: () => void;
+      confirmText?: string;
+      cancelText?: string;
+    }
   ) => {
-    alertService.showWarningAlert(title, message, options);
-  }, [alertService]);
-  
+    showAlert(title, message, { ...options, type: 'warning' });
+  }, [showAlert]);
+
   const showInfoAlert = useCallback((
     title: string,
     message: string,
-    options?: AlertOptions
+    options?: {
+      onConfirm?: () => void;
+      onCancel?: () => void;
+      confirmText?: string;
+      cancelText?: string;
+    }
   ) => {
-    alertService.showInfoAlert(title, message, options);
-  }, [alertService]);
-  
+    showAlert(title, message, { ...options, type: 'info' });
+  }, [showAlert]);
+
   return {
-    alert: alertState,
+    alert,
     showAlert,
     hideAlert,
     showSuccessAlert,
@@ -104,4 +112,4 @@ export const useCustomAlert = () => {
     showWarningAlert,
     showInfoAlert,
   };
-};
+}; 

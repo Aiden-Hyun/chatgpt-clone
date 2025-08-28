@@ -12,7 +12,7 @@ import {
     Text,
     View
 } from "react-native";
-import { useComponentStyles } from '../hooks/useComponentStyles';
+import { useAppTheme } from '../../../features/theme/theme';
 import createDropdownStyles from './Dropdown.styles';
 
 export type DropdownItem = {
@@ -80,7 +80,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
   disabled,
   accessibilityLabel,
 }) => {
-  const styles = useComponentStyles(createDropdownStyles);
+  const theme = useAppTheme();
+  const styles = createDropdownStyles(theme);
   const triggerRef = useRef<View>(null);
   const [open, setOpen] = useState(false);
   const [triggerRect, setTriggerRect] = useState<LayoutRectangle | null>(null);

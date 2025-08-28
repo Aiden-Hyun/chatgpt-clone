@@ -1,11 +1,11 @@
-import { Session } from '@supabase/supabase-js';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { ChatRoom } from '../entities/ChatRoom';
 import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
 
 export interface CreateRoomParams {
   name?: string;
   model: string;
-  session: Session;
+  session: IUserSession;
 }
 
 export interface CreateRoomResult {

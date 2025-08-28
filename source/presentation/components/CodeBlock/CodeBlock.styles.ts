@@ -1,5 +1,5 @@
 import { Platform, StyleSheet } from 'react-native';
-import { AppTheme } from '../../../../layers/business/theme/theme.types';
+import { PresentationTheme } from '../../theme/types/PresentationTheme';
 
 const monoFont = Platform.select({
   ios: 'Menlo',
@@ -10,7 +10,7 @@ const monoFont = Platform.select({
 const tabularNums = Platform.OS === 'ios' ? (['tabular-nums'] as any) : undefined;
 const codeFontNative = 'CascadiaMono';
 
-export const createCodeBlockStyles = (theme: AppTheme) => {
+export const createCodeBlockStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       backgroundColor: theme.colors.syntax?.background || theme.colors.background.tertiary,

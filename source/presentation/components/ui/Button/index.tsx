@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { useComponentStyles } from '../hooks/useComponentStyles';
+import { useAppTheme } from '../../../features/theme/theme';
 import createButtonStyles from './Button.styles';
 import { ButtonProps } from './Button.types';
 
@@ -45,7 +45,8 @@ export const Button = ({
   children,
   ...rest
 }: ButtonProps) => {
-  const styles = useComponentStyles(createButtonStyles);
+  const theme = useAppTheme();
+  const styles = createButtonStyles(theme);
 
   // Combine styles based on props
   const buttonStyle = [
@@ -70,10 +71,10 @@ export const Button = ({
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <ActivityIndicator 
             size={size === 'xs' || size === 'sm' ? 'small' : 'small'} 
-            color={variant === 'primary' ? styles.getTextStyle(variant, status, size).color : styles.getVariantStyle(variant, status).borderColor} 
+            color={variant === 'primary' ? theme.colors.text.inverted : theme.colors.primary} 
           />
           {loadingText && (
-            <Text style={[buttonTextStyle, { marginLeft: 8 }]}>
+            <Text style={[buttonTextStyle, { marginLeft: theme.spacing.sm }]}>
               {loadingText}
             </Text>
           )}

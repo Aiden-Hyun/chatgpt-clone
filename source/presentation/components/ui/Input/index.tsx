@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { useComponentStyles } from '../hooks/useComponentStyles';
+import { useAppTheme } from '../../../features/theme/theme';
 import createInputStyles from './Input.styles';
 import { InputProps } from './Input.types';
 
@@ -48,7 +48,8 @@ export const Input = forwardRef<TextInput, InputProps>(({
   editable = true,
   ...rest
 }, ref) => {
-  const styles = useComponentStyles(createInputStyles);
+  const theme = useAppTheme();
+  const styles = createInputStyles(theme);
 
   // Determine if we should show an error message
   const showError = status === 'error' && errorText;

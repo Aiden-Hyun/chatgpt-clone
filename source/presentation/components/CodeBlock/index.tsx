@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeContext } from '../../../../layers/business/theme/context/ThemeContext';
-import { useToast } from '../../../../layers/presentation/alert/toast/ToastContext';
+import { useToast } from '../../alert/toast/ToastContext';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
+import { useTheme } from '../../theme/hooks/useTheme';
 import { CodeStyler } from '../CodeStyler';
 import { createCodeBlockStyles } from './CodeBlock.styles';
 
@@ -18,7 +18,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   language = 'text',
   showLineNumbers = false 
 }) => {
-  const { currentTheme } = useThemeContext();
+  const currentTheme = useTheme();
   const styles = React.useMemo(() => createCodeBlockStyles(currentTheme), [currentTheme]);
   const { showSuccess, showError } = useToast();
   const { clipboard } = useBusinessContext();

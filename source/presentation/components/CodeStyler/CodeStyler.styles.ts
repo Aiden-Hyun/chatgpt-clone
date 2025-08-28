@@ -1,5 +1,5 @@
 import { Platform, StyleSheet } from 'react-native';
-import { AppTheme } from '../../../../layers/business/theme/theme.types';
+import { PresentationTheme } from '../../theme/types/PresentationTheme';
 
 const monoFont = Platform.select({
   ios: 'Menlo',
@@ -9,7 +9,7 @@ const monoFont = Platform.select({
 });
 const codeFontNative = 'CascadiaMono';
 
-export const createCodeStylerStyles = (theme: AppTheme) => {
+export const createCodeStylerStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       backgroundColor: 'transparent',

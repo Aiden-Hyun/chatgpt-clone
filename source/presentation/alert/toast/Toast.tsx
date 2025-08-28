@@ -1,17 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { AlertType, DEFAULT_TOAST_DURATION_MS } from '../../../business/alert/constants/alertConstants';
-import { useAppTheme } from '../../../business/theme';
+import { useAppTheme } from '../../theme/theme';
+import { DEFAULT_TOAST_DURATION_MS } from '../constants';
 
 interface ToastProps {
   visible: boolean;
   message: string;
-  type?: AlertType;
+  type?: 'success' | 'error' | 'warning' | 'info';
   duration?: number;
   onHide?: () => void;
   onPress?: () => void;
@@ -21,7 +21,7 @@ interface ToastProps {
 export const Toast: React.FC<ToastProps> = ({
   visible,
   message,
-  type = AlertType.INFO,
+  type = 'info',
   duration = DEFAULT_TOAST_DURATION_MS,
   onHide,
   onPress,
@@ -57,13 +57,13 @@ export const Toast: React.FC<ToastProps> = ({
 
   const getIcon = () => {
     switch (type) {
-      case AlertType.SUCCESS:
+      case 'success':
         return '✅';
-      case AlertType.ERROR:
+      case 'error':
         return '❌';
-      case AlertType.WARNING:
+      case 'warning':
         return '⚠️';
-      case AlertType.INFO:
+      case 'info':
       default:
         return 'ℹ️';
     }
@@ -93,7 +93,7 @@ export const Toast: React.FC<ToastProps> = ({
   );
 };
 
-const createStyles = (theme: any, type: AlertType, position: 'bottom' | 'top') => StyleSheet.create({
+const createStyles = (theme: any, type: string, position: 'bottom' | 'top') => StyleSheet.create({
   container: {
     position: 'absolute',
     ...(position === 'bottom' ? { bottom: 24 } : { top: 24 }),
@@ -102,11 +102,11 @@ const createStyles = (theme: any, type: AlertType, position: 'bottom' | 'top') =
     zIndex: 9999,
   },
   toast: {
-    backgroundColor: type === AlertType.SUCCESS 
+    backgroundColor: type === 'success' 
       ? theme.colors.status.success.primary 
-      : type === AlertType.ERROR 
+      : type === 'error' 
       ? theme.colors.status.error.primary 
-      : type === AlertType.WARNING 
+      : type === 'warning' 
       ? theme.colors.status.warning.primary 
       : theme.colors.primary,
     borderRadius: theme.borders.radius.lg,
@@ -116,15 +116,15 @@ const createStyles = (theme: any, type: AlertType, position: 'bottom' | 'top') =
     ...theme.shadows.medium,
   },
   icon: {
-    fontSize: theme.typography.fontSizes.lg,
+            fontSize: theme.typography.fontSizes.lg,
     marginRight: theme.spacing.sm,
   },
   message: {
     flex: 1,
     color: theme.colors.text.inverted,
-    fontSize: theme.typography.fontSizes.md,
-    fontWeight: theme.typography.fontWeights.medium,
-    fontFamily: theme.typography.fontFamily.primary,
+            fontSize: theme.typography.fontSizes.md,
+          fontWeight: theme.typography.fontWeights.medium as '500',
+          fontFamily: theme.typography.fontFamily.primary,
   },
   closeButton: {
     padding: theme.spacing.xs,
@@ -132,7 +132,7 @@ const createStyles = (theme: any, type: AlertType, position: 'bottom' | 'top') =
   },
   closeText: {
     color: theme.colors.text.inverted,
-    fontSize: theme.typography.fontSizes.sm,
-    fontWeight: theme.typography.fontWeights.bold,
+            fontSize: theme.typography.fontSizes.sm,
+          fontWeight: theme.typography.fontWeights.bold as '700',
   },
-});
+}); 

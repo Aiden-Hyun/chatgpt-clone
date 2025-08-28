@@ -1,5 +1,5 @@
-import { Session } from '@supabase/supabase-js';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { ChatRoom } from '../entities/ChatRoom';
 import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
 
@@ -7,7 +7,7 @@ export interface UpdateRoomParams {
   roomId: string;
   name?: string;
   model?: string;
-  session: Session;
+  session: IUserSession;
 }
 
 export interface UpdateRoomResult {

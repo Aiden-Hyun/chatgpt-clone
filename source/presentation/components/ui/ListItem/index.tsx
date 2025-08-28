@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { useComponentStyles } from '../hooks/useComponentStyles';
+import { useAppTheme } from '../../../features/theme/theme';
 import createListItemStyles from './ListItem.styles';
 import { ListItemProps } from './ListItem.types';
 
@@ -54,7 +54,8 @@ export const ListItem = ({
   onPress,
   ...rest
 }: ListItemProps) => {
-  const styles = useComponentStyles(createListItemStyles);
+  const theme = useAppTheme();
+  const styles = createListItemStyles(theme);
 
   return (
     <Pressable

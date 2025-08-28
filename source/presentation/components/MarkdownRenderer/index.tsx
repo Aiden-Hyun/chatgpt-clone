@@ -3,16 +3,16 @@ import * as FileSystem from "expo-file-system";
 import { Image as ExpoImage } from "expo-image";
 import React from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import MarkdownDisplay, { MarkdownIt } from "react-native-markdown-display";
-import { useThemeContext } from '../../../../layers/business/theme/context/ThemeContext';
-import { useToast } from '../../../../layers/presentation/alert/toast/ToastContext';
+import { useToast } from '../../alert/toast/ToastContext';
 import { useResponsive } from '../../shared/hooks/useResponsive';
+import { useTheme } from '../../theme/hooks/useTheme';
 import { CodeBlock } from '../CodeBlock';
 import { MARKDOWN_IMAGE_FILENAME_MAX_LENGTH } from './constants';
 import { createMarkdownRendererStyles } from './MarkdownRenderer.styles';
@@ -26,7 +26,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   children,
   isAnimating = false,
 }) => {
-  const { currentTheme } = useThemeContext();
+  const currentTheme = useTheme();
   const { isMobile } = useResponsive();
   const styles = React.useMemo(
     () => createMarkdownRendererStyles(currentTheme, isMobile),

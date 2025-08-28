@@ -1,14 +1,14 @@
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
 import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { MessageEntity } from '../entities/Message';
-import { Session } from '@supabase/supabase-js';
+import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 
 export interface EditMessageParams {
   messageId: string;
   newContent: string;
-  session: Session;
+  session: IUserSession;
 }
 
 export interface EditMessageResult {

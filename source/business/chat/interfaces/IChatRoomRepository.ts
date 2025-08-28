@@ -1,4 +1,4 @@
-import { Session } from '@supabase/supabase-js';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { ChatRoomEntity } from '../entities/ChatRoom';
 
 export interface CreateRoomResult {
@@ -19,9 +19,9 @@ export interface DeleteRoomResult {
 }
 
 export interface IChatRoomRepository {
-  create(model: string, session: Session, name?: string): Promise<CreateRoomResult>;
-  update(room: ChatRoomEntity, session: Session): Promise<UpdateRoomResult>;
-  getById(roomId: string, session: Session): Promise<ChatRoomEntity | null>;
-  listByUserId(userId: string, session: Session): Promise<ChatRoomEntity[]>;
-  delete(roomId: string, session: Session): Promise<DeleteRoomResult>;
+  create(model: string, session: IUserSession, name?: string): Promise<CreateRoomResult>;
+  update(room: ChatRoomEntity, session: IUserSession): Promise<UpdateRoomResult>;
+  getById(roomId: string, session: IUserSession): Promise<ChatRoomEntity | null>;
+  listByUserId(userId: string, session: IUserSession): Promise<ChatRoomEntity[]>;
+  delete(roomId: string, session: IUserSession): Promise<DeleteRoomResult>;
 }

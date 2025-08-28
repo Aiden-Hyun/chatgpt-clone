@@ -1,10 +1,10 @@
 import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { ChatRoom } from '../entities/ChatRoom';
-import { Session } from '@supabase/supabase-js';
 
 export interface ListRoomsParams {
-  session: Session;
+  session: IUserSession;
 }
 
 export interface ListRoomsResult {

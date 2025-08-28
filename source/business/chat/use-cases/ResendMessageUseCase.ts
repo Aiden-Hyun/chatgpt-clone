@@ -1,14 +1,14 @@
-import { Session } from '@supabase/supabase-js';
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { MessageEntity, MessageRole } from '../entities/Message';
 import { IAIProvider } from '../interfaces/IAIProvider';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
 import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { IMessageRepository } from '../interfaces/IMessageRepository';
 
 export interface ResendMessageParams {
   userMessageId: string;
-  session: Session;
+  session: IUserSession;
   model?: string;
   accessToken: string;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
-import { useThemeContext } from '../../../../layers/business/theme/context/ThemeContext';
+import { usePresentationTheme, useTheme } from '../../theme/hooks/useTheme';
 import { createCodeStylerStyles } from './CodeStyler.styles';
 
 // @ts-ignore - library lacks proper types for RN env
@@ -19,7 +19,8 @@ export const CodeStyler: React.FC<CodeStylerProps> = ({
   code,
   language,
 }) => {
-  const { currentTheme, themeMode } = useThemeContext();
+  const currentTheme = useTheme();
+  const { themeMode } = usePresentationTheme();
   const styles = React.useMemo(() => createCodeStylerStyles(currentTheme), [currentTheme]);
 
   const prismTheme = themeMode === 'dark' || 

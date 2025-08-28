@@ -1,4 +1,4 @@
-import { Session } from '@supabase/supabase-js';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { MessageEntity } from '../entities/Message';
 
 export interface SaveMessageResult {
@@ -8,10 +8,10 @@ export interface SaveMessageResult {
 }
 
 export interface IMessageRepository {
-  save(message: MessageEntity, session: Session): Promise<SaveMessageResult>;
-  update(message: MessageEntity, session: Session): Promise<SaveMessageResult>;
-  getById(messageId: string, session: Session): Promise<MessageEntity | null>;
-  getByRoomId(roomId: string, session: Session): Promise<MessageEntity[]>;
-  getRecentByRoomId(roomId: string, limit: number, session: Session): Promise<MessageEntity[]>;
-  delete(messageId: string, session: Session): Promise<{ success: boolean; error?: string; }>;
+  save(message: MessageEntity, session: IUserSession): Promise<SaveMessageResult>;
+  update(message: MessageEntity, session: IUserSession): Promise<SaveMessageResult>;
+  getById(messageId: string, session: IUserSession): Promise<MessageEntity | null>;
+  getByRoomId(roomId: string, session: IUserSession): Promise<MessageEntity[]>;
+  getRecentByRoomId(roomId: string, limit: number, session: IUserSession): Promise<MessageEntity[]>;
+  delete(messageId: string, session: IUserSession): Promise<{ success: boolean; error?: string; }>;
 }

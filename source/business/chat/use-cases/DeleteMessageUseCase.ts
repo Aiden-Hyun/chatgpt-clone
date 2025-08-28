@@ -1,5 +1,5 @@
-import { Session } from '@supabase/supabase-js';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { MessageEntity } from '../entities/Message';
 import { IMessageRepository } from '../interfaces/IMessageRepository';
 
@@ -7,7 +7,7 @@ export interface DeleteMessageParams {
   messageId: string;
   userId: string;
   roomId: string;
-  session: Session;
+  session: IUserSession;
 }
 
 export interface DeleteMessageResult {

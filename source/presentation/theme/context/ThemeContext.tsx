@@ -1,11 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import { AppTheme, ThemeMode, ThemeStyle } from '../../../business/theme/constants/theme.types';
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { Logger } from '../../../service/shared/utils/Logger';
-import { IThemeService } from '../../../service/theme/interfaces/IThemeService';
-import { ThemeService } from '../../../service/theme/ThemeService';
+import { AppTheme, ThemeMode, ThemeStyle } from '../theme.types';
+import themeRegistry from '../themeRegistry';
 
 // Storage keys for persisting theme preferences
 const THEME_MODE_STORAGE_KEY = '@theme_mode';
@@ -25,7 +22,7 @@ interface ThemeContextType {
   currentTheme: AppTheme;
   
   // Available themes for UI selection
-  availableThemes: ReturnType<IThemeService['getAllThemes']>;
+  availableThemes: ReturnType<typeof themeRegistry.getAllThemes>;
   
   // Loading state to track when theme preferences are being loaded
   isLoading: boolean;
@@ -34,19 +31,8 @@ interface ThemeContextType {
 // Create context with undefined default value
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Theme provider props
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  themeService?: IThemeService;
-  logger?: ILogger;
-}
-
 // Theme provider component
-export function ThemeProvider({ 
-  children,
-  themeService = new ThemeService(),
-  logger = new Logger().child('ThemeContext')
-}: ThemeProviderProps) {
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // State for theme mode (light, dark, system)
   const [themeMode, setThemeModeState] = useState<ThemeMode>('system');
   
@@ -61,61 +47,59 @@ export function ThemeProvider({
 
   // Load saved theme preferences from storage
   useEffect(() => {
-    logger.info('Loading theme preferences from storage...');
+    console.log('🎨 [ThemeContext] Loading theme preferences from storage...');
     const loadThemePreferences = async () => {
       setIsLoading(true);
       try {
         // Load theme mode
         const savedThemeMode = await AsyncStorage.getItem(THEME_MODE_STORAGE_KEY);
         if (savedThemeMode && ['light', 'dark', 'system'].includes(savedThemeMode)) {
-          logger.debug('Loaded theme mode:', { mode: savedThemeMode });
+          console.log('☀️ [ThemeContext] Loaded theme mode:', savedThemeMode);
           setThemeModeState(savedThemeMode as ThemeMode);
         }
         
         // Load theme style
         const savedThemeStyle = await AsyncStorage.getItem(THEME_STYLE_STORAGE_KEY);
-        if (savedThemeStyle && themeService.hasTheme(savedThemeStyle)) {
-          logger.debug('Loaded theme style:', { style: savedThemeStyle });
+        if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
+          console.log('✨ [ThemeContext] Loaded theme style:', savedThemeStyle);
           setThemeStyleState(savedThemeStyle);
         }
       } catch (error) {
-        logger.error('Failed to load theme preferences:', { error });
+        console.error('Failed to load theme preferences:', error);
       } finally {
-        logger.debug('Theme preferences loading complete');
+        console.log('✅ [ThemeContext] Theme preferences loading complete');
         setIsLoading(false);
       }
     };
 
     loadThemePreferences();
-  }, [logger, themeService]);
+  }, []);
 
   // Set theme mode with persistence
   const setThemeMode = useCallback(async (mode: ThemeMode) => {
     try {
       await AsyncStorage.setItem(THEME_MODE_STORAGE_KEY, mode);
       setThemeModeState(mode);
-      logger.debug('Theme mode saved:', { mode });
     } catch (error) {
-      logger.error('Failed to save theme mode:', { error });
+      console.error('Failed to save theme mode:', error);
     }
-  }, [logger]);
+  }, []);
 
   // Set theme style with persistence
   const setThemeStyle = useCallback(async (style: ThemeStyle) => {
     // Validate that the theme exists
-    if (!themeService.hasTheme(style)) {
-      logger.error('Theme style not found, using default:', { style });
-      style = themeService.getDefaultTheme().id;
+    if (!themeRegistry.hasTheme(style)) {
+      console.error(`Theme style "${style}" not found. Using default.`);
+      style = themeRegistry.getDefaultTheme().id;
     }
     
     try {
       await AsyncStorage.setItem(THEME_STYLE_STORAGE_KEY, style);
       setThemeStyleState(style);
-      logger.debug('Theme style saved:', { style });
     } catch (error) {
-      logger.error('Failed to save theme style:', { error });
+      console.error('Failed to save theme style:', error);
     }
-  }, [logger, themeService]);
+  }, []);
 
   // Determine current appearance based on mode and system preference
   const currentAppearance: 'light' | 'dark' = useMemo(() => {
@@ -127,14 +111,14 @@ export function ThemeProvider({
 
   // Get the current theme object based on style and appearance
   const currentTheme = useMemo(() => {
-    const themeData = themeService.getTheme(themeStyle) || themeService.getDefaultTheme();
+    const themeData = themeRegistry.getTheme(themeStyle) || themeRegistry.getDefaultTheme();
     return themeData.theme[currentAppearance];
-  }, [themeStyle, currentAppearance, themeService]);
+  }, [themeStyle, currentAppearance]);
 
   // Get all available themes for UI selection
   const availableThemes = useMemo(() => {
-    return themeService.getAllThemes();
-  }, [themeService]);
+    return themeRegistry.getAllThemes();
+  }, []);
 
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo(() => {

@@ -1,29 +1,25 @@
 // Bridge Auth Context for testing /source implementation with existing app session
 // This bridges the existing /src auth system with /source components for testing
 
-import { Session } from '@supabase/supabase-js';
-import React, { createContext, ReactNode, useContext } from 'react';
-
-interface BridgeAuthContextValue {
-  session: Session | null;
-  isLoading: boolean;
-}
+import React, { createContext, useContext, useMemo } from 'react';
+import { BridgeAuthContextValue, BridgeAuthProviderProps } from '../types/AuthTypes';
+import { SessionConverter } from '../utils/SessionConverter';
 
 const BridgeAuthContext = createContext<BridgeAuthContextValue | undefined>(undefined);
-
-interface BridgeAuthProviderProps {
-  children: ReactNode;
-  existingSession: Session | null;
-  existingIsLoading: boolean;
-}
 
 /**
  * Bridge Auth Provider that uses the existing app's session
  * This allows testing /source components without setting up the full /source session system
  */
 export function BridgeAuthProvider({ children, existingSession, existingIsLoading }: BridgeAuthProviderProps) {
+  // Convert external session to business session using SessionConverter
+  const businessSession = useMemo(() => {
+    if (!existingSession) return null;
+    return SessionConverter.toBusinessSession(existingSession);
+  }, [existingSession]);
+
   const value: BridgeAuthContextValue = {
-    session: existingSession,
+    session: businessSession,
     isLoading: existingIsLoading
   };
 

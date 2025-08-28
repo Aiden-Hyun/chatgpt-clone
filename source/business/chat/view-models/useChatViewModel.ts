@@ -1,5 +1,5 @@
-import { Session } from '@supabase/supabase-js';
 import { useCallback, useState } from 'react';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { ChatRoomEntity } from '../entities/ChatRoom';
 import { MessageEntity } from '../entities/Message';
 import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
@@ -50,7 +50,7 @@ interface ChatViewModelDependencies {
 export function useChatViewModel(
   userId: string,
   dependencies: ChatViewModelDependencies,
-  session: Session | null
+  session: IUserSession | null
 ): ChatState & ChatActions {
   
   const [state, setState] = useState<ChatState>({

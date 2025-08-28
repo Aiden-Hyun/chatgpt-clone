@@ -1,10 +1,10 @@
 import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { Session } from '@supabase/supabase-js';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 
 export interface DeleteRoomParams {
   roomId: string;
-  session: Session;
+  session: IUserSession;
 }
 
 export interface DeleteRoomResult {

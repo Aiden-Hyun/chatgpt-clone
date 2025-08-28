@@ -1,7 +1,7 @@
-import { Session } from '@supabase/supabase-js';
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { MessageEntity, MessageRole } from '../entities/Message';
 import { IAIProvider } from '../interfaces/IAIProvider';
 import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
@@ -12,7 +12,7 @@ export interface SendMessageParams {
   roomId: string;
   userId: string;
   model?: string;
-  session: Session;
+  session: IUserSession;
   accessToken: string;
 }
 

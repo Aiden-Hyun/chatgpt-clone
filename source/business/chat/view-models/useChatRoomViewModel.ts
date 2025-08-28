@@ -1,5 +1,5 @@
-import { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
+import { IUserSession } from '../../shared/interfaces/IUserSession';
 import { ChatRoom } from '../entities/ChatRoom';
 import { CreateRoomUseCase } from '../use-cases/CreateRoomUseCase';
 import { DeleteRoomUseCase } from '../use-cases/DeleteRoomUseCase';
@@ -31,7 +31,7 @@ interface ChatRoomViewModelDependencies {
   listRoomsUseCase: ListRoomsUseCase;
 }
 
-export function useChatRoomViewModel(dependencies: ChatRoomViewModelDependencies, session: Session | null): ChatRoomState & ChatRoomActions {
+export function useChatRoomViewModel(dependencies: ChatRoomViewModelDependencies, session: IUserSession | null): ChatRoomState & ChatRoomActions {
   
   const [state, setState] = useState<ChatRoomState>({
     rooms: [],

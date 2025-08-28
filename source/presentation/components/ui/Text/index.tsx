@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text as RNText } from 'react-native';
-import { useComponentStyles } from '../hooks/useComponentStyles';
+import { useAppTheme } from '../../../features/theme/theme';
 import createTextStyles from './Text.styles';
 import { TextProps } from './Text.types';
 
@@ -36,7 +36,8 @@ export const Text = ({
   children,
   ...rest
 }: TextProps) => {
-  const styles = useComponentStyles(createTextStyles);
+  const theme = useAppTheme();
+  const styles = createTextStyles(theme);
 
   // Default underline value for links
   const shouldUnderline = underline ?? (variant === 'link');

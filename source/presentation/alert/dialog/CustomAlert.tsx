@@ -7,8 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { AlertType } from '../../../business/alert/constants/alertConstants';
-import { useAppTheme } from '../../../business/theme';
+import { useAppTheme } from '../../theme/theme';
 
 interface CustomAlertProps {
   visible: boolean;
@@ -18,7 +17,7 @@ interface CustomAlertProps {
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
-  type?: AlertType;
+  type?: 'success' | 'error' | 'warning' | 'info';
 }
 
 export const CustomAlert: React.FC<CustomAlertProps> = ({
@@ -29,7 +28,7 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
   onCancel,
   confirmText = 'OK',
   cancelText = 'Cancel',
-  type = AlertType.INFO,
+  type = 'info',
 }) => {
   const theme = useAppTheme();
   const styles = createStyles(theme, type);
@@ -82,7 +81,7 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
   );
 };
 
-const createStyles = (theme: any, type: AlertType) => StyleSheet.create({
+const createStyles = (theme: any, type: string) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -102,8 +101,8 @@ const createStyles = (theme: any, type: AlertType) => StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   title: {
-    fontSize: theme.typography.fontSizes.lg,
-    fontWeight: theme.typography.fontWeights.semibold,
+            fontSize: theme.typography.fontSizes.lg,
+          fontWeight: theme.typography.fontWeights.semibold as '600',
     color: theme.colors.text.primary,
     textAlign: 'center',
     fontFamily: theme.typography.fontFamily.primary,
@@ -131,29 +130,29 @@ const createStyles = (theme: any, type: AlertType) => StyleSheet.create({
     alignItems: 'center',
   },
   confirmButton: {
-    backgroundColor: type === AlertType.SUCCESS 
+    backgroundColor: type === 'success' 
       ? theme.colors.status.success.primary 
-      : type === AlertType.ERROR 
+      : type === 'error' 
       ? theme.colors.status.error.primary 
-      : type === AlertType.WARNING 
+      : type === 'warning' 
       ? theme.colors.status.warning.primary 
       : theme.colors.primary,
   },
   cancelButton: {
     backgroundColor: theme.colors.background.secondary,
     borderWidth: 1,
-    borderColor: theme.borders.colors.medium,
+            borderColor: theme.borders.colors.medium,
   },
   confirmButtonText: {
     color: theme.colors.text.inverted,
     fontSize: theme.typography.fontSizes.md,
-    fontWeight: theme.typography.fontWeights.medium,
+    fontWeight: theme.typography.fontWeights.medium as '500',
     fontFamily: theme.typography.fontFamily.primary,
   },
   cancelButtonText: {
     color: theme.colors.text.primary,
     fontSize: theme.typography.fontSizes.md,
-    fontWeight: theme.typography.fontWeights.medium,
+    fontWeight: theme.typography.fontWeights.medium as '500',
     fontFamily: theme.typography.fontFamily.primary,
   },
-});
+}); 
