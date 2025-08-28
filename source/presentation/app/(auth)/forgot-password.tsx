@@ -1,12 +1,11 @@
 import { router } from 'expo-router';
-import { FormWrapper } from '../../../components/FormWrapper';
-import { Button, Input, Text } from '../../../components/ui';
+import React, { useState } from 'react';
 import { useToast } from '../../../alert/toast/ToastContext';
 import { usePasswordReset } from '../../../auth/hooks/usePasswordReset';
+import { FormWrapper } from '../../../components/FormWrapper';
+import { Button, Input, Text } from '../../../components/ui';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
-import React, { useState } from 'react';
-import { View } from 'react-native';
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {

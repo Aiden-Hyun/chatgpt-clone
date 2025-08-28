@@ -9,8 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { router } from 'expo-router';
 import { createAuthStyles } from './auth.styles';
-// TODO: Need to replace with proper supabase client from source
-// import { supabase } from '@/shared/lib/supabase';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 export default function AuthScreen() {
   const { t } = useLanguageContext();
@@ -29,15 +28,19 @@ export default function AuthScreen() {
   // Handle deep links for password reset
   useEffect(() => {
     const handleDeepLink = async (url: string) => {
-      // TODO: Replace with proper supabase client from source
-      // if (url.includes('type=recovery')) {
-      //   const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-      //   if (error) {
-      //     showError(t('auth.password_reset_failed'));
-      //   } else {
-      //     router.replace('/chat');
-      //   }
-      // }
+      if (url.includes('type=recovery')) {
+        try {
+          const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
+          if (error) {
+            showError(t('auth.password_reset_failed'));
+          } else {
+            router.replace('/chat');
+          }
+        } catch (e) {
+          console.error('Error handling deep link:', e);
+          showError(t('auth.password_reset_failed'));
+        }
+      }
     };
 
     // Listen for deep links

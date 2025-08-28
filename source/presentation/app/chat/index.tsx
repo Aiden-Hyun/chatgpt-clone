@@ -1,8 +1,6 @@
 import { LoadingWrapper } from '../../../components/LoadingWrapper';
 import { useAuth } from '../../../auth/hooks/useAuth';
 import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
-// Note: ServiceFactory doesn't exist in source yet, will need to be created
-// import { ServiceFactory } from '../../../business/chat/services/core';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
 import { useBusinessContext } from '../../../presentation/shared/BusinessContextProvider';
@@ -49,25 +47,30 @@ export default function NewChatScreen() {
           console.log('🏗️ [NewChatScreen] Creating new chat room for user:', session.user.id);
           hasAttemptedCreation.current = true;
 
-          // Create a real room up front and navigate directly to it
-          // TODO: Replace with UseCaseFactory
-          // const chatRoomService = ServiceFactory.createChatRoomService();
-          // console.log('🔍 [NewChatScreen] About to create room with model:', DEFAULT_MODEL);
-          // const newRoomId = await chatRoomService.createRoom(session.user.id, DEFAULT_MODEL);
-          
-          // Use CreateRoomUseCase from business layer instead
+          // Use CreateRoomUseCase from business layer
           const createRoomUseCase = useCaseFactory.createCreateRoomUseCase();
           console.log('🔍 [NewChatScreen] About to create room with model:', DEFAULT_MODEL);
+          
+          // Pass the parameters in the format expected by CreateRoomUseCase
           const result = await createRoomUseCase.execute({
-            userId: session.user.id,
-            model: DEFAULT_MODEL
+            model: DEFAULT_MODEL,
+            session: {
+              userId: session.user.id,
+              accessToken: session.access_token,
+              refreshToken: session.refresh_token,
+              expiresAt: new Date(session.expires_at * 1000),
+              user: {
+                id: session.user.id,
+                email: session.user.email || undefined
+              }
+            }
           });
           
-          if (!result.success || !result.data) {
+          if (!result.success || !result.room) {
             throw new Error('Failed to create new chat room');
           }
           
-          const newRoomId = result.data.id;
+          const newRoomId = result.room.id;
           console.log('🔍 [NewChatScreen] Room created with ID:', newRoomId);
 
           console.log('✅ [NewChatScreen] Successfully created room:', newRoomId);
