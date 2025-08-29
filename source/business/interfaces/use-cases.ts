@@ -3,9 +3,9 @@
  * All use case parameter and result interfaces
  */
 
-import { IUserSession } from './shared';
-import { ChatRoomEntity, MessageEntity } from './chat';
 import { User } from './auth';
+import { ChatRoomEntity, MessageEntity } from './chat';
+import { IUserSession } from './shared';
 
 // ============================================================================
 // CHAT USE CASE INTERFACES

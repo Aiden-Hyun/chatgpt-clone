@@ -1,8 +1,5 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../interfaces';
-import { MessageEntity } from '../../interfaces';
-import { IClipboardAdapter } from '../../interfaces';
-import { IMessageRepository } from '../../interfaces';
+import { CopyMessageParams, CopyMessageResult, IClipboardAdapter, IMessageRepository } from '../../interfaces';
 
 
 

@@ -1,7 +1,7 @@
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession, ISessionRepository, User, IUserRepository, SignInRequest, SignInResult } from '../../interfaces';
+import { UserSession, ISessionRepository, IUserRepository, SignInResult } from '../../interfaces';
 
 
 export class SignInUseCase {
@@ -31,8 +31,7 @@ export class SignInUseCase {
         Logger.warn('SignInUseCase: Authentication failed', { email: request.email, error: authResult.error });
         return { 
           success: false, 
-          error: authResult.error,
-          isNetworkError: (authResult as any).isNetworkError 
+          error: authResult.error
         };
       }
 

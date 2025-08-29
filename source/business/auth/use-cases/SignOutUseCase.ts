@@ -1,6 +1,5 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { ISessionRepository } from '../../interfaces';
-import { IUserRepository } from '../../interfaces';
+import { ISessionRepository , IUserRepository } from '../../interfaces';
 
 
 export class SignOutUseCase {

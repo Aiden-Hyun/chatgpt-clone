@@ -1,10 +1,7 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../interfaces';
-import { MessageEntity, MessageRole } from '../../interfaces';
-import { IAIProvider } from '../../interfaces';
-import { IChatRoomRepository } from '../../interfaces';
-import { IMessageRepository } from '../../interfaces';
+import { IAIProvider, IChatRoomRepository, IMessageRepository, IUserSession, MessageRole, ResendMessageParams, ResendMessageResult } from '../../interfaces';
+import { MessageEntity } from '../../interfaces/chat';
 
 
 
@@ -20,11 +17,11 @@ export class ResendMessageUseCase {
   async execute(params: ResendMessageParams): Promise<ResendMessageResult> {
     try {
       this.logger.info('ResendMessageUseCase: Starting message resend', { 
-        userMessageId: params.userMessageId 
+        messageId: params.messageId 
       });
 
       // Get the user message
-      const userMessage = await this.messageRepository.getById(params.userMessageId, params.session);
+      const userMessage = await this.messageRepository.getById(params.messageId, params.session);
       if (!userMessage) {
         return {
           success: false,
@@ -33,7 +30,7 @@ export class ResendMessageUseCase {
       }
 
       // Verify it's a user message and user owns it
-      if (!userMessage.isUserMessage() || userMessage.userId !== params.session.user.id) {
+      if (!userMessage.isUserMessage() || userMessage.userId !== params.session.userId) {
         return {
           success: false,
           error: 'Can only resend your own user messages'
@@ -42,7 +39,7 @@ export class ResendMessageUseCase {
 
       // Verify user has access to the room
       const room = await this.chatRoomRepository.getById(userMessage.roomId, params.session);
-      if (!room || room.userId !== params.session.user.id) {
+      if (!room || room.userId !== params.session.userId) {
         return {
           success: false,
           error: 'Access denied to this chat room'
@@ -50,14 +47,14 @@ export class ResendMessageUseCase {
       }
 
       // Build context up to and including this user message
-      const context = await this.buildContextUpToMessage(userMessage.roomId, params.userMessageId, params.session);
+      const context = await this.buildContextUpToMessage(userMessage.roomId, params.messageId, params.session);
 
       // Get AI response
       const aiResponse = await this.aiProvider.sendMessage({
         content: context,
         roomId: userMessage.roomId,
-        model: params.model || 'gpt-3.5-turbo',
-        accessToken: params.accessToken
+        model: 'gpt-3.5-turbo',
+        accessToken: params.session.accessToken
       });
 
       if (!aiResponse.success) {
@@ -70,14 +67,14 @@ export class ResendMessageUseCase {
       // Create assistant message linked to the user message
       const assistantMessage = new MessageEntity({
         id: this.idGenerator.generateMessageId(),
-        content: aiResponse.content,
+        content: aiResponse.content || 'No response content',
         role: MessageRole.ASSISTANT,
         roomId: userMessage.roomId,
         metadata: {
-          model: params.model || 'gpt-3.5-turbo',
+          model: 'gpt-3.5-turbo',
           tokens: aiResponse.tokens,
           processingTime: aiResponse.processingTime,
-          replyToMessageId: params.userMessageId
+          replyToMessageId: params.messageId
         }
       });
 
@@ -95,19 +92,19 @@ export class ResendMessageUseCase {
       await this.chatRoomRepository.update(room, params.session);
 
       this.logger.info('ResendMessageUseCase: Message resent successfully', {
-        userMessageId: params.userMessageId,
+        messageId: params.messageId,
         assistantMessageId: assistantMessage.id
       });
 
       return {
         success: true,
-        assistantMessage
+        newMessage: assistantMessage
       };
 
     } catch (error) {
       this.logger.error('ResendMessageUseCase: Failed to resend message', { 
         error, 
-        userMessageId: params.userMessageId 
+        messageId: params.messageId 
       });
       return {
         success: false,
@@ -116,7 +113,7 @@ export class ResendMessageUseCase {
     }
   }
 
-  private async buildContextUpToMessage(roomId: string, untilMessageId: string, session: Session): Promise<string> {
+  private async buildContextUpToMessage(roomId: string, untilMessageId: string, session: IUserSession): Promise<string> {
     // Get all messages in the room
     const allMessages = await this.messageRepository.getByRoomId(roomId, session);
     

@@ -2,7 +2,7 @@
 // Exports for external use
 
 // Re-export all auth interfaces, entities, and types from centralized location
-export * from '../../interfaces';
+export * from '../interfaces';
 
 // Use Cases
 export { SignInUseCase } from './use-cases/SignInUseCase';

@@ -39,7 +39,7 @@ export class CreateRoomUseCase {
         room: result.room 
       };
 
-    } catch (error) {
+    } catch {
       return { success: false, error: 'Failed to create room' };
     }
   }

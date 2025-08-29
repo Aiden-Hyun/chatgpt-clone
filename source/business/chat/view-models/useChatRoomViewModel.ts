@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IUserSession, ChatRoomState, ChatRoomActions } from '../../interfaces';
+import { ChatRoomActions, ChatRoomState, IUserSession } from '../../interfaces';
 import { CreateRoomUseCase } from '../use-cases/CreateRoomUseCase';
 import { DeleteRoomUseCase } from '../use-cases/DeleteRoomUseCase';
 import { ListRoomsUseCase } from '../use-cases/ListRoomsUseCase';

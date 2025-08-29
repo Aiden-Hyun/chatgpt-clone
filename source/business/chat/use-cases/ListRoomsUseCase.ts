@@ -1,6 +1,6 @@
 import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserSession, ChatRoomEntity, ListRoomsParams, ListRoomsResult } from '../../interfaces';
+import { ListRoomsParams, ListRoomsResult } from '../../interfaces';
 
 
 

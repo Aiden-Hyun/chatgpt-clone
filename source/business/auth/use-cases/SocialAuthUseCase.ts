@@ -1,8 +1,5 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../interfaces';
-import { ISessionRepository } from '../../interfaces';
-import { User } from '../../interfaces';
-import { IUserRepository } from '../../interfaces';
+import { UserSession , ISessionRepository , User , IUserRepository } from '../../interfaces';
 
 
 
@@ -119,7 +116,11 @@ export class SocialAuthUseCase {
    */
   async completeWithAdditionalInfo(
     provider: AuthProvider,
-    providerData: any,
+    providerData: {
+      displayName?: string;
+      email?: string;
+      [key: string]: unknown;
+    },
     additionalInfo: {
       displayName?: string;
       acceptTerms: boolean;
@@ -227,7 +228,10 @@ export class SocialAuthUseCase {
   /**
    * Create UserSession from auth result
    */
-  private createUserSession(user: User, authSession: any): UserSession {
+  private createUserSession(user: User, authSession: {
+    refresh_token?: string;
+    access_token?: string;
+  }): UserSession {
     const now = new Date();
     const expiryTime = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours
 

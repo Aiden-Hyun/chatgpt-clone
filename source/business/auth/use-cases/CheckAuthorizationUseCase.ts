@@ -1,7 +1,6 @@
 import { RoutePermissionChecker } from '../../../service/auth/utils/RoutePermissionChecker';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../interfaces';
-import { ISessionRepository } from '../../interfaces';
+import { UserSession , ISessionRepository } from '../../interfaces';
 
 
 

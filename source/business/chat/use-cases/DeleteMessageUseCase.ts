@@ -1,7 +1,5 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../interfaces';
-import { MessageEntity } from '../../interfaces';
-import { IMessageRepository } from '../../interfaces';
+import { DeleteMessageParams, DeleteMessageResult, IMessageRepository } from '../../interfaces';
 
 
 
@@ -14,8 +12,7 @@ export class DeleteMessageUseCase {
   async execute(params: DeleteMessageParams): Promise<DeleteMessageResult> {
     try {
       this.logger.info('DeleteMessageUseCase: Starting message deletion', { 
-        messageId: params.messageId,
-        roomId: params.roomId 
+        messageId: params.messageId
       });
 
       // Get message
@@ -28,7 +25,7 @@ export class DeleteMessageUseCase {
       }
 
       // Check if message belongs to user
-      if (message.userId !== params.userId) {
+      if (message.userId !== params.session.userId) {
         return {
           success: false,
           error: 'Access denied: Cannot delete message from another user'
@@ -50,20 +47,17 @@ export class DeleteMessageUseCase {
       await this.messageRepository.update(message, params.session);
 
       this.logger.info('DeleteMessageUseCase: Message deleted successfully', {
-        messageId: params.messageId,
-        roomId: params.roomId
+        messageId: params.messageId
       });
 
       return {
-        success: true,
-        message
+        success: true
       };
 
     } catch (error) {
       this.logger.error('DeleteMessageUseCase: Error deleting message', { 
         error, 
-        messageId: params.messageId,
-        roomId: params.roomId 
+        messageId: params.messageId
       });
       return {
         success: false,

@@ -1,11 +1,8 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../interfaces';
-import { MessageEntity, MessageRole } from '../../interfaces';
-import { IAIProvider } from '../../interfaces';
-import { IChatRoomRepository } from '../../interfaces';
-import { IMessageRepository } from '../../interfaces';
+import { IAIProvider, IChatRoomRepository, IMessageRepository, MessageRole, SendMessageParams, SendMessageResult } from '../../interfaces';
+import { MessageEntity } from '../../interfaces/chat';
 
 
 
@@ -34,7 +31,7 @@ export class SendMessageUseCase {
 
       // Check if room exists and user has access
       const room = await this.chatRoomRepository.getById(params.roomId, params.session);
-      if (!room || room.userId !== params.userId) {
+      if (!room || room.userId !== params.session.userId) {
         return {
           success: false,
           error: 'Chat room not found or access denied'
@@ -47,7 +44,7 @@ export class SendMessageUseCase {
         content: params.content,
         role: MessageRole.USER,
         roomId: params.roomId,
-        userId: params.userId
+        userId: params.session.userId
       });
 
       // Save user message
@@ -61,8 +58,8 @@ export class SendMessageUseCase {
       const aiResponse = await this.aiProvider.sendMessage({
         content: params.content,
         roomId: params.roomId,
-        model: params.model || 'gpt-3.5-turbo',
-        accessToken: params.accessToken
+        model: 'gpt-3.5-turbo',
+        accessToken: params.session.accessToken
       });
 
       if (!aiResponse.success) {
@@ -76,11 +73,11 @@ export class SendMessageUseCase {
       // Create assistant message
       const assistantMessage = new MessageEntity({
         id: this.idGenerator.generateMessageId(),
-        content: aiResponse.content,
+        content: aiResponse.content || 'No response content',
         role: MessageRole.ASSISTANT,
         roomId: params.roomId,
         metadata: {
-          model: params.model || 'gpt-3.5-turbo',
+          model: 'gpt-3.5-turbo',
           tokens: aiResponse.tokens,
           processingTime: aiResponse.processingTime
         }

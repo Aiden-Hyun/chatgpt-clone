@@ -1,7 +1,7 @@
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { User, IUserRepository, SignUpRequest, SignUpResult } from '../../interfaces';
+import { IUserRepository, SignUpResult } from '../../interfaces';
 
 
 export class SignUpUseCase {

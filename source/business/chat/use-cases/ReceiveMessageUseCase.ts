@@ -1,6 +1,6 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession, MessageEntity, MessageRole, IAIProvider, IMessageRepository, ReceiveMessageParams, ReceiveMessageResult } from '../../interfaces';
+import { IAIProvider, IMessageRepository, MessageEntity, MessageRole, ReceiveMessageParams, ReceiveMessageResult } from '../../interfaces';
 
 
 

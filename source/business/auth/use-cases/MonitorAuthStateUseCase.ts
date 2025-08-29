@@ -1,7 +1,5 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../interfaces';
-import { ISessionRepository } from '../../interfaces';
-import { IAuthEventEmitter } from '../../interfaces';
+import { UserSession , ISessionRepository , IAuthEventEmitter } from '../../interfaces';
 
 
 
@@ -52,7 +50,17 @@ export class MonitorAuthStateUseCase {
 
   private async handleAuthStateChange(
     event: string, 
-    supabaseSession: any
+    supabaseSession: {
+      user?: {
+        id: string;
+        user_metadata?: {
+          permissions?: string[];
+        };
+      };
+      expires_at?: number;
+      refresh_token?: string;
+      access_token?: string;
+    }
   ): Promise<void> {
     switch (event) {
       case 'SIGNED_IN':
@@ -76,7 +84,17 @@ export class MonitorAuthStateUseCase {
     }
   }
 
-  private async handleSignIn(supabaseSession: any): Promise<void> {
+  private async handleSignIn(supabaseSession: {
+    user?: {
+      id: string;
+      user_metadata?: {
+        permissions?: string[];
+      };
+    };
+    expires_at?: number;
+    refresh_token?: string;
+    access_token?: string;
+  }): Promise<void> {
     if (!supabaseSession?.user) {
       Logger.warn('MonitorAuthStateUseCase: Sign in event without user data');
       return;
@@ -119,7 +137,17 @@ export class MonitorAuthStateUseCase {
     }
   }
 
-  private async handleTokenRefresh(supabaseSession: any): Promise<void> {
+  private async handleTokenRefresh(supabaseSession: {
+    user?: {
+      id: string;
+      user_metadata?: {
+        permissions?: string[];
+      };
+    };
+    expires_at?: number;
+    refresh_token?: string;
+    access_token?: string;
+  }): Promise<void> {
     if (!supabaseSession?.user) {
       Logger.warn('MonitorAuthStateUseCase: Token refresh event without user data');
       return;
@@ -152,7 +180,17 @@ export class MonitorAuthStateUseCase {
     }
   }
 
-  private async handleUserUpdate(supabaseSession: any): Promise<void> {
+  private async handleUserUpdate(supabaseSession: {
+    user?: {
+      id: string;
+      user_metadata?: {
+        permissions?: string[];
+      };
+    };
+    expires_at?: number;
+    refresh_token?: string;
+    access_token?: string;
+  }): Promise<void> {
     if (!supabaseSession?.user) {
       Logger.warn('MonitorAuthStateUseCase: User update event without user data');
       return;
