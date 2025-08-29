@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
 import { useCallback } from 'react';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useSignOutViewModel } from '../../../business/auth/view-models/useSignOutViewModel';
 import { useStorageViewModel } from '../../../business/session/view-models/useStorageViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 /**
  * Hook for handling user logout functionality

@@ -1,6 +1,4 @@
-import { IIdGenerator } from '../chat/interfaces/IIdGenerator';
-import { AlertType, DEFAULT_TOAST_DURATION_MS, IToastService, Result, ToastMessage } from '../interfaces';
-import { ILogger } from '../shared/interfaces/ILogger';
+import { AlertType, DEFAULT_TOAST_DURATION_MS, IIdGenerator, ILogger, IToastService, Result, ToastMessage } from '../interfaces';
 
 /**
  * Implementation of the IToastService interface

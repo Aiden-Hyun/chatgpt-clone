@@ -1,6 +1,4 @@
-import { IIdGenerator } from '../chat/interfaces/IIdGenerator';
-import { AlertDialog, AlertOptions, AlertType, IAlertService, Result } from '../interfaces';
-import { ILogger } from '../shared/interfaces/ILogger';
+import { AlertDialog, AlertOptions, AlertType, IAlertService, IIdGenerator, ILogger, Result } from '../interfaces';
 
 /**
  * Implementation of the IAlertService interface

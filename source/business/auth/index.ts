@@ -5,10 +5,10 @@
 export * from '../interfaces';
 
 // Use Cases
+export { GetUserProfileUseCase } from './use-cases/GetUserProfileUseCase';
 export { SignInUseCase } from './use-cases/SignInUseCase';
 export { SignOutUseCase } from './use-cases/SignOutUseCase';
 export { SignUpUseCase } from './use-cases/SignUpUseCase';
-export { GetUserProfileUseCase } from './use-cases/GetUserProfileUseCase';
 export { UpdateUserProfileUseCase } from './use-cases/UpdateUserProfileUseCase';
 
 // View Models

@@ -93,7 +93,7 @@ export type {
 } from './auth';
 
 export type {
-    IAIProvider, IChatRoomRepository, IClipboardAdapter, IMessageRepository
+    IAIProvider, IChatRoomRepository, IClipboardAdapter, IIdGenerator, IMessageRepository
 } from './chat';
 
 export type {
@@ -101,13 +101,11 @@ export type {
 } from './storage';
 
 export type {
-    IAlertService,
-    IToastService
+    IAlertService, IToastService
 } from './alert';
 
 export type {
-    INavigationService,
-    INavigationTracker
+    INavigationService, INavigationTracker
 } from './navigation';
 
 export type {
@@ -117,6 +115,18 @@ export type {
 export type {
     ISessionRepository
 } from './session';
+
+// ============================================================================
+// ADDITIONAL SERVICE INTERFACES
+// ============================================================================
+
+// Logger interface
+export interface ILogger {
+  debug(message: string, context?: Record<string, unknown>): void;
+  info(message: string, context?: Record<string, unknown>): void;
+  warn(message: string, context?: Record<string, unknown>): void;
+  error(message: string, context?: Record<string, unknown>): void;
+}
 
 // ============================================================================
 // ENUM EXPORTS - Commonly used enums

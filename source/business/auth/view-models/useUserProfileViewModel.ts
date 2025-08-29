@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { UpdateUserProfileParams, UserProfile } from '../../interfaces';
 import { GetUserProfileUseCase } from '../use-cases/GetUserProfileUseCase';
 import { UpdateUserProfileUseCase } from '../use-cases/UpdateUserProfileUseCase';
-import { GetUserProfileParams, UpdateUserProfileParams, UserProfile } from '../../interfaces';
 
 export function useUserProfileViewModel(
   getUserProfileUseCase: GetUserProfileUseCase,

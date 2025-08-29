@@ -1,5 +1,5 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IStorageService, GetStoredRouteParams, GetStoredRouteResult } from '../../interfaces';
+import { GetStoredRouteParams, GetStoredRouteResult, IStorageService } from '../../interfaces';
 
 export class GetStoredRouteUseCase {
   constructor(

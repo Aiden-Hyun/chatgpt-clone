@@ -1,5 +1,5 @@
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useSignUpViewModel } from '../../../business/auth/view-models/useSignUpViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export const useEmailSignup = () => {
   const useCaseFactory = useUseCaseFactory();

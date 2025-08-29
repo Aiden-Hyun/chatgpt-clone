@@ -1,1 +1,0 @@
-export { INavigationStateAdapter } from './INavigationStateAdapter';

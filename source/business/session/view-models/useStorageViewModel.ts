@@ -1,8 +1,7 @@
-import { useState, useCallback } from 'react';
-import { ClearStorageUseCase } from '../use-cases/ClearStorageUseCase';
+import { useCallback, useState } from 'react';
 import { GetStoredRouteUseCase } from '../../navigation/use-cases/GetStoredRouteUseCase';
 import { SetStoredRouteUseCase } from '../../navigation/use-cases/SetStoredRouteUseCase';
-import { ClearStorageParams, GetStoredRouteParams, SetStoredRouteParams } from '../../interfaces';
+import { ClearStorageUseCase } from '../use-cases/ClearStorageUseCase';
 
 export function useStorageViewModel(
   clearStorageUseCase: ClearStorageUseCase,

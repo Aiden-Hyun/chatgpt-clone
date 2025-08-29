@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useUserProfileViewModel } from '../../../business/auth/view-models/useUserProfileViewModel';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { useAuth } from '../context/AuthContext';
 
 interface UpdateProfileData {
   display_name?: string;

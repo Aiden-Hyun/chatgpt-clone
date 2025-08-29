@@ -1,5 +1,5 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IStorageService, ClearStorageParams, ClearStorageResult } from '../../interfaces';
+import { ClearStorageParams, ClearStorageResult, IStorageService } from '../../interfaces';
 
 export class ClearStorageUseCase {
   constructor(

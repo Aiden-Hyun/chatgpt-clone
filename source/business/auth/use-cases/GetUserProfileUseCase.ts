@@ -1,5 +1,5 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserRepository, GetUserProfileParams, GetUserProfileResult } from '../../interfaces';
+import { GetUserProfileParams, GetUserProfileResult, IUserRepository } from '../../interfaces';
 
 export class GetUserProfileUseCase {
   constructor(
