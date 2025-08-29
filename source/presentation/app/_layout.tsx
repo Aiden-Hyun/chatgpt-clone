@@ -5,21 +5,31 @@ import { Drawer } from "expo-router/drawer";
 import { useCallback, useEffect, useMemo } from "react";
 import { AppState } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { BusinessLayerProvider } from "../../../business/shared/BusinessLayerProvider";
-import { navigationTracker } from "../../../service/navigation/utils/navigationTrackerInstance";
-import { resetDebugGlobals } from "../../../service/shared/lib/resetDebugGlobals";
-import { ToastContainer, ToastProvider } from "../../alert/toast";
-import { AuthProvider } from "../../auth/context/AuthContext";
-import { useAuth } from "../../auth/hooks/useAuth";
-import { Sidebar } from "../../chat/components/Sidebar";
-import { LoadingScreen } from "../../components";
-import { LanguageProvider } from "../../language/LanguageContext";
-import { BusinessContextProvider } from "../../shared/BusinessContextProvider";
-import { ThemeProvider } from "../../theme/context/ThemeContext";
-import { useAppTheme, useThemeContext } from "../../theme/hooks/useTheme";
+import { navigationTracker } from "../../service/navigation/utils/navigationTrackerInstance";
+import { resetDebugGlobals } from "../../service/shared/lib/resetDebugGlobals";
+import { ToastContainer, ToastProvider } from "../alert/toast";
+import { AuthProvider, useAuth } from "../auth/context/AuthContext";
+import { Sidebar } from "../chat/components/Sidebar";
+import { LoadingScreen } from "../components";
+import { LanguageProvider } from "../language/LanguageContext";
+import { BusinessContextProvider } from "../shared/BusinessContextProvider";
+import { ThemeProvider, useThemeContext } from "../theme/context/ThemeContext";
+import { useAppTheme } from "../theme/hooks/useTheme";
 
-// Initialize business layer
-const businessProvider = new BusinessLayerProvider();
+// Debug imports
+console.log('🔍 Import checks:', {
+  ToastContainer: !!ToastContainer,
+  ToastProvider: !!ToastProvider,
+  AuthProvider: !!AuthProvider,
+  useAuth: !!useAuth,
+  Sidebar: !!Sidebar,
+  LoadingScreen: !!LoadingScreen,
+  LanguageProvider: !!LanguageProvider,
+  BusinessContextProvider: !!BusinessContextProvider,
+  ThemeProvider: !!ThemeProvider,
+  useThemeContext: !!useThemeContext,
+  useAppTheme: !!useAppTheme
+});
 
 function AppContent() {
   const [fontsLoaded] = useFonts({
@@ -66,7 +76,12 @@ function ProtectedRoutes() {
 
   // Memoize drawerContent to prevent unnecessary re-renders of Sidebar
   const drawerContent = useCallback(
-    () => <Sidebar onSettings={handleSettings} />,
+    () => {
+      console.log('🔍 drawerContent: Creating Sidebar');
+      console.log('🔍 drawerContent: Sidebar component:', !!Sidebar);
+      console.log('🔍 drawerContent: handleSettings:', !!handleSettings);
+      return <Sidebar onSettings={handleSettings} />;
+    },
     [handleSettings]
   );
 
@@ -107,6 +122,12 @@ function ProtectedRoutes() {
     return <LoadingScreen />;
   }
 
+  console.log('🔍 ProtectedRoutes: About to render Drawer');
+  console.log('🔍 ProtectedRoutes: Drawer component:', !!Drawer);
+  console.log('🔍 ProtectedRoutes: drawerContent:', !!drawerContent);
+  console.log('🔍 ProtectedRoutes: screenOptions:', !!screenOptions);
+  console.log('🔍 ProtectedRoutes: ToastContainer:', !!ToastContainer);
+
   return (
     <>
       <Drawer
@@ -114,12 +135,9 @@ function ProtectedRoutes() {
         screenOptions={screenOptions}
       >
         <Drawer.Screen name="index" />
-        <Drawer.Screen name="(auth)" />
+        <Drawer.Screen name="(auth)/auth" />
         <Drawer.Screen name="settings/index" />
-        <Drawer.Screen name="settings/themes" />
         <Drawer.Screen name="chat/index" />
-        <Drawer.Screen name="chat/[roomId]" />
-        <Drawer.Screen name="design-showcase" />
       </Drawer>
       <ToastContainer />
     </>
@@ -127,9 +145,20 @@ function ProtectedRoutes() {
 }
 
 export default function Layout() {
+  console.log('🔍 Layout: Starting render');
+  console.log('🔍 Layout: Component checks:', {
+    SafeAreaProvider: !!SafeAreaProvider,
+    BusinessContextProvider: !!BusinessContextProvider,
+    LanguageProvider: !!LanguageProvider,
+    ThemeProvider: !!ThemeProvider,
+    AuthProvider: !!AuthProvider,
+    ToastProvider: !!ToastProvider,
+    AppContent: !!AppContent
+  });
+  
   return (
     <SafeAreaProvider>
-      <BusinessContextProvider businessProvider={businessProvider}>
+      <BusinessContextProvider>
         <LanguageProvider>
           <ThemeProvider>
             <AuthProvider>

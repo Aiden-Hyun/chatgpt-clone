@@ -1,15 +1,15 @@
-import { Button } from '@/components/ui/Button';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
-import { useToast } from '../../../alert';
-import { useAppTheme } from '../../../theme/theme';
-import { ChatMessage } from '../../types';
+import { Message } from '../../../../business/chat/entities/Message';
+import { useToast } from '../../../alert/toast';
+import { Button } from '../../../components/ui/Button';
+import { useBusinessContext } from '../../../shared/BusinessContextProvider';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createUserMessageStyles } from './UserMessage.styles';
 
 interface UserMessageProps {
-  message: ChatMessage;
+  message: Message;
   isLastInGroup?: boolean;
   onSendEdited?: (newText: string) => void;
 }
@@ -20,6 +20,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
   onSendEdited,
 }) => {
   const theme = useAppTheme();
+  const { clipboard } = useBusinessContext();
   const styles = createUserMessageStyles(theme);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
@@ -65,10 +66,14 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                 leftIcon={<Ionicons name="copy-outline" size={18} color={theme.colors.text.secondary} />}
                 onPress={async () => {
                   try {
-                    await copyToClipboard(message.content);
-                    try { showSuccess('Copied to clipboard'); } catch {}
+                    const result = await clipboard.copyToClipboard(message.content);
+                    if (result.success) {
+                      showSuccess('Copied to clipboard');
+                    } else {
+                      showError('Failed to copy');
+                    }
                   } catch {
-                    try { showError('Failed to copy'); } catch {}
+                    showError('Failed to copy');
                   }
                   console.log('[USER-MSG] copy');
                 }}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
-import { useAppTheme } from '../../../features/theme/theme';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import createCardStyles from './Card.styles';
 import { CardProps } from './Card.types';
 

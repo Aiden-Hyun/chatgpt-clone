@@ -1,15 +1,17 @@
-import type { DropdownItem } from '@/components/ui';
-import { Button, Dropdown } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { AnthropicLogo, OpenAILogo } from '../../../../components';
-import { useLanguageContext } from '../../../language';
-import { useAppTheme } from '../../../theme/theme';
-import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../constants';
+import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../../../business/chat/constants/models';
+import { AnthropicLogo, OpenAILogo } from '../../../components';
+import type { DropdownItem } from '../../../components/ui';
+import { Button, Dropdown } from '../../../components/ui';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
 import { createChatHeaderStyles } from './ChatHeader.styles';
+
+console.log('🔍 ChatHeader module: Loading ChatHeader file');
 
 interface ChatHeaderProps {
   onLogout: () => void;
@@ -39,10 +41,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onModelChange,
   showModelSelection = true,
 }) => {
+  console.log('🔍 ChatHeader: Starting render');
+  
   const navigation = useNavigation();
 
   const theme = useAppTheme();
   const { t } = useLanguageContext();
+  
+  console.log('🔍 ChatHeader: Hooks result:', { navigation: !!navigation, theme: !!theme, t: !!t });
   const styles = React.useMemo(() => createChatHeaderStyles(theme), [theme]);
 
   const selectedModelInfo = useMemo(() => {
@@ -275,4 +281,5 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   );
 };
 
+console.log('🔍 ChatHeader module: About to export ChatHeader:', !!ChatHeader);
 export default ChatHeader;

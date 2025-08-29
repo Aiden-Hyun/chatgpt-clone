@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
-import { FormWrapper } from '../../../components/FormWrapper';
-import { Button, Input, Text } from '../../../components/ui';
-import { useToast } from '../../../alert/toast/ToastContext';
-import { useEmailSignup } from '../../../auth/hooks/useEmailSignup';
-import { useLanguageContext } from '../../../language/LanguageContext';
-import { useAppTheme } from '../../../theme/hooks/useTheme';
 import React, { useState } from 'react';
+import { useToast } from '../../alert/toast';
+import { useEmailSignup } from '../../auth/hooks/useEmailSignup';
+import { FormWrapper } from '../../components/FormWrapper';
+import { Button, Input, Text } from '../../components/ui';
+import { useLanguageContext } from '../../language/LanguageContext';
+import { useAppTheme } from '../../theme/hooks/useTheme';
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {

@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
-import { supabase } from '../../../shared/lib/supabase';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 /**
  * Hook for handling user logout functionality

@@ -1,23 +1,44 @@
-import { Button, Card, FormWrapper, Input, LoadingScreen, Text } from '../../../components';
-import { useToast } from '../../../alert/toast/ToastContext';
-import { useAuth } from '../../../auth/hooks/useAuth';
-import { useEmailSignin } from '../../../auth/hooks/useEmailSignin';
-import { LanguageSelector, useLanguageContext } from '../../../language';
-import { useAppTheme } from '../../../theme/hooks/useTheme';
-import { useLoadingState } from '../../../shared/hooks/useLoadingState';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { router } from 'expo-router';
-import { createAuthStyles } from './auth.styles';
 import { supabase } from '../../../service/shared/lib/supabase';
+import { useToast } from '../../alert/toast';
+import { useAuth } from '../../auth/context/AuthContext';
+import { useEmailSignin } from '../../auth/hooks/useEmailSignin';
+import { FormWrapper, LoadingScreen } from '../../components';
+import { Button, Card, Input, Text } from '../../components/ui';
+import { LanguageSelector, useLanguageContext } from '../../language';
+
+import { useAppTheme } from '../../theme/hooks/useTheme';
+import { createAuthStyles } from './auth.styles';
+
+// Debug imports
+console.log('🔍 Auth imports:', {
+  FormWrapper: !!FormWrapper,
+  LoadingScreen: !!LoadingScreen,
+  Button: !!Button,
+  Card: !!Card,
+  Input: !!Input,
+  Text: !!Text,
+  LanguageSelector: !!LanguageSelector,
+  useLanguageContext: !!useLanguageContext
+});
 
 export default function AuthScreen() {
+  console.log('🔍 AuthScreen: Starting render');
+  
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   const { session, isLoading: authLoading } = useAuth();
+  
+  console.log('🔍 AuthScreen: Hook results:', {
+    t: !!t,
+    theme: !!theme,
+    session: !!session,
+    authLoading
+  });
   const { showError } = useToast();
-  const { signin, isLoading: signinLoading } = useEmailSignin();
-  const { isLoading, startLoading, stopLoading } = useLoadingState();
+  const { signIn, isLoading: signinLoading } = useEmailSignin();
   const styles = createAuthStyles(theme);
 
   const [email, setEmail] = useState('');
@@ -98,13 +119,10 @@ export default function AuthScreen() {
     }
 
     try {
-      startLoading();
-      await signin(email, password);
+      await signIn(email, password);
       // Navigation will be handled by auth state change
     } catch (error) {
       showError(t('auth.signin_failed'));
-    } finally {
-      stopLoading();
     }
   };
 
@@ -169,10 +187,10 @@ export default function AuthScreen() {
       />
 
       <Button
-        label={isLoading || signinLoading ? t('auth.signing_in') : t('auth.sign_in')}
+        label={signinLoading ? t('auth.signing_in') : t('auth.sign_in')}
         onPress={handleSignIn}
-        disabled={isLoading || signinLoading || !email.trim() || !password.trim()}
-        isLoading={isLoading || signinLoading}
+        disabled={signinLoading || !email.trim() || !password.trim()}
+        isLoading={signinLoading}
         fullWidth
         containerStyle={styles.button}
       />

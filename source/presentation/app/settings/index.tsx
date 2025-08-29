@@ -1,9 +1,9 @@
-import { Button } from '../../../components/ui';
 import { Platform, SafeAreaView, ScrollView } from 'react-native';
-import { CustomAlert, useCustomAlert } from '../../../alert/dialog';
-import { useLogout, useUserInfo } from '../../../auth/hooks';
-import { useLanguageContext } from '../../../language/LanguageContext';
-import { useAppTheme } from '../../../theme/hooks/useTheme';
+import { CustomAlert, useCustomAlert } from '../../alert/dialog';
+import { useLogout, useUserInfo } from '../../auth/hooks';
+import { Button } from '../../components/ui';
+import { useLanguageContext } from '../../language/LanguageContext';
+import { useAppTheme } from '../../theme/hooks/useTheme';
 import {
   AboutSection,
   AccountSection,

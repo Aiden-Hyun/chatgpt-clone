@@ -1,4 +1,4 @@
-import { AppTheme } from '../../../features/theme/theme.types';
+import { AppTheme } from '../../../../business/theme/constants/theme.types';
 import { TextSize, TextVariant, TextWeight } from './Text.types';
 
 /**

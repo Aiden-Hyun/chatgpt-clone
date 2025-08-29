@@ -12,7 +12,7 @@ import {
     Text,
     View
 } from "react-native";
-import { useAppTheme } from '../../../features/theme/theme';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import createDropdownStyles from './Dropdown.styles';
 
 export type DropdownItem = {

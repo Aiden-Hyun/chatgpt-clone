@@ -1,17 +1,17 @@
 // theme.ts - Main theme file with enhanced theme switching support
 
-import { useThemeContext } from './context/ThemeContext';
+import { useThemeContext } from '../../../presentation/theme/context/ThemeContext';
+import themeRegistry from '../../../presentation/theme/themeRegistry';
 import { AppTheme } from './theme.types';
-import themeRegistry from './themeRegistry';
 
 // Re-export theme types
 export * from './theme.types';
 
 // Re-export ThemeContext and provider
-export { ThemeProvider, useThemeContext } from './context/ThemeContext';
+export { ThemeProvider, useThemeContext } from '../../../presentation/theme/context/ThemeContext';
 
 // Re-export theme registry
-export { themeRegistry };
+export { themeRegistry } from '../../../presentation/theme/themeRegistry';
 
 /**
  * Hook to get the current theme based on user preferences

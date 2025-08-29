@@ -35,8 +35,13 @@ interface BusinessContextProviderProps {
  * Replaces service locator antipattern with proper React context injection
  */
 export function BusinessContextProvider({ children }: BusinessContextProviderProps) {
+  console.log('🔍 BusinessContextProvider: Starting render');
+  
   // Create business provider once and memoize
-  const businessProvider = useMemo(() => new BusinessLayerProvider(), []);
+  const businessProvider = useMemo(() => {
+    console.log('🔍 BusinessContextProvider: Creating BusinessLayerProvider');
+    return new BusinessLayerProvider();
+  }, []);
   
   // Access token helper can be enhanced to use session repo/use case later
   const getAccessToken = useMemo(() => async (): Promise<string | null> => {

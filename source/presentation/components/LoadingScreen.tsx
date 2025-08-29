@@ -1,6 +1,6 @@
-import { useAppTheme } from '@/features/theme/theme';
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
+import { useAppTheme } from '../theme/hooks/useTheme';
 
 interface LoadingScreenProps {
   message?: string;
@@ -13,7 +13,10 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   size = 'large',
   fullScreen = true 
 }) => {
+  console.log('🔍 LoadingScreen: Rendering with props:', { message, size, fullScreen });
+  
   const theme = useAppTheme();
+  console.log('🔍 LoadingScreen: Theme:', !!theme);
 
   const containerStyle = {
     flex: fullScreen ? 1 : undefined,

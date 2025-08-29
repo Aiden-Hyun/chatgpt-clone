@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../../../layers/business/theme/theme.types';
+import { AppTheme } from '../../../../business/theme/constants/theme.types';
 
 export const createModelSelectorStyles = (theme: AppTheme) => {
   return StyleSheet.create({

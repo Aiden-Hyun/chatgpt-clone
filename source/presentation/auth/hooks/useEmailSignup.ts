@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../../../shared/lib/supabase';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 export const useEmailSignup = () => {
   const [isLoading, setIsLoading] = useState(false);

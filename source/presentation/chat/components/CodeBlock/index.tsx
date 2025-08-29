@@ -2,9 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 // import * as Clipboard from 'expo-clipboard';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
-import { useToast } from '../../../alert';
-import { useAppTheme } from '../../../theme/theme';
+import { useToast } from '../../../alert/toast';
+import { useBusinessContext } from '../../../shared/BusinessContextProvider';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { CodeStyler } from '../CodeStyler';
 import { createCodeBlockStyles } from './CodeBlock.styles';
 
@@ -20,15 +20,20 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   showLineNumbers = false 
 }) => {
   const theme = useAppTheme();
+  const { clipboard } = useBusinessContext();
   const styles = React.useMemo(() => createCodeBlockStyles(theme), [theme]);
   const { showSuccess, showError } = useToast();
 
   const handleCopy = async () => {
     try {
-      await copyToClipboard(code);
-      try { showSuccess('Copied to clipboard'); } catch {}
+      const result = await clipboard.copyToClipboard(code);
+      if (result.success) {
+        showSuccess('Copied to clipboard');
+      } else {
+        showError('Failed to copy');
+      }
     } catch {
-      try { showError('Failed to copy'); } catch {}
+      showError('Failed to copy');
     }
   };
 

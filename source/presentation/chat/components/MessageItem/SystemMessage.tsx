@@ -1,6 +1,6 @@
-import { useAppTheme } from '@/features/theme/theme';
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { ChatMessage } from '../../types';
 
 interface SystemMessageProps {

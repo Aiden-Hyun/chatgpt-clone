@@ -21,7 +21,7 @@ export class ListRoomsUseCase {
   async execute(params: ListRoomsParams): Promise<ListRoomsResult> {
     try {
       Logger.info('ListRoomsUseCase: Listing chat rooms', { 
-        userId: params.session.user.id 
+        userId: params.session.userId 
       });
 
       // Business rule: Get all rooms for user with last message info
@@ -35,7 +35,7 @@ export class ListRoomsUseCase {
       });
 
       Logger.info('ListRoomsUseCase: Rooms listed successfully', { 
-        userId: params.session.user.id,
+        userId: params.session.userId,
         roomCount: sortedRooms.length 
       });
 
@@ -47,7 +47,7 @@ export class ListRoomsUseCase {
     } catch (error) {
       Logger.error('ListRoomsUseCase: Failed to list rooms', { 
         error, 
-        userId: params.session.user.id 
+        userId: params.session.userId 
       });
       return { success: false, error: 'Failed to list rooms' };
     }

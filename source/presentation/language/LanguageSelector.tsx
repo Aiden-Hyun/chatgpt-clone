@@ -5,12 +5,9 @@ import { useAppTheme } from '../../business/theme';
 import { useBusinessContext } from '../shared/BusinessContextProvider';
 import { useLanguageContext } from './LanguageContext';
 
-// Import from layers until we migrate the alert system
-import { useToast } from '../../../layers/presentation/alert';
-
-// Import from layers until we migrate the UI components
-import type { DropdownItem } from '../../../layers/presentation/components/ui';
-import { Dropdown } from '../../../layers/presentation/components/ui';
+import { useToast } from '../alert/toast';
+import type { DropdownItem } from '../components/ui';
+import { Dropdown } from '../components/ui';
 
 interface LanguageSelectorProps {
   style?: any;

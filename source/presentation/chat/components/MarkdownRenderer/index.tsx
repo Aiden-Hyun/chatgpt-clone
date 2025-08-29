@@ -11,13 +11,13 @@ import {
   View
 } from "react-native";
 import MarkdownDisplay, { MarkdownIt } from "react-native-markdown-display";
-import { useResponsive } from "../../../../shared/hooks/useResponsive";
-import { useToast } from "../../../alert";
-import { useAppTheme } from "../../../theme/theme";
+import { useToast } from "../../../alert/toast";
 import {
   MARKDOWN_IMAGE_FILENAME_MAX_LENGTH,
   SHORT_CODE_SNIPPET_THRESHOLD,
-} from "../../constants";
+} from "../../../chat/constants";
+import { useResponsive } from "../../../shared/hooks/useResponsive";
+import { useAppTheme } from "../../../theme/hooks/useTheme";
 import { CodeBlock } from "../CodeBlock";
 import { createMarkdownRendererStyles } from "./MarkdownRenderer.styles";
 

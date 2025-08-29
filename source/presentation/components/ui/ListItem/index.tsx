@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { useAppTheme } from '../../../features/theme/theme';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import createListItemStyles from './ListItem.styles';
 import { ListItemProps } from './ListItem.types';
 

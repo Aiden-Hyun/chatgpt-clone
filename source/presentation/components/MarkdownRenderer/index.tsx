@@ -10,9 +10,9 @@ import {
   View
 } from "react-native";
 import MarkdownDisplay, { MarkdownIt } from "react-native-markdown-display";
-import { useToast } from '../../alert/toast/ToastContext';
+import { useToast } from '../../alert/toast';
 import { useResponsive } from '../../shared/hooks/useResponsive';
-import { useTheme } from '../../theme/hooks/useTheme';
+import { useAppTheme } from '../../theme/hooks/useTheme';
 import { CodeBlock } from '../CodeBlock';
 import { MARKDOWN_IMAGE_FILENAME_MAX_LENGTH } from './constants';
 import { createMarkdownRendererStyles } from './MarkdownRenderer.styles';
@@ -26,7 +26,15 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   children,
   isAnimating = false,
 }) => {
-  const currentTheme = useTheme();
+  console.log('🔍 MarkdownRenderer: Rendering content:', { 
+    contentLength: children?.length, 
+    hasDiv: children?.includes('<div'),
+    hasDivEnd: children?.includes('</div>'),
+    isAnimating,
+    contentPreview: children?.substring(0, 100) 
+  });
+  
+  const currentTheme = useAppTheme();
   const { isMobile } = useResponsive();
   const styles = React.useMemo(
     () => createMarkdownRendererStyles(currentTheme, isMobile),

@@ -9,7 +9,7 @@ interface AnthropicLogoProps {
 export const AnthropicLogo: React.FC<AnthropicLogoProps> = ({ size = 16 }) => {
   return (
     <Image
-      source={require('../../assets/Anthropic/images.png')}
+      source={require('../../../assets/Anthropic/images.png')}
       style={{ width: size, height: size }}
       contentFit="contain"
     />

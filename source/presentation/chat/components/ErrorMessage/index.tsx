@@ -1,7 +1,7 @@
 // src/features/chat/components/ErrorMessage/index.tsx
-import { Button, Text } from '@/components/ui';
 import React from 'react';
 import { View } from 'react-native';
+import { Button, Text } from '../../../components/ui';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
 import { createErrorMessageStyles } from './ErrorMessage.styles';

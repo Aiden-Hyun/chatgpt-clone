@@ -1,7 +1,7 @@
 import { DEFAULT_LANGUAGE, LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES } from '../../../business/language/constants';
 import { Language } from '../../../business/language/entities';
 import { ILanguageRepository } from '../../../business/language/interfaces';
-import { Result } from '../../../business/shared/types/Result';
+import { Result, createFailure, createSuccess, isFailure } from '../../../business/shared/types/Result';
 import { IStorageAdapter } from '../../../service/language/interfaces/IStorageAdapter';
 import { translations } from '../../../service/language/translations';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
@@ -29,13 +29,13 @@ export class LanguageRepository implements ILanguageRepository {
       
       if (!languageTranslations) {
         this.logger.warn('Translations not found for language', { language: languageCode });
-        return Result.failure(`Translations not found for language '${languageCode}'`);
+        return createFailure(`Translations not found for language '${languageCode}'`);
       }
       
-      return Result.success(languageTranslations);
+      return createSuccess(languageTranslations);
     } catch (error) {
       this.logger.error('Error getting translations', { language: languageCode, error });
-      return Result.failure('Failed to get translations');
+      return createFailure('Failed to get translations');
     }
   }
   
@@ -55,10 +55,10 @@ export class LanguageRepository implements ILanguageRepository {
     try {
       // This is a synchronous method, but AsyncStorage is async
       // We return the default language and let the service handle the async loading
-      return Result.success(DEFAULT_LANGUAGE);
+      return createSuccess(DEFAULT_LANGUAGE);
     } catch (error) {
       this.logger.error('Error getting current language', { error });
-      return Result.failure('Failed to get current language');
+      return createFailure('Failed to get current language');
     }
   }
   
@@ -71,15 +71,15 @@ export class LanguageRepository implements ILanguageRepository {
     try {
       const result = await this.storageAdapter.setValue(LANGUAGE_STORAGE_KEY, languageCode);
       
-      if (result.isFailure()) {
-        this.logger.error('Failed to save language preference', { language: languageCode, error: result.getError() });
-        return Result.failure(result.getError());
+      if (isFailure(result)) {
+        this.logger.error('Failed to save language preference', { language: languageCode, error: result.error });
+        return createFailure(result.error);
       }
       
-      return Result.success(undefined);
+      return createSuccess(undefined);
     } catch (error) {
       this.logger.error('Error saving language preference', { language: languageCode, error });
-      return Result.failure('Failed to save language preference');
+      return createFailure('Failed to save language preference');
     }
   }
 }

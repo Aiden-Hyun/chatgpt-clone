@@ -1,9 +1,9 @@
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { RefObject, useMemo, useState } from 'react';
 import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { getModelInfo } from '../../constants/models';
+import { getModelInfo } from '../../../../business/chat/constants/models';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createChatInputStyles } from './ChatInputBar.styles';
 
 interface ChatInputBarProps {
@@ -40,9 +40,13 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({
   onSearchToggle,
   selectedModel,
 }) => {
+  console.log('🔍 ChatInputBar: Starting render');
+  
   const [inputHeight, setInputHeight] = useState(36);
   const { t } = useLanguageContext();
   const theme = useAppTheme();
+  
+  console.log('🔍 ChatInputBar: Hooks result:', { t: !!t, theme: !!theme });
   
   // Check if the current model supports search
   const modelInfo = getModelInfo(selectedModel || 'gpt-3.5-turbo');

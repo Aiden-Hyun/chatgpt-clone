@@ -1,14 +1,14 @@
 // src/features/auth/context/AuthContext.tsx
 import { Session } from '@supabase/supabase-js';
 import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+    createContext,
+    ReactNode,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from 'react';
-import { supabase } from '../../../shared/lib/supabase';
+import { supabase } from '../../../service/shared/lib/supabase';
 
 type AuthContextType = {
   session: Session | null;

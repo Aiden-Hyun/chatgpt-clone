@@ -1,7 +1,7 @@
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
 import React, { useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import {
     LOADING_ANIMATION_START_DELAY_MS,
     LOADING_DOT_INTERVAL_MS,

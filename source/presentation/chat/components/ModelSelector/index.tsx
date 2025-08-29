@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeContext } from '../../../../../layers/business/theme/context/ThemeContext';
-import { useToast } from '../../../../../layers/presentation/alert/toast/ToastContext';
 import { AVAILABLE_MODELS, ModelInfo, getModelInfo } from '../../../../business/chat/constants/models';
+import { useToast } from '../../../alert/toast';
+import { useThemeContext } from '../../../theme/context/ThemeContext';
 import { createModelSelectorStyles } from './ModelSelector.styles';
 
 interface ModelSelectorProps {

@@ -1,7 +1,7 @@
 import { DEFAULT_LANGUAGE } from '../../business/language/constants';
 import { Language } from '../../business/language/entities';
 import { ILanguageRepository, ILanguageService } from '../../business/language/interfaces';
-import { Result } from '../../business/shared/types/Result';
+import { Result, createFailure, createSuccess, isFailure, isSuccess } from '../../business/shared/types/Result';
 import { ILogger } from '../shared/interfaces/ILogger';
 import { formatTranslation } from './utils/languageFormatter';
 
@@ -27,8 +27,8 @@ export class LanguageService implements ILanguageService {
   private async initializeLanguage(): Promise<void> {
     const result = this.languageRepository.getCurrentLanguage();
     
-    if (result.isSuccess() && result.getValue()) {
-      this.currentLanguageCode = result.getValue();
+    if (isSuccess(result) && result.data) {
+      this.currentLanguageCode = result.data;
       this.logger.info('LanguageService initialized with stored language', { language: this.currentLanguageCode });
     } else {
       this.currentLanguageCode = DEFAULT_LANGUAGE;
@@ -44,8 +44,8 @@ export class LanguageService implements ILanguageService {
   public translate(key: string): string {
     const translationsResult = this.languageRepository.getTranslations(this.currentLanguageCode);
     
-    if (translationsResult.isSuccess()) {
-      const translations = translationsResult.getValue();
+    if (isSuccess(translationsResult)) {
+      const translations = translationsResult.data;
       const translation = translations[key];
       
       if (translation) {
@@ -55,8 +55,8 @@ export class LanguageService implements ILanguageService {
       // If translation not found in current language, try English as fallback
       if (this.currentLanguageCode !== DEFAULT_LANGUAGE) {
         const fallbackResult = this.languageRepository.getTranslations(DEFAULT_LANGUAGE);
-        if (fallbackResult.isSuccess()) {
-          const fallbackTranslations = fallbackResult.getValue();
+        if (isSuccess(fallbackResult)) {
+          const fallbackTranslations = fallbackResult.data;
           const fallbackTranslation = fallbackTranslations[key];
           
           if (fallbackTranslation) {
@@ -90,7 +90,7 @@ export class LanguageService implements ILanguageService {
     
     if (!isSupported) {
       this.logger.error('Attempted to set unsupported language', { language: languageCode });
-      return Result.failure(`Language '${languageCode}' is not supported`);
+      return createFailure(`Language '${languageCode}' is not supported`);
     }
     
     // Update the current language
@@ -99,8 +99,8 @@ export class LanguageService implements ILanguageService {
     // Save the language preference
     this.languageRepository.saveCurrentLanguage(languageCode)
       .then(result => {
-        if (result.isFailure()) {
-          this.logger.error('Failed to save language preference', { language: languageCode, error: result.getError() });
+        if (isFailure(result)) {
+          this.logger.error('Failed to save language preference', { language: languageCode, error: result.error });
         }
       })
       .catch(error => {
@@ -108,7 +108,7 @@ export class LanguageService implements ILanguageService {
       });
     
     this.logger.info('Language changed', { language: languageCode });
-    return Result.success(undefined);
+    return createSuccess(undefined);
   }
   
   /**

@@ -2,11 +2,23 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useModelSelection } from '../../../presentation/chat/hooks/useModelSelection';
 import { useLogout } from '../../auth/hooks/useLogout';
-import { ChatHeader, ChatInputBar, ChatInterface } from '../../chat/components';
-import { useModelSelection } from '../../chat/hooks/useModelSelection';
+import { ChatInputBar, ChatInterface } from '../../chat/components';
+import ChatHeader from '../../chat/components/ChatHeader';
 import { useAppTheme } from '../../theme/hooks/useTheme';
 import { createChatStyles } from './chat.styles';
+
+// Debug imports
+console.log('🔍 ChatRoomScreen imports:', {
+  useModelSelection: !!useModelSelection,
+  useLogout: !!useLogout,
+  ChatHeader: !!ChatHeader,
+  ChatInputBar: !!ChatInputBar,
+  ChatInterface: !!ChatInterface,
+  useAppTheme: !!useAppTheme,
+  createChatStyles: !!createChatStyles      
+});
 
 
 // �� CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
@@ -48,6 +60,15 @@ function ChatScreen({
     handleBack,
   } = chatScreenState;
 
+  console.log('🔍 ChatScreen: About to render components');
+  console.log('🔍 ChatScreen: Component checks:', {
+    SafeAreaView: !!SafeAreaView,
+    KeyboardAvoidingView: !!KeyboardAvoidingView,
+    ChatHeader: !!ChatHeader,
+    ChatInterface: !!ChatInterface,
+    ChatInputBar: !!ChatInputBar
+  });
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView
@@ -55,43 +76,63 @@ function ChatScreen({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
       >
-        <ChatHeader
-          title={isTemporaryRoom ? 'New Chat' : `Chat #${roomId}`}
-          onBack={handleBack}
-          onLogout={handleLogout}
-          showBackButton={true}
-        />
+        {(() => {
+          console.log('🔍 ChatScreen: Rendering ChatHeader');
+          return (
+            <ChatHeader
+              onBack={handleBack}
+              onLogout={handleLogout}
+              onSettings={() => {}}
+              onNewChat={() => {}}
+              onChatSelect={() => {}}
+              selectedModel={selectedModel}
+              onModelChange={handleModelChange}
+            />
+          );
+        })()}
 
-        {numericRoomId !== null && (
-          <ChatInterface
-            roomId={numericRoomId}
-            key={`chat-interface-${numericRoomId}`}
-          />
-        )}
+        {numericRoomId !== null && roomId && (() => {
+          console.log('🔍 ChatScreen: Rendering ChatInterface');
+          return (
+            <ChatInterface
+              roomId={roomId}
+              userId=""
+              key={`chat-interface-${numericRoomId}`}
+            />
+          );
+        })()}
 
-        <ChatInputBar
-          ref={inputRef}
-          value={inputValue}
-          onChangeText={setInputValue}
-          onSend={handleSendMessage}
-          isLoading={isLoading}
-          selectedModel={selectedModel}
-          onModelChange={handleModelChange}
-        />
+        {(() => {
+          console.log('🔍 ChatScreen: Rendering ChatInputBar');
+          return (
+            <ChatInputBar
+              input={inputValue}
+              onChangeText={setInputValue}
+              onSend={handleSendMessage}
+              sending={isLoading}
+              inputRef={inputRef}
+              selectedModel={selectedModel}
+            />
+          );
+        })()}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 export default function ChatRoomScreen() {
+  console.log('🔍 ChatRoomScreen: Starting render');
+  
   // �� CONTAINER COMPONENT: Handles data fetching, state, and context
   const params = useLocalSearchParams<{ roomId: string }>();
   const roomId = params.roomId;
+  
+  console.log('🔍 ChatRoomScreen: Params and roomId:', { params, roomId });
   const inputRef = useRef<TextInput>(null);
   const [inputValue, setInputValue] = useState('');
   const { selectedModel, handleModelChange } = useModelSelection();
   const [isLoading, setIsLoading] = useState(false);
-  const logout = useLogout();
+  const { logout } = useLogout();
 
   // Determine if this is a temporary room (new chat)
   const isTemporaryRoom = roomId === 'new';

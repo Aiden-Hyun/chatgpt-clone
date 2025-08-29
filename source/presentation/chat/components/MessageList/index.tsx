@@ -1,15 +1,15 @@
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
+import { MessageEntity as ChatMessage } from '../../../../business/chat/entities/Message';
+import { IdGenerator } from '../../../../service/chat/generators/IdGenerator';
 import {
   AUTOSCROLL_THRESHOLD_PX,
   CURSOR_BLINK_DURATION_MS,
   TYPING_ANIMATION_SPEED,
-} from '../../constants';
-import { ChatMessage } from '../../types';
-import { generateMessageId } from '../../utils/messageIdGenerator';
+} from '../../../chat/constants';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { MessageItem } from '../MessageItem';
 
 
@@ -78,7 +78,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   // ✅ STATE MACHINE: Derive loading state from message states
   const isNewMessageLoading = useMemo(() => {
     const lastMessage = messages[messages.length - 1];
-    return lastMessage?.role === 'assistant' && lastMessage?.state === 'loading';
+    return lastMessage?.role === 'assistant' && (lastMessage as any)?.state === 'loading';
   }, [messages]);
 
   // Memoize styles to prevent re-creation on every render
@@ -223,7 +223,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       if (explicitId) {
         ids[i] = explicitId;
       } else if (!ids[i]) {
-        ids[i] = generateMessageId();
+        ids[i] = new IdGenerator().generateMessageId();
       }
     }
   }, [messages]);
@@ -247,7 +247,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           {
             role: 'assistant' as const,
             content: '',
-            id: (placeholderIdRef.current ||= generateMessageId()),
+            id: (placeholderIdRef.current ||= new IdGenerator().generateMessageId()),
           } as any,
         ]
       : messagesWithIds,
@@ -315,18 +315,17 @@ export const MessageList: React.FC<MessageListProps> = ({
     return (
       <MessageItem
         message={item}
-        index={originalMessageIndex !== -1 ? originalMessageIndex : index}
-        isRegenerating={isRegenerating}
+        isPending={Boolean((item as any).isPending)}
+        currentUserId={''}
         onRegenerate={
           item.role === 'assistant' && !isRegenerating && !isNewMessageLoading
             ? handleRegenerate
-            : undefined
+            : () => {}
         }
-        onUserEditRegenerate={onUserEditRegenerate}
-        showAvatar={showAvatar}
-        isLastInGroup={isLastInGroup}
-        onLike={onLike}
-        onDislike={onDislike}
+        onDelete={() => {}}
+        onCopy={() => {}}
+        onEdit={() => {}}
+        onResend={() => {}}
       />
     );
   };

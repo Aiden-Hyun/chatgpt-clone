@@ -1,6 +1,6 @@
-import { useAppTheme } from '@/features/theme/theme';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { useAppTheme } from '../theme/hooks/useTheme';
 
 interface LoadingWrapperProps {
   loading: boolean;

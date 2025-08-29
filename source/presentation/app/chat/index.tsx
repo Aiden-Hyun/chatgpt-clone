@@ -1,13 +1,14 @@
-import { LoadingWrapper } from '../../../components/LoadingWrapper';
-import { useAuth } from '../../../auth/hooks/useAuth';
-import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { useBusinessContext } from '../../../presentation/shared/BusinessContextProvider';
+import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
+import { SessionAdapter } from '../../../persistence/shared/adapters/SessionAdapter';
+import { useAuth } from '../../auth/context/AuthContext';
+import { LoadingWrapper } from '../../components/LoadingWrapper';
+import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 export default function NewChatScreen() {
   const { session, isLoading } = useAuth();
-  const { useCaseFactory } = useBusinessContext();
+  const { useCaseFactory, businessProvider } = useBusinessContext();
   
   const hasAttemptedCreation = useRef(false);
 
@@ -51,19 +52,20 @@ export default function NewChatScreen() {
           const createRoomUseCase = useCaseFactory.createCreateRoomUseCase();
           console.log('🔍 [NewChatScreen] About to create room with model:', DEFAULT_MODEL);
           
+          // Create a proper IUserSession using the session adapter
+          const sessionAdapter = new SessionAdapter();
+          const userSession = sessionAdapter.createSessionFromParams({
+            userId: session.user.id,
+            accessToken: session.access_token,
+            expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : new Date(),
+            userEmail: session.user.email || undefined,
+            createdAt: new Date()
+          });
+
           // Pass the parameters in the format expected by CreateRoomUseCase
           const result = await createRoomUseCase.execute({
             model: DEFAULT_MODEL,
-            session: {
-              userId: session.user.id,
-              accessToken: session.access_token,
-              refreshToken: session.refresh_token,
-              expiresAt: new Date(session.expires_at * 1000),
-              user: {
-                id: session.user.id,
-                email: session.user.email || undefined
-              }
-            }
+            session: userSession
           });
           
           if (!result.success || !result.room) {

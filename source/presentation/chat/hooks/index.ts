@@ -1,1 +1,2 @@
-export { useModelSelection } from './useModelSelection';
+// source/presentation/chat/hooks/index.ts
+export * from './useChatRooms';

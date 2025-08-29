@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { MessageEntity } from '../../../business/chat/entities/Message';
 import { MessageFormatter } from '../../../service/chat/utils/MessageFormatter';
-import { MarkdownRenderer } from '../../components/MarkdownRenderer';
 
 interface MessageItemProps {
   message: MessageEntity;
@@ -171,9 +170,9 @@ export function MessageItem({
           isDeleted && styles.deletedContent,
           isUserMessage ? styles.userContent : styles.assistantContent
         ]}>
-          <MarkdownRenderer>
+          <Text>
             {MessageFormatter.formatForDisplay(message.getDisplayContent())}
-          </MarkdownRenderer>
+          </Text>
         </View>
       )}
       

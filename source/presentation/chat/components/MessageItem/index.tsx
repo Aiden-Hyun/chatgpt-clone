@@ -3,8 +3,8 @@ import { ChatMessage } from '../../types';
 import { ErrorMessage } from '../ErrorMessage';
 import { LoadingMessage } from '../LoadingMessage';
 import { AssistantMessage } from './AssistantMessage';
-import { UserMessage } from './UserMessage';
 import { SystemMessage } from './SystemMessage';
+import { UserMessage } from './UserMessage';
 
 interface MessageItemProps {
   message: ChatMessage;
@@ -13,7 +13,6 @@ interface MessageItemProps {
   isRegenerating?: boolean; // Keep for regeneration tracking by index
   onRegenerate?: () => void;
   onUserEditRegenerate?: (index: number, newText: string) => void;
-  showAvatar?: boolean;
   isLastInGroup?: boolean;
   // Like/dislike handlers
   onLike?: (messageId: string) => void;
@@ -26,7 +25,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   isRegenerating,
   onRegenerate,
   onUserEditRegenerate,
-  showAvatar = true,
   isLastInGroup = true,
   onLike,
   onDislike,
@@ -80,7 +78,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
       <AssistantMessage
         message={message}
         onRegenerate={onRegenerate}
-        showAvatar={showAvatar}
         isLastInGroup={isLastInGroup}
         onLike={onLike}
         onDislike={onDislike}

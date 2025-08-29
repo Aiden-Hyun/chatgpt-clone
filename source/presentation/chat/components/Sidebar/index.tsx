@@ -1,17 +1,17 @@
-import { Button, ListItem, Text } from '@/components';
-import { useToast } from '@/features/alert';
-import { useUserInfo } from '@/features/auth';
-import { useChatRooms } from '@/features/chat/hooks';
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { router, usePathname } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import mobileStorage from '../../../../shared/lib/mobileStorage';
-import { navigationTracker } from '../../../../shared/lib/navigationTracker';
-import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../../constants';
+import { navigationTracker } from '../../../../service/navigation/utils/navigationTrackerInstance';
+import mobileStorage from '../../../../service/storage/implementations/mobileStorage';
+import { useToast } from '../../../alert/toast';
+import { useUserInfo } from '../../../auth/hooks/useUserInfo';
+import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../../../chat/constants';
+import { Button, ListItem, Text } from '../../../components/ui';
+import { useLanguageContext } from '../../../language/LanguageContext';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
+import { useChatRooms } from '../../hooks/useChatRooms';
 import { createSidebarStyles } from './Sidebar.styles';
 
 

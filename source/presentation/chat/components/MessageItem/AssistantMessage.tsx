@@ -1,15 +1,14 @@
 import React from 'react';
-import { View } from 'react-native';
-import { copy as copyToClipboard } from '../../../../shared/lib/clipboard';
-import { useToast } from '../../../alert';
-import { useAppTheme } from '../../../theme/theme';
-import { ChatMessage } from '../../types';
+import { Text, View } from 'react-native';
+import { Message } from '../../../../business/chat/entities/Message';
+import { useToast } from '../../../alert/toast';
+import { useBusinessContext } from '../../../shared/BusinessContextProvider';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { AssistantMessageBar } from '../AssistantMessageBar';
-import { MarkdownRenderer } from '../MarkdownRenderer';
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
 
 interface AssistantMessageProps {
-  message: ChatMessage;
+  message: Message;
   onRegenerate?: () => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
@@ -27,14 +26,13 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
   onDislike,
 }: AssistantMessageProps) {
   const theme = useAppTheme();
+  const { clipboard } = useBusinessContext();
   
   // Memoize styles to prevent re-creation on every render
   const styles = React.useMemo(() => createAssistantMessageStyles(theme), [theme]);
   const { showSuccess, showError } = useToast();
-  const isAnimating = message.state === 'animating';
-  // When animating, show the orchestrator-provided substring in message.content.
-  // After completion, prefer message.content; fall back to fullContent for hydration.
-  const contentToShow = isAnimating ? (message.content || '') : (message.content || message.fullContent || '');
+  const isAnimating = false; // Simplified for now
+  const contentToShow = message.content || '';
 
   const handleLike = () => {
     if (message.id && onLike) {
@@ -50,9 +48,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
 
   return (
     <View style={[styles.container, !isLastInGroup && styles.compact]}>
-      <MarkdownRenderer isAnimating={isAnimating}>
-        {contentToShow}
-      </MarkdownRenderer>
+      <Text>{contentToShow}</Text>
 
       {/* Message interaction bar - always show for assistant messages */}
       {isLastInGroup && !isAnimating && (
@@ -60,15 +56,18 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(func
           onRegenerate={onRegenerate}
           onLike={handleLike}
           onDislike={handleDislike}
-          isLiked={message.isLiked}
-          isDisliked={message.isDisliked}
+          isLiked={false}
+          isDisliked={false}
           onCopy={async () => {
             try {
-              const text = message.fullContent || message.content || '';
-              await copyToClipboard(text);
-              try { showSuccess('Copied to clipboard'); } catch {}
+              const result = await clipboard.copyToClipboard(message.content);
+              if (result.success) {
+                showSuccess('Copied to clipboard');
+              } else {
+                showError('Failed to copy');
+              }
             } catch {
-              try { showError('Failed to copy'); } catch {}
+              showError('Failed to copy');
             }
           }}
         />
