@@ -5,6 +5,7 @@ import { createChatStyles } from '../../../app/chat/chat.styles';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { MessageList } from '../MessageList';
+import { useMessageActions } from '../../hooks/useMessageActions';
 
 interface ChatInterfaceProps {
   roomId: string | number;
@@ -84,6 +85,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     error,
   } = useChatViewModel(roomId?.toString() || '', dependencies, null);
 
+  // Get message actions using business layer UseCases
+  const messageActions = useMessageActions(roomId?.toString() || '');
+
   // Memoize the chat state object to prevent unnecessary parent re-renders
   const chatState = React.useMemo(() => ({
     input,
@@ -102,14 +106,28 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [chatState, onChatStateChange]);
 
-  // Like/dislike handlers - simplified for now
+  // Message action handlers using business layer UseCases
   const handleLike = React.useCallback((messageId: string) => {
-    console.log('Like message:', messageId);
-  }, []);
+    messageActions.likeMessage(messageId);
+  }, [messageActions]);
 
   const handleDislike = React.useCallback((messageId: string) => {
-    console.log('Dislike message:', messageId);
-  }, []);
+    messageActions.dislikeMessage(messageId);
+  }, [messageActions]);
+
+  const handleRegenerate = React.useCallback((index: number) => {
+    const message = messages[index];
+    if (message) {
+      messageActions.regenerateAssistant(message.id);
+    }
+  }, [messageActions, messages]);
+
+  const handleUserEditRegenerate = React.useCallback((index: number, newText: string) => {
+    const message = messages[index];
+    if (message) {
+      messageActions.editMessage(message.id, newText);
+    }
+  }, [messageActions, messages]);
 
   console.log('🔍 ChatInterface: About to render MessageList with', { 
     messagesCount: messages?.length, 
@@ -126,14 +144,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <MessageList
             messages={messages}
             regeneratingIndex={null}
-            onRegenerate={() => {}}
-            onUserEditRegenerate={() => {}}
+            onRegenerate={handleRegenerate}
+            onUserEditRegenerate={handleUserEditRegenerate}
             showWelcomeText={messages.length === 0}
             onLike={handleLike}
             onDislike={handleDislike}
           />
         );
-      }, [messages, loading, handleLike, handleDislike])}
+      }, [messages, loading, handleLike, handleDislike, handleRegenerate, handleUserEditRegenerate])}
     </View>
   );
 };

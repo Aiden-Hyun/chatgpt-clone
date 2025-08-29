@@ -1,11 +1,11 @@
-import { IMessageValidator, ValidationResult } from '../interfaces/IMessageValidator';
+import { IMessageValidator, IValidationResult } from '../../interfaces';
 
 export class MessageValidator implements IMessageValidator {
   private readonly MAX_CONTENT_LENGTH = 10000; // 10KB
   private readonly MIN_CONTENT_LENGTH = 1;
   private readonly FORBIDDEN_WORDS = ['spam', 'hack', 'exploit']; // Example forbidden words
 
-  validateContent(content: string): ValidationResult {
+  validateContent(content: string): IValidationResult {
     // Check if content is empty
     if (!content || content.trim().length === 0) {
       return {
@@ -63,7 +63,7 @@ export class MessageValidator implements IMessageValidator {
     };
   }
 
-  validateMessageId(messageId: string): ValidationResult {
+  validateMessageId(messageId: string): IValidationResult {
     if (!messageId || messageId.trim().length === 0) {
       return {
         isValid: false,
@@ -85,7 +85,7 @@ export class MessageValidator implements IMessageValidator {
     };
   }
 
-  validateRoomId(roomId: string): ValidationResult {
+  validateRoomId(roomId: string): IValidationResult {
     if (!roomId || roomId.trim().length === 0) {
       return {
         isValid: false,
@@ -107,7 +107,7 @@ export class MessageValidator implements IMessageValidator {
     };
   }
 
-  validateUserId(userId: string): ValidationResult {
+  validateUserId(userId: string): IValidationResult {
     if (!userId || userId.trim().length === 0) {
       return {
         isValid: false,

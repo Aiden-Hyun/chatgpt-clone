@@ -1,9 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-import { Result } from '../../../business/types/shared/Result';
-import { ILogger } from '../../shared/interfaces/ILogger';
-import { ISecureStorageAdapter } from '../interfaces/ISecureStorageAdapter';
+import { Result, ILogger, ISecureStorageAdapter } from '../../interfaces';
 
 /**
  * Implementation of the ISecureStorageAdapter interface using Expo SecureStore

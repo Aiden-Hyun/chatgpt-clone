@@ -133,6 +133,19 @@ export interface ILogger {
   error(message: string, context?: Record<string, unknown>): void;
 }
 
+// Message Validator interface
+export interface IMessageValidator {
+  validateContent(content: string): IValidationResult;
+  validateMessageId(messageId: string): IValidationResult;
+  validateRoomId(roomId: string): IValidationResult;
+}
+
+// Storage enums
+export enum WebStorageType {
+  LOCAL = 'local',
+  SESSION = 'session',
+}
+
 // ============================================================================
 // ENUM EXPORTS - Commonly used enums
 // ============================================================================

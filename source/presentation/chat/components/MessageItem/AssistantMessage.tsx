@@ -1,14 +1,17 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { Message } from '../../../../business/chat/entities/Message';
+
 import { useToast } from '../../../alert/toast';
+import { ChatMessage } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
+import { useMessageActions } from '../../hooks/useMessageActions';
+
 import { AssistantMessageBar } from '../AssistantMessageBar';
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
 
-interface AssistantMessageProps {
-  message: Message;
+interface IAssistantMessageProps {
+  message: ChatMessage;
   onRegenerate?: () => void;
   showAvatar?: boolean;
   isLastInGroup?: boolean;
@@ -17,7 +20,7 @@ interface AssistantMessageProps {
   onDislike?: (messageId: string) => void;
 }
 
-export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(function AssistantMessage({
+export const AssistantMessage: React.FC<IAssistantMessageProps> = React.memo(function AssistantMessage({
   message,
   onRegenerate,
   showAvatar = true, // (kept for future use)

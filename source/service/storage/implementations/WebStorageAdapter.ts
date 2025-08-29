@@ -1,14 +1,4 @@
-import { Result } from '../../../business/types/shared/Result';
-import { ILogger } from '../../shared/interfaces/ILogger';
-import { IStorageAdapter } from '../interfaces/IStorageAdapter';
-
-/**
- * Type of web storage to use
- */
-export enum WebStorageType {
-  LOCAL = 'local',
-  SESSION = 'session',
-}
+import { Result, ILogger, IStorageAdapter, WebStorageType } from '../../interfaces';
 
 /**
  * Implementation of the IStorageAdapter interface using Web Storage

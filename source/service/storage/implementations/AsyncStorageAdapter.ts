@@ -1,8 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Result } from '../../../business/types/shared/Result';
-import { ILogger } from '../../shared/interfaces/ILogger';
-import { IStorageAdapter } from '../interfaces/IStorageAdapter';
+import { Result, ILogger, IStorageAdapter } from '../../interfaces';
 
 /**
  * Implementation of the IStorageAdapter interface using AsyncStorage

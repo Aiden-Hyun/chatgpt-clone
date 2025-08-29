@@ -1,4 +1,4 @@
-import { IIdGenerator } from '../interfaces/IIdGenerator';
+import { IIdGenerator } from '../../interfaces';
 
 export class IdGenerator implements IIdGenerator {
   generateMessageId(): string {

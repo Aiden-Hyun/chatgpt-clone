@@ -1,8 +1,4 @@
-import { StorageKey } from '../../../business/storage/constants';
-import { ISecureStorageService } from '../../../business/storage/interfaces/ISecureStorageService';
-import { Result } from '../../../business/types/shared/Result';
-import { ILogger } from '../../shared/interfaces/ILogger';
-import { ISecureStorageAdapter } from '../interfaces/ISecureStorageAdapter';
+import { StorageKey, ISecureStorageService, Result, ILogger, ISecureStorageAdapter } from '../../interfaces';
 
 import { SecureStoreAdapter } from './SecureStoreAdapter';
 
