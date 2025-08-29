@@ -1,8 +1,8 @@
-import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
 import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
+import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
 import { SessionValidator } from '../../../service/session/validators/SessionValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../interfaces';
+import { RefreshSessionResult } from '../../interfaces';
 
 
 export class RefreshSessionUseCase {

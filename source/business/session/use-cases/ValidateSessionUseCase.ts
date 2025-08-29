@@ -1,8 +1,7 @@
 import { TokenValidator } from '../../../service/auth/validators/TokenValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { RefreshTokenUseCase } from '../../auth/use-cases/RefreshTokenUseCase';
-import { UserSession } from '../../interfaces';
-import { ISessionRepository } from '../../interfaces';
+import { UserSession , ISessionRepository } from '../../interfaces';
 
 
 

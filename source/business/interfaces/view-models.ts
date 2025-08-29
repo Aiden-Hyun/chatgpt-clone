@@ -136,3 +136,13 @@ export interface SessionActions {
   updateActivity: () => Promise<void>;
   clearError: () => void;
 }
+
+/**
+ * Session view model dependencies interface
+ */
+export interface ISessionViewModelDependencies {
+  getSessionUseCase: any; // GetSessionUseCase
+  refreshSessionUseCase: any; // RefreshSessionUseCase
+  validateSessionUseCase: any; // ValidateSessionUseCase
+  updateActivityUseCase: any; // UpdateSessionActivityUseCase
+}

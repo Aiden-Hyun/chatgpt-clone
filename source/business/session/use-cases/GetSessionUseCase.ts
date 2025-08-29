@@ -1,7 +1,6 @@
 import { TokenValidator } from '../../../service/auth/validators/TokenValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserRepository } from '../../auth/interfaces/IUserRepository';
-import { UserSession, ISessionRepository, GetSessionRequest, GetSessionResult } from '../../interfaces';
+import { IUserRepository , UserSession, ISessionRepository, GetSessionRequest, GetSessionResult } from '../../interfaces';
 
 
 

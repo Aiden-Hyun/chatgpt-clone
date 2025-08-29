@@ -1,18 +1,8 @@
-import { useState, useEffect } from 'react';
-import { GetSessionUseCase } from '../use-cases/GetSessionUseCase';
-import { RefreshSessionUseCase } from '../use-cases/RefreshSessionUseCase';
-import { ValidateSessionUseCase } from '../use-cases/ValidateSessionUseCase';
-import { UpdateSessionActivityUseCase } from '../use-cases/UpdateSessionActivityUseCase';
-import { UserSession, SessionState, SessionActions } from '../../interfaces';
+import { useState, useEffect, useCallback } from 'react';
 
-interface SessionViewModelDependencies {
-  getSessionUseCase: GetSessionUseCase;
-  refreshSessionUseCase: RefreshSessionUseCase;
-  validateSessionUseCase: ValidateSessionUseCase;
-  updateActivityUseCase: UpdateSessionActivityUseCase;
-}
+import { UserSession, ISessionViewModelDependencies } from '../../interfaces';
 
-export function useSessionViewModel(dependencies: SessionViewModelDependencies) {
+export function useSessionViewModel(dependencies: ISessionViewModelDependencies) {
   const [session, setSession] = useState<UserSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,7 +17,7 @@ export function useSessionViewModel(dependencies: SessionViewModelDependencies) 
   // Load initial session
   useEffect(() => {
     loadSession();
-  }, []);
+  }, [loadSession]);
 
   // Set up activity tracking
   useEffect(() => {
@@ -49,9 +39,9 @@ export function useSessionViewModel(dependencies: SessionViewModelDependencies) 
         document.removeEventListener(event, handleActivity, true);
       });
     };
-  }, [session]);
+  }, [session, updateActivityUseCase]);
 
-  const loadSession = async () => {
+  const loadSession = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await getSessionUseCase.execute();
@@ -66,7 +56,7 @@ export function useSessionViewModel(dependencies: SessionViewModelDependencies) 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [getSessionUseCase]);
 
   const refreshSession = async () => {
     if (!session) {
