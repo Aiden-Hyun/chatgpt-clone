@@ -5,7 +5,6 @@ import { useToast } from '../../../alert/toast';
 import { ChatMessage } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
-import { useMessageActions } from '../../hooks/useMessageActions';
 
 import { AssistantMessageBar } from '../AssistantMessageBar';
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
@@ -27,7 +26,7 @@ export const AssistantMessage: React.FC<IAssistantMessageProps> = React.memo(fun
   isLastInGroup = true,
   onLike,
   onDislike,
-}: AssistantMessageProps) {
+}: IAssistantMessageProps) {
   const theme = useAppTheme();
   const { clipboard } = useBusinessContext();
   

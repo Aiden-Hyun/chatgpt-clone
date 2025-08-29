@@ -1,128 +1,22 @@
 /**
- * Business Layer Interfaces - Main Export File
+ * Service Layer Interfaces - Main Export File
  * 
- * This file exports all business layer interfaces, types, and entities
- * from a centralized location for easy importing throughout the application.
+ * This file exports all service layer interfaces, types, and entities
+ * from a centralized location for easy importing throughout the service layer.
  * 
  * Usage:
- * import { Result, IUserSession, User, ChatRoomEntity } from '@business/interfaces';
+ * import { Result, ILogger, IStorageService } from '@service/interfaces';
  */
 
 // ============================================================================
-// SHARED INTERFACES - Core business types
+// SERVICE-SPECIFIC INTERFACES
 // ============================================================================
-export * from './shared';
 
-// ============================================================================
-// AUTHENTICATION INTERFACES - Auth domain
-// ============================================================================
-export * from './auth';
-
-// ============================================================================
-// AUTH UTILITY INTERFACES - Auth utilities and validators
-// ============================================================================
+// Auth utilities
 export * from './auth-utils';
 
 // ============================================================================
-// CHAT INTERFACES - Chat domain
-// ============================================================================
-export * from './chat';
-
-// ============================================================================
-// STORAGE INTERFACES - Storage domain
-// ============================================================================
-export * from './storage';
-
-// ============================================================================
-// ALERT INTERFACES - Alert and toast domain
-// ============================================================================
-export * from './alert';
-
-// ============================================================================
-// NAVIGATION INTERFACES - Navigation domain
-// ============================================================================
-export * from './navigation';
-
-// ============================================================================
-// LANGUAGE INTERFACES - Language and i18n domain
-// ============================================================================
-export * from './language';
-
-// ============================================================================
-// SESSION INTERFACES - Session management domain
-// ============================================================================
-export * from './session';
-
-// ============================================================================
-// THEME INTERFACES - Theme and styling domain
-// ============================================================================
-export * from './theme';
-
-// ============================================================================
-// THEME TOKENS - Design tokens and styling constants
-// ============================================================================
-export * from './tokens';
-
-// ============================================================================
-// USE CASE INTERFACES - Use case parameters and results
-// ============================================================================
-export * from './use-cases';
-
-// ============================================================================
-// VIEW MODEL INTERFACES - View model states and actions
-// ============================================================================
-export * from './view-models';
-
-// ============================================================================
-// TYPE EXPORTS - Commonly used type aliases
-// ============================================================================
-
-// Result pattern types
-export type {
-    AsyncResult, Failure, Result,
-    Success
-} from './shared';
-
-// Entity types
-export type {
-    AlertDialog, ChatRoomEntity, MessageEntity, ToastMessage, User, UserSession
-} from './auth';
-
-export type {
-    ChatRoomEntity as ChatRoom, MessageEntity as Message
-} from './chat';
-
-// Service interface types
-export type {
-    IAuthEventEmitter, IUserRepository
-} from './auth';
-
-export type {
-    IAIProvider, IChatRoomRepository, IClipboardAdapter, IIdGenerator, IMessageRepository
-} from './chat';
-
-export type {
-    ISecureStorageService, IStorageService
-} from './storage';
-
-export type {
-    IAlertService, IToastService
-} from './alert';
-
-export type {
-    INavigationService, INavigationTracker
-} from './navigation';
-
-export type {
-    ILanguageRepository, ILanguageService
-} from './language';
-
-export type {
-    ISessionRepository
-} from './session';
-
-// ============================================================================
-// ADDITIONAL SERVICE INTERFACES
+// SERVICE INTERFACES
 // ============================================================================
 
 // Logger interface
@@ -131,6 +25,12 @@ export interface ILogger {
   info(message: string, context?: Record<string, unknown>): void;
   warn(message: string, context?: Record<string, unknown>): void;
   error(message: string, context?: Record<string, unknown>): void;
+}
+
+// Validation Result interface
+export interface IValidationResult {
+  isValid: boolean;
+  error?: string;
 }
 
 // Message Validator interface

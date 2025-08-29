@@ -32,7 +32,6 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
   const styles = createAssistantMessageBarStyles(theme);
   const { showSuccess } = useToast();
   const handleRegeneratePress = () => {
-    
     onRegenerate?.();
   };
 

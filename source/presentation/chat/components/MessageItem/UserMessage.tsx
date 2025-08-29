@@ -1,20 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import { Message } from '../../../../business/chat/entities/Message';
+
 import { useToast } from '../../../alert/toast';
+import { ChatMessage } from '../../../interfaces/chat';
 import { Button } from '../../../components/ui/Button';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
+
 import { createUserMessageStyles } from './UserMessage.styles';
 
-interface UserMessageProps {
-  message: Message;
+interface IUserMessageProps {
+  message: ChatMessage;
   isLastInGroup?: boolean;
   onSendEdited?: (newText: string) => void;
 }
 
-export const UserMessage: React.FC<UserMessageProps> = ({
+export const UserMessage: React.FC<IUserMessageProps> = ({
   message,
   isLastInGroup = true,
   onSendEdited,
@@ -42,7 +44,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                 label="Send"
                 variant="primary"
                 size="sm"
-                onPress={() => { console.log('[EDIT] send', draft); onSendEdited?.(draft); setIsEditing(false); }}
+                onPress={() => { onSendEdited?.(draft); setIsEditing(false); }}
                 containerStyle={styles.actionButton}
               />
               <Button
