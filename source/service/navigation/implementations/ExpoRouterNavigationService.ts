@@ -1,5 +1,6 @@
 // src/features/chat/services/implementations/ExpoRouterNavigationService.ts
 import { router } from 'expo-router';
+
 import { INavigationService } from '../interfaces/INavigationService';
 
 export class ExpoRouterNavigationService implements INavigationService {

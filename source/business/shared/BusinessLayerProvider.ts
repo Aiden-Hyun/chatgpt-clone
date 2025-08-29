@@ -1,6 +1,29 @@
 // Business Layer Provider - Creates and configures business layer dependencies
 // Follows layered architecture: Business layer owns its dependency configuration
 
+
+// Import concrete implementations from persistence layer
+import { UserRepository } from '../../persistence/auth/repositories/UserRepository';
+import { AIProvider } from '../../persistence/chat/adapters/AIProvider';
+import { ClipboardAdapter } from '../../persistence/chat/adapters/ClipboardAdapter';
+import { ChatRoomRepository } from '../../persistence/chat/repositories/ChatRoomRepository';
+import { MessageRepository } from '../../persistence/chat/repositories/MessageRepository';
+import { LanguageRepository } from '../../persistence/language/repositories/LanguageRepository';
+import { SessionRepository } from '../../persistence/session/repositories/SessionRepository';
+import { AlertService, ToastService } from '../../service/alert';
+import { IdGenerator } from '../../service/chat/generators/IdGenerator';
+import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
+import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
+import { MessageValidator } from '../../service/chat/validators/MessageValidator';
+import { AsyncStorageAdapter } from '../../service/language/adapters/AsyncStorageAdapter';
+import { LanguageService } from '../../service/language/LanguageService';
+import { NavigationService, NavigationTracker } from '../../service/navigation';
+import { ILogger } from '../../service/shared/interfaces/ILogger';
+import { ConfigService } from '../../service/shared/lib/config';
+import { Logger } from '../../service/shared/utils/Logger';
+import { MobileStorageService, SecureStorageService } from '../../service/storage';
+
+// Import business layer interfaces
 import {
     IAIProvider,
     IAlertService,
@@ -17,31 +40,7 @@ import {
     IUserRepository
 } from '../interfaces';
 
-// Import config service
-import { ConfigService } from '../../service/shared/lib/config';
-
-// Import concrete implementations from persistence layer
-import { UserRepository } from '../../persistence/auth/repositories/UserRepository';
-import { AIProvider } from '../../persistence/chat/adapters/AIProvider';
-import { ClipboardAdapter } from '../../persistence/chat/adapters/ClipboardAdapter';
-import { ChatRoomRepository } from '../../persistence/chat/repositories/ChatRoomRepository';
-import { MessageRepository } from '../../persistence/chat/repositories/MessageRepository';
-import { LanguageRepository } from '../../persistence/language/repositories/LanguageRepository';
-import { SessionRepository } from '../../persistence/session/repositories/SessionRepository';
-
-// Import service layer utilities  
-import { AlertService, ToastService } from '../../service/alert';
-import { IdGenerator } from '../../service/chat/generators/IdGenerator';
-import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
-import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
-import { MessageValidator } from '../../service/chat/validators/MessageValidator';
-import { AsyncStorageAdapter } from '../../service/language/adapters/AsyncStorageAdapter';
-import { LanguageService } from '../../service/language/LanguageService';
-import { NavigationService, NavigationTracker } from '../../service/navigation';
-import { ILogger } from '../../service/shared/interfaces/ILogger';
-import { Logger } from '../../service/shared/utils/Logger';
-import { MobileStorageService, SecureStorageService } from '../../service/storage';
-
+// Import business layer components
 import { UseCaseFactory } from './UseCaseFactory';
 
 /**

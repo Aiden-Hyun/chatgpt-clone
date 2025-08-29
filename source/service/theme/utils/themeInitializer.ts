@@ -1,13 +1,13 @@
+import claymorphismTheme from '../../../business/theme/themes/claymorphism';
+import defaultTheme from '../../../business/theme/themes/default';
+import glassmorphismTheme from '../../../business/theme/themes/glassmorphism';
+import gradientNeumorphismTheme from '../../../business/theme/themes/gradient-neumorphism';
 import { ILogger } from '../../shared/interfaces/ILogger';
 import { Logger } from '../../shared/utils/Logger';
 import { IThemeService } from '../interfaces/IThemeService';
 import { ThemeService } from '../ThemeService';
 
 // Import themes
-import claymorphismTheme from '../../../business/theme/themes/claymorphism';
-import defaultTheme from '../../../business/theme/themes/default';
-import glassmorphismTheme from '../../../business/theme/themes/glassmorphism';
-import gradientNeumorphismTheme from '../../../business/theme/themes/gradient-neumorphism';
 
 /**
  * Initialize themes by registering them with the theme service

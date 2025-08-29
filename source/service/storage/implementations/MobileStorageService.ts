@@ -1,9 +1,11 @@
 import { Platform } from 'react-native';
+
 import { StorageKey } from '../../../business/storage/constants';
 import { IStorageService } from '../../../business/storage/interfaces/IStorageService';
 import { Result } from '../../../business/types/shared/Result';
 import { ILogger } from '../../shared/interfaces/ILogger';
 import { IStorageAdapter } from '../interfaces/IStorageAdapter';
+
 import { AsyncStorageAdapter } from './AsyncStorageAdapter';
 import { WebStorageAdapter, WebStorageType } from './WebStorageAdapter';
 

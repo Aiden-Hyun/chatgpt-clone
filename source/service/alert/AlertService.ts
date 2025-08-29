@@ -1,8 +1,5 @@
-import { AlertType } from '../../business/alert/constants/alertConstants';
-import { AlertDialog, AlertOptions } from '../../business/alert/entities/AlertDialog';
-import { IAlertService } from '../../business/alert/interfaces/IAlertService';
-import { Result } from '../../business/types/shared/Result';
 import { IIdGenerator } from '../chat/interfaces/IIdGenerator';
+import { AlertDialog, AlertOptions, AlertType, IAlertService, Result } from '../interfaces';
 import { ILogger } from '../shared/interfaces/ILogger';
 
 /**

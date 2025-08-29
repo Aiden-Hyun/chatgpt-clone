@@ -1,23 +1,16 @@
 // Use Case Factory - Creates configured use cases with proper DI
 // Follows layered architecture: Business layer factory for business objects
 
-import {
-    IAIProvider,
-    IAuthEventEmitter,
-    IChatRoomRepository,
-    IClipboardAdapter,
-    IMessageRepository,
-    ISessionRepository,
-    IUserRepository
-} from '../interfaces';
-
 // Service layer interfaces
 import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
 import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
 import { ILogger } from '../../service/shared/interfaces/ILogger';
 
-// Use Cases
+// Business layer interfaces
+
+// Auth Use Cases
 import { CheckAuthorizationUseCase } from '../auth/use-cases/CheckAuthorizationUseCase';
+import { GetUserProfileUseCase } from '../auth/use-cases/GetUserProfileUseCase';
 import { MonitorAuthStateUseCase } from '../auth/use-cases/MonitorAuthStateUseCase';
 import { RefreshTokenUseCase } from '../auth/use-cases/RefreshTokenUseCase';
 import { RequestPasswordResetUseCase } from '../auth/use-cases/RequestPasswordResetUseCase';
@@ -26,6 +19,9 @@ import { SignInUseCase } from '../auth/use-cases/SignInUseCase';
 import { SignOutUseCase } from '../auth/use-cases/SignOutUseCase';
 import { SignUpUseCase } from '../auth/use-cases/SignUpUseCase';
 import { SocialAuthUseCase } from '../auth/use-cases/SocialAuthUseCase';
+import { UpdateUserProfileUseCase } from '../auth/use-cases/UpdateUserProfileUseCase';
+
+// Chat Use Cases
 import { CopyMessageUseCase } from '../chat/use-cases/CopyMessageUseCase';
 import { CreateRoomUseCase } from '../chat/use-cases/CreateRoomUseCase';
 import { DeleteMessageUseCase } from '../chat/use-cases/DeleteMessageUseCase';
@@ -37,7 +33,21 @@ import { RegenerateAssistantUseCase } from '../chat/use-cases/RegenerateAssistan
 import { ResendMessageUseCase } from '../chat/use-cases/ResendMessageUseCase';
 import { SendMessageUseCase } from '../chat/use-cases/SendMessageUseCase';
 import { UpdateRoomUseCase } from '../chat/use-cases/UpdateRoomUseCase';
+import {
+    IAIProvider,
+    IAuthEventEmitter,
+    IChatRoomRepository,
+    IClipboardAdapter,
+    IMessageRepository,
+    ISessionRepository,
+    IUserRepository
+} from '../interfaces';
+
+// Session Use Cases
+import { GetStoredRouteUseCase } from '../navigation/use-cases/GetStoredRouteUseCase';
+import { SetStoredRouteUseCase } from '../navigation/use-cases/SetStoredRouteUseCase';
 import { AutoLogoutUseCase } from '../session/use-cases/AutoLogoutUseCase';
+import { ClearStorageUseCase } from '../session/use-cases/ClearStorageUseCase';
 import { GetSessionUseCase } from '../session/use-cases/GetSessionUseCase';
 import { RefreshSessionUseCase } from '../session/use-cases/RefreshSessionUseCase';
 import { UpdateSessionActivityUseCase } from '../session/use-cases/UpdateSessionActivityUseCase';
@@ -59,6 +69,7 @@ export class UseCaseFactory {
     private aiProvider: IAIProvider,
     private clipboardAdapter: IClipboardAdapter,
     private authEventEmitter: IAuthEventEmitter,
+    private storageService: IStorageService,
     
     // Service dependencies (injected)
     private logger: ILogger,
@@ -77,6 +88,20 @@ export class UseCaseFactory {
   createSignUpUseCase(): SignUpUseCase {
     return new SignUpUseCase(
       this.userRepository
+    );
+  }
+
+  createGetUserProfileUseCase(): GetUserProfileUseCase {
+    return new GetUserProfileUseCase(
+      this.userRepository,
+      this.logger
+    );
+  }
+
+  createUpdateUserProfileUseCase(): UpdateUserProfileUseCase {
+    return new UpdateUserProfileUseCase(
+      this.userRepository,
+      this.logger
     );
   }
 
@@ -219,6 +244,27 @@ export class UseCaseFactory {
   createUpdateSessionActivityUseCase(): UpdateSessionActivityUseCase {
     return new UpdateSessionActivityUseCase(
       this.sessionRepository
+    );
+  }
+
+  createClearStorageUseCase(): ClearStorageUseCase {
+    return new ClearStorageUseCase(
+      this.storageService,
+      this.logger
+    );
+  }
+
+  createGetStoredRouteUseCase(): GetStoredRouteUseCase {
+    return new GetStoredRouteUseCase(
+      this.storageService,
+      this.logger
+    );
+  }
+
+  createSetStoredRouteUseCase(): SetStoredRouteUseCase {
+    return new SetStoredRouteUseCase(
+      this.storageService,
+      this.logger
     );
   }
 

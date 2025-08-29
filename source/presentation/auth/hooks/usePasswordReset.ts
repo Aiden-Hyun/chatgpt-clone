@@ -1,35 +1,24 @@
-import { useState } from 'react';
-import { supabase } from '../../../service/shared/lib/supabase';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { useRequestPasswordResetViewModel } from '../../../business/auth/view-models/useRequestPasswordResetViewModel';
 
 export const usePasswordReset = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const useCaseFactory = useUseCaseFactory();
+  const requestPasswordResetViewModel = useRequestPasswordResetViewModel(
+    useCaseFactory.createRequestPasswordResetUseCase()
+  );
 
   const resetPassword = async (email: string) => {
     try {
-      setIsLoading(true);
-
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        // This should be your app's URL to handle the password reset
-        // redirectTo: 'yourapp://auth/reset-password',
-      });
-
-      if (error) {
-        console.error('Password reset error:', error);
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, error: null };
+      const result = await requestPasswordResetViewModel.requestReset(email);
+      return result;
     } catch (error) {
-      console.error('Unexpected password reset error:', error);
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return {
     resetPassword,
-    isLoading,
+    isLoading: requestPasswordResetViewModel.isLoading,
   };
 }; 

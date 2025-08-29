@@ -1,42 +1,29 @@
 import { router } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { Platform } from 'react-native';
-import { supabase } from '../../../service/shared/lib/supabase';
+import { useCallback } from 'react';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { useSignOutViewModel } from '../../../business/auth/view-models/useSignOutViewModel';
+import { useStorageViewModel } from '../../../business/session/view-models/useStorageViewModel';
 
 /**
  * Hook for handling user logout functionality
  * Centralizes logout logic and provides loading state
  */
 export const useLogout = () => {
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const useCaseFactory = useUseCaseFactory();
+  const signOutViewModel = useSignOutViewModel(useCaseFactory.createSignOutUseCase());
+  const storageViewModel = useStorageViewModel(
+    useCaseFactory.createClearStorageUseCase(),
+    useCaseFactory.createGetStoredRouteUseCase(),
+    useCaseFactory.createSetStoredRouteUseCase()
+  );
 
   const logout = useCallback(async () => {
     try {
-      setIsLoggingOut(true);
+      // Clear storage first
+      await storageViewModel.clearStorage('all');
       
-      // On web, clear localStorage first to prevent race conditions
-      if (Platform.OS === 'web') {
-        try {
-          // Clear all Supabase-related localStorage items
-          const keysToRemove: string[] = [];
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
-              keysToRemove.push(key);
-            }
-          }
-          keysToRemove.forEach(key => localStorage.removeItem(key));
-          
-          if (__DEV__) {
-            console.log('🧹 [LOGOUT] Cleared Supabase localStorage items:', keysToRemove);
-          }
-        } catch (error) {
-          console.warn('Failed to clear localStorage:', error);
-        }
-      }
-      
-      // Sign out from Supabase
-      await supabase.auth.signOut();
+      // Then sign out
+      await signOutViewModel.signOut();
       
       // Navigate to login screen
       router.replace('/auth');
@@ -44,13 +31,11 @@ export const useLogout = () => {
       console.error('Error during logout:', error);
       // Even if there's an error, try to navigate to login
       router.replace('/auth');
-    } finally {
-      setIsLoggingOut(false);
     }
-  }, []);
+  }, [signOutViewModel, storageViewModel]);
 
   return {
     logout,
-    isLoggingOut,
+    isLoggingOut: signOutViewModel.isLoading || storageViewModel.isLoading,
   };
 }; 

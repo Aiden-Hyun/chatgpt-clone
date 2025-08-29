@@ -1,6 +1,7 @@
 // source/service/shared/lib/fetch.ts
 import { ILogger } from '../interfaces/ILogger';
 import { Logger } from '../utils/Logger';
+
 import { NETWORK } from './constants';
 
 /**

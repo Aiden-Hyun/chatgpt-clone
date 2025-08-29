@@ -59,9 +59,9 @@ export class MessageFormatter {
   /**
    * Extract code blocks from message content
    */
-  static extractCodeBlocks(content: string): Array<{ language: string; code: string }> {
+  static extractCodeBlocks(content: string): { language: string; code: string }[] {
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    const blocks: Array<{ language: string; code: string }> = [];
+    const blocks: { language: string; code: string }[] = [];
     let match;
 
     while ((match = codeBlockRegex.exec(content)) !== null) {

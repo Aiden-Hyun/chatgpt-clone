@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+
 import { AppRoute, ParamsOf, buildRoute } from '../../../business/navigation/constants/routes';
 import { NavigationState } from '../../../business/navigation/entities/NavigationState';
 import { INavigationService } from '../../../business/navigation/interfaces/INavigationService';

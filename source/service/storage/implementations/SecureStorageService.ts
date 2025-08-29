@@ -3,6 +3,7 @@ import { ISecureStorageService } from '../../../business/storage/interfaces/ISec
 import { Result } from '../../../business/types/shared/Result';
 import { ILogger } from '../../shared/interfaces/ILogger';
 import { ISecureStorageAdapter } from '../interfaces/ISecureStorageAdapter';
+
 import { SecureStoreAdapter } from './SecureStoreAdapter';
 
 /**

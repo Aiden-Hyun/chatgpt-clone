@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../../service/shared/lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { useUserProfileViewModel } from '../../../business/auth/view-models/useUserProfileViewModel';
 
 interface UserInfo {
   userName: string;
@@ -12,7 +13,7 @@ interface UserInfo {
 
 /**
  * Hook for fetching and managing user information from the current session
- * Extracts user session data and resolves display name from metadata
+ * Uses business layer UseCases instead of direct database access
  */
 export const useUserInfo = (): UserInfo => {
   const { session } = useAuth();
@@ -20,6 +21,12 @@ export const useUserInfo = (): UserInfo => {
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const useCaseFactory = useUseCaseFactory();
+  const userProfileViewModel = useUserProfileViewModel(
+    useCaseFactory.createGetUserProfileUseCase(),
+    useCaseFactory.createUpdateUserProfileUseCase()
+  );
 
   const getUserInfo = async () => {
     try {
@@ -30,24 +37,19 @@ export const useUserInfo = (): UserInfo => {
         // Extract email
         setEmail(session.user.email || null);
         
-        // Try to get display name from profiles table first
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', session.user.id)
-          .maybeSingle();
+        // Get profile from business layer
+        const result = await userProfileViewModel.getUserProfile(session.user.id);
         
-        if (profileError) {
-          // Profile might not exist yet, that's okay
+        if (result.success && result.profile) {
+          setUserName(result.profile.displayName);
+        } else {
+          // Fall back to metadata if profile not found
+          const name = session.user.user_metadata?.full_name || 
+                      session.user.user_metadata?.name || 
+                      session.user.email?.split('@')[0] || 
+                      'User';
+          setUserName(name);
         }
-        
-        // Use profile display_name if available, otherwise fall back to metadata
-        const name = profileData?.display_name || 
-                    session.user.user_metadata?.full_name || 
-                    session.user.user_metadata?.name || 
-                    session.user.email?.split('@')[0] || 
-                    'User';
-        setUserName(name);
       } else {
         // No session, reset user info
         setUserName('');

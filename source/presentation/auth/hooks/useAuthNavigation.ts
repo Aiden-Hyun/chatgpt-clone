@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { useStorageViewModel } from '../../../business/session/view-models/useStorageViewModel';
 
 export interface AuthNavigationOptions {
   preserveRoute?: boolean;
@@ -9,15 +11,15 @@ export interface AuthNavigationOptions {
 }
 
 export interface AuthNavigationHook {
-  navigateToProtectedRoute: (route: string, options?: AuthNavigationOptions) => void;
-  navigateToAuth: (options?: AuthNavigationOptions) => void;
-  handleAuthSuccess: (options?: AuthNavigationOptions) => void;
+  navigateToProtectedRoute: (route: string, options?: AuthNavigationOptions) => Promise<void>;
+  navigateToAuth: (options?: AuthNavigationOptions) => Promise<void>;
+  handleAuthSuccess: (options?: AuthNavigationOptions) => Promise<void>;
   navigateToSignUp: () => void;
   navigateToForgotPassword: () => void;
   navigateBack: () => void;
   getCurrentRoute: () => string | null;
-  getPreviousRoute: () => string | null;
-  setPreviousRoute: (route: string) => void;
+  getPreviousRoute: () => Promise<string | null>;
+  setPreviousRoute: (route: string) => Promise<void>;
 }
 
 // Storage key for preserving the intended route
@@ -26,11 +28,18 @@ const PREVIOUS_ROUTE_KEY = 'auth_previous_route';
 
 export function useAuthNavigation(): AuthNavigationHook {
   const router = useRouter();
+  
+  const useCaseFactory = useUseCaseFactory();
+  const storageViewModel = useStorageViewModel(
+    useCaseFactory.createClearStorageUseCase(),
+    useCaseFactory.createGetStoredRouteUseCase(),
+    useCaseFactory.createSetStoredRouteUseCase()
+  );
 
   /**
    * Navigate to a protected route, handling authentication if needed
    */
-  const navigateToProtectedRoute = useCallback((
+  const navigateToProtectedRoute = useCallback(async (
     route: string, 
     options: AuthNavigationOptions = {}
   ) => {
@@ -39,9 +48,7 @@ export function useAuthNavigation(): AuthNavigationHook {
 
       if (options.preserveRoute) {
         // Store the intended route for after authentication
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(INTENDED_ROUTE_KEY, route);
-        }
+        await storageViewModel.setStoredRoute(INTENDED_ROUTE_KEY, route);
       }
 
       if (options.clearHistory) {
@@ -55,20 +62,18 @@ export function useAuthNavigation(): AuthNavigationHook {
         error 
       });
     }
-  }, [router]);
+  }, [router, storageViewModel]);
 
   /**
    * Navigate to authentication screen
    */
-  const navigateToAuth = useCallback((options: AuthNavigationOptions = {}) => {
+  const navigateToAuth = useCallback(async (options: AuthNavigationOptions = {}) => {
     try {
       Logger.info('useAuthNavigation: Navigating to auth screen', { options });
 
       if (options.preserveRoute && options.redirectPath) {
         // Store the current route to return to after auth
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(INTENDED_ROUTE_KEY, options.redirectPath);
-        }
+        await storageViewModel.setStoredRoute(INTENDED_ROUTE_KEY, options.redirectPath);
       }
 
       if (options.clearHistory) {
@@ -79,27 +84,26 @@ export function useAuthNavigation(): AuthNavigationHook {
     } catch (error) {
       Logger.error('useAuthNavigation: Failed to navigate to auth', { error });
     }
-  }, [router]);
+  }, [router, storageViewModel]);
 
   /**
    * Handle successful authentication - redirect to intended route or default
    */
-  const handleAuthSuccess = useCallback((options: AuthNavigationOptions = {}) => {
+  const handleAuthSuccess = useCallback(async (options: AuthNavigationOptions = {}) => {
     try {
       Logger.info('useAuthNavigation: Handling auth success', { options });
 
       let targetRoute = '/chat'; // Default route after auth
 
       // Check for stored intended route
-      if (typeof window !== 'undefined') {
-        const intendedRoute = localStorage.getItem(INTENDED_ROUTE_KEY);
-        if (intendedRoute) {
-          targetRoute = intendedRoute;
-          localStorage.removeItem(INTENDED_ROUTE_KEY);
-          Logger.info('useAuthNavigation: Redirecting to intended route', { 
-            intendedRoute: targetRoute 
-          });
-        }
+      const result = await storageViewModel.getStoredRoute(INTENDED_ROUTE_KEY);
+      if (result.success && result.route) {
+        targetRoute = result.route;
+        // Clear the stored route after using it
+        await storageViewModel.setStoredRoute(INTENDED_ROUTE_KEY, '');
+        Logger.info('useAuthNavigation: Redirecting to intended route', { 
+          intendedRoute: targetRoute 
+        });
       }
 
       // Use provided redirect path if available
@@ -114,7 +118,7 @@ export function useAuthNavigation(): AuthNavigationHook {
       // Fallback to default route
       router.replace('/chat');
     }
-  }, [router]);
+  }, [router, storageViewModel]);
 
   /**
    * Navigate to sign up screen
@@ -177,32 +181,27 @@ export function useAuthNavigation(): AuthNavigationHook {
   /**
    * Get previously stored route
    */
-  const getPreviousRoute = useCallback((): string | null => {
+  const getPreviousRoute = useCallback(async (): Promise<string | null> => {
     try {
-      if (typeof window !== 'undefined') {
-        return localStorage.getItem(PREVIOUS_ROUTE_KEY);
-      }
-      return null;
+      const result = await storageViewModel.getStoredRoute(PREVIOUS_ROUTE_KEY);
+      return result.success ? result.route : null;
     } catch (error) {
       Logger.error('useAuthNavigation: Failed to get previous route', { error });
       return null;
     }
-  }, []);
+  }, [storageViewModel]);
 
   /**
    * Store the previous route for later navigation
    */
-  const setPreviousRoute = useCallback((route: string) => {
+  const setPreviousRoute = useCallback(async (route: string) => {
     try {
       Logger.info('useAuthNavigation: Setting previous route', { route });
-      
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(PREVIOUS_ROUTE_KEY, route);
-      }
+      await storageViewModel.setStoredRoute(PREVIOUS_ROUTE_KEY, route);
     } catch (error) {
       Logger.error('useAuthNavigation: Failed to set previous route', { route, error });
     }
-  }, []);
+  }, [storageViewModel]);
 
   return {
     navigateToProtectedRoute,

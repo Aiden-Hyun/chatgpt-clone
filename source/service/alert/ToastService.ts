@@ -1,8 +1,5 @@
-import { AlertType, DEFAULT_TOAST_DURATION_MS } from '../../business/alert/constants/alertConstants';
-import { ToastMessage } from '../../business/alert/entities/ToastMessage';
-import { IToastService } from '../../business/alert/interfaces/IToastService';
-import { Result } from '../../business/types/shared/Result';
 import { IIdGenerator } from '../chat/interfaces/IIdGenerator';
+import { AlertType, DEFAULT_TOAST_DURATION_MS, IToastService, Result, ToastMessage } from '../interfaces';
 import { ILogger } from '../shared/interfaces/ILogger';
 
 /**

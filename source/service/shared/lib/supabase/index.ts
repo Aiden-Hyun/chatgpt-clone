@@ -1,8 +1,13 @@
 // source/service/shared/lib/supabase/index.ts
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
 import { ILogger } from '../../interfaces/ILogger';
 import { Logger } from '../../utils/Logger';
 import { IConfigService } from '../config';
+
+// Export a default instance for backward compatibility
+// This will be deprecated in favor of injected instances
+import { appConfig } from '../config';
 
 /**
  * Create a Supabase client with proper configuration
@@ -32,10 +37,6 @@ export function createSupabaseClient(
     },
   });
 }
-
-// Export a default instance for backward compatibility
-// This will be deprecated in favor of injected instances
-import { appConfig } from '../config';
 export const supabase = createClient(appConfig.supabaseUrl, appConfig.supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,

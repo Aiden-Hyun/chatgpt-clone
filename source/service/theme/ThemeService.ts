@@ -1,6 +1,7 @@
 import { ThemeWithMetadata } from '../../business/types/theme/theme.types';
 import { ILogger } from '../shared/interfaces/ILogger';
 import { Logger } from '../shared/utils/Logger';
+
 import { IThemeService } from './interfaces/IThemeService';
 import { ThemeRegistry } from './utils/themeRegistry';
 

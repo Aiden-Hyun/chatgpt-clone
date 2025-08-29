@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import { IClipboardService } from './interfaces/IClipboardService';
 
 /**
