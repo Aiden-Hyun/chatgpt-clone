@@ -1,26 +1,4 @@
-export enum AuthErrorType {
-  NETWORK_ERROR = 'NETWORK_ERROR',
-  INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
-  USER_NOT_FOUND = 'USER_NOT_FOUND',
-  EMAIL_NOT_CONFIRMED = 'EMAIL_NOT_CONFIRMED',
-  WEAK_PASSWORD = 'WEAK_PASSWORD',
-  EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
-  INVALID_EMAIL = 'INVALID_EMAIL',
-  TOKEN_EXPIRED = 'TOKEN_EXPIRED',
-  INVALID_TOKEN = 'INVALID_TOKEN',
-  SESSION_EXPIRED = 'SESSION_EXPIRED',
-  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
-  SERVER_ERROR = 'SERVER_ERROR',
-  UNKNOWN_ERROR = 'UNKNOWN_ERROR'
-}
-
-export interface CategorizedAuthError {
-  type: AuthErrorType;
-  message: string;
-  isRetryable: boolean;
-  isNetworkError: boolean;
-  originalError?: any;
-}
+import { AuthErrorType, ICategorizedAuthError } from '../../interfaces';
 
 export class AuthErrorHandler {
   private static readonly ERROR_MESSAGES: Record<AuthErrorType, string> = {
@@ -75,7 +53,7 @@ export class AuthErrorHandler {
    * @param error Error object from Supabase or other auth service
    * @returns Categorized error information
    */
-  static categorizeAuthError(error: any): CategorizedAuthError {
+  static categorizeAuthError(error: unknown): ICategorizedAuthError {
     if (!error) {
       return this.createCategorizedError(AuthErrorType.UNKNOWN_ERROR, error);
     }
@@ -119,7 +97,7 @@ export class AuthErrorHandler {
    * @param error Error object
    * @returns User-friendly error message
    */
-  static getMessageFromError(error: any): string {
+  static getMessageFromError(error: unknown): string {
     const categorized = this.categorizeAuthError(error);
     return categorized.message;
   }
@@ -129,7 +107,7 @@ export class AuthErrorHandler {
    * @param error Error object
    * @returns true if the operation can be retried
    */
-  static isRetryableError(error: any): boolean {
+  static isRetryableError(error: unknown): boolean {
     const categorized = this.categorizeAuthError(error);
     return categorized.isRetryable;
   }
@@ -139,7 +117,7 @@ export class AuthErrorHandler {
    * @param error Error object
    * @returns true if it's a network-related error
    */
-  static isNetworkError(error: any): boolean {
+  static isNetworkError(error: unknown): boolean {
     if (!error) return false;
 
     // Check for common network error indicators
@@ -164,10 +142,10 @@ export class AuthErrorHandler {
    */
   private static createCategorizedError(
     type: AuthErrorType,
-    originalError?: any,
+    originalError?: unknown,
     isRetryable: boolean = false,
     isNetworkError: boolean = false
-  ): CategorizedAuthError {
+  ): ICategorizedAuthError {
     // Determine if error is retryable based on type
     const retryable = isRetryable || [
       AuthErrorType.NETWORK_ERROR,
@@ -190,7 +168,7 @@ export class AuthErrorHandler {
   /**
    * Extract error message from various error object formats
    */
-  private static extractErrorMessage(error: any): string {
+  private static extractErrorMessage(error: unknown): string {
     if (typeof error === 'string') {
       return error;
     }
@@ -213,7 +191,7 @@ export class AuthErrorHandler {
   /**
    * Extract error code from various error object formats
    */
-  private static extractErrorCode(error: any): string | null {
+  private static extractErrorCode(error: unknown): string | null {
     if (error?.error) {
       return error.error;
     }

@@ -1,7 +1,4 @@
-export interface EmailValidationResult {
-  isValid: boolean;
-  error?: string;
-}
+import { IEmailValidationResult } from '../../interfaces';
 
 export class EmailValidator {
   // RFC 5322 compliant email regex (simplified version)
@@ -36,7 +33,7 @@ export class EmailValidator {
    * @param email Email address to validate
    * @returns Validation result with error message if invalid
    */
-  static validate(email: string): EmailValidationResult {
+  static validate(email: string): IEmailValidationResult {
     if (!email || typeof email !== 'string') {
       return {
         isValid: false,
@@ -99,7 +96,7 @@ export class EmailValidator {
   /**
    * Validate local part of email (before @)
    */
-  private static validateLocalPart(localPart: string): EmailValidationResult {
+  private static validateLocalPart(localPart: string): IEmailValidationResult {
     if (!localPart) {
       return {
         isValid: false,
@@ -136,7 +133,7 @@ export class EmailValidator {
   /**
    * Validate domain part of email (after @)
    */
-  private static validateDomainPart(domainPart: string): EmailValidationResult {
+  private static validateDomainPart(domainPart: string): IEmailValidationResult {
     if (!domainPart) {
       return {
         isValid: false,

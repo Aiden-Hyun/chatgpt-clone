@@ -1,16 +1,4 @@
-export interface PermissionCheckResult {
-  hasAccess: boolean;
-  missingPermissions: string[];
-  reason?: string;
-}
-
-export interface RouteConfig {
-  path: string;
-  permissions: string[];
-  requiresAuth: boolean;
-  allowedRoles?: string[];
-  description?: string;
-}
+import { IPermissionCheckResult, IRouteConfig } from '../../interfaces';
 
 export class RoutePermissionChecker {
   // Define route permissions configuration
@@ -68,7 +56,7 @@ export class RoutePermissionChecker {
   static canAccessRoute(
     userPermissions: string[], 
     requiredPermissions: string[]
-  ): PermissionCheckResult {
+  ): IPermissionCheckResult {
     // If no permissions are required, allow access
     if (!requiredPermissions || requiredPermissions.length === 0) {
       return {

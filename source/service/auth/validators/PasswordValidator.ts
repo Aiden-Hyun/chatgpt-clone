@@ -1,13 +1,4 @@
-export interface PasswordValidationResult {
-  isValid: boolean;
-  error?: string;
-}
-
-export interface PasswordStrengthResult {
-  score: number; // 0-100
-  level: 'weak' | 'fair' | 'good' | 'strong';
-  feedback: string[];
-}
+import { IPasswordValidationResult, IPasswordStrengthResult } from '../../interfaces';
 
 export class PasswordValidator {
   // Password requirements configuration
@@ -58,7 +49,7 @@ export class PasswordValidator {
    * @param password Password to validate
    * @returns Validation result with error message if invalid
    */
-  static validate(password: string): PasswordValidationResult {
+  static validate(password: string): IPasswordValidationResult {
     if (!password || typeof password !== 'string') {
       return {
         isValid: false,
@@ -144,7 +135,7 @@ export class PasswordValidator {
    * @param password Password to analyze
    * @returns Strength analysis with score, level, and feedback
    */
-  static getStrength(password: string): PasswordStrengthResult {
+  static getStrength(password: string): IPasswordStrengthResult {
     if (!password || typeof password !== 'string') {
       return {
         score: 0,
@@ -362,7 +353,7 @@ export class PasswordValidator {
   /**
    * Validate password confirmation
    */
-  static validateConfirmation(password: string, confirmPassword: string): PasswordValidationResult {
+  static validateConfirmation(password: string, confirmPassword: string): IPasswordValidationResult {
     if (!confirmPassword) {
       return {
         isValid: false,
