@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { useAppTheme } from '../../../theme/hooks/useTheme';
-import { useBusinessContext } from '../../../shared/BusinessContextProvider';
-import { createChatStyles } from '../../../app/chat/chat.styles';
-import { MessageList } from '../MessageList';
 import { useChatViewModel } from '../../../../business/chat/view-models/useChatViewModel';
-import { useMemo } from 'react';
+import { createChatStyles } from '../../../app/chat/chat.styles';
+import { useBusinessContext } from '../../../shared/BusinessContextProvider';
+import { useAppTheme } from '../../../theme/hooks/useTheme';
+import { MessageList } from '../MessageList';
 
 interface ChatInterfaceProps {
   roomId: string | number;

@@ -70,7 +70,7 @@ export class TokenValidator {
       const now = new Date();
       const timeUntilExpiry = expiryDate.getTime() - now.getTime();
       return Math.max(0, timeUntilExpiry);
-    } catch (error) {
+    } catch {
       return 0; // Invalid or expired token
     }
   }
@@ -150,7 +150,7 @@ export class TokenValidator {
     try {
       const decoded = this.decodeToken(token);
       return decoded.sub || null;
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -165,7 +165,7 @@ export class TokenValidator {
     try {
       const decoded = this.decodeToken(token);
       return decoded.role === requiredRole;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

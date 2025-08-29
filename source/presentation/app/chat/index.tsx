@@ -3,8 +3,8 @@ import { useCallback, useRef } from 'react';
 import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
 import { SessionAdapter } from '../../../persistence/shared/adapters/SessionAdapter';
 import { useAuth } from '../../auth/context/AuthContext';
-import { LoadingWrapper } from '../../components/LoadingWrapper';
 import { useRoomCreation } from '../../chat/hooks/useRoomCreation';
+import { LoadingWrapper } from '../../components/LoadingWrapper';
 
 export default function NewChatScreen() {
   const { session, isLoading } = useAuth();

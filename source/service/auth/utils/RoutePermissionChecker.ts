@@ -1,4 +1,4 @@
-import { IPermissionCheckResult, IRouteConfig } from '../../interfaces';
+import { IPermissionCheckResult } from '../../interfaces';
 
 export class RoutePermissionChecker {
   // Define route permissions configuration
