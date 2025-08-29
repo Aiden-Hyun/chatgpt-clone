@@ -4,11 +4,11 @@ import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
 import { SessionAdapter } from '../../../persistence/shared/adapters/SessionAdapter';
 import { useAuth } from '../../auth/context/AuthContext';
 import { LoadingWrapper } from '../../components/LoadingWrapper';
-import { useBusinessContext } from '../../shared/BusinessContextProvider';
+import { useRoomCreation } from '../../chat/hooks/useRoomCreation';
 
 export default function NewChatScreen() {
   const { session, isLoading } = useAuth();
-  const { useCaseFactory, businessProvider } = useBusinessContext();
+  const { createRoom } = useRoomCreation();
   
   const hasAttemptedCreation = useRef(false);
 
@@ -48,8 +48,6 @@ export default function NewChatScreen() {
           console.log('🏗️ [NewChatScreen] Creating new chat room for user:', session.user.id);
           hasAttemptedCreation.current = true;
 
-          // Use CreateRoomUseCase from business layer
-          const createRoomUseCase = useCaseFactory.createCreateRoomUseCase();
           console.log('🔍 [NewChatScreen] About to create room with model:', DEFAULT_MODEL);
           
           // Create a proper IUserSession using the session adapter
@@ -62,11 +60,8 @@ export default function NewChatScreen() {
             createdAt: new Date()
           });
 
-          // Pass the parameters in the format expected by CreateRoomUseCase
-          const result = await createRoomUseCase.execute({
-            model: DEFAULT_MODEL,
-            session: userSession
-          });
+          // Use the custom hook for room creation
+          const result = await createRoom(DEFAULT_MODEL, userSession);
           
           if (!result.success || !result.room) {
             throw new Error('Failed to create new chat room');
@@ -102,7 +97,7 @@ export default function NewChatScreen() {
       // Reset the guard and create room
       hasAttemptedCreation.current = false;
       createNewChat();
-    }, [session, isLoading, useCaseFactory])
+    }, [session, isLoading, createRoom])
   );
 
   // Show loading only when auth is loading or when we're creating a room

@@ -1,19 +1,19 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useChatViewModel } from '../../../../business/chat/view-models/useChatViewModel';
-import { createChatStyles } from '../../../app/chat/chat.styles';
-import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
+import { useBusinessContext } from '../../../shared/BusinessContextProvider';
+import { createChatStyles } from '../../../app/chat/chat.styles';
 import { MessageList } from '../MessageList';
+import { useChatViewModel } from '../../../../business/chat/view-models/useChatViewModel';
+import { useMemo } from 'react';
 
 interface ChatInterfaceProps {
-  roomId?: number;
+  roomId: string | number;
   initialModel?: string;
   className?: string;
   showHeader?: boolean;
   selectedModel?: string;
-  onChangeModel?: (model: string) => void | Promise<void>;
-  // New props to expose chat state to parent
+  onChangeModel?: (model: string) => void;
   onChatStateChange?: (state: {
     input: string;
     handleInputChange: (text: string) => void;
@@ -23,6 +23,30 @@ interface ChatInterfaceProps {
     isSearchMode: boolean;
     onSearchToggle: () => void;
   }) => void;
+}
+
+/**
+ * Custom hook to manage chat interface dependencies
+ * Creates UseCases once at hook level, not in render
+ */
+function useChatInterfaceDependencies(roomId: string) {
+  const { businessProvider } = useBusinessContext();
+  
+  // Create UseCases once using useMemo to prevent recreation on every render
+  const dependencies = useMemo(() => ({
+    sendMessageUseCase: businessProvider.getUseCaseFactory().createSendMessageUseCase(),
+    receiveMessageUseCase: businessProvider.getUseCaseFactory().createReceiveMessageUseCase(),
+    deleteMessageUseCase: businessProvider.getUseCaseFactory().createDeleteMessageUseCase(),
+    copyMessageUseCase: businessProvider.getUseCaseFactory().createCopyMessageUseCase(),
+    editMessageUseCase: businessProvider.getUseCaseFactory().createEditMessageUseCase(),
+    resendMessageUseCase: businessProvider.getUseCaseFactory().createResendMessageUseCase(),
+    regenerateAssistantUseCase: businessProvider.getUseCaseFactory().createRegenerateAssistantUseCase(),
+    messageRepository: businessProvider.getMessageRepository(),
+    chatRoomRepository: businessProvider.getChatRoomRepository(),
+    getAccessToken: async () => businessProvider.getSessionRepository().get()?.then(session => session?.accessToken || null),
+  }), [businessProvider]);
+
+  return dependencies;
 }
 
 /**
@@ -44,10 +68,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   
   // Get proven styles - memoized to prevent excessive re-renders
   const theme = useAppTheme();
-  const { businessProvider } = useBusinessContext();
   const styles = React.useMemo(() => createChatStyles(theme), [theme]);
   
-  console.log('🔍 ChatInterface: Hooks result:', { theme: !!theme, businessProvider: !!businessProvider });
+  // Get dependencies from custom hook (UseCases created once)
+  const dependencies = useChatInterfaceDependencies(roomId?.toString() || '');
+  
+  console.log('🔍 ChatInterface: Hooks result:', { theme: !!theme, dependencies: !!dependencies });
   
   // Use the business layer view model with proper dependencies
   const {
@@ -57,18 +83,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setInputValue: handleInputChange,
     sendMessage,
     error,
-  } = useChatViewModel(roomId?.toString() || '', {
-    sendMessageUseCase: businessProvider.getUseCaseFactory().createSendMessageUseCase(),
-    receiveMessageUseCase: businessProvider.getUseCaseFactory().createReceiveMessageUseCase(),
-    deleteMessageUseCase: businessProvider.getUseCaseFactory().createDeleteMessageUseCase(),
-    copyMessageUseCase: businessProvider.getUseCaseFactory().createCopyMessageUseCase(),
-    editMessageUseCase: businessProvider.getUseCaseFactory().createEditMessageUseCase(),
-    resendMessageUseCase: businessProvider.getUseCaseFactory().createResendMessageUseCase(),
-    regenerateAssistantUseCase: businessProvider.getUseCaseFactory().createRegenerateAssistantUseCase(),
-    messageRepository: businessProvider.getMessageRepository(),
-    chatRoomRepository: businessProvider.getChatRoomRepository(),
-    getAccessToken: async () => businessProvider.getSessionRepository().get()?.then(session => session?.accessToken || null),
-  }, null);
+  } = useChatViewModel(roomId?.toString() || '', dependencies, null);
 
   // Memoize the chat state object to prevent unnecessary parent re-renders
   const chatState = React.useMemo(() => ({

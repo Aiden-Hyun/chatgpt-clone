@@ -34,6 +34,20 @@ export function useSession(): UseSessionHook {
   const [sessionHealth, setSessionHealth] = useState<'healthy' | 'warning' | 'expired'>('expired');
 
   const { useCaseFactory } = useBusinessContext();
+  
+  // Create UseCases once at hook level using useMemo
+  const getSessionUseCase = useMemo(() => 
+    useCaseFactory.createGetSessionUseCase(), [useCaseFactory]
+  );
+  const refreshTokenUseCase = useMemo(() => 
+    useCaseFactory.createRefreshTokenUseCase(), [useCaseFactory]
+  );
+  const validateSessionUseCase = useMemo(() => 
+    useCaseFactory.createValidateSessionUseCase(), [useCaseFactory]
+  );
+  const updateActivityUseCase = useMemo(() => 
+    useCaseFactory.createUpdateSessionActivityUseCase(), [useCaseFactory]
+  );
 
   /**
    * Update session state and derived values
@@ -76,7 +90,6 @@ export function useSession(): UseSessionHook {
       setIsLoading(true);
       setError(null);
 
-      const getSessionUseCase = useCaseFactory.createGetSessionUseCase();
       const result = await getSessionUseCase.execute({ 
         validateExpiry: true,
         refreshIfExpired: false 
@@ -97,7 +110,7 @@ export function useSession(): UseSessionHook {
     } finally {
       setIsLoading(false);
     }
-  }, [useCaseFactory, updateSessionState]);
+  }, [getSessionUseCase, updateSessionState]);
 
   /**
    * Refresh session tokens
@@ -112,7 +125,6 @@ export function useSession(): UseSessionHook {
         return false;
       }
 
-      const refreshTokenUseCase = useCaseFactory.createRefreshTokenUseCase();
       const result = await refreshTokenUseCase.execute({
         refreshToken: session.refreshToken,
         userId: session.userId
@@ -132,7 +144,7 @@ export function useSession(): UseSessionHook {
       setError('Session refresh failed');
       return false;
     }
-  }, [session, useCaseFactory, updateSessionState]);
+  }, [session, refreshTokenUseCase, updateSessionState]);
 
   /**
    * Validate current session
@@ -142,7 +154,6 @@ export function useSession(): UseSessionHook {
       setError(null);
       Logger.info('useSession: Validating session');
 
-      const validateSessionUseCase = useCaseFactory.createValidateSessionUseCase();
       const result = await validateSessionUseCase.execute({ 
         autoRefresh: true 
       });
@@ -175,7 +186,7 @@ export function useSession(): UseSessionHook {
       setError('Session validation failed');
       return false;
     }
-  }, [useCaseFactory, updateSessionState]);
+  }, [validateSessionUseCase, updateSessionState]);
 
   /**
    * Clear error state
@@ -193,7 +204,6 @@ export function useSession(): UseSessionHook {
         return;
       }
 
-      const updateActivityUseCase = useCaseFactory.createUpdateSessionActivityUseCase();
       await updateActivityUseCase.execute({ userId: session.userId });
 
       // Update local session state
@@ -208,14 +218,13 @@ export function useSession(): UseSessionHook {
       Logger.error('useSession: Failed to update last activity', { error });
       // Don't set error for this non-critical operation
     }
-  }, [session, useCaseFactory, updateSessionState]);
+  }, [session, updateActivityUseCase, updateSessionState]);
 
   /**
    * Get fresh session details
    */
   const getSessionDetails = useCallback(async (): Promise<UserSession | null> => {
     try {
-      const getSessionUseCase = useCaseFactory.createGetSessionUseCase();
       const result = await getSessionUseCase.execute({ validateExpiry: true });
       
       return result.success && result.session ? result.session : null;
@@ -223,7 +232,7 @@ export function useSession(): UseSessionHook {
       Logger.error('useSession: Failed to get session details', { error });
       return null;
     }
-  }, [useCaseFactory]);
+  }, [getSessionUseCase]);
 
   /**
    * Set up periodic session validation

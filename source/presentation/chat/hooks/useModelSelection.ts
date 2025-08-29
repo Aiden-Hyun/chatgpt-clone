@@ -1,27 +1,41 @@
 // source/presentation/chat/hooks/useModelSelection.ts
-import { useCallback, useState } from 'react';
-import { useBusinessContext } from '../../shared/BusinessContextProvider';
+import { useCallback, useState, useMemo } from 'react';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { useAuth } from '../../auth/context/AuthContext';
 
 export function useModelSelection(roomId?: number | null) {
   // Default to GPT-3.5 Turbo
   const [selectedModel, setSelectedModel] = useState('gpt-3.5-turbo');
-  const { useCaseFactory } = useBusinessContext();
+  const useCaseFactory = useUseCaseFactory();
+  const { session } = useAuth();
+  
+  // Create UseCase once at hook level
+  const updateRoomUseCase = useMemo(() => 
+    useCaseFactory.createUpdateRoomUseCase(), [useCaseFactory]
+  );
   
   const handleModelChange = useCallback(async (model: string) => {
     setSelectedModel(model);
     
-    // If we have a roomId, we could persist the model selection
-    if (roomId) {
+    // If we have a roomId and session, persist the model selection using UseCase
+    if (roomId && session) {
       try {
-        // In a real implementation, we would use a use case to update the room's model
-        // const updateRoomUseCase = useCaseFactory.createUpdateRoomUseCase();
-        // await updateRoomUseCase.execute({ roomId, model });
-        console.log('[useModelSelection] Updated model for room', roomId, 'to', model);
+        const result = await updateRoomUseCase.execute({ 
+          roomId: roomId.toString(), 
+          model,
+          session
+        });
+        
+        if (result.success) {
+          console.log('[useModelSelection] Updated model for room', roomId, 'to', model);
+        } else {
+          console.error('[useModelSelection] Failed to update room model:', result.error);
+        }
       } catch (error) {
         console.error('[useModelSelection] Failed to update room model:', error);
       }
     }
-  }, [roomId, useCaseFactory]);
+  }, [roomId, session, updateRoomUseCase]);
   
   return {
     selectedModel,

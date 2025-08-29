@@ -1,21 +1,4 @@
-export interface DecodedToken {
-  sub: string; // Subject (user ID)
-  exp: number; // Expiration time (Unix timestamp)
-  iat: number; // Issued at time (Unix timestamp)
-  aud: string; // Audience
-  iss: string; // Issuer
-  email?: string;
-  role?: string;
-  [key: string]: any;
-}
-
-export interface TokenValidationResult {
-  isValid: boolean;
-  isExpired: boolean;
-  expiresAt?: Date;
-  userId?: string;
-  error?: string;
-}
+import { IDecodedToken, ITokenValidationResult } from '../../interfaces';
 
 export class TokenValidator {
   private static readonly EXPIRY_BUFFER_MINUTES = 5; // Refresh token 5 minutes before expiry
@@ -34,7 +17,7 @@ export class TokenValidator {
 
       const now = Math.floor(Date.now() / 1000);
       return decoded.exp <= now;
-    } catch (error) {
+    } catch {
       return true; // Invalid token is considered expired
     }
   }
@@ -54,7 +37,7 @@ export class TokenValidator {
       const now = Math.floor(Date.now() / 1000);
       const bufferTime = this.EXPIRY_BUFFER_MINUTES * 60;
       return decoded.exp <= (now + bufferTime);
-    } catch (error) {
+    } catch {
       return true; // Invalid token should be refreshed
     }
   }
@@ -97,7 +80,7 @@ export class TokenValidator {
    * @param token JWT token string
    * @returns Decoded token payload
    */
-  static decodeToken(token: string): DecodedToken {
+  static decodeToken(token: string): IDecodedToken {
     try {
       if (!token || typeof token !== 'string') {
         throw new Error('Invalid token format');
@@ -117,7 +100,7 @@ export class TokenValidator {
       // Decode base64url
       const decodedPayload = this.base64UrlDecode(paddedPayload);
       
-      return JSON.parse(decodedPayload) as DecodedToken;
+      return JSON.parse(decodedPayload) as IDecodedToken;
     } catch (error) {
       throw new Error(`Failed to decode token: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -128,7 +111,7 @@ export class TokenValidator {
    * @param token JWT token string
    * @returns Validation result with details
    */
-  static validateToken(token: string): TokenValidationResult {
+  static validateToken(token: string): ITokenValidationResult {
     try {
       if (!token || typeof token !== 'string') {
         return {

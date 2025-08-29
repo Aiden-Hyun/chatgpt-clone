@@ -1,13 +1,4 @@
-export interface ValidationResult {
-  isValid: boolean;
-  error?: string;
-}
-
-export interface TokenValidationResult extends ValidationResult {
-  tokenType?: 'reset' | 'verification' | 'unknown';
-  isExpired?: boolean;
-  expiresAt?: Date;
-}
+import { IValidationResult, ITokenValidationResult } from '../../interfaces';
 
 export class PasswordResetValidator {
   // Token validation patterns
@@ -44,7 +35,7 @@ export class PasswordResetValidator {
    * @param token Reset token to validate
    * @returns Validation result with token details
    */
-  static validateResetToken(token: string): TokenValidationResult {
+  static validateResetToken(token: string): ITokenValidationResult {
     if (!token || typeof token !== 'string') {
       return {
         isValid: false,
@@ -99,7 +90,7 @@ export class PasswordResetValidator {
    * @param password New password to validate
    * @returns Validation result
    */
-  static validateNewPassword(password: string): ValidationResult {
+  static validateNewPassword(password: string): IValidationResult {
     if (!password || typeof password !== 'string') {
       return {
         isValid: false,
@@ -180,7 +171,7 @@ export class PasswordResetValidator {
    * @param confirmPassword Confirmation password
    * @returns Validation result
    */
-  static validatePasswordConfirmation(password: string, confirmPassword: string): ValidationResult {
+  static validatePasswordConfirmation(password: string, confirmPassword: string): IValidationResult {
     if (!confirmPassword || typeof confirmPassword !== 'string') {
       return {
         isValid: false,
@@ -209,7 +200,7 @@ export class PasswordResetValidator {
     token: string,
     newPassword: string,
     confirmPassword: string
-  ): ValidationResult {
+  ): IValidationResult {
     // Validate token
     const tokenValidation = this.validateResetToken(token);
     if (!tokenValidation.isValid) {
@@ -324,7 +315,7 @@ export class PasswordResetValidator {
   /**
    * Validate JWT token format (basic validation)
    */
-  private static validateJWTToken(token: string): TokenValidationResult {
+  private static validateJWTToken(token: string): ITokenValidationResult {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) {
@@ -355,7 +346,7 @@ export class PasswordResetValidator {
             };
           }
         }
-      } catch (decodeError) {
+      } catch {
         // If we can't decode, assume it's still valid (server will validate)
       }
 
@@ -363,7 +354,7 @@ export class PasswordResetValidator {
         isValid: true,
         tokenType: 'reset'
       };
-    } catch (error) {
+    } catch {
       return {
         isValid: false,
         error: 'Invalid JWT token format'

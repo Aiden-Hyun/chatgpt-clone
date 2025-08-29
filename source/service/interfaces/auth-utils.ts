@@ -58,20 +58,24 @@ export interface IPasswordStrengthResult {
 
 export interface IValidationResult {
   isValid: boolean;
-  errors: string[];
-  warnings?: string[];
+  error?: string;
 }
 
 export interface ITokenValidationResult {
   isValid: boolean;
-  errors: string[];
-  decodedToken?: IDecodedToken;
+  error?: string;
+  tokenType?: 'reset' | 'verification' | 'unknown';
+  isExpired?: boolean;
+  expiresAt?: Date;
 }
 
 export interface IDecodedToken {
-  sub: string;
-  email: string;
-  exp: number;
-  iat: number;
+  sub: string; // Subject (user ID)
+  exp: number; // Expiration time (Unix timestamp)
+  iat: number; // Issued at time (Unix timestamp)
+  aud: string; // Audience
+  iss: string; // Issuer
+  email?: string;
+  role?: string;
   [key: string]: unknown;
 }
