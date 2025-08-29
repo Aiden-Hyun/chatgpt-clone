@@ -1,27 +1,7 @@
-import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-
-interface ToastState {
-  visible: boolean;
-  message: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  duration: number;
-}
-
-interface ToastContextType {
-  toast: ToastState;
-  showToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info', duration?: number) => void;
-  hideToast: () => void;
-  showSuccess: (message: string, duration?: number) => void;
-  showError: (message: string, duration?: number) => void;
-  showWarning: (message: string, duration?: number) => void;
-  showInfo: (message: string, duration?: number) => void;
-}
+import React, { createContext, useCallback, useContext, useState } from 'react';
+import { ToastContextType, ToastProviderProps, ToastState } from '../../interfaces/alert';
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
-interface ToastProviderProps {
-  children: ReactNode;
-}
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toast, setToast] = useState<ToastState>({

@@ -1,4 +1,4 @@
-import { ThemeWithMetadata } from '../../../business/theme/constants/theme.types';
+import { ThemeWithMetadata } from '../../../business/types/theme/theme.types';
 
 /**
  * Interface for theme service

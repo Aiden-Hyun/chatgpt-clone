@@ -1,18 +1,8 @@
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../session/entities/UserSession';
-import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
-import { User } from '../entities/User';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { UserSession, ISessionRepository, User, IUserRepository, SignInRequest, SignInResult } from '../../interfaces';
 
-export interface SignInResult {
-  success: boolean;
-  user?: User;
-  session?: UserSession;
-  error?: string;
-  isNetworkError?: boolean;
-}
 
 export class SignInUseCase {
   constructor(

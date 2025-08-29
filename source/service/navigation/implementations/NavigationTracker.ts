@@ -1,5 +1,5 @@
 import { INavigationTracker } from '../../../business/navigation/interfaces/INavigationTracker';
-import { Result } from '../../../business/shared/types/Result';
+import { Result } from '../../../business/types/shared/Result';
 import { ILogger } from '../../shared/interfaces/ILogger';
 
 /**

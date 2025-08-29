@@ -1,6 +1,6 @@
 // source/presentation/chat/hooks/useChatRooms.ts
 import { useEffect, useState } from 'react';
-import { isSuccess } from '../../../business/shared/types/Result';
+import { isSuccess } from '../../../business/types/shared/Result';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 export interface ChatRoom {

@@ -1,28 +1,10 @@
 import { TokenValidator } from '../../../service/auth/validators/TokenValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { RefreshTokenUseCase } from '../../auth/use-cases/RefreshTokenUseCase';
-import { UserSession } from '../entities/UserSession';
-import { ISessionRepository } from '../interfaces/ISessionRepository';
+import { UserSession } from '../../interfaces';
+import { ISessionRepository } from '../../interfaces';
 
-export interface ValidateSessionRequest {
-  autoRefresh?: boolean;
-  forceRefresh?: boolean;
-}
 
-export interface SessionValidationResult {
-  success: boolean;
-  isValid: boolean;
-  session?: UserSession;
-  error?: string;
-  validationDetails: {
-    exists: boolean;
-    isActive: boolean;
-    isExpired: boolean;
-    needsRefresh: boolean;
-    wasRefreshed: boolean;
-    timeUntilExpiry?: number;
-  };
-}
 
 export class ValidateSessionUseCase {
   constructor(

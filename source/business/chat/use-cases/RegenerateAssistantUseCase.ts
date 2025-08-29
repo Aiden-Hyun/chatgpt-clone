@@ -1,24 +1,12 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity, MessageRole } from '../entities/Message';
-import { IAIProvider } from '../interfaces/IAIProvider';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession } from '../../interfaces';
+import { MessageEntity, MessageRole } from '../../interfaces';
+import { IAIProvider } from '../../interfaces';
+import { IChatRoomRepository } from '../../interfaces';
+import { IMessageRepository } from '../../interfaces';
 
-export interface RegenerateAssistantParams {
-  targetId: string; // Can be assistant message ID or user message ID
-  session: IUserSession;
-  model?: string;
-  accessToken: string;
-}
 
-export interface RegenerateAssistantResult {
-  success: boolean;
-  newAssistantMessage?: MessageEntity;
-  supersededMessage?: MessageEntity;
-  error?: string;
-}
 
 export class RegenerateAssistantUseCase {
   constructor(

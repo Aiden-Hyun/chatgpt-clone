@@ -1,16 +1,21 @@
 // Business Layer Provider - Creates and configures business layer dependencies
 // Follows layered architecture: Business layer owns its dependency configuration
 
-import { IAlertService, IToastService } from '../alert/interfaces';
-import { IUserRepository } from '../auth/interfaces/IUserRepository';
-import { IAIProvider } from '../chat/interfaces/IAIProvider';
-import { IChatRoomRepository } from '../chat/interfaces/IChatRoomRepository';
-import { IClipboardAdapter } from '../chat/interfaces/IClipboardAdapter';
-import { IMessageRepository } from '../chat/interfaces/IMessageRepository';
-import { ILanguageService } from '../language/interfaces/ILanguageService';
-import { INavigationService, INavigationTracker } from '../navigation/interfaces';
-import { ISessionRepository } from '../session/interfaces/ISessionRepository';
-import { ISecureStorageService, IStorageService } from '../storage/interfaces';
+import {
+    IAIProvider,
+    IAlertService,
+    IChatRoomRepository,
+    IClipboardAdapter,
+    ILanguageService,
+    IMessageRepository,
+    INavigationService,
+    INavigationTracker,
+    ISecureStorageService,
+    ISessionRepository,
+    IStorageService,
+    IToastService,
+    IUserRepository
+} from '../interfaces';
 
 // Import config service
 import { ConfigService } from '../../service/shared/lib/config';

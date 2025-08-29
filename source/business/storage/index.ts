@@ -1,4 +1,3 @@
-// Export all business layer storage components
-export * from './constants';
-export * from './interfaces';
+// Re-export all storage interfaces, entities, and types from centralized location
+export * from '../interfaces/storage';
 

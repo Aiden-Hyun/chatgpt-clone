@@ -1,5 +1,3 @@
-// Export all business layer language components
-export * from './constants';
-export * from './entities';
-export * from './interfaces';
+// Re-export all language interfaces, entities, and types from centralized location
+export * from '../interfaces/language';
 

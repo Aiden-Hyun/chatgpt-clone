@@ -1,23 +1,12 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity, MessageRole } from '../entities/Message';
-import { IAIProvider } from '../interfaces/IAIProvider';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession } from '../../interfaces';
+import { MessageEntity, MessageRole } from '../../interfaces';
+import { IAIProvider } from '../../interfaces';
+import { IChatRoomRepository } from '../../interfaces';
+import { IMessageRepository } from '../../interfaces';
 
-export interface ResendMessageParams {
-  userMessageId: string;
-  session: IUserSession;
-  model?: string;
-  accessToken: string;
-}
 
-export interface ResendMessageResult {
-  success: boolean;
-  assistantMessage?: MessageEntity;
-  error?: string;
-}
 
 export class ResendMessageUseCase {
   constructor(

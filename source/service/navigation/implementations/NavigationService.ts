@@ -3,7 +3,7 @@ import { AppRoute, ParamsOf, buildRoute } from '../../../business/navigation/con
 import { NavigationState } from '../../../business/navigation/entities/NavigationState';
 import { INavigationService } from '../../../business/navigation/interfaces/INavigationService';
 import { INavigationTracker } from '../../../business/navigation/interfaces/INavigationTracker';
-import { Result } from '../../../business/shared/types/Result';
+import { Result } from '../../../business/types/shared/Result';
 import { ILogger } from '../../shared/interfaces/ILogger';
 
 /**

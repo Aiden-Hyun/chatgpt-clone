@@ -1,13 +1,15 @@
 // Use Case Factory - Creates configured use cases with proper DI
 // Follows layered architecture: Business layer factory for business objects
 
-import { IAuthEventEmitter } from '../auth/interfaces/IAuthEventEmitter';
-import { IUserRepository } from '../auth/interfaces/IUserRepository';
-import { IAIProvider } from '../chat/interfaces/IAIProvider';
-import { IChatRoomRepository } from '../chat/interfaces/IChatRoomRepository';
-import { IClipboardAdapter } from '../chat/interfaces/IClipboardAdapter';
-import { IMessageRepository } from '../chat/interfaces/IMessageRepository';
-import { ISessionRepository } from '../session/interfaces/ISessionRepository';
+import {
+    IAIProvider,
+    IAuthEventEmitter,
+    IChatRoomRepository,
+    IClipboardAdapter,
+    IMessageRepository,
+    ISessionRepository,
+    IUserRepository
+} from '../interfaces';
 
 // Service layer interfaces
 import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';

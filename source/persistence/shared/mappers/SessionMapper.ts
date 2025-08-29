@@ -7,7 +7,7 @@ import {
     createSessionFailure,
     createSessionSuccess,
     type SessionResult
-} from '../../../business/shared/types/SessionTypes';
+} from '../../../business/types/session/SessionTypes';
 import { Logger } from '../../../service/shared/utils/Logger';
 
 /**

@@ -1,30 +1,9 @@
 import { RoutePermissionChecker } from '../../../service/auth/utils/RoutePermissionChecker';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../session/entities/UserSession';
-import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
+import { UserSession } from '../../interfaces';
+import { ISessionRepository } from '../../interfaces';
 
-export interface CheckAuthorizationRequest {
-  route: string;
-  requiredPermissions?: string[];
-  requireAuthentication?: boolean;
-}
 
-export interface AuthorizationResult {
-  success: boolean;
-  isAuthorized: boolean;
-  isAuthenticated: boolean;
-  session?: UserSession;
-  error?: string;
-  redirectTo?: string;
-  missingPermissions?: string[];
-  authorizationDetails: {
-    hasValidSession: boolean;
-    sessionExpired: boolean;
-    hasRequiredPermissions: boolean;
-    userPermissions: string[];
-    requiredPermissions: string[];
-  };
-}
 
 export class CheckAuthorizationUseCase {
   constructor(

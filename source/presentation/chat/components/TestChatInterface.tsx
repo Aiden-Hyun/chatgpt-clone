@@ -2,13 +2,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAuth } from '../../auth/context/BridgeAuthContext';
+import { useAuth } from '../../auth/context/AuthContext';
+import { TestChatInterfaceProps } from '../../interfaces/chat';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 import { ChatInterface } from './ChatInterface';
-
-interface TestChatInterfaceProps {
-  userId: string;
-}
 
 export function TestChatInterface({ userId }: TestChatInterfaceProps) {
   const [roomId, setRoomId] = useState<string | null>(null);

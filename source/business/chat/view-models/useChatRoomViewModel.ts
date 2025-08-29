@@ -1,28 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { ChatRoom } from '../entities/ChatRoom';
+import { IUserSession, ChatRoomState, ChatRoomActions } from '../../interfaces';
 import { CreateRoomUseCase } from '../use-cases/CreateRoomUseCase';
 import { DeleteRoomUseCase } from '../use-cases/DeleteRoomUseCase';
 import { ListRoomsUseCase } from '../use-cases/ListRoomsUseCase';
 import { UpdateRoomUseCase } from '../use-cases/UpdateRoomUseCase';
 
-export interface ChatRoomState {
-  rooms: ChatRoom[];
-  loading: boolean;
-  error: string | null;
-  creatingRoom: boolean;
-  updatingRoom: boolean;
-  deletingRoom: boolean;
-}
 
-export interface ChatRoomActions {
-  createRoom: (model: string, name?: string) => Promise<{ success: boolean; room?: ChatRoom; error?: string }>;
-  updateRoom: (roomId: string, updates: { name?: string; model?: string }) => Promise<{ success: boolean; room?: ChatRoom; error?: string }>;
-  deleteRoom: (roomId: string) => Promise<{ success: boolean; error?: string }>;
-  listRooms: () => Promise<void>;
-  clearError: () => void;
-  refreshRooms: () => Promise<void>;
-}
 
 interface ChatRoomViewModelDependencies {
   createRoomUseCase: CreateRoomUseCase;

@@ -1,20 +1,7 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { ChatRoom } from '../entities/ChatRoom';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { IChatRoomRepository, UpdateRoomParams, UpdateRoomResult } from '../../interfaces';
 
-export interface UpdateRoomParams {
-  roomId: string;
-  name?: string;
-  model?: string;
-  session: IUserSession;
-}
 
-export interface UpdateRoomResult {
-  success: boolean;
-  room?: ChatRoom;
-  error?: string;
-}
 
 export class UpdateRoomUseCase {
   constructor(

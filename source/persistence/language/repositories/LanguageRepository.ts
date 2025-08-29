@@ -1,7 +1,7 @@
 import { DEFAULT_LANGUAGE, LANGUAGE_STORAGE_KEY, SUPPORTED_LANGUAGES } from '../../../business/language/constants';
 import { Language } from '../../../business/language/entities';
 import { ILanguageRepository } from '../../../business/language/interfaces';
-import { Result, createFailure, createSuccess, isFailure } from '../../../business/shared/types/Result';
+import { Result, createFailure, createSuccess, isFailure } from '../../../business/types/shared/Result';
 import { IStorageAdapter } from '../../../service/language/interfaces/IStorageAdapter';
 import { translations } from '../../../service/language/translations';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';

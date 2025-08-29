@@ -1,15 +1,8 @@
 // Business Layer - Chat Feature
 // Exports for external use
 
-// Entities
-export { ChatRoom } from './entities/ChatRoom';
-export { MessageEntity, MessageRole } from './entities/Message';
-
-// Interfaces
-export type { AIMessageParams, AIResponse, IAIProvider } from './interfaces/IAIProvider';
-export type { CreateRoomResult, DeleteRoomResult, IChatRoomRepository, UpdateRoomResult } from './interfaces/IChatRoomRepository';
-export type { ClipboardResult, IClipboardAdapter } from './interfaces/IClipboardAdapter';
-export type { IMessageRepository, SaveMessageResult } from './interfaces/IMessageRepository';
+// Re-export all chat interfaces, entities, and types from centralized location
+export * from '../../interfaces';
 
 // Use Cases
 export { CopyMessageUseCase } from './use-cases/CopyMessageUseCase';
@@ -24,3 +17,4 @@ export { UpdateRoomUseCase } from './use-cases/UpdateRoomUseCase';
 // View Models
 export { useChatRoomViewModel } from './view-models/useChatRoomViewModel';
 export { useChatViewModel } from './view-models/useChatViewModel';
+

@@ -1,27 +1,13 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity, MessageRole } from '../entities/Message';
-import { IAIProvider } from '../interfaces/IAIProvider';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession } from '../../interfaces';
+import { MessageEntity, MessageRole } from '../../interfaces';
+import { IAIProvider } from '../../interfaces';
+import { IChatRoomRepository } from '../../interfaces';
+import { IMessageRepository } from '../../interfaces';
 
-export interface SendMessageParams {
-  content: string;
-  roomId: string;
-  userId: string;
-  model?: string;
-  session: IUserSession;
-  accessToken: string;
-}
 
-export interface SendMessageResult {
-  success: boolean;
-  userMessage?: MessageEntity;
-  assistantMessage?: MessageEntity;
-  error?: string;
-}
 
 export class SendMessageUseCase {
   constructor(

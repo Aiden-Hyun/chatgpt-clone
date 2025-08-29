@@ -1,19 +1,8 @@
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { IUserRepository } from '../../interfaces';
 
-export interface ResetPasswordRequest {
-  token: string;
-  newPassword: string;
-  confirmPassword: string;
-}
 
-export interface ResetPasswordResult {
-  success: boolean;
-  message?: string;
-  error?: string;
-  isNetworkError?: boolean;
-}
 
 export class ResetPasswordUseCase {
   constructor(

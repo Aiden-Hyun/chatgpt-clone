@@ -1,24 +1,8 @@
 import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity, MessageRole } from '../entities/Message';
-import { IAIProvider } from '../interfaces/IAIProvider';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession, MessageEntity, MessageRole, IAIProvider, IMessageRepository, ReceiveMessageParams, ReceiveMessageResult } from '../../interfaces';
 
-export interface ReceiveMessageParams {
-  roomId: string;
-  userId: string;
-  model?: string;
-  context?: string;
-  session: IUserSession;
-  accessToken: string;
-}
 
-export interface ReceiveMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  error?: string;
-}
 
 export class ReceiveMessageUseCase {
   constructor(

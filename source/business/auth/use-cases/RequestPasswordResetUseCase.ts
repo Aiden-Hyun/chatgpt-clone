@@ -1,17 +1,8 @@
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { IUserRepository } from '../../interfaces';
 
-export interface RequestPasswordResetRequest {
-  email: string;
-}
 
-export interface RequestPasswordResetResult {
-  success: boolean;
-  message?: string;
-  error?: string;
-  isNetworkError?: boolean;
-}
 
 export class RequestPasswordResetUseCase {
   constructor(

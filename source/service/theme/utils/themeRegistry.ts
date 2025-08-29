@@ -1,5 +1,5 @@
 // Theme registry for managing available themes
-import { ThemeWithMetadata } from '../../../business/theme/constants/theme.types';
+import { ThemeWithMetadata } from '../../../business/types/theme/theme.types';
 import { ILogger } from '../../shared/interfaces/ILogger';
 import { Logger } from '../../shared/utils/Logger';
 

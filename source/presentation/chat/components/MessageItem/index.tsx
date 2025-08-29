@@ -1,23 +1,10 @@
 import React from 'react';
-import { ChatMessage } from '../../types';
+import { MessageItemProps } from '../../../interfaces/chat';
 import { ErrorMessage } from '../ErrorMessage';
 import { LoadingMessage } from '../LoadingMessage';
 import { AssistantMessage } from './AssistantMessage';
 import { SystemMessage } from './SystemMessage';
 import { UserMessage } from './UserMessage';
-
-interface MessageItemProps {
-  message: ChatMessage;
-  index: number;
-  // ✅ STATE MACHINE: Remove legacy boolean flags - use message.state instead
-  isRegenerating?: boolean; // Keep for regeneration tracking by index
-  onRegenerate?: () => void;
-  onUserEditRegenerate?: (index: number, newText: string) => void;
-  isLastInGroup?: boolean;
-  // Like/dislike handlers
-  onLike?: (messageId: string) => void;
-  onDislike?: (messageId: string) => void;
-}
 
 export const MessageItem: React.FC<MessageItemProps> = ({
   message,

@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
 import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
-import { useAuth } from '../../auth/context/BridgeAuthContext';
+import { useAuth } from '../../auth/context/AuthContext';
+import { CreateRoomButtonProps } from '../../interfaces/chat';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
-
-export interface CreateRoomButtonProps {
-  onRoomCreated?: (room: ChatRoom) => void;
-  style?: any;
-}
 
 export function CreateRoomButton({ onRoomCreated, style }: CreateRoomButtonProps) {
   const { session } = useAuth();

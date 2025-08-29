@@ -1,20 +1,9 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity } from '../entities/Message';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession } from '../../interfaces';
+import { MessageEntity } from '../../interfaces';
+import { IMessageRepository } from '../../interfaces';
 
-export interface DeleteMessageParams {
-  messageId: string;
-  userId: string;
-  roomId: string;
-  session: IUserSession;
-}
 
-export interface DeleteMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  error?: string;
-}
 
 export class DeleteMessageUseCase {
   constructor(

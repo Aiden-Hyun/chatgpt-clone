@@ -1,11 +1,8 @@
 // Business Layer - Session Feature
 // Exports for external use
 
-// Entities
-export { UserSession } from './entities/UserSession';
-
-// Interfaces
-export type { ISessionRepository, RefreshResult } from './interfaces/ISessionRepository';
+// Re-export all session interfaces, entities, and types from centralized location
+export * from '../interfaces/session';
 
 // Use Cases
 export { GetSessionUseCase } from './use-cases/GetSessionUseCase';

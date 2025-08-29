@@ -1,5 +1,3 @@
-// Export all business layer alert components
-export * from './constants/alertConstants';
-export * from './entities';
-export * from './interfaces';
+// Re-export all alert interfaces, entities, and types from centralized location
+export * from '../interfaces/alert';
 

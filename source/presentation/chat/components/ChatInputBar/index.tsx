@@ -1,22 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { RefObject, useMemo, useState } from 'react';
-import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { getModelInfo } from '../../../../business/chat/constants/models';
+import { ChatInputBarProps } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createChatInputStyles } from './ChatInputBar.styles';
-
-interface ChatInputBarProps {
-  input: string;
-  onChangeText: (text: string) => void;
-  onSend: () => void;
-  sending?: boolean;
-  isTyping?: boolean;
-  inputRef: RefObject<TextInput | null>;
-  isSearchMode?: boolean;
-  onSearchToggle?: () => void;
-  selectedModel?: string;
-}
 
 /**
  * ChatInput - Native Responsive Multiline Input

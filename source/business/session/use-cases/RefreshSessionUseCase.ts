@@ -2,13 +2,8 @@ import { SessionRepository } from '../../../persistence/session/repositories/Ses
 import { UserRepository } from '../../../persistence/auth/repositories/UserRepository';
 import { SessionValidator } from '../../../service/session/validators/SessionValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../entities/UserSession';
+import { UserSession } from '../../interfaces';
 
-export interface RefreshSessionResult {
-  success: boolean;
-  session?: UserSession;
-  error?: string;
-}
 
 export class RefreshSessionUseCase {
   constructor(

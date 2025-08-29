@@ -1,19 +1,9 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../session/entities/UserSession';
-import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { UserSession } from '../../interfaces';
+import { ISessionRepository } from '../../interfaces';
+import { IUserRepository } from '../../interfaces';
 
-export interface RefreshTokenRequest {
-  refreshToken: string;
-  userId: string;
-}
 
-export interface RefreshTokenResult {
-  success: boolean;
-  session?: UserSession;
-  error?: string;
-  isNetworkError?: boolean;
-}
 
 export class RefreshTokenUseCase {
   constructor(

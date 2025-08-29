@@ -1,11 +1,7 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { ISessionRepository } from '../../interfaces';
+import { IUserRepository } from '../../interfaces';
 
-export interface SignOutResult {
-  success: boolean;
-  error?: string;
-}
 
 export class SignOutUseCase {
   constructor(

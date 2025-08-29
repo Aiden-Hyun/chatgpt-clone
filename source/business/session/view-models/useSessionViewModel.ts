@@ -3,7 +3,7 @@ import { GetSessionUseCase } from '../use-cases/GetSessionUseCase';
 import { RefreshSessionUseCase } from '../use-cases/RefreshSessionUseCase';
 import { ValidateSessionUseCase } from '../use-cases/ValidateSessionUseCase';
 import { UpdateSessionActivityUseCase } from '../use-cases/UpdateSessionActivityUseCase';
-import { UserSession } from '../entities/UserSession';
+import { UserSession, SessionState, SessionActions } from '../../interfaces';
 
 interface SessionViewModelDependencies {
   getSessionUseCase: GetSessionUseCase;

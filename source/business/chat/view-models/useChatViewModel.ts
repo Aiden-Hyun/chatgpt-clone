@@ -1,9 +1,5 @@
 import { useCallback, useState } from 'react';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { ChatRoomEntity } from '../entities/ChatRoom';
-import { MessageEntity } from '../entities/Message';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IChatRoomRepository, IMessageRepository, IUserSession, ChatState, ChatActions } from '../../interfaces';
 import { CopyMessageUseCase } from '../use-cases/CopyMessageUseCase';
 import { DeleteMessageUseCase } from '../use-cases/DeleteMessageUseCase';
 import { EditMessageUseCase } from '../use-cases/EditMessageUseCase';
@@ -12,27 +8,7 @@ import { RegenerateAssistantUseCase } from '../use-cases/RegenerateAssistantUseC
 import { ResendMessageUseCase } from '../use-cases/ResendMessageUseCase';
 import { SendMessageUseCase } from '../use-cases/SendMessageUseCase';
 
-export interface ChatState {
-  messages: MessageEntity[];
-  currentRoom: ChatRoomEntity | null;
-  isLoading: boolean;
-  error: string | null;
-  inputValue: string;
-  pendingByMessageId: Record<string, boolean>;
-}
 
-export interface ChatActions {
-  sendMessage: (content: string, model?: string) => Promise<void>;
-  receiveMessage: (context?: string, model?: string) => Promise<void>;
-  deleteMessage: (messageId: string) => Promise<void>;
-  copyMessage: (messageId: string) => Promise<void>;
-  editMessage: (messageId: string, newContent: string) => Promise<void>;
-  resendMessage: (userMessageId: string, model?: string) => Promise<void>;
-  regenerateAssistant: (targetId: string, model?: string) => Promise<void>;
-  setInputValue: (value: string) => void;
-  clearError: () => void;
-  loadMessages: (roomId: string) => Promise<void>;
-}
 
 interface ChatViewModelDependencies {
   sendMessageUseCase: SendMessageUseCase;

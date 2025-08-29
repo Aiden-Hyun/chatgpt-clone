@@ -1,18 +1,5 @@
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { ChatRoom } from '../entities/ChatRoom';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
+import { CreateRoomParams, CreateRoomResult, IChatRoomRepository } from '../../interfaces';
 
-export interface CreateRoomParams {
-  name?: string;
-  model: string;
-  session: IUserSession;
-}
-
-export interface CreateRoomResult {
-  success: boolean;
-  room?: ChatRoom;
-  error?: string;
-}
 
 export class CreateRoomUseCase {
   constructor(

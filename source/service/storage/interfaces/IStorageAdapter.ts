@@ -1,4 +1,4 @@
-import { Result } from '../../../business/shared/types/Result';
+import { Result } from '../../../business/types/shared/Result';
 
 /**
  * Interface for platform-specific storage adapters

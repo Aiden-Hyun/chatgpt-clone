@@ -1,5 +1,5 @@
 import { NavigationState } from '../../../business/navigation/entities/NavigationState';
-import { Result } from '../../../business/shared/types/Result';
+import { Result } from '../../../business/types/shared/Result';
 
 /**
  * Interface for adapting navigation state to platform-specific implementations

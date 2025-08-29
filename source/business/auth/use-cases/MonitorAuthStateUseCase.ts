@@ -1,20 +1,9 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../session/entities/UserSession';
-import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
-import { IAuthEventEmitter } from '../interfaces/IAuthEventEmitter';
+import { UserSession } from '../../interfaces';
+import { ISessionRepository } from '../../interfaces';
+import { IAuthEventEmitter } from '../../interfaces';
 
-export interface AuthStateChange {
-  event: 'SIGNED_IN' | 'SIGNED_OUT' | 'TOKEN_REFRESHED' | 'USER_UPDATED';
-  session?: UserSession;
-  userId?: string;
-  timestamp: Date;
-}
 
-export interface MonitorAuthStateResult {
-  success: boolean;
-  unsubscribe?: () => void;
-  error?: string;
-}
 
 export class MonitorAuthStateUseCase {
   constructor(

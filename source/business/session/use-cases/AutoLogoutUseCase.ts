@@ -1,26 +1,9 @@
 import { Logger } from '../../../service/shared/utils/Logger';
 import { SignOutUseCase } from '../../auth/use-cases/SignOutUseCase';
-import { UserSession } from '../entities/UserSession';
-import { ISessionRepository } from '../interfaces/ISessionRepository';
+import { UserSession } from '../../interfaces';
+import { ISessionRepository } from '../../interfaces';
 
-export interface AutoLogoutRequest {
-  reason?: string;
-  gracePeriodMinutes?: number;
-  forceLogout?: boolean;
-}
 
-export interface AutoLogoutResult {
-  success: boolean;
-  loggedOut: boolean;
-  reason?: string;
-  error?: string;
-  sessionDetails?: {
-    userId: string;
-    wasExpired: boolean;
-    expiresAt: Date;
-    timeExpired: number; // milliseconds since expiry
-  };
-}
 
 export class AutoLogoutUseCase {
   constructor(

@@ -1,16 +1,8 @@
 import { ChatRoomRepository } from '../../../persistence/chat/repositories/ChatRoomRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
+import { DeleteRoomParams, DeleteRoomResult } from '../../interfaces';
 
-export interface DeleteRoomParams {
-  roomId: string;
-  session: IUserSession;
-}
 
-export interface DeleteRoomResult {
-  success: boolean;
-  error?: string;
-}
 
 export class DeleteRoomUseCase {
   constructor(

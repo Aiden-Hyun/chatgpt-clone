@@ -1,22 +1,10 @@
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity } from '../entities/Message';
-import { IClipboardAdapter } from '../interfaces/IClipboardAdapter';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession } from '../../interfaces';
+import { MessageEntity } from '../../interfaces';
+import { IClipboardAdapter } from '../../interfaces';
+import { IMessageRepository } from '../../interfaces';
 
-export interface CopyMessageParams {
-  messageId: string;
-  userId: string;
-  roomId: string;
-  session: IUserSession;
-}
 
-export interface CopyMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  copiedContent?: string;
-  error?: string;
-}
 
 export class CopyMessageUseCase {
   constructor(

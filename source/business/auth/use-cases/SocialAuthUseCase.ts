@@ -1,31 +1,11 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../session/entities/UserSession';
-import { ISessionRepository } from '../../session/interfaces/ISessionRepository';
-import { User } from '../entities/User';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { UserSession } from '../../interfaces';
+import { ISessionRepository } from '../../interfaces';
+import { User } from '../../interfaces';
+import { IUserRepository } from '../../interfaces';
 
-export type AuthProvider = 'google' | 'apple' | 'github' | 'facebook';
 
-export interface SocialAuthRequest {
-  provider: AuthProvider;
-  redirectUrl?: string;
-  scopes?: string[];
-}
 
-export interface SocialAuthResult {
-  success: boolean;
-  user?: User;
-  session?: UserSession;
-  error?: string;
-  isNetworkError?: boolean;
-  requiresAdditionalInfo?: boolean;
-  providerData?: {
-    providerId: string;
-    email?: string;
-    displayName?: string;
-    avatarUrl?: string;
-  };
-}
 
 export class SocialAuthUseCase {
   constructor(

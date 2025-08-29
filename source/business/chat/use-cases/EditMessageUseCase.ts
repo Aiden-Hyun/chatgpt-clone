@@ -1,21 +1,8 @@
 import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
 import { ILogger } from '../../../service/shared/interfaces/ILogger';
-import { IUserSession } from '../../shared/interfaces/IUserSession';
-import { MessageEntity } from '../entities/Message';
-import { IChatRoomRepository } from '../interfaces/IChatRoomRepository';
-import { IMessageRepository } from '../interfaces/IMessageRepository';
+import { IUserSession, MessageEntity, IChatRoomRepository, IMessageRepository, EditMessageParams, EditMessageResult } from '../../interfaces';
 
-export interface EditMessageParams {
-  messageId: string;
-  newContent: string;
-  session: IUserSession;
-}
 
-export interface EditMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  error?: string;
-}
 
 export class EditMessageUseCase {
   constructor(

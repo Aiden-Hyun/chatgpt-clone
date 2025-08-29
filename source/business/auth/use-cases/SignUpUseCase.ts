@@ -1,15 +1,8 @@
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { User } from '../entities/User';
-import { IUserRepository } from '../interfaces/IUserRepository';
+import { User, IUserRepository, SignUpRequest, SignUpResult } from '../../interfaces';
 
-export interface SignUpResult {
-  success: boolean;
-  user?: User;
-  requiresEmailVerification?: boolean;
-  error?: string;
-}
 
 export class SignUpUseCase {
   constructor(

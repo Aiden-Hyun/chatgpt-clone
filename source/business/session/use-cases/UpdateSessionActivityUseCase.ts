@@ -1,10 +1,6 @@
 import { SessionRepository } from '../../../persistence/session/repositories/SessionRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
 
-export interface UpdateSessionActivityResult {
-  success: boolean;
-  error?: string;
-}
 
 export class UpdateSessionActivityUseCase {
   constructor(

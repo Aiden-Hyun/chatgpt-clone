@@ -1,21 +1,9 @@
 import { TokenValidator } from '../../../service/auth/validators/TokenValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { IUserRepository } from '../../auth/interfaces/IUserRepository';
-import { UserSession } from '../entities/UserSession';
-import { ISessionRepository } from '../interfaces/ISessionRepository';
+import { UserSession, ISessionRepository, GetSessionRequest, GetSessionResult } from '../../interfaces';
 
-export interface GetSessionRequest {
-  validateExpiry?: boolean;
-  refreshIfExpired?: boolean;
-}
 
-export interface GetSessionResult {
-  success: boolean;
-  session?: UserSession;
-  error?: string;
-  isExpired?: boolean;
-  wasRefreshed?: boolean;
-}
 
 export class GetSessionUseCase {
   constructor(
