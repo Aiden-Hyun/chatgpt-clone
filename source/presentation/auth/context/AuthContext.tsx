@@ -1,5 +1,3 @@
-// src/features/auth/context/AuthContext.tsx
-import { Session } from '@supabase/supabase-js';
 import React, {
     createContext,
     useContext,
@@ -7,26 +5,44 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { supabase } from '../../../service/shared/lib/supabase';
 import { AuthContextType, AuthProviderProps } from '../../interfaces/auth';
+import { useBusinessContext } from '../../shared/BusinessContextProvider';
+import { useAuthStateMonitor } from '../hooks/useAuthStateMonitor';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { useCaseFactory } = useBusinessContext();
+  
+  // Use business layer auth state monitoring
+  const { isMonitoring } = useAuthStateMonitor();
 
   useEffect(() => {
-    console.log('🔑 [AuthContext] Starting auth initialization');
+    console.log('🔑 [AuthContext] Starting auth initialization with business layer');
     let mounted = true;
 
     const initializeAuth = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
-        console.log('📋 [AuthContext] Initial session result:', { hasSession: !!data.session });
+        // Use business layer to get session
+        const getSessionUseCase = useCaseFactory.createGetSessionUseCase();
+        const result = await getSessionUseCase.execute({ 
+          validateExpiry: false,
+          refreshIfExpired: false 
+        });
+        
+        console.log('📋 [AuthContext] Initial session result:', { 
+          hasSession: !!result.session,
+          success: result.success 
+        });
         
         if (mounted) {
-          setSession(data.session);
+          if (result.success && result.session) {
+            setSession(result.session);
+          } else {
+            setSession(null);
+          }
           setIsLoading(false);
         }
       } catch (error) {
@@ -39,28 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     initializeAuth();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔄 [AuthContext] Auth state change:', { event, hasSession: !!session });
-      if (mounted) {
-        // Handle logout events more explicitly
-        if (event === 'SIGNED_OUT') {
-          setSession(null);
-          setIsLoading(false);
-        } else {
-          setSession(session);
-          setIsLoading(false);
-        }
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
+  }, [useCaseFactory]);
 
   // Memoize AuthContext value to prevent unnecessary re-renders
   const value = useMemo(() => {

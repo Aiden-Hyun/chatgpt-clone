@@ -3,6 +3,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import { UserSession } from '../../../business/session/entities/UserSession';
 import { SessionExpiryCalculator } from '../../../service/session/utils/SessionExpiryCalculator';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { useAutoLogout } from '../../auth/hooks/useAutoLogout';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 export interface SessionMonitorProps {
@@ -52,6 +53,7 @@ export function SessionMonitor({
   });
 
   const { useCaseFactory } = useBusinessContext();
+  const { checkAutoLogout } = useAutoLogout();
   
   // Refs to prevent stale closures and manage timers
   const sessionRef = useRef(session);
@@ -183,18 +185,23 @@ export function SessionMonitor({
       try {
         Logger.info('SessionMonitor: Executing auto-logout');
 
-        const autoLogoutUseCase = useCaseFactory.createAutoLogoutUseCase();
-        await autoLogoutUseCase.execute({ 
-          reason: 'Session expired',
-          forceLogout: true 
+        // Use the business layer auto-logout hook
+        const result = await checkAutoLogout({
+          gracePeriodMinutes: 0,
+          forceLogout: true,
+          reason: 'Session expired'
         });
 
-        Logger.info('SessionMonitor: Auto-logout completed');
+        if (result.loggedOut) {
+          Logger.info('SessionMonitor: Auto-logout completed successfully');
+        } else {
+          Logger.warn('SessionMonitor: Auto-logout did not complete', { reason: result.reason });
+        }
       } catch (error) {
         Logger.error('SessionMonitor: Auto-logout failed', { error });
       }
     }, 30000); // 30 second grace period
-  }, [state.autoLogoutScheduled, useCaseFactory]);
+  }, [state.autoLogoutScheduled, checkAutoLogout]);
 
   /**
    * Schedule session refresh

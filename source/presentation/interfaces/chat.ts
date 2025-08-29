@@ -6,6 +6,7 @@
 
 import { RefObject } from 'react';
 import { TextInput } from 'react-native';
+
 import { BaseComponentProps } from './shared';
 
 // ============================================================================

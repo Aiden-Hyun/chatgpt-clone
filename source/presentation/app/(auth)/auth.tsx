@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Linking, View } from 'react-native';
-import { supabase } from '../../../service/shared/lib/supabase';
+
 import { useToast } from '../../alert/toast';
+import { SocialAuthButtons } from '../../auth/components/SocialAuthButtons';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useEmailSignin } from '../../auth/hooks/useEmailSignin';
 import { FormWrapper, LoadingScreen } from '../../components';
 import { Button, Card, Input, Text } from '../../components/ui';
 import { LanguageSelector, useLanguageContext } from '../../language';
-
 import { useAppTheme } from '../../theme/hooks/useTheme';
+
 import { createAuthStyles } from './auth.styles';
 
 // Debug imports
@@ -51,12 +52,9 @@ export default function AuthScreen() {
     const handleDeepLink = async (url: string) => {
       if (url.includes('type=recovery')) {
         try {
-          const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-          if (error) {
-            showError(t('auth.password_reset_failed'));
-          } else {
-            router.replace('/chat');
-          }
+          // TODO: Replace with business layer password reset handling
+          // For now, just navigate to chat on recovery
+          router.replace('/chat');
         } catch (e) {
           console.error('Error handling deep link:', e);
           showError(t('auth.password_reset_failed'));
@@ -149,11 +147,19 @@ export default function AuthScreen() {
         {t('auth.welcome')}
       </Text>
 
-      <Card variant="elevated" padding="lg" containerStyle={styles.googleButton}>
-        <Text variant="button" style={styles.googleButtonText}>
-          {t('auth.continue_with_google')}
-        </Text>
-      </Card>
+      <SocialAuthButtons
+        onSuccess={(provider) => {
+          console.log(`Successfully authenticated with ${provider}`);
+          // Navigation will be handled by auth state change
+        }}
+        onError={(provider, error) => {
+          showError(`Failed to authenticate with ${provider}: ${error}`);
+        }}
+        onRequiresAdditionalInfo={(provider, providerData) => {
+          console.log(`Additional info required for ${provider}`, providerData);
+          // TODO: Navigate to additional info form
+        }}
+      />
 
       <View style={styles.divider}>
         <View style={{ flex: 1, height: 1, backgroundColor: theme.colors.borders.light }} />

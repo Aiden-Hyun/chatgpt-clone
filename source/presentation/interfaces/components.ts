@@ -6,6 +6,7 @@
 
 import * as React from 'react';
 import { PressableProps, TextProps as RNTextProps, TextInputProps, TouchableOpacityProps } from 'react-native';
+
 import { BaseComponentProps, ComponentSize } from './shared';
 
 // ============================================================================

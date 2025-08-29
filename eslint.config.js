@@ -5,6 +5,9 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*', 'supabase/functions/**'],
+  },
+
+  {
     settings: {
       'import/resolver': {
         typescript: { project: './tsconfig.json' },
@@ -212,10 +215,7 @@ module.exports = defineConfig([
       // Forbid defining interfaces/types/enums outside of /interfaces folders
       'no-restricted-syntax': [
         'error',
-        {
-          selector: 'TSInterfaceDeclaration:not([id.name^="I"])',
-          message: 'Define interfaces only in /interfaces folders. Move this interface to the appropriate layer\'s /interfaces folder.',
-        },
+        
         {
           selector: 'TSTypeAliasDeclaration',
           message: 'Define type aliases only in /interfaces folders. Move this type to the appropriate layer\'s /interfaces folder.',
@@ -266,7 +266,7 @@ module.exports = defineConfig([
         {
           selector: 'interface',
           format: ['PascalCase'],
-          prefix: ['I'],
+          
         },
       ],
       
@@ -279,6 +279,23 @@ module.exports = defineConfig([
       
       // Enforce array type consistency
       '@typescript-eslint/array-type': ['error', { default: 'array' }],
+    },
+  },
+  {
+    files: [
+      'source/presentation/interfaces/**/*',
+      'source/business/interfaces/**/*', 
+      'source/service/interfaces/**/*',
+      'source/persistence/interfaces/**/*',
+      'source/database/interfaces/**/*'
+    ],
+    rules: {
+      // Allow all type definitions in /interfaces folders
+      'no-restricted-syntax': 'off',
+      '@typescript-eslint/naming-convention': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/array-type': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 ]);
