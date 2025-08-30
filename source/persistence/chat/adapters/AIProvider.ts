@@ -60,7 +60,7 @@ export class AIProvider implements IAIProvider {
       });
 
       // Make the actual API call using our fetch utility
-      const response = await fetchJson<any>(
+      const response = await fetchJson<AIResponse>(
         `${this.configService.getEdgeFunctionBaseUrl()}/ai-chat`,
         {
           method: 'POST',

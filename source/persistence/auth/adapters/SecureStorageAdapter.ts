@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { SecureStoreOptions } from '../../interfaces/shared';
 
 export interface SecureStorageOptions {
   requireAuthentication?: boolean;
@@ -36,7 +37,7 @@ export class SecureStorageAdapter {
         await this.addKeyToRegistry(key);
       } else {
         // On native platforms, use Expo SecureStore
-        const storeOptions: any = {
+        const storeOptions: SecureStoreOptions = {
           requireAuthentication: options.requireAuthentication || false
         };
 
@@ -87,7 +88,7 @@ export class SecureStorageAdapter {
         }
       } else {
         // On native platforms, use Expo SecureStore
-        const storeOptions: any = {
+        const storeOptions: SecureStoreOptions = {
           requireAuthentication: options.requireAuthentication || false
         };
 
@@ -127,7 +128,7 @@ export class SecureStorageAdapter {
         localStorage.removeItem(key);
         await this.removeKeyFromRegistry(key);
       } else {
-        const storeOptions: any = {
+        const storeOptions: SecureStoreOptions = {
           requireAuthentication: options.requireAuthentication || false
         };
 

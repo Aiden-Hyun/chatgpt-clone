@@ -1,5 +1,5 @@
 import { Logger } from '../../../service/shared/utils/Logger';
-import { CreateUserResult, IUserRepository, User } from '../../interfaces/auth';
+import { CreateUserResult, IUserRepository, User, SocialAuthData, SocialAuthOptions } from '../../interfaces/auth';
 import { SocialAuthAdapter } from '../adapters/SocialAuthAdapter';
 import { SupabaseAuthAdapter } from '../adapters/SupabaseAuthAdapter';
 import { UserMapper } from '../mappers/UserMapper';
@@ -188,7 +188,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async authenticateWithProvider(provider: string, options?: any): Promise<SocialAuthResult> {
+  async authenticateWithProvider(provider: string, options?: SocialAuthOptions): Promise<SocialAuthResult> {
     try {
       Logger.info('UserRepository: Authenticating with social provider', { provider });
       
@@ -223,7 +223,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async completeSocialAuth(provider: string, data: any): Promise<SocialAuthResult> {
+  async completeSocialAuth(provider: string, data: SocialAuthData): Promise<SocialAuthResult> {
     try {
       Logger.info('UserRepository: Completing social authentication', { provider });
       

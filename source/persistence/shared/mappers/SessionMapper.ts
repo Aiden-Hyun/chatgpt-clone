@@ -1,13 +1,14 @@
 import { Session } from '@supabase/supabase-js';
-import {
-    SESSION_EXPIRY_THRESHOLDS,
-    SessionValidationError,
-    createSessionFailure,
-    createSessionSuccess,
-    type SessionResult
-} from '../../interfaces/shared';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserSession, SessionValidationResult } from '../../interfaces/shared';
+import {
+  IUserSession,
+  SESSION_EXPIRY_THRESHOLDS,
+  SessionValidationError,
+  SessionValidationResult,
+  createSessionFailure,
+  createSessionSuccess,
+  type SessionResult
+} from '../../interfaces/shared';
 
 /**
  * Concrete implementation of IUserSession
@@ -21,6 +22,11 @@ class UserSession implements IUserSession {
     public readonly userEmail?: string,
     public readonly createdAt: Date = new Date()
   ) {}
+  id: string;
+  refreshToken?: string | undefined;
+  validate(): SessionValidationResult {
+    throw new Error('Method not implemented.');
+  }
 
   isValid(): boolean {
     return !this.isExpired() && 

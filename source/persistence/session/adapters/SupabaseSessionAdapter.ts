@@ -1,8 +1,9 @@
 import { supabase } from '../../../service/shared/lib/supabase';
+import { SupabaseSession } from '../../interfaces/auth';
 
 export interface SupabaseSessionResult {
   success: boolean;
-  session?: any;
+  session?: SupabaseSession;
   error?: string;
 }
 
@@ -101,7 +102,7 @@ export class SupabaseSessionAdapter {
    * Subscribe to auth state changes
    * Returns a cleanup function
    */
-  onAuthStateChange(callback: (event: string, session: any) => void): () => void {
+  onAuthStateChange(callback: (event: string, session: SupabaseSession | null) => void): () => void {
     console.log('[SupabaseSessionAdapter] Setting up auth state change listener');
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {

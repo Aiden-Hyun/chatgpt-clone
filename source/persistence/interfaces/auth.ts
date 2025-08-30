@@ -48,14 +48,37 @@ export interface IUserRepository {
 }
 
 // User entity
-export interface User {
+export class User {
+  constructor(
+    public readonly id: string,
+    public readonly email: string,
+    public readonly displayName: string = '',
+    public readonly avatarUrl: string | null = null,
+    public readonly permissions: string[] = ['user'],
+    public readonly createdAt: Date = new Date(),
+    public readonly updatedAt: Date = new Date()
+  ) {}
+}
+
+// User storage types
+export interface UserStorage {
   id: string;
   email: string;
-  name?: string;
-  avatar?: string;
-  permissions?: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  display_name: string;
+  avatar_url: string | null;
+  permissions: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserDTO {
+  id: string;
+  email: string;
+  displayName: string;
+  avatarUrl: string | null;
+  permissions: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 // User mapper interface
@@ -110,6 +133,31 @@ export interface SupabaseSignUpResult {
   session?: unknown;
   error?: string;
   needsEmailConfirmation?: boolean;
+}
+
+// Supabase user and session types
+export interface SupabaseUser {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, unknown>;
+  app_metadata?: Record<string, unknown>;
+  aud?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SupabaseSession {
+  access_token: string;
+  refresh_token?: string;
+  expires_at?: number;
+  user?: SupabaseUser;
+}
+
+export interface SocialAuthData {
+  provider: string;
+  accessToken?: string;
+  refreshToken?: string;
+  user?: Record<string, unknown>;
 }
 
 export interface ISupabaseAuthAdapter {

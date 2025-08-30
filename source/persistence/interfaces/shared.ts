@@ -137,6 +137,34 @@ export interface PersistenceErrorResult {
   details?: unknown;
 }
 
+// SecureStore options interface
+export interface SecureStoreOptions {
+  requireAuthentication?: boolean;
+  keychainService?: string;
+  accessGroup?: string;
+}
+
+// Clipboard API types
+export interface NavigatorWithClipboard {
+  clipboard?: Clipboard;
+}
+
+export interface WindowWithSecureContext {
+  isSecureContext?: boolean;
+}
+
+export interface ClipboardAPI {
+  writeText(text: string): Promise<void>;
+  readText(): Promise<string>;
+}
+
+export interface ExpoClipboard {
+  setStringAsync(text: string): Promise<void>;
+  setString(text: string): void;
+  getStringAsync(): Promise<string>;
+  getString(): string;
+}
+
 // Common configuration types
 export interface DatabaseConfig {
   url: string;

@@ -3,6 +3,7 @@ import { ConfigService, IConfigService } from '../../../service/shared/lib/confi
 import { createSupabaseClient } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { ILogger } from '../../interfaces/shared';
+import { User, SupabaseSession, SocialAuthData } from '../../interfaces/auth';
 
 export interface SocialAuthOptions {
   redirectUrl?: string;
@@ -11,8 +12,8 @@ export interface SocialAuthOptions {
 
 export interface SocialAuthAdapterResult {
   success: boolean;
-  user?: any;
-  session?: any;
+  user?: User;
+  session?: SupabaseSession;
   error?: string;
   isNetworkError?: boolean;
   requiresAdditionalInfo?: boolean;
@@ -60,7 +61,7 @@ export class SocialAuthAdapter {
 
       // Initiate OAuth flow with Supabase
       const { data, error } = await this.supabase.auth.signInWithOAuth({
-        provider: provider as any,
+        provider: provider as 'google' | 'apple' | 'github' | 'facebook',
         options: {
           redirectTo,
           scopes: options.scopes?.join(' '),
@@ -187,7 +188,7 @@ export class SocialAuthAdapter {
   /**
    * Complete social authentication with additional information
    */
-  async completeSocialAuth(provider: string, data: any): Promise<SocialAuthAdapterResult> {
+  async completeSocialAuth(provider: string, data: SocialAuthData): Promise<SocialAuthAdapterResult> {
     try {
       this.logger.info('Completing social authentication', { provider });
 
@@ -290,7 +291,7 @@ export class SocialAuthAdapter {
    * Check if provider is supported
    */
   private isProviderSupported(provider: string): boolean {
-    return SocialAuthAdapter.SUPPORTED_PROVIDERS.includes(provider as any);
+    return SocialAuthAdapter.SUPPORTED_PROVIDERS.includes(provider as 'google' | 'apple' | 'github' | 'facebook');
   }
 
   /**
@@ -306,7 +307,7 @@ export class SocialAuthAdapter {
   /**
    * Extract provider data from user object
    */
-  private extractProviderData(user: any): {
+  private extractProviderData(user: SupabaseUser): {
     providerId: string;
     email?: string;
     displayName?: string;
@@ -329,7 +330,7 @@ export class SocialAuthAdapter {
   /**
    * Check if user needs additional information
    */
-  private checkIfAdditionalInfoNeeded(user: any): boolean {
+  private checkIfAdditionalInfoNeeded(user: SupabaseUser): boolean {
     // Check if profile is already completed
     if (user.user_metadata?.completed_profile) {
       return false;
@@ -348,7 +349,7 @@ export class SocialAuthAdapter {
   /**
    * Check if error is network-related
    */
-  private isNetworkError(error: any): boolean {
+  private isNetworkError(error: Error): boolean {
     if (!error) return false;
 
     const errorMessage = error.message || error.toString();

@@ -1,18 +1,19 @@
 import { supabase } from '../../../service/shared/lib/supabase';
+import { User, SupabaseUser, SupabaseSession } from '../../interfaces/auth';
 
 export interface SupabaseAuthResult {
   success: boolean;
-  user?: any;
-  session?: any;
-  data?: any;
+  user?: SupabaseUser;
+  session?: SupabaseSession;
+  data?: { user: SupabaseUser; session: SupabaseSession };
   error?: string;
   isNetworkError?: boolean;
 }
 
 export interface SupabaseSignUpResult {
   success: boolean;
-  user?: any;
-  data?: any;
+  user?: SupabaseUser;
+  data?: { user: SupabaseUser; session?: SupabaseSession };
   requiresEmailVerification?: boolean;
   error?: string;
 }
@@ -115,7 +116,7 @@ export class SupabaseAuthAdapter {
     }
   }
 
-  async getUserByEmail(email: string): Promise<any> {
+  async getUserByEmail(email: string): Promise<SupabaseUser | null> {
     try {
       console.log('[SupabaseAuthAdapter] Getting user by email:', email);
       
@@ -138,7 +139,7 @@ export class SupabaseAuthAdapter {
     }
   }
 
-  async getCurrentUser(): Promise<any> {
+  async getCurrentUser(): Promise<SupabaseUser | null> {
     try {
       console.log('[SupabaseAuthAdapter] Getting current user');
       
@@ -241,7 +242,7 @@ export class SupabaseAuthAdapter {
     }
   }
 
-  async getCurrentSession(): Promise<{ success: boolean; session?: any; error?: string }> {
+  async getCurrentSession(): Promise<{ success: boolean; session?: SupabaseSession; error?: string }> {
     try {
       console.log('[SupabaseAuthAdapter] Getting current session');
       
@@ -255,7 +256,7 @@ export class SupabaseAuthAdapter {
     }
   }
 
-  async refreshSession(): Promise<{ success: boolean; session?: any; error?: string }> {
+  async refreshSession(): Promise<{ success: boolean; session?: SupabaseSession; error?: string }> {
     try {
       console.log('[SupabaseAuthAdapter] Refreshing session');
       
@@ -276,7 +277,7 @@ export class SupabaseAuthAdapter {
 
   async refreshToken(refreshToken: string): Promise<{ 
     success: boolean; 
-    session?: any; 
+            session?: SupabaseSession; 
     accessToken?: string; 
     error?: string; 
     isNetworkError?: boolean; 

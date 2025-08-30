@@ -152,6 +152,25 @@ export interface GetMessagesResult {
   error?: string;
 }
 
+// Database message types
+export interface DatabaseMessage {
+  id: string;
+  room_id: string;
+  content: string;
+  role: string;
+  timestamp: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface MessageDTO {
+  id: string;
+  roomId: string;
+  content: string;
+  role: string;
+  timestamp: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface ISupabaseMessageAdapter {
   saveMessage(message: Partial<Message>): Promise<SaveResult>;
   getMessages(roomId: string): Promise<GetMessagesResult>;

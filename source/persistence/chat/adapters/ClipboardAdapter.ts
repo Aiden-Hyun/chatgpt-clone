@@ -10,6 +10,7 @@ export interface ClipboardResult {
  * Follows the patterns from /src/shared/lib/clipboard.ts
  */
 import { IClipboardAdapter } from '../../interfaces/chat';
+import { NavigatorWithClipboard, WindowWithSecureContext, ClipboardAPI, ExpoClipboard } from '../../interfaces/shared';
 
 export class ClipboardAdapter implements IClipboardAdapter {
   async copyToClipboard(text: string): Promise<ClipboardResult> {
@@ -23,11 +24,11 @@ export class ClipboardAdapter implements IClipboardAdapter {
       if (Platform.OS === 'web') {
         // Web: Use Navigator Clipboard API with fallback
         try {
-          const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as any);
-          const isSecure = typeof window !== 'undefined' && (window as any).isSecureContext !== false;
+          const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as NavigatorWithClipboard);
+          const isSecure = typeof window !== 'undefined' && (window as WindowWithSecureContext).isSecureContext !== false;
           
-          if (hasNavigator && (navigator as any).clipboard && isSecure) {
-            await (navigator as any).clipboard.writeText(text);
+          if (hasNavigator && (navigator as NavigatorWithClipboard).clipboard && isSecure) {
+            await (navigator as NavigatorWithClipboard).clipboard!.writeText(text);
             console.log('[ClipboardAdapter] Copied to clipboard via Navigator API');
             return { success: true };
           }
@@ -75,10 +76,10 @@ export class ClipboardAdapter implements IClipboardAdapter {
       try {
         const Clipboard = await import('expo-clipboard');
         
-        if ((Clipboard as any).setStringAsync) {
-          await (Clipboard as any).setStringAsync(text);
-        } else if ((Clipboard as any).setString) {
-          (Clipboard as any).setString(text);
+        if ((Clipboard as ExpoClipboard).setStringAsync) {
+          await (Clipboard as ExpoClipboard).setStringAsync(text);
+        } else if ((Clipboard as ExpoClipboard).setString) {
+          (Clipboard as ExpoClipboard).setString(text);
         } else {
           throw new Error('Clipboard module missing setString methods');
         }
@@ -108,11 +109,11 @@ export class ClipboardAdapter implements IClipboardAdapter {
       if (Platform.OS === 'web') {
         // Web: Use Navigator Clipboard API
         try {
-          const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as any);
-          const isSecure = typeof window !== 'undefined' && (window as any).isSecureContext !== false;
+          const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as NavigatorWithClipboard);
+          const isSecure = typeof window !== 'undefined' && (window as WindowWithSecureContext).isSecureContext !== false;
           
-          if (hasNavigator && (navigator as any).clipboard && isSecure) {
-            const text = await (navigator as any).clipboard.readText();
+          if (hasNavigator && (navigator as NavigatorWithClipboard).clipboard && isSecure) {
+            const text = await (navigator as NavigatorWithClipboard).clipboard!.readText();
             console.log('[ClipboardAdapter] Retrieved from clipboard via Navigator API');
             return { success: true, text };
           }
@@ -132,10 +133,10 @@ export class ClipboardAdapter implements IClipboardAdapter {
         
         let text: string | null = null;
         
-        if ((Clipboard as any).getStringAsync) {
-          text = await (Clipboard as any).getStringAsync();
-        } else if ((Clipboard as any).getString) {
-          text = (Clipboard as any).getString();
+        if ((Clipboard as ExpoClipboard).getStringAsync) {
+          text = await (Clipboard as ExpoClipboard).getStringAsync();
+        } else if ((Clipboard as ExpoClipboard).getString) {
+          text = (Clipboard as ExpoClipboard).getString();
         } else {
           throw new Error('Clipboard module missing getString methods');
         }
@@ -165,11 +166,11 @@ export class ClipboardAdapter implements IClipboardAdapter {
       if (Platform.OS === 'web') {
         // Web: Try to read from clipboard to check if it has content
         try {
-          const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as any);
-          const isSecure = typeof window !== 'undefined' && (window as any).isSecureContext !== false;
+          const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as NavigatorWithClipboard);
+          const isSecure = typeof window !== 'undefined' && (window as WindowWithSecureContext).isSecureContext !== false;
           
-          if (hasNavigator && (navigator as any).clipboard && isSecure) {
-            const text = await (navigator as any).clipboard.readText();
+          if (hasNavigator && (navigator as NavigatorWithClipboard).clipboard && isSecure) {
+            const text = await (navigator as NavigatorWithClipboard).clipboard!.readText();
             const hasContent = text && text.trim().length > 0;
             console.log('[ClipboardAdapter] Clipboard has content (web):', hasContent);
             return hasContent;
@@ -187,10 +188,10 @@ export class ClipboardAdapter implements IClipboardAdapter {
         
         let text: string | null = null;
         
-        if ((Clipboard as any).getStringAsync) {
-          text = await (Clipboard as any).getStringAsync();
-        } else if ((Clipboard as any).getString) {
-          text = (Clipboard as any).getString();
+        if ((Clipboard as ExpoClipboard).getStringAsync) {
+          text = await (Clipboard as ExpoClipboard).getStringAsync();
+        } else if ((Clipboard as ExpoClipboard).getString) {
+          text = (Clipboard as ExpoClipboard).getString();
         } else {
           throw new Error('Clipboard module missing getString methods');
         }

@@ -1,7 +1,7 @@
-import { User } from '../../interfaces/auth';
+import { User, SupabaseUser, UserStorage, UserDTO } from '../../interfaces/auth';
 
 export class UserMapper {
-  toDomain(supabaseUser: any): User {
+  toDomain(supabaseUser: SupabaseUser): User {
     return new User(
       supabaseUser.id,
       supabaseUser.email,
@@ -13,7 +13,7 @@ export class UserMapper {
     );
   }
 
-  toStorage(user: User): any {
+  toStorage(user: User): UserStorage {
     return {
       id: user.id,
       email: user.email,
@@ -25,7 +25,7 @@ export class UserMapper {
     };
   }
 
-  toDatabase(user: User): any {
+  toDatabase(user: User): UserStorage {
     return {
       id: user.id,
       email: user.email,
@@ -37,7 +37,7 @@ export class UserMapper {
     };
   }
 
-  fromDatabase(dbUser: any): User {
+  fromDatabase(dbUser: UserStorage): User {
     return new User(
       dbUser.id,
       dbUser.email,
@@ -51,7 +51,7 @@ export class UserMapper {
     );
   }
 
-  toDTO(user: User): any {
+  toDTO(user: User): UserDTO {
     return {
       id: user.id,
       email: user.email,
@@ -63,7 +63,7 @@ export class UserMapper {
     };
   }
 
-  fromDTO(dto: any): User {
+  fromDTO(dto: UserDTO): User {
     return new User(
       dto.id,
       dto.email,

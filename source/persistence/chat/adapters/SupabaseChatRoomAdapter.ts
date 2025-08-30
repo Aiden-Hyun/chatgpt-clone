@@ -61,7 +61,7 @@ export class SupabaseChatRoomAdapter {
     try {
       console.log('[SupabaseChatRoomAdapter] Updating room', { roomId, updates });
 
-      const updateData: any = {};
+      const updateData: Record<string, unknown> = {};
       
       // Only update name if it's provided and not empty
       if (updates.name !== undefined && updates.name.trim()) {

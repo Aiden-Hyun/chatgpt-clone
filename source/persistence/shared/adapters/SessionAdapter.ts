@@ -1,4 +1,5 @@
 import { Session } from '@supabase/supabase-js';
+import { SupabaseSession } from '../../interfaces/auth';
 import {
     createSessionFailure,
     createSessionSuccess,
@@ -233,16 +234,16 @@ export class SessionAdapter implements IUserSessionFactory {
   /**
    * Type guard to check if an object is a Supabase Session
    */
-  private isSupabaseSession(obj: unknown): obj is Session {
+  private isSupabaseSession(obj: unknown): obj is SupabaseSession {
     return (
       typeof obj === 'object' &&
       obj !== null &&
       'access_token' in obj &&
       'user' in obj &&
-      typeof (obj as any).access_token === 'string' &&
-      typeof (obj as any).user === 'object' &&
-      (obj as any).user !== null &&
-      'id' in (obj as any).user
+      typeof (obj as SupabaseSession).access_token === 'string' &&
+      typeof (obj as SupabaseSession).user === 'object' &&
+      (obj as SupabaseSession).user !== null &&
+      'id' in (obj as SupabaseSession).user
     );
   }
 
@@ -257,10 +258,10 @@ export class SessionAdapter implements IUserSessionFactory {
       'accessToken' in obj &&
       'expiresAt' in obj &&
       'isValid' in obj &&
-      typeof (obj as any).userId === 'string' &&
-      typeof (obj as any).accessToken === 'string' &&
-      (obj as any).expiresAt instanceof Date &&
-      typeof (obj as any).isValid === 'function'
+      typeof (obj as IUserSession).userId === 'string' &&
+      typeof (obj as IUserSession).accessToken === 'string' &&
+      (obj as IUserSession).expiresAt instanceof Date &&
+      typeof (obj as IUserSession).isValid === 'function'
     );
   }
 }

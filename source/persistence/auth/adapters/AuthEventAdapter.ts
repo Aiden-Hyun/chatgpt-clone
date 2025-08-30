@@ -1,7 +1,7 @@
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { AuthEventCallback, IAuthEventEmitter, Unsubscribe } from '../../interfaces/auth';
+import { AuthEventCallback, IAuthEventEmitter, Unsubscribe, SupabaseUser } from '../../interfaces/auth';
 
 export class AuthEventAdapter implements IAuthEventEmitter {
   private activeSubscriptions: Set<() => void> = new Set();
@@ -189,7 +189,7 @@ export class AuthEventAdapter implements IAuthEventEmitter {
    * Get the current user from Supabase
    * @returns Current user or null
    */
-  async getCurrentUser(): Promise<any | null> {
+  async getCurrentUser(): Promise<SupabaseUser | null> {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       

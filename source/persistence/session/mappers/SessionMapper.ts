@@ -1,7 +1,8 @@
-import { UserSession } from '../../interfaces/session';
+import { UserSession, DatabaseSession, SessionDTO } from '../../interfaces/session';
+import { SupabaseSession } from '../../interfaces/auth';
 
 export class SessionMapper {
-  toDomain(sessionData: any): UserSession {
+  toDomain(sessionData: DatabaseSession): UserSession {
     return new UserSession(
       sessionData.userId,
       sessionData.isAuthenticated,
@@ -11,7 +12,7 @@ export class SessionMapper {
     );
   }
 
-  toStorage(session: UserSession): any {
+  toStorage(session: UserSession): SessionDTO {
     return {
       userId: session.userId,
       isAuthenticated: session.isAuthenticated,
@@ -21,7 +22,7 @@ export class SessionMapper {
     };
   }
 
-  toDatabase(session: UserSession): any {
+  toDatabase(session: UserSession): DatabaseSession {
     return {
       user_id: session.userId,
       is_authenticated: session.isAuthenticated,
@@ -31,7 +32,7 @@ export class SessionMapper {
     };
   }
 
-  fromDatabase(dbSession: any): UserSession {
+  fromDatabase(dbSession: DatabaseSession): UserSession {
     return new UserSession(
       dbSession.user_id,
       dbSession.is_authenticated,
@@ -43,7 +44,7 @@ export class SessionMapper {
     );
   }
 
-  toDTO(session: UserSession): any {
+  toDTO(session: UserSession): SessionDTO {
     return {
       userId: session.userId,
       isAuthenticated: session.isAuthenticated,
@@ -55,7 +56,7 @@ export class SessionMapper {
     };
   }
 
-  fromDTO(dto: any): UserSession {
+  fromDTO(dto: SessionDTO): UserSession {
     return new UserSession(
       dto.userId,
       dto.isAuthenticated,
@@ -84,7 +85,7 @@ export class SessionMapper {
    * Map from Supabase session object to UserSession domain entity
    * Follows patterns from /src/features/auth/context/AuthContext.tsx
    */
-  fromSupabaseSession(supabaseSession: any): UserSession {
+  fromSupabaseSession(supabaseSession: SupabaseSession): UserSession {
     if (!supabaseSession || !supabaseSession.user) {
       throw new Error('Invalid Supabase session data');
     }
