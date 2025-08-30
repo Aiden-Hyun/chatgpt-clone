@@ -1,8 +1,8 @@
-import { IAIProvider } from '../../../business/chat/interfaces/IAIProvider';
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
 import { ConfigService, IConfigService } from '../../../service/shared/lib/config';
 import { fetchJson } from '../../../service/shared/lib/fetch';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IAIProvider } from '../../interfaces/chat';
+import { ILogger } from '../../interfaces/shared';
 
 export interface AIResponse {
   success: boolean;

@@ -1,8 +1,7 @@
 import { Session } from '@supabase/supabase-js';
-import { MessageEntity } from '../../../business/chat/entities/Message';
-import { IMessageRepository } from '../../../business/chat/interfaces/IMessageRepository';
-import { IUserSession } from '../../../business/shared/interfaces/IUserSession';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IMessageRepository } from '../../interfaces/chat';
+import { IUserSession } from '../../interfaces/shared';
 import { SessionMapper } from '../../shared/mappers/SessionMapper';
 import { SupabaseMessageAdapter } from '../adapters/SupabaseMessageAdapter';
 import { MessageMapper } from '../mappers/MessageMapper';

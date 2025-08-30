@@ -1,7 +1,7 @@
 import { Session } from '@supabase/supabase-js';
-import { AuthEventCallback, IAuthEventEmitter, Unsubscribe } from '../../../business/auth/interfaces/IAuthEventEmitter';
 import { supabase } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { AuthEventCallback, IAuthEventEmitter, Unsubscribe } from '../../interfaces/auth';
 
 export class AuthEventAdapter implements IAuthEventEmitter {
   private activeSubscriptions: Set<() => void> = new Set();

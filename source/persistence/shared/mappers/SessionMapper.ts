@@ -1,14 +1,13 @@
 import { Session } from '@supabase/supabase-js';
-import { IUserSession, SessionValidationResult } from '../../../business/shared/interfaces/IUserSession';
 import {
     SESSION_EXPIRY_THRESHOLDS,
-    SessionStatus,
     SessionValidationError,
     createSessionFailure,
     createSessionSuccess,
     type SessionResult
-} from '../../../business/types/session/SessionTypes';
+} from '../../interfaces/shared';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IUserSession, SessionValidationResult } from '../../interfaces/shared';
 
 /**
  * Concrete implementation of IUserSession

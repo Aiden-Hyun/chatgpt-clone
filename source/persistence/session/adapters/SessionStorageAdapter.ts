@@ -1,6 +1,6 @@
-import { UserSession } from '../../../business/session/entities/UserSession';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { SecureStorageAdapter } from '../../auth/adapters/SecureStorageAdapter';
+import { UserSession } from '../../interfaces/session';
 
 export interface SessionStorageResult {
   success: boolean;

@@ -1,4 +1,3 @@
-import { ChatRoomEntity } from '../../../business/chat/entities/ChatRoom';
 import { RoomData, RoomWithLastMessage } from '../adapters/SupabaseChatRoomAdapter';
 
 export interface ChatRoomData {

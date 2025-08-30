@@ -1,8 +1,8 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
 import { ConfigService, IConfigService } from '../../../service/shared/lib/config';
 import { createSupabaseClient } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { ILogger } from '../../interfaces/shared';
 
 export interface SocialAuthOptions {
   redirectUrl?: string;

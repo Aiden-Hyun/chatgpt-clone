@@ -1,4 +1,4 @@
-import { User } from '../../../business/auth/entities/User';
+import { User } from '../../interfaces/auth';
 
 export class UserMapper {
   toDomain(supabaseUser: any): User {

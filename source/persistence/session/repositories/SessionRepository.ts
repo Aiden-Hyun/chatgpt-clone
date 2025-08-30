@@ -1,6 +1,5 @@
-import { UserSession } from '../../../business/session/entities/UserSession';
-import { ISessionRepository, RefreshResult, SaveSessionResult } from '../../../business/session/interfaces/ISessionRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { ISessionRepository, RefreshResult, SaveSessionResult, UserSession } from '../../interfaces/session';
 import { LocalStorageAdapter } from '../adapters/LocalStorageAdapter';
 import { SecureStorageAdapter } from '../adapters/SecureStorageAdapter';
 import { SupabaseSessionAdapter } from '../adapters/SupabaseSessionAdapter';

@@ -1,14 +1,5 @@
-import { User } from '../../../business/auth/entities/User';
-import {
-    AuthResult,
-    CreateUserResult,
-    IUserRepository,
-    RefreshTokenResult,
-    RequestResetResult,
-    ResetPasswordResult,
-    SocialAuthResult
-} from '../../../business/auth/interfaces/IUserRepository';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { CreateUserResult, IUserRepository, User } from '../../interfaces/auth';
 import { SocialAuthAdapter } from '../adapters/SocialAuthAdapter';
 import { SupabaseAuthAdapter } from '../adapters/SupabaseAuthAdapter';
 import { UserMapper } from '../mappers/UserMapper';

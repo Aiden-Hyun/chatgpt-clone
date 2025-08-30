@@ -1,4 +1,4 @@
-import { UserSession } from '../../../business/session/entities/UserSession';
+import { UserSession } from '../../interfaces/session';
 
 export class SessionMapper {
   toDomain(sessionData: any): UserSession {

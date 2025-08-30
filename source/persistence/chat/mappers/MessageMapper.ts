@@ -1,4 +1,3 @@
-import { MessageEntity, Message, MessageRole } from '../../../business/chat/entities/Message';
 
 export interface MessageData {
   id: string;

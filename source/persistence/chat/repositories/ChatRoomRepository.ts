@@ -1,8 +1,7 @@
 import { Session } from '@supabase/supabase-js';
-import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
-import { CreateRoomResult, DeleteRoomResult, IChatRoomRepository, UpdateRoomResult } from '../../../business/chat/interfaces/IChatRoomRepository';
-import { IUserSession } from '../../../business/shared/interfaces/IUserSession';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { ChatRoom, CreateRoomResult, DeleteRoomResult, IChatRoomRepository, UpdateRoomResult } from '../../interfaces/chat';
+import { IUserSession } from '../../interfaces/shared';
 import { SessionMapper } from '../../shared/mappers/SessionMapper';
 import { SupabaseChatRoomAdapter } from '../adapters/SupabaseChatRoomAdapter';
 import { ChatRoomMapper } from '../mappers/ChatRoomMapper';
