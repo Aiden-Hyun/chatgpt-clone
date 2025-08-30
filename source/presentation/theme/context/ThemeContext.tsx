@@ -3,7 +3,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { useColorScheme } from 'react-native';
 
 import type { AppTheme, ThemeMode, ThemeStyle } from '../../interfaces/theme';
-import themeRegistry from '../themeRegistry';
+import { themeRegistry } from '../themeRegistry';
 
 // Storage keys for persisting theme preferences
 const THEME_MODE_STORAGE_KEY = '@theme_mode';

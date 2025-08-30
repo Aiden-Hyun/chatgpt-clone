@@ -1,10 +1,10 @@
 // Theme registry for managing available themes
 import { ThemeWithMetadata } from '../interfaces/theme';
 
-import claymorphismTheme from './themes/claymorphism';
-import defaultTheme from './themes/default';
-import glassmorphismTheme from './themes/glassmorphism';
-import gradientNeumorphismTheme from './themes/gradient-neumorphism';
+import { claymorphismTheme } from './themes/claymorphism';
+import { defaultTheme } from './themes/default';
+import { glassmorphismTheme } from './themes/glassmorphism';
+import { gradientNeumorphismTheme } from './themes/gradient-neumorphism';
 
 /**
  * Registry of all available themes
@@ -77,22 +77,42 @@ export const themeRegistry = new ThemeRegistry();
 
 // Register the default theme
 themeRegistry.register({
-  ...defaultTheme,
+  id: 'default',
+  name: 'Default',
+  description: 'Clean and modern default theme',
+  version: '1.0.0',
+  author: 'ChatGPT Clone Team',
+  theme: defaultTheme,
 });
 
 // Register the glassmorphism theme
 themeRegistry.register({
-  ...glassmorphismTheme,
+  id: 'glassmorphism',
+  name: 'Glassmorphism',
+  description: 'Frosted glass effect with transparency',
+  version: '1.0.0',
+  author: 'ChatGPT Clone Team',
+  theme: glassmorphismTheme,
 });
 
 // Register the claymorphism theme
 themeRegistry.register({
-  ...claymorphismTheme,
+  id: 'claymorphism',
+  name: 'Claymorphism',
+  description: 'Soft, puffy 3D elements with vibrant colors',
+  version: '1.0.0',
+  author: 'ChatGPT Clone Team',
+  theme: claymorphismTheme,
 });
 
 // Register the gradient neumorphism theme
 themeRegistry.register({
-  ...gradientNeumorphismTheme,
+  id: 'gradient-neumorphism',
+  name: 'Gradient Neumorphism',
+  description: 'Soft shadows with gradient backgrounds',
+  version: '1.0.0',
+  author: 'ChatGPT Clone Team',
+  theme: gradientNeumorphismTheme,
 });
 
 export default themeRegistry;

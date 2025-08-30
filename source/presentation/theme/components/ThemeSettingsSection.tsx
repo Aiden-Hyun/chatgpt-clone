@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { useAppTheme } from '../theme';
 
-import ThemeSelector from './ThemeSelector';
+import { ThemeSelector } from './ThemeSelector';
 
 interface ThemeSettingsSectionProps {
   // Optional props can be added here

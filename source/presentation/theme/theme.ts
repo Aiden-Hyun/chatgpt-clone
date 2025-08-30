@@ -3,7 +3,7 @@
 import { PresentationTheme } from '../interfaces/theme';
 
 import { useThemeContext } from './context/ThemeContext';
-import themeRegistry from './themeRegistry';
+import { themeRegistry } from './themeRegistry';
 
 // Re-export theme types
 // Theme types moved to interfaces/theme.ts
