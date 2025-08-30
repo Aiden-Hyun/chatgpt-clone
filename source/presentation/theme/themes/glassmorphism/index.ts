@@ -1,8 +1,9 @@
 // Glassmorphism theme - Index file
 // Exports both light and dark variants along with theme metadata
 
-import { BaseTheme } from '../../theme.types';
+import { BaseTheme } from '../../../interfaces/theme';
 import { spacing } from '../tokens';
+
 import { darkColors, darkShadows } from './dark';
 import { lightColors, lightShadows } from './light';
 
@@ -173,44 +174,7 @@ const glassmorphismLayout = {
   spacing: spacing,
 };
 
-// Glassmorphism shadow values (subtle for glass effect)
-const glassmorphismShadows = {
-  light: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  medium: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  heavy: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  button: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  card: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-};
+
 
 // Glassmorphism animation values (smooth and elegant)
 const glassmorphismAnimations = {

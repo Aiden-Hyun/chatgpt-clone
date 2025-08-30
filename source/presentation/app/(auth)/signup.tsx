@@ -1,11 +1,13 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+
 import { useToast } from '../../alert/toast';
 import { useEmailSignup } from '../../auth/hooks/useEmailSignup';
 import { FormWrapper } from '../../components/FormWrapper';
 import { Button, Input, Text } from '../../components/ui';
 import { useLanguageContext } from '../../language/LanguageContext';
 import { useAppTheme } from '../../theme/hooks/useTheme';
+
 import { createSignupStyles } from './signup.styles';
 
 export default function SignupScreen() {
@@ -82,7 +84,8 @@ export default function SignupScreen() {
       await signup(email, password);
       // Navigation will be handled by auth state change
     } catch (error) {
-      showError(t('auth.signup_failed'));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showError(`${t('auth.signup_failed')}: ${errorMessage}`);
     }
   };
 

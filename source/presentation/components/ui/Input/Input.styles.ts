@@ -1,10 +1,11 @@
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+import { PresentationTheme } from '../../../interfaces/theme';
+
 import { InputStatus, InputVariant } from './Input.types';
 
 /**
  * Creates input styles based on the current theme
  */
-export const createInputStyles = (theme: AppTheme) => {
+export const createInputStyles = (theme: PresentationTheme) => {
   // Base styles for all inputs
   const baseInput = {
     fontFamily: theme.typography.fontFamily.primary,

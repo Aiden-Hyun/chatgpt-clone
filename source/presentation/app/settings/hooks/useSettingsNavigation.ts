@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
+
 import { navigationTracker } from '../../../../service/navigation/utils/navigationTrackerInstance';
 
 export const useSettingsNavigation = () => {
@@ -11,7 +12,7 @@ export const useSettingsNavigation = () => {
     // When the settings page mounts, try to determine where we came from
     if (previousRouteRef.current === null) {
       // Check if we can go back in the navigation stack
-      const canGoBack = (router as any).canGoBack?.() ?? false;
+      const canGoBack = (router as { canGoBack?: () => boolean }).canGoBack?.() ?? false;
       
       if (canGoBack) {
         // If we can go back, we'll use router.back() later
@@ -40,6 +41,8 @@ export const useSettingsNavigation = () => {
       // Clear the tracked route after using it
       navigationTracker.clearPreviousRoute();
     } catch (error) {
+      // Log the error for debugging
+      console.error('Navigation error:', error);
       // Fallback to chat page if anything goes wrong
       router.replace('/chat');
     }

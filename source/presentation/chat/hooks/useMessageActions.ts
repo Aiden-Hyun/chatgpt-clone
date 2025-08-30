@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
-import { useBusinessContext } from '../../shared/BusinessContextProvider';
+
 import { useToast } from '../../alert/toast';
+import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 /**
  * Hook for handling message actions using business layer UseCases
@@ -38,7 +39,7 @@ export function useMessageActions(roomId: string) {
       } else {
         showError(result.error || 'Failed to copy message');
       }
-    } catch (error) {
+    } catch {
       showError('Failed to copy message');
     }
   }, [copyMessageUseCase, roomId, showSuccess, showError]);
@@ -59,7 +60,7 @@ export function useMessageActions(roomId: string) {
         showError(result.error || 'Failed to edit message');
         return null;
       }
-    } catch (error) {
+    } catch {
       showError('Failed to edit message');
       return null;
     }
@@ -80,7 +81,7 @@ export function useMessageActions(roomId: string) {
         showError(result.error || 'Failed to resend message');
         return null;
       }
-    } catch (error) {
+    } catch {
       showError('Failed to resend message');
       return null;
     }
@@ -101,28 +102,28 @@ export function useMessageActions(roomId: string) {
         showError(result.error || 'Failed to regenerate response');
         return null;
       }
-    } catch (error) {
+    } catch {
       showError('Failed to regenerate response');
       return null;
     }
   }, [regenerateAssistantUseCase, roomId, showSuccess, showError]);
 
   // Like message (placeholder for future implementation)
-  const likeMessage = useCallback(async (messageId: string) => {
+  const likeMessage = useCallback(async (_unusedMessageId: string) => {
     try {
       // TODO: Implement like message UseCase when available
       showSuccess('Message liked');
-    } catch (error) {
+    } catch {
       showError('Failed to like message');
     }
   }, [showSuccess, showError]);
 
   // Dislike message (placeholder for future implementation)
-  const dislikeMessage = useCallback(async (messageId: string) => {
+  const dislikeMessage = useCallback(async (_unusedMessageId: string) => {
     try {
       // TODO: Implement dislike message UseCase when available
       showSuccess('Message disliked');
-    } catch (error) {
+    } catch {
       showError('Failed to dislike message');
     }
   }, [showSuccess, showError]);

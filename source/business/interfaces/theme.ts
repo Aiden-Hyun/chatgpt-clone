@@ -452,3 +452,83 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 // Theme style (which theme set to use)
 export type ThemeStyle = string;
+
+// Import Result type for service interfaces
+import { Result } from './shared';
+
+// ============================================================================
+// THEME SERVICE INTERFACES
+// ============================================================================
+
+/**
+ * Interface for theme service operations
+ * Provides methods for managing theme preferences and theme data
+ */
+export interface IThemeService {
+  /**
+   * Get the current theme mode (light, dark, system)
+   */
+  getThemeMode(): Promise<Result<ThemeMode>>;
+  
+  /**
+   * Set the theme mode
+   */
+  setThemeMode(mode: ThemeMode): Promise<Result<void>>;
+  
+  /**
+   * Get the current theme style
+   */
+  getThemeStyle(): Promise<Result<ThemeStyle>>;
+  
+  /**
+   * Set the theme style
+   */
+  setThemeStyle(style: ThemeStyle): Promise<Result<void>>;
+  
+  /**
+   * Get all available themes
+   */
+  getAvailableThemes(): Promise<Result<ThemeWithMetadata[]>>;
+  
+  /**
+   * Get a specific theme by ID
+   */
+  getTheme(themeId: string): Promise<Result<ThemeWithMetadata>>;
+  
+  /**
+   * Get the default theme
+   */
+  getDefaultTheme(): Promise<Result<ThemeWithMetadata>>;
+  
+  /**
+   * Reset theme preferences to defaults
+   */
+  resetThemePreferences(): Promise<Result<void>>;
+  
+  /**
+   * Check if a theme exists
+   */
+  hasTheme(themeId: string): Promise<Result<boolean>>;
+}
+
+// ============================================================================
+// THEME PREFERENCE INTERFACES
+// ============================================================================
+
+/**
+ * Theme preferences data structure
+ */
+export interface ThemePreferences {
+  mode: ThemeMode;
+  style: ThemeStyle;
+  lastUpdated: Date;
+}
+
+/**
+ * Theme preference storage keys
+ */
+export enum ThemeStorageKeys {
+  THEME_MODE = 'theme_mode',
+  THEME_STYLE = 'theme_style',
+  THEME_PREFERENCES = 'theme_preferences'
+}

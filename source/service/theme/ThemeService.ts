@@ -1,73 +1,54 @@
-import { ThemeWithMetadata } from '../../business/types/theme/theme.types';
-import { ILogger } from '../shared/interfaces/ILogger';
+import { ILogger } from '../interfaces';
 import { Logger } from '../shared/utils/Logger';
 
-import { IThemeService } from './interfaces/IThemeService';
-import { ThemeRegistry } from './utils/themeRegistry';
+import { IThemeService } from '../interfaces';
 
 /**
  * Theme service implementation
  * Provides methods for managing themes
  */
 export class ThemeService implements IThemeService {
-  private themeRegistry: ThemeRegistry;
+  private currentTheme: string = 'default';
+  private availableThemes: string[] = ['default', 'dark', 'light'];
   private logger: ILogger;
 
-  constructor(
-    themeRegistry: ThemeRegistry = new ThemeRegistry(),
-    logger: ILogger = new Logger().child('ThemeService')
-  ) {
-    this.themeRegistry = themeRegistry;
+  constructor(logger: ILogger = new Logger().child('ThemeService')) {
     this.logger = logger;
   }
 
   /**
-   * Register a new theme
-   * @param theme Theme with metadata
+   * Get the current theme
+   * @returns Promise resolving to the current theme name
    */
-  registerTheme(theme: ThemeWithMetadata): void {
-    this.themeRegistry.register(theme);
+  async getCurrentTheme(): Promise<string> {
+    return this.currentTheme;
   }
 
   /**
-   * Get a theme by ID
-   * @param id Theme ID
-   * @returns Theme with metadata or undefined if not found
+   * Set the current theme
+   * @param themeName The name of the theme to set
    */
-  getTheme(id: string): ThemeWithMetadata | undefined {
-    return this.themeRegistry.getTheme(id);
+  async setTheme(themeName: string): Promise<void> {
+    if (this.availableThemes.includes(themeName)) {
+      this.currentTheme = themeName;
+      this.logger.info('Theme changed', { theme: themeName });
+    } else {
+      this.logger.warn('Attempted to set unknown theme', { theme: themeName });
+    }
   }
 
   /**
    * Get all available themes
-   * @returns Array of all registered themes
+   * @returns Promise resolving to array of available theme names
    */
-  getAllThemes(): ThemeWithMetadata[] {
-    return this.themeRegistry.getAllThemes();
+  async getAvailableThemes(): Promise<string[]> {
+    return [...this.availableThemes];
   }
 
   /**
-   * Get all theme IDs
-   * @returns Array of all theme IDs
+   * Initialize themes
    */
-  getAllThemeIds(): string[] {
-    return this.themeRegistry.getAllThemeIds();
-  }
-
-  /**
-   * Check if a theme exists
-   * @param id Theme ID
-   * @returns True if theme exists, false otherwise
-   */
-  hasTheme(id: string): boolean {
-    return this.themeRegistry.hasTheme(id);
-  }
-
-  /**
-   * Get the default theme
-   * @returns Default theme
-   */
-  getDefaultTheme(): ThemeWithMetadata {
-    return this.themeRegistry.getDefaultTheme();
+  async initializeThemes(): Promise<void> {
+    this.logger.info('Themes initialized', { themes: this.availableThemes });
   }
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+
 import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
 import { useAuth } from '../../auth/context/AuthContext';
-import { RoomListProps } from '../../interfaces/chat';
+import { ChatRoom, RoomListProps } from '../../interfaces/chat';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function RoomList({ onRoomSelect, onRoomDelete }: RoomListProps) {

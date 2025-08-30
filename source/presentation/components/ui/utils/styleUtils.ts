@@ -1,5 +1,6 @@
 import { StyleProp, TextStyle, ViewStyle } from 'react-native';
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+
+import { PresentationTheme } from '../../../interfaces/theme';
 
 /**
  * Merges multiple style objects into one
@@ -8,7 +9,7 @@ import { AppTheme } from '../../../../business/theme/constants/theme.types';
  * @returns Merged style object
  */
 export function mergeStyles<T extends ViewStyle | TextStyle>(
-  ...styles: Array<StyleProp<T> | undefined | false | null>
+  ...styles: (StyleProp<T> | undefined | false | null)[]
 ): StyleProp<T> {
   return styles.filter(Boolean);
 }
@@ -26,7 +27,7 @@ export function createConditionalStyles<T extends ViewStyle | TextStyle>(
 ): StyleProp<T> {
   const styles = [baseStyle];
   
-  Object.entries(conditions).forEach(([_, value]) => {
+  Object.entries(conditions).forEach(([_unusedKey, value]) => {
     if (value && typeof value !== 'boolean') {
       styles.push(value);
     }
@@ -43,7 +44,7 @@ export function createConditionalStyles<T extends ViewStyle | TextStyle>(
  * @returns Style object
  */
 export function createResponsiveStyles<T extends ViewStyle | TextStyle>(
-  theme: AppTheme,
+  theme: PresentationTheme,
   styleCreator: (breakpoint: string) => StyleProp<T>
 ): StyleProp<T> {
   // This is a simplified implementation

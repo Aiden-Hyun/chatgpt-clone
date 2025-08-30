@@ -1,11 +1,4 @@
-import { ILogger, LogContext } from '../interfaces/ILogger';
-
-export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3
-}
+import { ILogger, LogContext, LogLevel } from '../../interfaces';
 
 export class Logger implements ILogger {
   private static currentLevel: LogLevel = LogLevel.INFO;

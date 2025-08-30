@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
 import { useToast } from '../../../alert/toast';
-import { ChatMessage } from '../../../interfaces/chat';
 import { Button } from '../../../components/ui/Button';
+import { ChatMessage } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 

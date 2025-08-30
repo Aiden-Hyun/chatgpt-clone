@@ -1,6 +1,4 @@
-import { INavigationTracker } from '../../../business/navigation/interfaces/INavigationTracker';
-import { Result } from '../../../business/types/shared/Result';
-import { ILogger } from '../../shared/interfaces/ILogger';
+import { ILogger, INavigationTracker } from '../../interfaces';
 
 /**
  * Implementation of the INavigationTracker interface

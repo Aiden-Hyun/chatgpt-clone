@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+
 import { useSessionStatus } from '../hooks/useSessionStatus';
 
 export function SessionStatus() {
-  const { session, isLoading, error, refreshSession } = useSessionStatus();
+  const { session, isLoading, error } = useSessionStatus();
   
   if (isLoading) {
     return (

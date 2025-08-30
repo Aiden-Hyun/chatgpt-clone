@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
+
 import { Button } from '../../components/ui/Button';
 import { useLanguageContext } from '../../language/LanguageContext';
 import { useAppTheme } from '../../theme/hooks/useTheme';
@@ -9,7 +10,7 @@ import { useSocialAuth } from '../hooks/useSocialAuth';
 interface ISocialAuthButtonsProps {
   onSuccess?: (provider: string) => void;
   onError?: (provider: string, error: string) => void;
-  onRequiresAdditionalInfo?: (provider: string, providerData: any) => void;
+  onRequiresAdditionalInfo?: (provider: string, providerData: Record<string, unknown>) => void;
 }
 
 export const SocialAuthButtons: React.FC<ISocialAuthButtonsProps> = ({
@@ -27,7 +28,7 @@ export const SocialAuthButtons: React.FC<ISocialAuthButtonsProps> = ({
     isLoading 
   } = useSocialAuth();
 
-  const handleSocialAuth = async (provider: string, authFunction: () => Promise<any>) => {
+  const handleSocialAuth = async (provider: string, authFunction: () => Promise<Record<string, unknown>>) => {
     try {
       const result = await authFunction();
       
@@ -39,7 +40,8 @@ export const SocialAuthButtons: React.FC<ISocialAuthButtonsProps> = ({
         onError?.(provider, result.error || 'Authentication failed');
       }
     } catch (error) {
-      onError?.(provider, 'Authentication failed');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      onError?.(provider, `Authentication failed: ${errorMessage}`);
     }
   };
 

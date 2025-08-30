@@ -1,10 +1,11 @@
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+import { PresentationTheme } from '../../../interfaces/theme';
+
 import { ButtonSize, ButtonStatus, ButtonVariant } from './Button.types';
 
 /**
  * Creates button styles based on the current theme
  */
-export const createButtonStyles = (theme: AppTheme) => {
+export const createButtonStyles = (theme: PresentationTheme) => {
   // Base styles for all buttons
   const baseButton = {
     flexDirection: 'row' as const,

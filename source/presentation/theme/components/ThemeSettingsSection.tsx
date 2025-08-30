@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { useAppTheme } from '../theme';
+
 import ThemeSelector from './ThemeSelector';
 
 interface ThemeSettingsSectionProps {

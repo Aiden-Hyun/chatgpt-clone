@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import { AuthProvider } from '../../../business/auth/use-cases/SocialAuthUseCase';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { SignUpFormValues, useAuthForms } from '../hooks/useAuthForms';
@@ -11,7 +12,7 @@ export interface SignUpFormProps {
   enabledProviders?: AuthProvider[];
   termsUrl?: string;
   privacyUrl?: string;
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 export function SignUpForm({
@@ -19,8 +20,8 @@ export function SignUpForm({
   onSuccess,
   showSocialAuth = true,
   enabledProviders = ['google', 'apple', 'github'],
-  termsUrl,
-  privacyUrl,
+  termsUrl: _termsUrl,
+  privacyUrl: _privacyUrl,
   style
 }: SignUpFormProps) {
   const [formValues, setFormValues] = useState<SignUpFormValues>({

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
+
 import { Card, ListItem, Text } from '../../../components/ui';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';

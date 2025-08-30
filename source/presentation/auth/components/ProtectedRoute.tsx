@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+
 import { Logger } from '../../../service/shared/utils/Logger';
 import { useProtectedRoute, UseProtectedRouteOptions } from '../hooks/useProtectedRoute';
 
@@ -198,7 +199,7 @@ export interface ConditionalRenderProps {
   requiredPermissions?: string[];
   requireAll?: boolean;
   fallback?: ReactNode;
-  session?: any;
+  session?: unknown;
 }
 
 export function ConditionalRender({
@@ -206,7 +207,7 @@ export function ConditionalRender({
   requiredPermissions = [],
   requireAll = false,
   fallback = null,
-  session
+  session: _session
 }: ConditionalRenderProps) {
   const {
     isAuthorized,

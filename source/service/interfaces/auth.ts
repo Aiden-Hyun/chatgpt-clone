@@ -1,416 +1,97 @@
 /**
- * Authentication Business Layer Interfaces and Types
- * All auth-related interfaces, entities, and types
+ * Auth Service Layer Interfaces
+ * 
+ * This file contains auth-related interfaces used in the service layer.
  */
 
-
 // ============================================================================
-// USER ENTITY - Core user domain object
+// AUTH ERROR TYPES
 // ============================================================================
 
-/**
- * User entity representing an authenticated user in the system
- */
-export class User {
-  constructor(
-    public readonly id: string,
-    public readonly email: string,
-    public readonly displayName: string,
-    public readonly avatarUrl: string | null,
-    public readonly permissions: string[],
-    public readonly createdAt: Date,
-    public readonly updatedAt: Date
-  ) {}
+export enum AuthErrorType {
+  NETWORK_ERROR = 'NETWORK_ERROR',
+  INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
+  USER_NOT_FOUND = 'USER_NOT_FOUND',
+  EMAIL_NOT_CONFIRMED = 'EMAIL_NOT_CONFIRMED',
+  WEAK_PASSWORD = 'WEAK_PASSWORD',
+  EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',
+  INVALID_EMAIL = 'INVALID_EMAIL',
+  TOKEN_EXPIRED = 'TOKEN_EXPIRED',
+  INVALID_TOKEN = 'INVALID_TOKEN',
+  SESSION_EXPIRED = 'SESSION_EXPIRED',
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
+  SERVER_ERROR = 'SERVER_ERROR',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+}
 
-  hasPermission(permission: string): boolean {
-    return this.permissions.includes(permission);
-  }
-
-  canAccessFeature(feature: string): boolean {
-    // Business rules for feature access
-    const featurePermissions: Record<string, string[]> = {
-      'chat': ['user', 'admin'],
-      'admin': ['admin'],
-      'premium': ['premium', 'admin'],
-      'search': ['user', 'premium', 'admin'],
-      'image_generation': ['premium', 'admin']
-    };
-    
-    const requiredPermissions = featurePermissions[feature] || [];
-    return requiredPermissions.some((perm: string) => this.hasPermission(perm));
-  }
-
-  isAdmin(): boolean {
-    return this.hasPermission('admin');
-  }
-
-  isPremium(): boolean {
-    return this.hasPermission('premium') || this.hasPermission('admin');
-  }
-
-  getDisplayName(): string {
-    return this.displayName || this.email.split('@')[0];
-  }
-
-  getAvatarUrl(): string | null {
-    return this.avatarUrl;
-  }
-
-  canEditProfile(): boolean {
-    return this.hasPermission('user');
-  }
-
-  canDeleteAccount(): boolean {
-    return this.hasPermission('user');
-  }
+export interface ICategorizedAuthError {
+  type: AuthErrorType;
+  message: string;
+  isRetryable: boolean;
+  isNetworkError: boolean;
+  originalError?: unknown;
 }
 
 // ============================================================================
-// AUTH RESULT TYPES - Authentication operation results
+// VALIDATION INTERFACES
 // ============================================================================
 
-/**
- * Basic authentication result
- */
-export interface AuthResult {
-  success: boolean;
-  user?: User;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * User creation result
- */
-export interface CreateUserResult {
-  success: boolean;
-  user: User;
-  requiresEmailVerification?: boolean;
+export interface IValidationResult {
+  isValid: boolean;
   error?: string;
 }
 
-/**
- * Sign out result
- */
-export interface SignOutResult {
-  success: boolean;
+export interface IEmailValidationResult {
+  isValid: boolean;
   error?: string;
 }
 
-/**
- * Token refresh result
- */
-export interface RefreshTokenResult {
-  success: boolean;
-  session?: any; // Supabase Session type
-  accessToken?: string;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * Password reset request result
- */
-export interface RequestResetResult {
-  success: boolean;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * Password reset completion result
- */
-export interface ResetPasswordResult {
-  success: boolean;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * Social authentication result
- */
-export interface SocialAuthResult {
-  success: boolean;
-  user?: User;
-  session?: any;
-  error?: string;
-  isNetworkError?: boolean;
-  requiresAdditionalInfo?: boolean;
-  providerData?: {
-    providerId: string;
-    email?: string;
-    displayName?: string;
-    avatarUrl?: string;
-  };
-}
-
-/**
- * Profile update result
- */
-export interface UpdateProfileResult {
-  success: boolean;
-  user?: User;
+export interface IPasswordValidationResult {
+  isValid: boolean;
   error?: string;
 }
 
-/**
- * User profile data
- */
-export interface UserProfile {
-  id: string;
-  displayName: string;
-  avatarUrl: string | null;
-  email: string;
-  updatedAt: Date;
+export interface IPasswordStrengthResult {
+  score: number; // 0-100
+  level: 'weak' | 'fair' | 'good' | 'strong';
+  feedback: string[];
 }
 
-/**
- * Get user profile parameters
- */
-export interface GetUserProfileParams {
-  userId: string;
-}
-
-/**
- * Get user profile result
- */
-export interface GetUserProfileResult {
-  success: boolean;
-  profile?: UserProfile;
+export interface ITokenValidationResult {
+  isValid: boolean;
   error?: string;
+  tokenType?: 'reset' | 'verification' | 'unknown';
+  isExpired?: boolean;
+  expiresAt?: Date;
 }
 
-/**
- * Update user profile parameters
- */
-export interface UpdateUserProfileParams {
-  userId: string;
-  displayName?: string;
-  avatarUrl?: string;
-}
-
-/**
- * Update user profile result
- */
-export interface UpdateUserProfileResult {
-  success: boolean;
-  profile?: UserProfile;
-  error?: string;
-}
-
-/**
- * User deletion result
- */
-export interface DeleteUserResult {
-  success: boolean;
-  error?: string;
-}
-
-// ============================================================================
-// AUTH REPOSITORY INTERFACE - Data access abstraction
-// ============================================================================
-
-/**
- * User repository interface for authentication operations
- * Abstracts data access for user-related operations
- */
-export interface IUserRepository {
-  /**
-   * Find user by email address
-   */
-  findByEmail(email: string): Promise<User | null>;
-
-  /**
-   * Find user by ID
-   */
-  findById(userId: string): Promise<User | null>;
-
-  /**
-   * Authenticate user with email and password
-   */
-  authenticate(email: string, password: string): Promise<AuthResult>;
-
-  /**
-   * Create a new user account
-   */
-  create(userData: {
-    email: string;
-    password: string;
-    displayName: string;
-  }): Promise<CreateUserResult>;
-
-  /**
-   * Get currently authenticated user
-   */
-  getCurrentUser(): Promise<User | null>;
-
-  /**
-   * Update user profile information
-   */
-  updateProfile(userId: string, updates: {
-    displayName?: string;
-    avatarUrl?: string;
-  }): Promise<UpdateProfileResult>;
-
-  /**
-   * Get user profile information
-   */
-  getProfile(userId: string): Promise<GetUserProfileResult>;
-
-  /**
-   * Delete user account
-   */
-  deleteUser(userId: string): Promise<DeleteUserResult>;
-
-  /**
-   * Sign out current user
-   */
-  signOut(): Promise<SignOutResult>;
-
-  /**
-   * Refresh authentication token
-   */
-  refreshToken(refreshToken: string): Promise<RefreshTokenResult>;
-
-  /**
-   * Request password reset
-   */
-  requestPasswordReset(email: string): Promise<RequestResetResult>;
-
-  /**
-   * Complete password reset
-   */
-  resetPassword(token: string, newPassword: string): Promise<ResetPasswordResult>;
-
-  /**
-   * Authenticate with social provider
-   */
-  authenticateWithProvider(provider: string, options?: any): Promise<SocialAuthResult>;
-
-  /**
-   * Complete social authentication flow
-   */
-  completeSocialAuth(provider: string, data: any): Promise<SocialAuthResult>;
-
-  /**
-   * Clear cached user data
-   */
-  clearCache(): Promise<void>;
-}
-
-// ============================================================================
-// AUTH EVENT EMITTER - Authentication event handling
-// ============================================================================
-
-/**
- * Authentication events
- */
-export enum AuthEvent {
-  SIGN_IN = 'auth_sign_in',
-  SIGN_OUT = 'auth_sign_out',
-  TOKEN_REFRESH = 'auth_token_refresh',
-  SESSION_EXPIRED = 'auth_session_expired',
-  USER_UPDATED = 'auth_user_updated',
-  PASSWORD_RESET_REQUESTED = 'auth_password_reset_requested',
-  PASSWORD_RESET_COMPLETED = 'auth_password_reset_completed',
-  SOCIAL_AUTH_STARTED = 'auth_social_started',
-  SOCIAL_AUTH_COMPLETED = 'auth_social_completed'
-}
-
-/**
- * Authentication event data
- */
-export interface AuthEventData {
-  userId?: string;
+export interface IDecodedToken {
+  sub: string; // Subject (user ID)
+  exp: number; // Expiration time (Unix timestamp)
+  iat: number; // Issued at time (Unix timestamp)
+  aud: string; // Audience
+  iss: string; // Issuer
   email?: string;
-  provider?: string;
-  timestamp: Date;
-  metadata?: Record<string, any>;
-}
-
-/**
- * Authentication event emitter interface
- */
-export interface IAuthEventEmitter {
-  /**
-   * Emit an authentication event
-   */
-  emit(event: AuthEvent, data: AuthEventData): void;
-
-  /**
-   * Subscribe to authentication events
-   */
-  on(event: AuthEvent, handler: (data: AuthEventData) => void): void;
-
-  /**
-   * Unsubscribe from authentication events
-   */
-  off(event: AuthEvent, handler: (data: AuthEventData) => void): void;
-
-  /**
-   * Subscribe to authentication events (once)
-   */
-  once(event: AuthEvent, handler: (data: AuthEventData) => void): void;
+  role?: string;
+  [key: string]: unknown;
 }
 
 // ============================================================================
-// AUTH VALIDATION TYPES - Input validation
+// PERMISSION INTERFACES
 // ============================================================================
 
-/**
- * Email validation result
- */
-export interface EmailValidationResult {
-  isValid: boolean;
-  error?: string;
-}
-
-/**
- * Password validation result
- */
-export interface PasswordValidationResult {
-  isValid: boolean;
-  errors: string[];
-  strength: 'weak' | 'medium' | 'strong';
-}
-
-/**
- * User data validation result
- */
-export interface UserDataValidationResult {
-  isValid: boolean;
-  errors: Record<string, string>;
-}
-
-// ============================================================================
-// AUTH PERMISSIONS - Authorization types
-// ============================================================================
-
-/**
- * System permissions
- */
-export enum Permission {
-  USER = 'user',
-  ADMIN = 'admin',
-  PREMIUM = 'premium',
-  MODERATOR = 'moderator'
-}
-
-/**
- * Feature access levels
- */
-export enum FeatureAccess {
-  PUBLIC = 'public',
-  USER = 'user',
-  PREMIUM = 'premium',
-  ADMIN = 'admin'
-}
-
-/**
- * Authorization check result
- */
-export interface AuthorizationResult {
-  authorized: boolean;
+export interface IPermissionCheckResult {
+  hasAccess: boolean;
+  missingPermissions: string[];
   reason?: string;
-  requiredPermissions?: Permission[];
+}
+
+// ============================================================================
+// MESSAGE VALIDATION INTERFACES
+// ============================================================================
+
+export interface IMessageValidator {
+  validateContent(content: string): IValidationResult;
+  validateMessageId(messageId: string): IValidationResult;
+  validateRoomId(roomId: string): IValidationResult;
 }

@@ -1,15 +1,17 @@
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
+import SyntaxHighlighter from 'react-native-syntax-highlighter';
+import { nightOwl, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import { useThemeContext } from '../../../theme';
 import { useAppTheme } from '../../../theme/theme';
+
 import { createCodeStylerStyles } from './CodeStyler.styles';
 
  
 // @ts-ignore - library lacks proper types for RN env
-import SyntaxHighlighter from 'react-native-syntax-highlighter';
  
 // @ts-ignore - use Prism styles for richer, IDE-like colorization
-import { nightOwl, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeStylerProps {
   code: string;
@@ -71,9 +73,9 @@ export const CodeStyler: React.FC<CodeStylerProps> = ({
   return (
     <View style={styles.container}>
       <SyntaxHighlighter
-        language={normalizedLanguage as any}
+        language={normalizedLanguage}
         style={prismTheme}
-        fontFamily={codeFont as any}
+        fontFamily={codeFont}
         fontSize={fontSize}
         customStyle={{
           backgroundColor: 'transparent',

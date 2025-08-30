@@ -1,7 +1,8 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { ThemeMode, ThemeWithMetadata } from '../../interfaces/theme';
 import { useAppTheme, useThemeMode, useThemeStyle } from '../theme';
-import { ThemeMode, ThemeWithMetadata } from '../theme.types';
 
 interface ThemeSelectorProps {
   // Optional props can be added here

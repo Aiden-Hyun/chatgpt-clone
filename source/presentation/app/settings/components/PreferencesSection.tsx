@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Switch, View } from 'react-native';
+
 import { useToast } from '../../../alert/toast/ToastContext';
 import { Card, ListItem, Text } from '../../../components/ui';
 import { LanguageSelector, useLanguageContext } from '../../../language';

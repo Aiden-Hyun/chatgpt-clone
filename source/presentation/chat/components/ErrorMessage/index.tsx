@@ -1,15 +1,17 @@
 // src/features/chat/components/ErrorMessage/index.tsx
 import React from 'react';
 import { View } from 'react-native';
+
 import { Button, Text } from '../../../components/ui';
 import { useAppTheme } from '../../../theme/theme';
 import { ChatMessage } from '../../types';
+
 import { createErrorMessageStyles } from './ErrorMessage.styles';
 
 interface ErrorMessageProps {
   message: ChatMessage;
   onRetry: () => void;
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry, style }) => {

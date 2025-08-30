@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
 
-export const createAssistantMessageStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createAssistantMessageStyles = (theme: PresentationTheme) => {
   
   return StyleSheet.create({
     container: {

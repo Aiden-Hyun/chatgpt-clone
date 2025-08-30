@@ -1,10 +1,11 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { DEFAULT_MODEL } from '../../../business/chat/constants/models';
+
 import { SessionAdapter } from '../../../persistence/shared/adapters/SessionAdapter';
 import { useAuth } from '../../auth/context/AuthContext';
 import { useRoomCreation } from '../../chat/hooks/useRoomCreation';
 import { LoadingWrapper } from '../../components/LoadingWrapper';
+import { DEFAULT_MODEL } from '../../interfaces/chat';
 
 export default function NewChatScreen() {
   const { session, isLoading } = useAuth();

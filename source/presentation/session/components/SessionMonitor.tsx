@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { UserSession } from '../../../business/session/entities/UserSession';
+
 import { SessionExpiryCalculator } from '../../../service/session/utils/SessionExpiryCalculator';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { useAutoLogout } from '../../auth/hooks/useAutoLogout';
+import { UserSession } from '../../interfaces/auth';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 export interface SessionMonitorProps {
@@ -405,10 +406,8 @@ export function SessionMonitor({
  * Hook version of SessionMonitor for easier integration
  */
 export function useSessionMonitor(
-  session: UserSession | null,
-  options: Omit<SessionMonitorProps, 'session' | 'children'> = {}
+  session: UserSession | null
 ) {
-  const monitorRef = useRef<any>(null);
 
   useEffect(() => {
     // This would typically be handled by the SessionMonitor component

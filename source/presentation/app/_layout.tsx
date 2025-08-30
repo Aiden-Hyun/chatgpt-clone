@@ -5,6 +5,7 @@ import { Drawer } from "expo-router/drawer";
 import { useCallback, useEffect, useMemo } from "react";
 import { AppState } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import { navigationTracker } from "../../service/navigation/utils/navigationTrackerInstance";
 import { resetDebugGlobals } from "../../service/shared/lib/resetDebugGlobals";
 import { ToastContainer, ToastProvider } from "../alert/toast";

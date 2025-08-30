@@ -1,16 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useAppTheme } from '../../business/theme';
-import { useBusinessContext } from '../shared/BusinessContextProvider';
-import { useLanguageContext } from './LanguageContext';
 
 import { useToast } from '../alert/toast';
 import type { DropdownItem } from '../components/ui';
 import { Dropdown } from '../components/ui';
+import { PresentationTheme } from '../interfaces/theme';
+import { useBusinessContext } from '../shared/BusinessContextProvider';
+
+import { useLanguageContext } from './LanguageContext';
 
 interface LanguageSelectorProps {
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
@@ -109,7 +110,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
   );
 };
 
-const createLanguageSelectorStyles = (theme: any) => ({
+const createLanguageSelectorStyles = (theme: PresentationTheme) => ({
   container: {
     alignItems: 'flex-end' as const,
   },

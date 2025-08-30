@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
 
-export const createLoadingMessageStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createLoadingMessageStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       marginVertical: theme.spacing.md,

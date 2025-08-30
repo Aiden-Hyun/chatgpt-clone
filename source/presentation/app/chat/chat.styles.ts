@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../presentation/theme/theme.types';
 
-export const createChatStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../interfaces/theme';
+
+export const createChatStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,

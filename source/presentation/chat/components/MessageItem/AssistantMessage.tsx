@@ -5,27 +5,18 @@ import { useToast } from '../../../alert/toast';
 import { ChatMessage } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
-
 import { AssistantMessageBar } from '../AssistantMessageBar';
+
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
 
 interface IAssistantMessageProps {
   message: ChatMessage;
   onRegenerate?: () => void;
-  showAvatar?: boolean;
-  isLastInGroup?: boolean;
-  // Like/dislike handlers
-  onLike?: (messageId: string) => void;
-  onDislike?: (messageId: string) => void;
 }
 
 export const AssistantMessage: React.FC<IAssistantMessageProps> = React.memo(function AssistantMessage({
   message,
   onRegenerate,
-  showAvatar = true, // (kept for future use)
-  isLastInGroup = true,
-  onLike,
-  onDislike,
 }: IAssistantMessageProps) {
   const theme = useAppTheme();
   const { clipboard } = useBusinessContext();
@@ -36,28 +27,18 @@ export const AssistantMessage: React.FC<IAssistantMessageProps> = React.memo(fun
   const isAnimating = false; // Simplified for now
   const contentToShow = message.content || '';
 
-  const handleLike = () => {
-    if (message.id && onLike) {
-      onLike(message.id);
-    }
-  };
 
-  const handleDislike = () => {
-    if (message.id && onDislike) {
-      onDislike(message.id);
-    }
-  };
 
   return (
-    <View style={[styles.container, !isLastInGroup && styles.compact]}>
+    <View style={styles.container}>
       <Text>{contentToShow}</Text>
 
       {/* Message interaction bar - always show for assistant messages */}
-      {isLastInGroup && !isAnimating && (
+      {!isAnimating && (
         <AssistantMessageBar
           onRegenerate={onRegenerate}
-          onLike={handleLike}
-          onDislike={handleDislike}
+          onLike={() => {}}
+          onDislike={() => {}}
           isLiked={false}
           isDisliked={false}
           onCopy={async () => {

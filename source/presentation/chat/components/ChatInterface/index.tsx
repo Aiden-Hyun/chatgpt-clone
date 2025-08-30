@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
+
 import { useChatViewModel } from '../../../../business/chat/view-models/useChatViewModel';
 import { createChatStyles } from '../../../app/chat/chat.styles';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
-import { MessageList } from '../MessageList';
 import { useMessageActions } from '../../hooks/useMessageActions';
+import { MessageList } from '../MessageList';
 
 interface ChatInterfaceProps {
   roomId: string | number;
@@ -82,7 +83,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     inputValue: input,
     setInputValue: handleInputChange,
     sendMessage,
-    error,
   } = useChatViewModel(roomId?.toString() || '', dependencies, null);
 
   // Get message actions using business layer UseCases

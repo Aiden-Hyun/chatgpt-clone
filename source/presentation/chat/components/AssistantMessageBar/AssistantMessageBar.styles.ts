@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
-// import { getButtonSize } from '../../../../shared/utils/layout';
-import { AppTheme } from '../../../theme/theme.types';
 
-export const createAssistantMessageBarStyles = (theme: AppTheme) => {
+// import { getButtonSize } from '../../../../shared/utils/layout';
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createAssistantMessageBarStyles = (theme: PresentationTheme) => {
   
   return StyleSheet.create({
     container: {

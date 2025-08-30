@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import { useUserProfileViewModel } from '../../../business/auth/view-models/useUserProfileViewModel';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useAuth } from '../context/AuthContext';
@@ -57,6 +58,8 @@ export const useUserInfo = (): UserInfo => {
         setUserId(null);
       }
     } catch (error) {
+      // Log the error for debugging
+      console.error('Failed to get user info:', error);
       // On error, set default values
       setUserName('User');
       setEmail(null);

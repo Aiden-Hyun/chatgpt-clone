@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+
 import { useSessionExpiry } from '../hooks/useSessionExpiry';
 
 export function SessionExpiryWarning() {

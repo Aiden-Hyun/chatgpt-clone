@@ -3,6 +3,7 @@ import { router, usePathname } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { navigationTracker } from '../../../../service/navigation/utils/navigationTrackerInstance';
 import mobileStorage from '../../../../service/storage/implementations/mobileStorage';
 import { useToast } from '../../../alert/toast';
@@ -12,6 +13,7 @@ import { Button, ListItem, Text } from '../../../components/ui';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { useChatRooms } from '../../hooks/useChatRooms';
+
 import { createSidebarStyles } from './Sidebar.styles';
 
 
@@ -19,16 +21,12 @@ interface SidebarProps {
   onNewChat?: () => void;
   onChatSelect?: (roomId: string) => void;
   onSettings?: () => void;
-  onLogout?: () => void;
-  selectedChatId?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
   onChatSelect,
   onSettings,
-  onLogout,
-  selectedChatId,
 }) => {
   const theme = useAppTheme();
   const { t } = useLanguageContext();

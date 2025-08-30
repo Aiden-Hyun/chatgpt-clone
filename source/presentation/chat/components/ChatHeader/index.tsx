@@ -2,13 +2,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useNavigation } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../../../business/chat/constants/models';
+
 import { AnthropicLogo, OpenAILogo } from '../../../components';
 import type { DropdownItem } from '../../../components/ui';
 import { Button, Dropdown } from '../../../components/ui';
+import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
+
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 console.log('🔍 ChatHeader module: Loading ChatHeader file');
@@ -71,7 +73,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   const toggleDrawer = () => {
-    (navigation as any).toggleDrawer();
+    (navigation as { toggleDrawer?: () => void }).toggleDrawer?.();
   };
 
   return (

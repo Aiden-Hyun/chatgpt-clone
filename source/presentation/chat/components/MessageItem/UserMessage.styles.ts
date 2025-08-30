@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
 
-export const createUserMessageStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createUserMessageStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',
@@ -51,7 +52,7 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       paddingVertical: 4,
       backgroundColor: 'transparent',
       borderWidth: 0,
-      outlineStyle: 'none' as any,
+      outlineStyle: 'none',
     },
     actionRow: {
       flexDirection: 'row',

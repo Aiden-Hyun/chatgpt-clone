@@ -1,10 +1,11 @@
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+import { PresentationTheme } from '../../../interfaces/theme';
+
 import { ListItemVariant } from './ListItem.types';
 
 /**
  * Creates list item styles based on the current theme
  */
-export const createListItemStyles = (theme: AppTheme) => {
+export const createListItemStyles = (theme: PresentationTheme) => {
   // Base styles for all list items
   const baseItem = {
     flexDirection: 'row' as const,

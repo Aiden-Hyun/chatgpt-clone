@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 import React from 'react';
+
 import { useThemeContext } from '../theme/context/ThemeContext';
 
 interface OpenAILogoProps {

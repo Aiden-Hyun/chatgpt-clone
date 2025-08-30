@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
 import { useAuth } from '../../auth/context/AuthContext';
 import { CreateRoomButtonProps } from '../../interfaces/chat';

@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+
+import { PresentationTheme } from '../../../interfaces/theme';
 
 /**
  * Creates dropdown styles based on the current theme
  */
-export const createDropdownStyles = (theme: AppTheme) => {
+export const createDropdownStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     trigger: {
       minHeight: 44,

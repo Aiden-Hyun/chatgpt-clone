@@ -4,7 +4,23 @@
  */
 
 import { User } from './auth';
+import {
+  AppInfo,
+  ClearConversationsDataResult,
+  DataExportFormat,
+  DataExportResult,
+  DataExportScope,
+  LegalInfo,
+  SettingsCategory,
+  SupportInfo,
+  UserSettings
+} from './settings';
 import { IUserSession } from './shared';
+import {
+  ThemeMode,
+  ThemePreferences,
+  ThemeStyle
+} from './theme';
 
 // ============================================================================
 // CHAT USE CASE INTERFACES
@@ -174,4 +190,110 @@ export interface UpdateSessionActivityResult {
 export interface AutoLogoutRequest {
   session: IUserSession;
   inactivityThreshold: number;
+}
+
+// ============================================================================
+// THEME USE CASE INTERFACES
+// ============================================================================
+
+// Get Theme Preferences Use Case
+export interface GetThemePreferencesRequest {
+  includeDefaults?: boolean;
+}
+
+export interface GetThemePreferencesResult {
+  mode: ThemeMode;
+  style: ThemeStyle;
+  preferences: ThemePreferences;
+}
+
+// Set Theme Preferences Use Case
+export interface SetThemePreferencesRequest {
+  mode?: ThemeMode;
+  style?: ThemeStyle;
+  preferences?: Partial<ThemePreferences>;
+}
+
+export interface SetThemePreferencesResult {
+  success: boolean;
+  updatedPreferences: ThemePreferences;
+}
+
+// Reset Theme Preferences Use Case
+export interface ResetThemePreferencesRequest {
+  resetToDefaults?: boolean;
+}
+
+export interface ResetThemePreferencesResult {
+  success: boolean;
+  resetPreferences: ThemePreferences;
+}
+
+// ============================================================================
+// SETTINGS USE CASE INTERFACES
+// ============================================================================
+
+// Export Data Use Case
+export interface ExportDataRequest {
+  format: DataExportFormat;
+  scope: DataExportScope;
+  includeMetadata?: boolean;
+  session: IUserSession;
+}
+
+export interface ExportDataResult {
+  success: boolean;
+  data: DataExportResult;
+  error?: string;
+}
+
+// Clear Conversations Use Case
+export interface ClearConversationsRequest {
+  roomIds?: string[];
+  beforeDate?: Date;
+  session: IUserSession;
+}
+
+export interface ClearConversationsUseCaseResult {
+  success: boolean;
+  result: ClearConversationsDataResult;
+  error?: string;
+}
+
+// Get App Info Use Case
+export interface GetAppInfoRequest {
+  includeSupportInfo?: boolean;
+  includeLegalInfo?: boolean;
+}
+
+export interface GetAppInfoResult {
+  success: boolean;
+  appInfo: AppInfo;
+  supportInfo?: SupportInfo;
+  legalInfo?: LegalInfo;
+  error?: string;
+}
+
+// Get User Settings Use Case
+export interface GetUserSettingsRequest {
+  session: IUserSession;
+  category?: SettingsCategory;
+}
+
+export interface GetUserSettingsResult {
+  success: boolean;
+  settings: UserSettings;
+  error?: string;
+}
+
+// Update User Settings Use Case
+export interface UpdateUserSettingsRequest {
+  session: IUserSession;
+  settings: Partial<UserSettings>;
+}
+
+export interface UpdateUserSettingsResult {
+  success: boolean;
+  updatedSettings: UserSettings;
+  error?: string;
 }

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
+
 import { useCustomAlert } from '../../../alert/dialog/useCustomAlert';
 import { useUpdateProfile } from '../../../auth/hooks/useUpdateProfile';
 import { Button, Card, Input, ListItem, Text } from '../../../components/ui';
@@ -56,7 +57,8 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
       setIsEditingName(false);
       showSuccessAlert(t('common.success'), t('settings.name_updated'));
     } catch (error) {
-      showErrorAlert(t('common.error'), t('settings.name_update_failed'));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showErrorAlert(t('common.error'), `${t('settings.name_update_failed')}: ${errorMessage}`);
     }
   };
 

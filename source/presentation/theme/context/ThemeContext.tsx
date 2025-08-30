@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import { AppTheme, ThemeMode, ThemeStyle } from '../theme.types';
+
+import type { AppTheme, ThemeMode, ThemeStyle } from '../../interfaces/theme';
 import themeRegistry from '../themeRegistry';
 
 // Storage keys for persisting theme preferences

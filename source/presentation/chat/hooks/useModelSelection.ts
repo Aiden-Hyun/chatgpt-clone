@@ -1,7 +1,8 @@
 // source/presentation/chat/hooks/useModelSelection.ts
 import { useCallback, useState, useMemo } from 'react';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+
 import { useAuth } from '../../auth/context/AuthContext';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function useModelSelection(roomId?: number | null) {
   // Default to GPT-3.5 Turbo

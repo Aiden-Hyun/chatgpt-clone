@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
+
+import { PresentationTheme } from '../../interfaces/theme';
 import { useAppTheme } from '../../theme/theme';
 import { DEFAULT_TOAST_DURATION_MS } from '../constants';
 
@@ -93,7 +95,7 @@ export const Toast: React.FC<ToastProps> = ({
   );
 };
 
-const createStyles = (theme: any, type: string, position: 'bottom' | 'top') => StyleSheet.create({
+const createStyles = (theme: PresentationTheme, type: string, position: 'bottom' | 'top') => StyleSheet.create({
   container: {
     position: 'absolute',
     ...(position === 'bottom' ? { bottom: 24 } : { top: 24 }),

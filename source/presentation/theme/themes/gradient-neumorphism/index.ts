@@ -1,8 +1,9 @@
 // Gradient Neumorphism theme - Index file
 // Exports both light and dark variants along with theme metadata
 
-import { BaseTheme } from '../../theme.types';
+import { BaseTheme } from '../../../interfaces/theme';
 import { spacing } from '../tokens';
+
 import { darkColors, darkShadows } from './dark';
 import { lightColors, lightShadows } from './light';
 

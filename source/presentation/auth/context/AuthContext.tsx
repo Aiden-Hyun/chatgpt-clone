@@ -5,6 +5,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
+
 import { AuthContextType, AuthProviderProps } from '../../interfaces/auth';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 import { useAuthStateMonitor } from '../hooks/useAuthStateMonitor';
@@ -12,7 +13,7 @@ import { useAuthStateMonitor } from '../hooks/useAuthStateMonitor';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<unknown>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { useCaseFactory } = useBusinessContext();
   

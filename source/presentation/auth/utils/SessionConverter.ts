@@ -8,9 +8,14 @@
  * session types while maintaining compatibility during migration.
  */
 
-import { IUserSession } from '../../../business/shared/interfaces/IUserSession';
 import { SessionAdapter } from '../../../persistence/shared/adapters/SessionAdapter';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IUserSession } from '../../interfaces/auth';
+import {
+    ExternalSession,
+    SessionValidationResult,
+    SupabaseSession
+} from '../../interfaces/session';
 
 /**
  * Session converter for presentation layer
@@ -71,10 +76,10 @@ export class SessionConverter {
       'accessToken' in session &&
       'expiresAt' in session &&
       'isValid' in session &&
-      typeof (session as any).userId === 'string' &&
-      typeof (session as any).accessToken === 'string' &&
-      (session as any).expiresAt instanceof Date &&
-      typeof (session as any).isValid === 'function'
+      typeof (session as IUserSession).userId === 'string' &&
+      typeof (session as IUserSession).accessToken === 'string' &&
+      (session as IUserSession).expiresAt instanceof Date &&
+      typeof (session as IUserSession).isValid === 'function'
     );
   }
 
@@ -93,16 +98,16 @@ export class SessionConverter {
       // Try to extract from external session formats
       if (typeof session === 'object' && session !== null) {
         // Supabase session format
-        if ('user' in session && typeof (session as any).user === 'object') {
-          const user = (session as any).user;
-          if ('id' in user && typeof user.id === 'string') {
+        if ('user' in session && typeof (session as SupabaseSession).user === 'object') {
+          const user = (session as SupabaseSession).user;
+          if (user && 'id' in user && typeof user.id === 'string') {
             return user.id;
           }
         }
 
         // Direct user ID
-        if ('userId' in session && typeof (session as any).userId === 'string') {
-          return (session as any).userId;
+        if ('userId' in session && typeof (session as ExternalSession).userId === 'string') {
+          return (session as ExternalSession).userId;
         }
       }
 
@@ -131,13 +136,13 @@ export class SessionConverter {
       // Try to extract from external session formats
       if (typeof session === 'object' && session !== null) {
         // Supabase session format
-        if ('access_token' in session && typeof (session as any).access_token === 'string') {
-          return (session as any).access_token;
+        if ('access_token' in session && typeof (session as SupabaseSession).access_token === 'string') {
+          return (session as SupabaseSession).access_token;
         }
 
         // Business session format
-        if ('accessToken' in session && typeof (session as any).accessToken === 'string') {
-          return (session as any).accessToken;
+        if ('accessToken' in session && typeof (session as ExternalSession).accessToken === 'string') {
+          return (session as ExternalSession).accessToken;
         }
       }
 
@@ -166,14 +171,14 @@ export class SessionConverter {
       // Try to check expiry from external session formats
       if (typeof session === 'object' && session !== null) {
         // Supabase session format
-        if ('expires_at' in session && typeof (session as any).expires_at === 'number') {
-          const expiresAt = new Date((session as any).expires_at * 1000);
+        if ('expires_at' in session && typeof (session as SupabaseSession).expires_at === 'number') {
+          const expiresAt = new Date((session as SupabaseSession).expires_at * 1000);
           return new Date() >= expiresAt;
         }
 
         // Business session format
-        if ('expiresAt' in session && (session as any).expiresAt instanceof Date) {
-          return new Date() >= (session as any).expiresAt;
+        if ('expiresAt' in session && (session as ExternalSession).expiresAt instanceof Date) {
+          return new Date() >= (session as ExternalSession).expiresAt;
         }
       }
 
@@ -219,14 +224,7 @@ export class SessionConverter {
    * @param session - Session to validate
    * @returns Validation result with details
    */
-  static validateSession(session: unknown): {
-    isValid: boolean;
-    isBusinessSession: boolean;
-    isExpired: boolean;
-    hasUserId: boolean;
-    hasAccessToken: boolean;
-    error?: string;
-  } {
+  static validateSession(session: unknown): SessionValidationResult {
     try {
       const isBusinessSession = this.isValidBusinessSession(session);
       const hasUserId = !!this.extractUserId(session);

@@ -1,4 +1,4 @@
-import { ILogger } from '../../shared/interfaces/ILogger';
+import { ILogger } from '../../interfaces';
 import { NavigationTracker } from '../implementations/NavigationTracker';
 
 /**

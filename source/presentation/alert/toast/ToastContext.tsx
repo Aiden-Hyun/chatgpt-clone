@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
+
 import { ToastContextType, ToastProviderProps, ToastState } from '../../interfaces/alert';
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);

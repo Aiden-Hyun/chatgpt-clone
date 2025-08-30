@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+
 import { UserSession } from '../../../business/interfaces';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export function useRoomCreation() {
   const useCaseFactory = useUseCaseFactory();

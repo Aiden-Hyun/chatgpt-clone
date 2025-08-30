@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../../business/theme/constants/theme.types'; // ← Use absolute path with @ alias
 
-export const createSidebarStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createSidebarStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,

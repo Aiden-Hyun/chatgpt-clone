@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import { AuthProvider } from '../../../business/auth/use-cases/SocialAuthUseCase';
 import { AuthErrorHandler } from '../../../service/auth/utils/AuthErrorHandler';
 import { EmailValidator } from '../../../service/auth/validators/EmailValidator';
@@ -6,6 +7,7 @@ import { PasswordResetValidator } from '../../../service/auth/validators/Passwor
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
+
 import { useAuthNavigation } from './useAuthNavigation';
 
 export interface LoginFormValues {

@@ -7,6 +7,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+
+import { PresentationTheme } from '../../interfaces/theme';
 import { useAppTheme } from '../../theme/theme';
 
 interface CustomAlertProps {
@@ -81,7 +83,7 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
   );
 };
 
-const createStyles = (theme: any, type: string) => StyleSheet.create({
+const createStyles = (theme: PresentationTheme, type: string) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

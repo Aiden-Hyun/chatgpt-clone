@@ -1,4 +1,3 @@
-import { useRequestPasswordResetViewModel } from '../../../business/auth/view-models/useRequestPasswordResetViewModel';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export const usePasswordReset = () => {

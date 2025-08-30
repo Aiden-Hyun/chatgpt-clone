@@ -12,7 +12,9 @@ import {
     Text,
     View
 } from "react-native";
+
 import { useAppTheme } from '../../../theme/hooks/useTheme';
+
 import createDropdownStyles from './Dropdown.styles';
 
 export type DropdownItem = {
@@ -319,7 +321,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const keyExtractor = useCallback((it: DropdownItem) => String(it.value), []);
 
   // Dismiss if user taps outside
-  const onBackdrop = useCallback((e: GestureResponderEvent) => {
+  const onBackdrop = useCallback((_unusedEvent: GestureResponderEvent) => {
     // No special hit testing needed; full-screen backdrop
     closeMenu();
   }, [closeMenu]);

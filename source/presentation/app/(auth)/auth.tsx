@@ -119,7 +119,7 @@ export default function AuthScreen() {
     try {
       await signIn(email, password);
       // Navigation will be handled by auth state change
-    } catch (error) {
+    } catch  {
       showError(t('auth.signin_failed'));
     }
   };

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
+
+import { PresentationTheme } from '../../../interfaces/theme';
 
 /**
  * ChatInput Styles - Native TextInput Style with Neumorphic Effects
@@ -11,7 +12,7 @@ import { AppTheme } from '../../../theme/theme.types';
  * - Native TextInput styling for proper iOS behavior
  * - Consistent appearance across iOS, Android, and Web
  */
-export const createChatInputStyles = (theme: AppTheme) => {
+export const createChatInputStyles = (theme: PresentationTheme) => {
   
   const styles = StyleSheet.create({
     // Main container - Consistent padding across platforms

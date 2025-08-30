@@ -1,5 +1,5 @@
+import { PresentationTheme } from '../../interfaces/theme';
 import { useThemeContext } from '../context/ThemeContext';
-import { PresentationTheme } from '../types/PresentationTheme';
 
 /**
  * Hook to get the current theme based on user preferences

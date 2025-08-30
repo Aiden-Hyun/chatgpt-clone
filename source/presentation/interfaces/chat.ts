@@ -10,6 +10,303 @@ import { TextInput } from 'react-native';
 import { BaseComponentProps } from './shared';
 
 // ============================================================================
+// MODEL TYPES - AI model configuration (from business layer)
+// ============================================================================
+
+/**
+ * Model provider types
+ */
+export type ModelProvider = 'openai' | 'anthropic' | 'perplexity';
+
+/**
+ * Model capabilities interface
+ */
+export interface ModelCapabilities {
+  chat: boolean;
+  image: boolean;
+  search: boolean;
+  vision: boolean;
+  code: boolean;
+  analysis: boolean;
+}
+
+/**
+ * Model information interface
+ */
+export interface ModelInfo {
+  label: string;
+  value: string;
+  provider: ModelProvider;
+  capabilities: ModelCapabilities;
+  description?: string;
+  tokenParameter?: 'max_tokens' | 'max_completion_tokens';
+  supportsCustomTemperature?: boolean;
+  defaultTemperature?: number;
+}
+
+/**
+ * Type for model values
+ */
+export type ModelValue = string;
+
+/**
+ * Model constants for presentation layer
+ */
+export interface ModelConstants {
+  availableModels: ModelInfo[];
+  defaultModel: ModelValue;
+}
+
+// ============================================================================
+// MESSAGE ENTITY TYPES - Business layer message entities
+// ============================================================================
+
+/**
+ * Message role enumeration
+ */
+export enum MessageRole {
+  USER = 'user',
+  ASSISTANT = 'assistant',
+  SYSTEM = 'system'
+}
+
+/**
+ * Message metadata interface
+ */
+export interface MessageMetadata {
+  model?: string;
+  tokens?: number;
+  processingTime?: number;
+  error?: string;
+  isEdited?: boolean;
+  editedAt?: Date;
+  replyToMessageId?: string;
+  supersededByMessageId?: string;
+}
+
+/**
+ * Message entity interface (from business layer)
+ */
+export interface Message {
+  id: string;
+  content: string;
+  role: MessageRole;
+  timestamp: Date;
+  roomId: string;
+  userId?: string;
+  isDeleted: boolean;
+  metadata?: MessageMetadata;
+}
+
+/**
+ * Message entity with business logic
+ */
+export class MessageEntity implements Message {
+  id: string;
+  content: string;
+  role: MessageRole;
+  timestamp: Date;
+  roomId: string;
+  userId?: string;
+  isDeleted: boolean;
+  metadata?: MessageMetadata;
+
+  constructor(params: {
+    id: string;
+    content: string;
+    role: MessageRole;
+    roomId: string;
+    userId?: string;
+    timestamp?: Date;
+    isDeleted?: boolean;
+    metadata?: MessageMetadata;
+  }) {
+    this.id = params.id;
+    this.content = params.content;
+    this.role = params.role;
+    this.roomId = params.roomId;
+    this.userId = params.userId;
+    this.timestamp = params.timestamp || new Date();
+    this.isDeleted = params.isDeleted || false;
+    this.metadata = params.metadata;
+  }
+
+  // Business methods
+  isUserMessage(): boolean {
+    return this.role === MessageRole.USER;
+  }
+
+  isAssistantMessage(): boolean {
+    return this.role === MessageRole.ASSISTANT;
+  }
+
+  isSystemMessage(): boolean {
+    return this.role === MessageRole.SYSTEM;
+  }
+
+  markAsDeleted(): void {
+    this.isDeleted = true;
+  }
+
+  restore(): void {
+    this.isDeleted = false;
+  }
+
+  updateContent(newContent: string): void {
+    this.content = newContent;
+    this.timestamp = new Date();
+  }
+
+  addMetadata(metadata: Partial<MessageMetadata>): void {
+    this.metadata = { ...this.metadata, ...metadata };
+  }
+
+  getDisplayContent(): string {
+    return this.isDeleted ? '[Message deleted]' : this.content;
+  }
+
+  canBeDeleted(): boolean {
+    return !this.isSystemMessage() && !this.isDeleted;
+  }
+
+  canBeCopied(): boolean {
+    return !this.isDeleted && this.content.length > 0;
+  }
+
+  editContent(newContent: string): void {
+    this.content = newContent;
+    this.metadata = {
+      ...this.metadata,
+      isEdited: true,
+      editedAt: new Date()
+    };
+  }
+
+  canBeEdited(userId: string): boolean {
+    return this.isUserMessage() && this.userId === userId && !this.isDeleted;
+  }
+
+  markAsSuperseded(supersededByMessageId: string): void {
+    this.metadata = {
+      ...this.metadata,
+      supersededByMessageId
+    };
+  }
+
+  linkToUserMessage(replyToMessageId: string): void {
+    this.metadata = {
+      ...this.metadata,
+      replyToMessageId
+    };
+  }
+
+  isEdited(): boolean {
+    return this.metadata?.isEdited === true;
+  }
+
+  isSuperseded(): boolean {
+    return !!this.metadata?.supersededByMessageId;
+  }
+}
+
+// ============================================================================
+// CHAT ROOM ENTITY TYPES - Business layer chat room entities
+// ============================================================================
+
+/**
+ * Chat room entity interface (from business layer)
+ */
+export interface ChatRoomEntity {
+  id: string;
+  name: string;
+  model: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+  messageCount: number;
+  lastMessage?: string;
+  lastActivity?: Date;
+}
+
+/**
+ * Chat room entity with business logic
+ */
+export class ChatRoom implements ChatRoomEntity {
+  id: string;
+  name: string;
+  model: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+  messageCount: number;
+  lastMessage?: string;
+  lastActivity?: Date;
+
+  constructor(params: {
+    id: string;
+    name: string;
+    model: string;
+    userId: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+    isActive?: boolean;
+    messageCount?: number;
+    lastMessage?: string;
+    lastActivity?: Date;
+  }) {
+    this.id = params.id;
+    this.name = params.name;
+    this.model = params.model;
+    this.userId = params.userId;
+    this.createdAt = params.createdAt || new Date();
+    this.updatedAt = params.updatedAt || new Date();
+    this.isActive = params.isActive ?? true;
+    this.messageCount = params.messageCount || 0;
+    this.lastMessage = params.lastMessage;
+    this.lastActivity = params.lastActivity;
+  }
+
+  // Business methods
+  updateLastMessage(messageId: string, timestamp: Date): void {
+    this.lastMessage = messageId;
+    this.lastActivity = timestamp;
+    this.updatedAt = new Date();
+    this.messageCount++;
+  }
+
+  incrementMessageCount(): void {
+    this.messageCount++;
+    this.updatedAt = new Date();
+  }
+
+  deactivate(): void {
+    this.isActive = false;
+    this.updatedAt = new Date();
+  }
+
+  activate(): void {
+    this.isActive = true;
+    this.updatedAt = new Date();
+  }
+
+  updateName(newName: string): void {
+    this.name = newName;
+    this.updatedAt = new Date();
+  }
+
+  getDisplayName(): string {
+    return this.name || 'New Chat';
+  }
+
+  isRecent(): boolean {
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    return this.updatedAt > oneDayAgo;
+  }
+}
+
+// ============================================================================
 // CHAT MESSAGE INTERFACES
 // ============================================================================
 
@@ -210,4 +507,41 @@ export interface ChatThemeCustomization {
  */
 export interface TestChatInterfaceProps extends BaseComponentProps {
   userId: string;
+}
+
+// ============================================================================
+// MODEL HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Available models constant (to be populated from constants)
+ */
+export const AVAILABLE_MODELS: ModelInfo[] = [];
+
+/**
+ * Default model
+ */
+export const DEFAULT_MODEL: ModelValue = 'gpt-3.5-turbo';
+
+/**
+ * Get model info by value
+ */
+export function getModelInfo(value: string): ModelInfo | undefined {
+  return AVAILABLE_MODELS.find(model => model.value === value);
+}
+
+/**
+ * Validate model capabilities
+ */
+export function validateModelCapabilities(
+  model: string, 
+  requiredCapabilities: Partial<ModelCapabilities>
+): boolean {
+  const modelInfo = getModelInfo(model);
+  if (!modelInfo) return false;
+
+  return Object.entries(requiredCapabilities).every(([capability, required]) => {
+    if (!required) return true;
+    return modelInfo.capabilities[capability as keyof ModelCapabilities];
+  });
 }

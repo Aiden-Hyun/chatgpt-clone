@@ -3,8 +3,8 @@ import { Platform } from 'react-native';
 
 interface FormWrapperProps {
   children: React.ReactNode;
-  onSubmit?: (e: any) => void;
-  style?: any;
+  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
+  style?: Record<string, unknown>;
 }
 
 export const FormWrapper: React.FC<FormWrapperProps> = ({ 

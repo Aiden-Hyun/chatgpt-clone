@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
 
-export const createModelSelectorStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createModelSelectorStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       flexDirection: 'row',

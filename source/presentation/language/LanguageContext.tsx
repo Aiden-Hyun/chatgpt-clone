@@ -1,4 +1,5 @@
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
 import { useBusinessContext } from '../shared/BusinessContextProvider';
 
 // Define the context type

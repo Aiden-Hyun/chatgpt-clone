@@ -1,8 +1,9 @@
 import { usePathname, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { IUserSession } from '../../../business/shared/interfaces/IUserSession';
+
 import { RoutePermissionChecker } from '../../../service/auth/utils/RoutePermissionChecker';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { IUserSession } from '../../interfaces/auth';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 export interface ProtectedRouteState {

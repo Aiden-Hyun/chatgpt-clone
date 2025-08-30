@@ -1,8 +1,7 @@
 // source/presentation/chat/hooks/useChatRooms.ts
-import { useEffect } from 'react';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useChatRoomViewModel } from '../../../business/chat/view-models/useChatRoomViewModel';
 import { useAuth } from '../../auth/context/AuthContext';
+import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 
 export interface ChatRoom {
   id: number;

@@ -1,16 +1,17 @@
 import { Platform, StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
+
+import { PresentationTheme } from '../../../interfaces/theme';
 
 const monoFont = Platform.select({
   ios: 'Menlo',
   android: 'monospace',
   web: "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   default: 'monospace',
-});
-const tabularNums = Platform.OS === 'ios' ? (['tabular-nums'] as any) : undefined;
+}) as string;
+const tabularNums = Platform.OS === 'ios' ? (['tabular-nums'] as string[]) : undefined;
 const codeFontNative = 'CascadiaMono';
 
-export const createCodeBlockStyles = (theme: AppTheme) => {
+export const createCodeBlockStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     container: {
       backgroundColor: theme.colors.syntax?.background || theme.colors.background.tertiary,
@@ -78,7 +79,7 @@ export const createCodeBlockStyles = (theme: AppTheme) => {
     },
     
     lineNumber: {
-      fontFamily: Platform.OS === 'web' ? (monoFont as any) : (codeFontNative as any),
+      fontFamily: Platform.OS === 'web' ? monoFont : codeFontNative,
       fontSize: 14,
       color: theme.colors.text.quaternary,
       textAlign: 'right',
@@ -86,7 +87,7 @@ export const createCodeBlockStyles = (theme: AppTheme) => {
       marginRight: theme.spacing.md,
       paddingTop: 0,
       //lineHeight: 22,
-      includeFontPadding: false as any,
+      includeFontPadding: false,
       fontVariant: tabularNums,
     },
     
@@ -95,15 +96,15 @@ export const createCodeBlockStyles = (theme: AppTheme) => {
     },
     
     codeLine: {
-      fontFamily: Platform.OS === 'web' ? (monoFont as any) : (codeFontNative as any),
+      fontFamily: Platform.OS === 'web' ? monoFont : codeFontNative,
       fontSize: 14,
       color: theme.colors.text.primary,
       //lineHeight: 22,
-      includeFontPadding: false as any,
+      includeFontPadding: false,
     },
     
     code: {
-      fontFamily: Platform.OS === 'web' ? (monoFont as any) : (codeFontNative as any),
+      fontFamily: Platform.OS === 'web' ? monoFont : codeFontNative,
       fontSize: 14,
       color: theme.colors.text.primary,
     },

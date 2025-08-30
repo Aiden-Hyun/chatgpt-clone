@@ -1,14 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
+
+import { ModelCapabilities } from '../../../interfaces/chat';
 import { useAppTheme } from '../../../theme/theme';
-import { ModelCapabilities } from '../../constants/models';
 
 interface ModelCapabilityIconsProps {
   capabilities: ModelCapabilities;
   size?: number;
   showLabels?: boolean;
-  containerStyle?: any;
+  containerStyle?: Record<string, unknown>;
 }
 
 /**
@@ -70,10 +71,10 @@ export const ModelCapabilityIcons: React.FC<ModelCapabilityIconsProps> = ({
 
   return (
     <View style={[{ flexDirection: 'row', alignItems: 'center', gap: 4 }, containerStyle]}>
-      {activeCapabilities.map((capability, index) => (
+      {activeCapabilities.map((capability) => (
         <View key={capability.key} style={{ alignItems: 'center' }}>
           <Ionicons
-            name={`${capability.icon}-outline` as any}
+            name={`${capability.icon}-outline` as keyof typeof Ionicons.glyphMap}
             size={size}
             color={capability.color}
           />

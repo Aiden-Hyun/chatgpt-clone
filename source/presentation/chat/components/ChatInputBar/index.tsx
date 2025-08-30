@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo, useState } from 'react';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
-import { getModelInfo } from '../../../../business/chat/constants/models';
-import { ChatInputBarProps } from '../../../interfaces/chat';
+import { Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import { ChatInputBarProps, getModelInfo } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
+
 import { createChatInputStyles } from './ChatInputBar.styles';
 
 /**

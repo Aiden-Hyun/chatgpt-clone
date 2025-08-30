@@ -2,11 +2,13 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useModelSelection } from '../../../presentation/chat/hooks/useModelSelection';
 import { useLogout } from '../../auth/hooks/useLogout';
 import { ChatInputBar, ChatInterface } from '../../chat/components';
 import ChatHeader from '../../chat/components/ChatHeader';
 import { useAppTheme } from '../../theme/hooks/useTheme';
+
 import { createChatStyles } from './chat.styles';
 
 // Debug imports
@@ -27,7 +29,7 @@ interface ChatScreenProps {
   isTemporaryRoom: boolean;
   numericRoomId: number | null;
   chatScreenState: {
-    inputRef: any;
+    inputRef: React.RefObject<TextInput> | null;
     inputValue: string;
     setInputValue: (value: string) => void;
     handleSendMessage: () => void;

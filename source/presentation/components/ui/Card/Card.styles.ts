@@ -1,10 +1,11 @@
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+import { PresentationTheme } from '../../../interfaces/theme';
+
 import { CardPadding, CardVariant } from './Card.types';
 
 /**
  * Creates card styles based on the current theme
  */
-export const createCardStyles = (theme: AppTheme) => {
+export const createCardStyles = (theme: PresentationTheme) => {
   // Base styles for all cards
   const baseCard = {
     backgroundColor: theme.colors.background.secondary,

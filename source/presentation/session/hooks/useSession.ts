@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { UserSession } from '../../../business/session/entities/UserSession';
+
 import { SessionExpiryCalculator } from '../../../service/session/utils/SessionExpiryCalculator';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { UserSession } from '../../interfaces/auth';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
 
 export interface SessionState {

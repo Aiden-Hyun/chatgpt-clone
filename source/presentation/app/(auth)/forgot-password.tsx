@@ -1,11 +1,13 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+
 import { useToast } from '../../alert/toast';
 import { usePasswordReset } from '../../auth/hooks/usePasswordReset';
 import { FormWrapper } from '../../components/FormWrapper';
 import { Button, Input, Text } from '../../components/ui';
 import { useLanguageContext } from '../../language/LanguageContext';
 import { useAppTheme } from '../../theme/hooks/useTheme';
+
 import { createForgotPasswordStyles } from './forgot-password.styles';
 
 export default function ForgotPasswordScreen() {
@@ -48,7 +50,8 @@ export default function ForgotPasswordScreen() {
         router.replace('/auth');
       }, 2000);
     } catch (error) {
-      showError(t('auth.reset_email_failed'));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showError(`${t('auth.reset_email_failed')}: ${errorMessage}`);
     }
   };
 

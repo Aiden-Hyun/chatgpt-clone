@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
+
 import { Button, Text } from '../../../components/ui';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createSettingsStyles } from '../settings.styles';

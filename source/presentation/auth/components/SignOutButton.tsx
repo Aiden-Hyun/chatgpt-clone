@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, Button, StyleSheet, View } from 'react-native';
+
 import { useSignOutButton } from '../hooks/useSignOutButton';
 
 export function SignOutButton() {

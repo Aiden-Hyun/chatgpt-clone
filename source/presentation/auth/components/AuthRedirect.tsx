@@ -1,6 +1,7 @@
 import { usePathname, useRouter, useSearchParams } from 'expo-router';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+
 import { RoutePermissionChecker } from '../../../service/auth/utils/RoutePermissionChecker';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { useProtectedRoute } from '../hooks/useProtectedRoute';
@@ -76,6 +77,7 @@ export function AuthRedirect({
       }
     } catch (error) {
       // localStorage might not be available
+      console.warn('localStorage setItem failed:', error);
     }
 
     return null;
@@ -89,7 +91,7 @@ export function AuthRedirect({
 
     try {
       localStorage?.setItem('intendedDestination', destination);
-    } catch (error) {
+    } catch {
       // localStorage might not be available
     }
   };

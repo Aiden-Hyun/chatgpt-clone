@@ -2,13 +2,10 @@
 // Follows layered architecture: Presentation layer manages its dependencies
 
 import React, { createContext, useContext, useMemo } from 'react';
-import { IAlertService, IToastService } from '../../business/alert/interfaces';
-import { IClipboardAdapter } from '../../business/chat/interfaces/IClipboardAdapter';
-import { ILanguageService } from '../../business/language/interfaces/ILanguageService';
-import { INavigationService, INavigationTracker } from '../../business/navigation/interfaces';
+
 import { BusinessLayerProvider } from '../../business/shared/BusinessLayerProvider';
 import { UseCaseFactory } from '../../business/shared/UseCaseFactory';
-import { ISecureStorageService, IStorageService } from '../../business/storage/interfaces';
+import { IAlertService, IClipboardAdapter, ILanguageService, INavigationService, INavigationTracker, ISecureStorageService, IStorageService, IToastService } from '../interfaces/shared';
 
 interface BusinessContextValue {
   useCaseFactory: UseCaseFactory;

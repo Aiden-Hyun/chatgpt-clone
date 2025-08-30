@@ -2,10 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 // import * as Clipboard from 'expo-clipboard';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
 import { useToast } from '../../../alert/toast';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { CodeStyler } from '../CodeStyler';
+
 import { createCodeBlockStyles } from './CodeBlock.styles';
 
 interface CodeBlockProps {

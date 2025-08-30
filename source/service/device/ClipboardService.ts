@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { IClipboardService } from './interfaces/IClipboardService';
+import { IClipboardService } from '../interfaces';
 
 /**
  * Cross-platform clipboard service implementation.

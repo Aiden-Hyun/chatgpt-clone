@@ -1,11 +1,11 @@
 // theme.ts - Main theme file with enhanced theme switching support
 
+import { PresentationTheme } from '../interfaces/theme';
 import { useThemeContext } from './context/ThemeContext';
-import { AppTheme } from './theme.types';
 import themeRegistry from './themeRegistry';
 
 // Re-export theme types
-export * from './theme.types';
+// Theme types moved to interfaces/theme.ts
 
 // Re-export ThemeContext and provider
 export { ThemeProvider, useThemeContext } from './context/ThemeContext';
@@ -17,7 +17,7 @@ export { themeRegistry };
  * Hook to get the current theme based on user preferences
  * @returns The current theme object
  */
-export function useTheme(): AppTheme {
+export function useTheme(): PresentationTheme {
   const { currentTheme } = useThemeContext();
   return currentTheme;
 }
@@ -26,7 +26,7 @@ export function useTheme(): AppTheme {
  * Alias for useTheme for clarity and backward compatibility
  * @returns The current theme object
  */
-export function useAppTheme(): AppTheme {
+export function useAppTheme(): PresentationTheme {
   return useTheme();
 }
 

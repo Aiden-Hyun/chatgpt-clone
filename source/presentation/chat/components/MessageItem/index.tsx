@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { MessageItemProps } from '../../../interfaces/chat';
 import { ErrorMessage } from '../ErrorMessage';
 import { LoadingMessage } from '../LoadingMessage';
+
 import { AssistantMessage } from './AssistantMessage';
 import { SystemMessage } from './SystemMessage';
 import { UserMessage } from './UserMessage';

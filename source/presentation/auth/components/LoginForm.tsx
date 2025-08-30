@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import { AuthProvider } from '../../../business/auth/use-cases/SocialAuthUseCase';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { LoginFormValues, useAuthForms } from '../hooks/useAuthForms';
@@ -10,7 +11,7 @@ export interface LoginFormProps {
   onSuccess?: () => void;
   showSocialAuth?: boolean;
   enabledProviders?: AuthProvider[];
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 export function LoginForm({

@@ -1,10 +1,11 @@
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
+import { PresentationTheme } from '../../../interfaces/theme';
+
 import { TextSize, TextVariant, TextWeight } from './Text.types';
 
 /**
  * Creates text styles based on the current theme
  */
-export const createTextStyles = (theme: AppTheme) => {
+export const createTextStyles = (theme: PresentationTheme) => {
   // Font sizes mapping
   const fontSizes = {
     xs: theme.typography.fontSizes.xs,

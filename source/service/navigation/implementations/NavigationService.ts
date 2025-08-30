@@ -1,19 +1,14 @@
 import { router } from 'expo-router';
 
-import { AppRoute, ParamsOf, buildRoute } from '../../../business/navigation/constants/routes';
-import { NavigationState } from '../../../business/navigation/entities/NavigationState';
-import { INavigationService } from '../../../business/navigation/interfaces/INavigationService';
-import { INavigationTracker } from '../../../business/navigation/interfaces/INavigationTracker';
-import { Result } from '../../../business/types/shared/Result';
-import { ILogger } from '../../shared/interfaces/ILogger';
+import { ILogger, INavigationService, INavigationTracker } from '../../interfaces';
 
 /**
  * Implementation of the INavigationService interface using Expo Router
  */
 export class NavigationService implements INavigationService {
-  private navigationState: NavigationState;
   private readonly navigationTracker: INavigationTracker;
   private readonly logger: ILogger;
+  private currentRoute: string = '/';
   
   /**
    * Creates a new NavigationService
@@ -24,7 +19,6 @@ export class NavigationService implements INavigationService {
   constructor(navigationTracker: INavigationTracker, logger: ILogger) {
     this.navigationTracker = navigationTracker;
     this.logger = logger;
-    this.navigationState = NavigationState.createInitial();
   }
   
   /**
@@ -34,67 +28,80 @@ export class NavigationService implements INavigationService {
    * @param params The route parameters
    * @returns A Result indicating success or failure
    */
-  navigate<T extends AppRoute>(route: T, params?: ParamsOf<T>): Result<void> {
+  async navigate(route: string, params?: Record<string, unknown>): Promise<void> {
     try {
-      const routePath = buildRoute(route, params);
+      const routePath = this.buildRoutePath(route, params);
       router.push(routePath);
       
-      // Update navigation state
-      this.navigationState = this.navigationState.pushRoute(routePath);
+      // Update current route
+      this.currentRoute = routePath;
       
       // Update navigation tracker
-      this.navigationTracker.setPreviousRoute(this.navigationState.getCurrentRoute());
-      this.navigationTracker.addToHistory(routePath);
+      await this.navigationTracker.trackPageView(routePath, params);
       
       this.logger.info('Navigated to route', { route: routePath });
-      return { success: true, data: undefined };
     } catch (error) {
       this.logger.error('Failed to navigate', { route, params, error });
-      return { success: false, error: 'Failed to navigate' };
-    }
-  }
-  
-  /**
-   * Replace the current route with a new route
-   * 
-   * @param route The route to replace with
-   * @param params The route parameters
-   * @returns A Result indicating success or failure
-   */
-  replace<T extends AppRoute>(route: T, params?: ParamsOf<T>): Result<void> {
-    try {
-      const routePath = buildRoute(route, params);
-      router.replace(routePath);
-      
-      // Update navigation state
-      this.navigationState = this.navigationState.replaceRoute(routePath);
-      
-      this.logger.info('Replaced route', { route: routePath });
-      return { success: true, data: undefined };
-    } catch (error) {
-      this.logger.error('Failed to replace route', { route, params, error });
-      return { success: false, error: 'Failed to replace route' };
+      throw new Error('Failed to navigate');
     }
   }
   
   /**
    * Go back to the previous route
    * 
-   * @returns A Result indicating success or failure
+   * @returns A Promise that resolves when navigation is complete
    */
-  goBack(): Result<void> {
+  async goBack(): Promise<void> {
     try {
       router.back();
-      
-      // Update navigation state
-      this.navigationState = this.navigationState.goBack();
-      
       this.logger.info('Navigated back');
-      return { success: true, data: undefined };
     } catch (error) {
       this.logger.error('Failed to navigate back', { error });
-      return { success: false, error: 'Failed to navigate back' };
+      throw new Error('Failed to navigate back');
     }
+  }
+  
+  /**
+   * Check if navigation can go back
+   * 
+   * @returns A Promise that resolves to true if navigation can go back
+   */
+  async canGoBack(): Promise<boolean> {
+    // This is a simplified implementation
+    // In a real app, you might check router.canGoBack() or similar
+    return true;
+  }
+  
+  /**
+   * Get the current route
+   * 
+   * @returns A Promise that resolves to the current route
+   */
+  async getCurrentRoute(): Promise<string> {
+    return this.currentRoute;
+  }
+  
+  /**
+   * Build a route path with parameters
+   * 
+   * @param route The base route
+   * @param params The route parameters
+   * @returns The complete route path
+   */
+  private buildRoutePath(route: string, params?: Record<string, unknown>): string {
+    if (!params || Object.keys(params).length === 0) {
+      return route;
+    }
+    
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams.append(key, String(value));
+      }
+    });
+    
+    const queryString = queryParams.toString();
+    return queryString ? `${route}?${queryString}` : route;
   }
   
   /**
@@ -161,3 +168,4 @@ export class NavigationService implements INavigationService {
     return this.navigate(AppRoute.CHAT);
   }
 }
+

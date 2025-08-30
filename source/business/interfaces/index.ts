@@ -59,6 +59,11 @@ export * from './theme';
 export * from './tokens';
 
 // ============================================================================
+// SETTINGS INTERFACES - Settings and preferences domain
+// ============================================================================
+export * from './settings';
+
+// ============================================================================
 // USE CASE INTERFACES - Use case parameters and results
 // ============================================================================
 export * from './use-cases';

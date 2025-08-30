@@ -1,10 +1,9 @@
-import { DEFAULT_LANGUAGE } from '../../business/language/constants';
-import { Language } from '../../business/language/entities';
-import { ILanguageRepository, ILanguageService } from '../../business/language/interfaces';
-import { Result, createFailure, createSuccess, isFailure, isSuccess } from '../../business/types/shared/Result';
-import { ILogger } from '../shared/interfaces/ILogger';
+import { createFailure, createSuccess, ILanguageRepository, ILanguageService, ILogger, Result } from '../interfaces';
 
 import { formatTranslation } from './utils/languageFormatter';
+
+// Constants
+const DEFAULT_LANGUAGE = 'en';
 
 /**
  * Implementation of the ILanguageService interface
@@ -26,10 +25,10 @@ export class LanguageService implements ILanguageService {
    * Initialize the language service with the stored language preference
    */
   private async initializeLanguage(): Promise<void> {
-    const result = this.languageRepository.getCurrentLanguage();
+    const currentLanguage = this.languageRepository.getCurrentLanguage();
     
-    if (isSuccess(result) && result.data) {
-      this.currentLanguageCode = result.data;
+    if (currentLanguage) {
+      this.currentLanguageCode = currentLanguage;
       this.logger.info('LanguageService initialized with stored language', { language: this.currentLanguageCode });
     } else {
       this.currentLanguageCode = DEFAULT_LANGUAGE;
@@ -43,27 +42,21 @@ export class LanguageService implements ILanguageService {
    * @returns The translated string or the key itself if not found
    */
   public translate(key: string): string {
-    const translationsResult = this.languageRepository.getTranslations(this.currentLanguageCode);
+    const translations = this.languageRepository.getTranslations(this.currentLanguageCode);
     
-    if (isSuccess(translationsResult)) {
-      const translations = translationsResult.data;
-      const translation = translations[key];
+    const translation = translations[key];
+    
+    if (translation) {
+      return translation;
+    }
+    
+    // If translation not found in current language, try English as fallback
+    if (this.currentLanguageCode !== DEFAULT_LANGUAGE) {
+      const fallbackTranslations = this.languageRepository.getTranslations(DEFAULT_LANGUAGE);
+      const fallbackTranslation = fallbackTranslations[key];
       
-      if (translation) {
-        return translation;
-      }
-      
-      // If translation not found in current language, try English as fallback
-      if (this.currentLanguageCode !== DEFAULT_LANGUAGE) {
-        const fallbackResult = this.languageRepository.getTranslations(DEFAULT_LANGUAGE);
-        if (isSuccess(fallbackResult)) {
-          const fallbackTranslations = fallbackResult.data;
-          const fallbackTranslation = fallbackTranslations[key];
-          
-          if (fallbackTranslation) {
-            return fallbackTranslation;
-          }
-        }
+      if (fallbackTranslation) {
+        return fallbackTranslation;
       }
     }
     
@@ -87,7 +80,7 @@ export class LanguageService implements ILanguageService {
   public setLanguage(languageCode: string): Result<void> {
     // Check if the language is supported
     const supportedLanguages = this.languageRepository.getSupportedLanguages();
-    const isSupported = supportedLanguages.some(lang => lang.getCode() === languageCode);
+    const isSupported = supportedLanguages.includes(languageCode);
     
     if (!isSupported) {
       this.logger.error('Attempted to set unsupported language', { language: languageCode });
@@ -98,15 +91,7 @@ export class LanguageService implements ILanguageService {
     this.currentLanguageCode = languageCode;
     
     // Save the language preference
-    this.languageRepository.saveCurrentLanguage(languageCode)
-      .then(result => {
-        if (isFailure(result)) {
-          this.logger.error('Failed to save language preference', { language: languageCode, error: result.error });
-        }
-      })
-      .catch(error => {
-        this.logger.error('Error saving language preference', { language: languageCode, error });
-      });
+    this.languageRepository.saveLanguage(languageCode);
     
     this.logger.info('Language changed', { language: languageCode });
     return createSuccess(undefined);
@@ -114,9 +99,9 @@ export class LanguageService implements ILanguageService {
   
   /**
    * Get all supported languages
-   * @returns Array of supported Language entities
+   * @returns Array of supported language codes
    */
-  public getSupportedLanguages(): Language[] {
+  public getSupportedLanguages(): string[] {
     return this.languageRepository.getSupportedLanguages();
   }
   

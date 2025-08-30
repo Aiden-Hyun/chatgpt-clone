@@ -1,6 +1,6 @@
+import { PresentationTheme } from '../../../interfaces/theme';
 import { useTheme } from '../../../theme/hooks/useTheme';
 import { useThemeStyle } from '../../../theme/hooks/useThemeStyle';
-import { AppTheme } from '../../../../business/theme/constants/theme.types';
 
 /**
  * Hook to provide consistent access to theme values for UI components
@@ -9,7 +9,7 @@ import { AppTheme } from '../../../../business/theme/constants/theme.types';
  * a consistent way to access theme values across all UI components.
  */
 export function useComponentStyles<T>(
-  styleCreator: (theme: AppTheme) => T
+  styleCreator: (theme: PresentationTheme) => T
 ): T {
   const theme = useTheme();
   return styleCreator(theme);
@@ -20,7 +20,7 @@ export function useComponentStyles<T>(
  * 
  * This is a convenience wrapper around the useTheme hook from the presentation layer
  */
-export function useComponentTheme(): AppTheme {
+export function useComponentTheme(): PresentationTheme {
   return useTheme();
 }
 

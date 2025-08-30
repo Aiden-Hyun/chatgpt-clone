@@ -1,14 +1,16 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { RoomList } from './RoomList';
+import { StyleSheet, View } from 'react-native';
+
+import { ChatRoom } from '../../interfaces/chat';
+
 import { CreateRoomButton } from './CreateRoomButton';
-import { ChatRoom } from '../../../business/chat/entities/ChatRoom';
+import { RoomList } from './RoomList';
 
 export interface RoomManagementProps {
   onRoomSelect?: (room: ChatRoom) => void;
   onRoomCreated?: (room: ChatRoom) => void;
   onRoomDeleted?: (roomId: string) => void;
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 export function RoomManagement({ 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Button, StyleSheet, Text } from 'react-native';
+
 import { useSessionRefresh } from '../hooks/useSessionRefresh';
 
 export function SessionRefreshButton() {

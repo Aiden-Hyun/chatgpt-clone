@@ -1,13 +1,14 @@
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, Text, View } from 'react-native';
-import { MessageEntity as ChatMessage } from '../../../../business/chat/entities/Message';
+
 import { IdGenerator } from '../../../../service/chat/generators/IdGenerator';
 import {
-  AUTOSCROLL_THRESHOLD_PX,
-  CURSOR_BLINK_DURATION_MS,
-  TYPING_ANIMATION_SPEED,
+    AUTOSCROLL_THRESHOLD_PX,
+    CURSOR_BLINK_DURATION_MS,
+    TYPING_ANIMATION_SPEED,
 } from '../../../chat/constants';
+import { MessageEntity as ChatMessage } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { MessageItem } from '../MessageItem';
@@ -18,21 +19,14 @@ interface MessageListProps {
   // ✅ STATE MACHINE: Remove legacy loading flag - derive from message states
   regeneratingIndex: number | null;
   onRegenerate: (index: number) => void;
-  onUserEditRegenerate?: (index: number, newText: string) => void;
   showWelcomeText: boolean;
-  // Like/dislike handlers
-  onLike?: (messageId: string) => void;
-  onDislike?: (messageId: string) => void;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
   messages,
   regeneratingIndex,
   onRegenerate,
-  onUserEditRegenerate,
   showWelcomeText,
-  onLike,
-  onDislike,
 }) => {
   // Add render counting for performance monitoring
   const renderCount = useRef(0);
@@ -78,7 +72,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   // ✅ STATE MACHINE: Derive loading state from message states
   const isNewMessageLoading = useMemo(() => {
     const lastMessage = messages[messages.length - 1];
-    return lastMessage?.role === 'assistant' && (lastMessage as any)?.state === 'loading';
+    return lastMessage?.role === 'assistant' && (lastMessage as { state?: string })?.state === 'loading';
   }, [messages]);
 
   // Memoize styles to prevent re-creation on every render
@@ -219,7 +213,7 @@ export const MessageList: React.FC<MessageListProps> = ({
       ids.length = messages.length;
     }
     for (let i = 0; i < messages.length; i++) {
-      const explicitId = (messages[i] as any).id ?? (messages[i] as any)._loadingId;
+      const explicitId = (messages[i] as { id?: string; _loadingId?: string }).id ?? (messages[i] as { id?: string; _loadingId?: string })._loadingId;
       if (explicitId) {
         ids[i] = explicitId;
       } else if (!ids[i]) {
@@ -231,11 +225,11 @@ export const MessageList: React.FC<MessageListProps> = ({
   // Prepare messages with stable ids for rendering (must be before early return)
   const messagesWithIds = useMemo(() => 
     messages.map((m, i) => {
-      const existingId = (m as any).id as string | undefined;
-      const loadingId = (m as any)._loadingId as string | undefined;
+      const existingId = (m as { id?: string }).id;
+      const loadingId = (m as { _loadingId?: string })._loadingId;
       const resolvedId = existingId ?? loadingId ?? stableIdsRef.current[i];
-      return { ...(m as any), id: resolvedId } as any;
-    }) as ChatMessage[], 
+      return { ...m, id: resolvedId } as ChatMessage;
+    }), 
     [messages]
   );
 
@@ -248,7 +242,7 @@ export const MessageList: React.FC<MessageListProps> = ({
             role: 'assistant' as const,
             content: '',
             id: (placeholderIdRef.current ||= new IdGenerator().generateMessageId()),
-          } as any,
+          } as ChatMessage,
         ]
       : messagesWithIds,
     [messagesWithIds, isNewMessageLoading]
@@ -284,12 +278,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     const isRegenerating = originalMessageIndex !== -1 ? regeneratingIndex === originalMessageIndex : false;
     // State-based rendering: no complex animation triggers needed
     
-    // Group consecutive messages from the same sender
-    const showAvatar =
-      index === 0 || (index > 0 && messagesWithLoading[index - 1].role !== item.role);
-    const isLastInGroup =
-      index === messagesWithLoading.length - 1 ||
-      (index < messagesWithLoading.length - 1 && messagesWithLoading[index + 1].role !== item.role);
+
 
     // Debug logging removed for performance
 
@@ -315,7 +304,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     return (
       <MessageItem
         message={item}
-        isPending={Boolean((item as any).isPending)}
+        isPending={Boolean((item as { isPending?: boolean }).isPending)}
         currentUserId={''}
         onRegenerate={
           item.role === 'assistant' && !isRegenerating && !isNewMessageLoading
@@ -335,7 +324,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <FlashList
       data={messagesWithLoading}
-      keyExtractor={(item: any) => item.id}
+      keyExtractor={(item: ChatMessage) => item.id}
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}

@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
-import { AppTheme } from "../../../theme/theme.types";
+
+import { PresentationTheme } from "../../../interfaces/theme";
 
 /**
  * ChatHeader Styles
  * Dedicated style file for ChatHeader component
  */
-export const createChatHeaderStyles = (theme: AppTheme) => {
+export const createChatHeaderStyles = (theme: PresentationTheme) => {
   return StyleSheet.create({
     header: {
       padding: theme.spacing.lg,

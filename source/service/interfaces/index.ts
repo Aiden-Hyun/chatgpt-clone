@@ -8,11 +8,29 @@
  * import { ILogger, IValidationResult, WebStorageType } from '@service/interfaces';
  */
 
-// Auth utilities
-export * from './auth-utils';
+// ============================================================================
+// CORE INTERFACES - Core service types
+// ============================================================================
+export * from './core';
 
-// Service-specific interfaces
-export * from './service-interfaces';
+// ============================================================================
+// STORAGE INTERFACES - Storage domain
+// ============================================================================
+export * from './storage';
 
+// ============================================================================
+// AUTH INTERFACES - Auth validation and error handling
+// ============================================================================
+export * from './auth';
 
+// ============================================================================
+// ALERT INTERFACES - Alert and toast domain
+// ============================================================================
+export * from './alert';
 
+// ============================================================================
+// DOMAIN INTERFACES - Theme, clipboard, navigation
+// ============================================================================
+export * from './domain';
+
+export * from './language';

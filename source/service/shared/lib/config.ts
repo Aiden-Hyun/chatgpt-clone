@@ -1,7 +1,7 @@
 // source/service/shared/lib/config.ts
 import Constants from 'expo-constants';
 
-import { ILogger } from '../interfaces/ILogger';
+import { ILogger } from '../../interfaces';
 import { Logger } from '../utils/Logger';
 
 // Create a logger instance for config

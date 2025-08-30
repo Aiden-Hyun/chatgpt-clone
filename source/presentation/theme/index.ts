@@ -1,13 +1,14 @@
 // Main exports for the theme feature
 
-// Export everything from theme.ts
-export * from './theme';
+// Export theme registry
+export { default as themeRegistry } from './themeRegistry';
 
 // Export ThemeProvider for app initialization
 export { ThemeProvider } from './context/ThemeContext';
 
-// Export theme registry
-export { default as themeRegistry } from './themeRegistry';
+// Export theme hooks
+export { useTheme } from './hooks/useTheme';
+export { useThemeStyle } from './hooks/useThemeStyle';
 
 // Export components
 export * from './components';

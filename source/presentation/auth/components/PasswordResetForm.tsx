@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import { Logger } from '../../../service/shared/utils/Logger';
 import { PasswordResetRequestValues, ResetFormValues, useAuthForms } from '../hooks/useAuthForms';
 
@@ -8,7 +9,7 @@ export interface PasswordResetFormProps {
   resetToken?: string;
   onBackToLogin?: () => void;
   onSuccess?: () => void;
-  style?: any;
+  style?: Record<string, unknown>;
 }
 
 export function PasswordResetForm({

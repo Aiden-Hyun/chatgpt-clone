@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../presentation/theme/theme.types';
+
+import { PresentationTheme } from '../../interfaces/theme';
 // import { getButtonSize } from '../../../shared/utils/layout';
 
-export const createSettingsStyles = (theme: AppTheme) => {
+export const createSettingsStyles = (theme: PresentationTheme) => {
   
   return StyleSheet.create({
     container: {

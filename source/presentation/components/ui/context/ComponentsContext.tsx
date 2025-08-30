@@ -1,6 +1,7 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext } from 'react';
+
+import { ILogger } from '../../../interfaces/shared';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
-import { ILogger } from '../../../../service/shared/interfaces/ILogger';
 
 /**
  * Interface for UI component-specific context

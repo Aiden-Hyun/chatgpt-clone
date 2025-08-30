@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { AVAILABLE_MODELS, ModelInfo, getModelInfo } from '../../../../business/chat/constants/models';
+
 import { useToast } from '../../../alert/toast';
+import { AVAILABLE_MODELS, ModelInfo, getModelInfo } from '../../../interfaces/chat';
 import { useThemeContext } from '../../../theme/context/ThemeContext';
+
 import { createModelSelectorStyles } from './ModelSelector.styles';
 
 interface ModelSelectorProps {
@@ -38,7 +40,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
       await onModelChange(model.value);
       setIsModalVisible(false);
     } catch (error) {
-      showError('Failed to change model');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showError(`Failed to change model: ${errorMessage}`);
     } finally {
       setIsChanging(false);
     }

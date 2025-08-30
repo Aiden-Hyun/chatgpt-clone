@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../presentation/theme/theme.types';
 
-export const createAuthStyles = (theme: AppTheme) => {
+import { PresentationTheme } from '../../interfaces/theme';
+
+export const createAuthStyles = (theme: PresentationTheme) => {
   
   return StyleSheet.create({
     loadingContainer: {

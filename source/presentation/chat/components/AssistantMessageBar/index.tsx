@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
+
 import { useToast } from '../../../alert';
 import { Button } from '../../../components/ui/Button';
 import { useAppTheme } from '../../../theme/theme';
+
 import { createAssistantMessageBarStyles } from './AssistantMessageBar.styles';
 
 interface AssistantMessageBarProps {

@@ -1,7 +1,8 @@
 import { Platform, StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
 
-export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean = false) => {
+import { PresentationTheme } from '../../../interfaces/theme';
+
+export const createMarkdownRendererStyles = (theme: PresentationTheme, isMobile: boolean = false) => {
   return StyleSheet.create({
     // Body Text
     body: {
