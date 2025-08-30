@@ -4,14 +4,10 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { ThemeMode, ThemeWithMetadata } from '../../interfaces/theme';
 import { useAppTheme, useThemeMode, useThemeStyle } from '../theme';
 
-interface ThemeSelectorProps {
-  // Optional props can be added here
-}
-
 /**
  * Component for selecting theme style and mode
  */
-export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
+export const ThemeSelector: React.FC = () => {
   const theme = useAppTheme();
   const { themeMode, setThemeMode } = useThemeMode();
   const { themeStyle, setThemeStyle, availableThemes } = useThemeStyle();

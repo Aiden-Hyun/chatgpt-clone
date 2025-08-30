@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import { GetStoredRouteUseCase } from '../../navigation/use-cases/GetStoredRouteUseCase';
 import { SetStoredRouteUseCase } from '../../navigation/use-cases/SetStoredRouteUseCase';
 import { ClearStorageUseCase } from '../use-cases/ClearStorageUseCase';

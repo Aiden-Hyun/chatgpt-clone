@@ -1,5 +1,6 @@
 // Enhanced theme types to support theme switching
 
+import { Result } from './shared';
 
 // Helper type for deep partial objects
 type DeepPartial<T> = {
@@ -452,9 +453,6 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 // Theme style (which theme set to use)
 export type ThemeStyle = string;
-
-// Import Result type for service interfaces
-import { Result } from './shared';
 
 // ============================================================================
 // THEME SERVICE INTERFACES

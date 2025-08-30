@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import { UpdateUserProfileParams, UserProfile } from '../../interfaces';
 import { GetUserProfileUseCase } from '../use-cases/GetUserProfileUseCase';
 import { UpdateUserProfileUseCase } from '../use-cases/UpdateUserProfileUseCase';

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+
 import { ChatActions, ChatState, IChatRoomRepository, IMessageRepository, IUserSession } from '../../interfaces';
 import { CopyMessageUseCase } from '../use-cases/CopyMessageUseCase';
 import { DeleteMessageUseCase } from '../use-cases/DeleteMessageUseCase';
@@ -112,7 +113,7 @@ export function useChatViewModel(
           isLoading: false
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to send message',
@@ -163,7 +164,7 @@ export function useChatViewModel(
           isLoading: false
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to receive message',
@@ -204,7 +205,7 @@ export function useChatViewModel(
           error: result.error || 'Failed to delete message'
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to delete message'
@@ -237,7 +238,7 @@ export function useChatViewModel(
           error: result.error || 'Failed to copy message'
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to copy message'
@@ -288,8 +289,8 @@ export function useChatViewModel(
           isLoading: false
         }));
       }
-    } catch (error) {
-      console.error('[useChatViewModel] Error loading messages:', error);
+    } catch (_error) {
+      console.error('[useChatViewModel] Error loading messages:', _error);
       setState(prev => ({
         ...prev,
         error: 'Failed to load messages',
@@ -332,7 +333,7 @@ export function useChatViewModel(
           pendingByMessageId: { ...prev.pendingByMessageId, [messageId]: false }
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to edit message',
@@ -384,7 +385,7 @@ export function useChatViewModel(
           pendingByMessageId: { ...prev.pendingByMessageId, [userMessageId]: false }
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to resend message',
@@ -455,7 +456,7 @@ export function useChatViewModel(
           pendingByMessageId: { ...prev.pendingByMessageId, [targetId]: false }
         }));
       }
-    } catch (error) {
+    } catch {
       setState(prev => ({
         ...prev,
         error: 'Failed to regenerate response',

@@ -2,7 +2,7 @@
 // Exports for external use
 
 // Re-export all chat interfaces, entities, and types from centralized location
-export * from '../../interfaces';
+export * from '../interfaces';
 
 // Use Cases
 export { CopyMessageUseCase } from './use-cases/CopyMessageUseCase';

@@ -1,4 +1,4 @@
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { ILogger } from '../../../service/interfaces/core';
 import { GetUserProfileParams, GetUserProfileResult, IUserRepository } from '../../interfaces';
 
 export class GetUserProfileUseCase {

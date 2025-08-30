@@ -5,14 +5,10 @@ import { useAppTheme } from '../theme';
 
 import { ThemeSelector } from './ThemeSelector';
 
-interface ThemeSettingsSectionProps {
-  // Optional props can be added here
-}
-
 /**
  * Theme settings section component for the settings screen
  */
-export const ThemeSettingsSection: React.FC<ThemeSettingsSectionProps> = () => {
+export const ThemeSettingsSection: React.FC = () => {
   const theme = useAppTheme();
 
   const styles = StyleSheet.create({

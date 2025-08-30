@@ -1,5 +1,5 @@
-import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { IMessageValidator } from '../../../service/interfaces/auth';
+import { ILogger } from '../../../service/interfaces/core';
 import { EditMessageParams, EditMessageResult, IChatRoomRepository, IMessageRepository } from '../../interfaces';
 
 

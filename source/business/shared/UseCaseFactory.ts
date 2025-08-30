@@ -2,12 +2,9 @@
 // Follows layered architecture: Business layer factory for business objects
 
 // Service layer interfaces
-import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
-import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
-import { ILogger } from '../../service/shared/interfaces/ILogger';
-
+import { IMessageValidator } from '../../service/interfaces/auth';
+import { IIdGenerator, ILogger } from '../../service/interfaces/core';
 // Business layer interfaces
-
 // Auth Use Cases
 import { CheckAuthorizationUseCase } from '../auth/use-cases/CheckAuthorizationUseCase';
 import { GetUserProfileUseCase } from '../auth/use-cases/GetUserProfileUseCase';
@@ -20,7 +17,6 @@ import { SignOutUseCase } from '../auth/use-cases/SignOutUseCase';
 import { SignUpUseCase } from '../auth/use-cases/SignUpUseCase';
 import { SocialAuthUseCase } from '../auth/use-cases/SocialAuthUseCase';
 import { UpdateUserProfileUseCase } from '../auth/use-cases/UpdateUserProfileUseCase';
-
 // Chat Use Cases
 import { CopyMessageUseCase } from '../chat/use-cases/CopyMessageUseCase';
 import { CreateRoomUseCase } from '../chat/use-cases/CreateRoomUseCase';
@@ -42,7 +38,6 @@ import {
     ISessionRepository,
     IUserRepository
 } from '../interfaces';
-
 // Session Use Cases
 import { GetStoredRouteUseCase } from '../navigation/use-cases/GetStoredRouteUseCase';
 import { SetStoredRouteUseCase } from '../navigation/use-cases/SetStoredRouteUseCase';

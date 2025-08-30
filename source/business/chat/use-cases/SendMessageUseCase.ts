@@ -1,6 +1,5 @@
-import { IIdGenerator } from '../../../service/chat/interfaces/IIdGenerator';
-import { IMessageValidator } from '../../../service/chat/interfaces/IMessageValidator';
-import { ILogger } from '../../../service/shared/interfaces/ILogger';
+import { IMessageValidator } from '../../../service/interfaces/auth';
+import { IIdGenerator, ILogger } from '../../../service/interfaces/core';
 import { IAIProvider, IChatRoomRepository, IMessageRepository, MessageRole, SendMessageParams, SendMessageResult } from '../../interfaces';
 import { MessageEntity } from '../../interfaces/chat';
 

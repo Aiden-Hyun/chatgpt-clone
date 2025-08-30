@@ -114,7 +114,7 @@ export function TestChatInterface({ userId }: TestChatInterfaceProps) {
     if (session) {
       createOrReuseTestRoom();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [session]);
 
   if (isCreatingRoom) {

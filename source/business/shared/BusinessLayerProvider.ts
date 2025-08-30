@@ -12,17 +12,15 @@ import { LanguageRepository } from '../../persistence/language/repositories/Lang
 import { SessionRepository } from '../../persistence/session/repositories/SessionRepository';
 import { AlertService, ToastService } from '../../service/alert';
 import { IdGenerator } from '../../service/chat/generators/IdGenerator';
-import { IIdGenerator } from '../../service/chat/interfaces/IIdGenerator';
-import { IMessageValidator } from '../../service/chat/interfaces/IMessageValidator';
 import { MessageValidator } from '../../service/chat/validators/MessageValidator';
+import { IMessageValidator } from '../../service/interfaces/auth';
+import { IIdGenerator, ILogger } from '../../service/interfaces/core';
 import { AsyncStorageAdapter } from '../../service/language/adapters/AsyncStorageAdapter';
 import { LanguageService } from '../../service/language/LanguageService';
 import { NavigationService, NavigationTracker } from '../../service/navigation';
-import { ILogger } from '../../service/shared/interfaces/ILogger';
 import { ConfigService } from '../../service/shared/lib/config';
 import { Logger } from '../../service/shared/utils/Logger';
 import { MobileStorageService, SecureStorageService } from '../../service/storage';
-
 // Import business layer interfaces
 import {
     IAIProvider,
