@@ -1,22 +1,10 @@
 import { Session } from '@supabase/supabase-js';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IMessageRepository } from '../../interfaces/chat';
+import { IMessageRepository, SaveMessageResult } from '../../interfaces/chat';
 import { IUserSession } from '../../interfaces/shared';
 import { SessionMapper } from '../../shared/mappers/SessionMapper';
 import { SupabaseMessageAdapter } from '../adapters/SupabaseMessageAdapter';
 import { MessageMapper } from '../mappers/MessageMapper';
-
-export interface SaveMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  error?: string;
-}
-
-export interface GetMessagesResult {
-  success: boolean;
-  messages?: MessageEntity[];
-  error?: string;
-}
 
 export class MessageRepository implements IMessageRepository {
   constructor(

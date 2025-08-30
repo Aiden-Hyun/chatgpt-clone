@@ -1,11 +1,6 @@
 import { supabase } from '../../../service/shared/lib/supabase';
 import { SupabaseSession } from '../../interfaces/auth';
-
-export interface SupabaseSessionResult {
-  success: boolean;
-  session?: SupabaseSession;
-  error?: string;
-}
+import { SupabaseSessionResult } from '../../interfaces/session';
 
 /**
  * Adapter for Supabase session operations

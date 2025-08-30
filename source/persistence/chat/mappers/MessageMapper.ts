@@ -1,14 +1,5 @@
 
-export interface MessageData {
-  id: string;
-  content: string;
-  role: string;
-  timestamp: string;
-  room_id: string;
-  user_id?: string;
-  is_deleted: boolean;
-  metadata?: string;
-}
+import { MessageData } from '../../interfaces/chat';
 
 export class MessageMapper {
   toData(entity: MessageEntity): MessageData {

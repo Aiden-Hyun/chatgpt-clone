@@ -1,5 +1,5 @@
-import { UserSession, DatabaseSession, SessionDTO } from '../../interfaces/session';
 import { SupabaseSession } from '../../interfaces/auth';
+import { DatabaseSession, SessionDTO, UserSession } from '../../interfaces/session';
 
 export class SessionMapper {
   toDomain(sessionData: DatabaseSession): UserSession {

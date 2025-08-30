@@ -1,6 +1,7 @@
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
+
 import { AuthEventCallback, IAuthEventEmitter, SupabaseUser, Unsubscribe } from '../../interfaces/auth';
 
 export class AuthEventAdapter implements IAuthEventEmitter {

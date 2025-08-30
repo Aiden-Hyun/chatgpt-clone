@@ -1,15 +1,4 @@
-import { RoomData, RoomWithLastMessage } from '../adapters/SupabaseChatRoomAdapter';
-
-export interface ChatRoomData {
-  id: string; // Domain uses string, adapter uses number
-  name: string;
-  model: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  lastMessage?: string;
-  lastActivity?: Date;
-}
+import { ChatRoomData, RoomData, RoomWithLastMessage } from '../../interfaces/chat';
 
 export class ChatRoomMapper {
   /**

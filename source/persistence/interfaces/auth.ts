@@ -89,9 +89,9 @@ export interface IUserMapper {
 
 // Secure storage adapter interface
 export interface SecureStorageOptions {
-  accessible?: string;
-  accessControl?: string;
-  authenticationPrompt?: string;
+  requireAuthentication?: boolean;
+  accessGroup?: string;
+  keychainService?: string;
 }
 
 export interface ISecureStorageAdapter {
@@ -103,15 +103,23 @@ export interface ISecureStorageAdapter {
 
 // Social auth adapter interfaces
 export interface SocialAuthOptions {
-  provider: 'google' | 'apple' | 'facebook';
-  redirectTo?: string;
+  redirectUrl?: string;
+  scopes?: string[];
 }
 
 export interface SocialAuthAdapterResult {
   success: boolean;
   user?: User;
-  session?: unknown;
+  session?: SupabaseSession;
   error?: string;
+  isNetworkError?: boolean;
+  requiresAdditionalInfo?: boolean;
+  providerData?: {
+    providerId: string;
+    email?: string;
+    displayName?: string;
+    avatarUrl?: string;
+  };
 }
 
 export interface ISocialAuthAdapter {
@@ -122,17 +130,19 @@ export interface ISocialAuthAdapter {
 // Supabase auth adapter interfaces
 export interface SupabaseAuthResult {
   success: boolean;
-  user?: User;
-  session?: unknown;
+  user?: SupabaseUser;
+  session?: SupabaseSession;
+  data?: { user: SupabaseUser; session: SupabaseSession };
   error?: string;
+  isNetworkError?: boolean;
 }
 
 export interface SupabaseSignUpResult {
   success: boolean;
-  user?: User;
-  session?: unknown;
+  user?: SupabaseUser;
+  data?: { user: SupabaseUser; session?: SupabaseSession };
+  requiresEmailVerification?: boolean;
   error?: string;
-  needsEmailConfirmation?: boolean;
 }
 
 // Supabase user and session types

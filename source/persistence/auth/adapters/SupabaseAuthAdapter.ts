@@ -1,22 +1,5 @@
 import { supabase } from '../../../service/shared/lib/supabase';
-import { SupabaseUser, SupabaseSession } from '../../interfaces/auth';
-
-export interface SupabaseAuthResult {
-  success: boolean;
-  user?: SupabaseUser;
-  session?: SupabaseSession;
-  data?: { user: SupabaseUser; session: SupabaseSession };
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-export interface SupabaseSignUpResult {
-  success: boolean;
-  user?: SupabaseUser;
-  data?: { user: SupabaseUser; session?: SupabaseSession };
-  requiresEmailVerification?: boolean;
-  error?: string;
-}
+import { SupabaseAuthResult, SupabaseSession, SupabaseSignUpResult, SupabaseUser } from '../../interfaces/auth';
 
 export class SupabaseAuthAdapter {
   async signIn(email: string, password: string): Promise<SupabaseAuthResult> {

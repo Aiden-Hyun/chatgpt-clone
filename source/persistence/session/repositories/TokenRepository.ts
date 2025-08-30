@@ -1,12 +1,6 @@
-import { SecureStorageAdapter } from '../adapters/SecureStorageAdapter';
 import { Logger } from '../../../service/shared/utils/Logger';
-
-export interface TokenData {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
-  tokenType: string;
-}
+import { TokenData } from '../../interfaces/session';
+import { SecureStorageAdapter } from '../adapters/SecureStorageAdapter';
 
 export class TokenRepository {
   constructor(

@@ -1,23 +1,8 @@
 import { ConfigService, IConfigService } from '../../../service/shared/lib/config';
 import { fetchJson } from '../../../service/shared/lib/fetch';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IAIProvider } from '../../interfaces/chat';
+import { AIMessageParams, AIResponse, IAIProvider } from '../../interfaces/chat';
 import { ILogger } from '../../interfaces/shared';
-
-export interface AIResponse {
-  success: boolean;
-  content?: string;
-  tokens?: number;
-  processingTime?: number;
-  error?: string;
-}
-
-export interface AIMessageParams {
-  content: string;
-  roomId: string;
-  model?: string;
-  accessToken: string;
-}
 
 export class AIProvider implements IAIProvider {
   private readonly logger: ILogger;

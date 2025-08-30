@@ -142,17 +142,45 @@ export interface ISupabaseChatRoomAdapter {
 
 export interface SaveResult {
   success: boolean;
-  messageId?: string;
+  data?: MessageData;
+  error?: string;
+}
+
+export interface SaveMessageResult {
+  success: boolean;
+  message?: Message;
   error?: string;
 }
 
 export interface GetMessagesResult {
   success: boolean;
-  messages?: unknown[];
+  data?: MessageData[];
   error?: string;
 }
 
 // Database message types
+export interface MessageData {
+  id: string;
+  content: string;
+  role: string;
+  timestamp: string;
+  room_id: string;
+  user_id?: string;
+  is_deleted: boolean;
+  metadata?: string;
+}
+
+export interface ChatRoomData {
+  id: string; // Domain uses string, adapter uses number
+  name: string;
+  model: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  lastMessage?: string;
+  lastActivity?: Date;
+}
+
 export interface DatabaseMessage {
   id: string;
   room_id: string;

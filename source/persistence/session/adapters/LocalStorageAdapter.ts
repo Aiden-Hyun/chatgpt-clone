@@ -97,11 +97,11 @@ export class LocalStorageAdapter {
     }
   }
 
-  async multiGet(keys: string[]): Promise<Array<[string, string | null]>> {
+  async multiGet(keys: string[]): Promise<[string, string | null][]> {
     try {
       console.log('[LocalStorageAdapter] Multi-getting items:', { keys });
       
-      let values: Array<[string, string | null]>;
+      let values: [string, string | null][];
       
       if (Platform.OS === 'web') {
         values = keys.map(key => [key, localStorage.getItem(key)]);
@@ -117,7 +117,7 @@ export class LocalStorageAdapter {
     }
   }
 
-  async multiSet(keyValuePairs: Array<[string, string]>): Promise<void> {
+  async multiSet(keyValuePairs: [string, string][]): Promise<void> {
     try {
       console.log('[LocalStorageAdapter] Multi-setting items:', { count: keyValuePairs.length });
       

@@ -9,10 +9,10 @@ const LAYERS = ['presentation', 'business', 'service', 'persistence', 'database'
 // LAW: Each layer is permitted to import only from itself and the explicitly allowed layers below.
 const ALLOWED = {
   presentation: ['presentation', 'business', 'service'],
-  business:     ['business', 'service', 'persistence'],
-  service:      ['service', 'persistence'],
-  persistence:  ['persistence', 'database'],
-  database:     ['database'],
+  business: ['business', 'service', 'persistence'],
+  service: ['service', 'persistence'],
+  persistence: ['persistence', 'database'],
+  database: ['database'],
 };
 
 // LAW: All imports between layers not explicitly allowed are strictly forbidden.
@@ -23,7 +23,7 @@ for (const target of LAYERS) {
     if (!allowed.has(from)) {
       zones.push({
         target: `source/${target}/**/*`,
-        from:   `source/${from}/**/*`,
+        from: `source/${from}/**/*`,
         message: `${capitalize(target)} layer cannot import from ${capitalize(from)} layer.`
       });
     }
@@ -37,7 +37,7 @@ for (const target of LAYERS) {
     if (!isSame) {
       zones.push({
         target: `source/${target}/**/*`,
-        from:   `source/${from}/interfaces/**/*`,
+        from: `source/${from}/interfaces/**/*`,
         message: `${capitalize(target)} layer must not use ${capitalize(from)} interfaces.`,
       });
     }
@@ -67,7 +67,7 @@ module.exports = defineConfig([
 
   {
     // LAW: The 'unused-imports' plugin shall be enforced for all code.
-    plugins: { 
+    plugins: {
       'unused-imports': require('eslint-plugin-unused-imports')
     },
     settings: {
@@ -80,46 +80,47 @@ module.exports = defineConfig([
     rules: {
       // LAW: Cyclic imports are forbidden beyond a depth of 1.
       'import/no-cycle': ['error', { maxDepth: 1 }],
-      
-      // LAW: Type aliases and enums must only be defined within /interfaces folders.
+
+      // LAW: Type aliases, enums, and interfaces must only be defined within /interfaces folders.
       'no-restricted-syntax': [
         'error',
         { selector: 'TSTypeAliasDeclaration', message: 'Define type aliases only in /interfaces folders.' },
-        { selector: 'TSEnumDeclaration',     message: 'Define enums only in /interfaces folders.' },
+        { selector: 'TSEnumDeclaration', message: 'Define enums only in /interfaces folders.' },
+        { selector: 'TSInterfaceDeclaration', message: 'Define interfaces only in /interfaces folders.' },
       ],
 
-      // LAW: Imports must be ordered by group, alphabetized, and separated by newlines.
+      // LAW: Imports must be ordered by group and alphabetized.
       'import/order': ['error', {
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        'newlines-between': 'always',
         alphabetize: { order: 'asc', caseInsensitive: true },
       }],
       // LAW: Duplicate imports are strictly forbidden.
       'import/no-duplicates': 'error',
 
-// LAW: All unused imports and variables shall be reported as errors.
-'unused-imports/no-unused-imports': 'error',
-'@typescript-eslint/no-unused-vars': 'off',
+      // LAW: All unused imports and variables shall be reported as errors.
+      'unused-imports/no-unused-imports': 'error',
+      '@typescript-eslint/no-unused-vars': 'off',
 
-// 🔧 give the plugin the same _unused ignore patterns
-'unused-imports/no-unused-vars': ['error', {
-  vars: 'all',
-  args: 'after-used',
-  ignoreRestSiblings: true,
-  varsIgnorePattern: '^_unused.*',
-  argsIgnorePattern: '^_unused.*',
-  caughtErrors: 'all',
-  caughtErrorsIgnorePattern: '^_unused.*',
-}],
+      // 🔧 give the plugin the same _unused ignore patterns
+      'unused-imports/no-unused-vars': ['error', {
+        vars: 'all',
+        args: 'after-used',
+        ignoreRestSiblings: true,
+        varsIgnorePattern: '^_unused.*',
+        argsIgnorePattern: '^_unused.*',
+        caughtErrors: 'all',
+        caughtErrorsIgnorePattern: '^_unused.*',
+      }],
 
 
       // LAW: Unsafe types and nonstandard naming conventions are forbidden.
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/naming-convention': ['error', { selector: 'interface', format: ['PascalCase'] }],
       '@typescript-eslint/array-type': ['error', { default: 'array' }],
-      
-      // LAW: React hooks exhaustive-deps rule is disabled to reduce noise
+
+      // React hooks exhaustive deps rule disabled
       'react-hooks/exhaustive-deps': 'off',
+
     },
   },
 

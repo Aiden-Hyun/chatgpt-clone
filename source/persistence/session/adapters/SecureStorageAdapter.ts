@@ -115,11 +115,11 @@ export class SecureStorageAdapter {
     }
   }
 
-  async multiGet(keys: string[]): Promise<Array<[string, string | null]>> {
+  async multiGet(keys: string[]): Promise<[string, string | null][]> {
     try {
       console.log('[SecureStorageAdapter] Multi-getting secure items:', { keys });
       
-      const values: Array<[string, string | null]> = [];
+      const values: [string, string | null][] = [];
       
       // SecureStore doesn't have multiGet, so we do individual gets
       for (const key of keys) {
@@ -135,7 +135,7 @@ export class SecureStorageAdapter {
     }
   }
 
-  async multiSet(keyValuePairs: Array<[string, string]>): Promise<void> {
+  async multiSet(keyValuePairs: [string, string][]): Promise<void> {
     try {
       console.log('[SecureStorageAdapter] Multi-setting secure items:', { count: keyValuePairs.length });
       

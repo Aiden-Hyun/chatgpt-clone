@@ -1,16 +1,12 @@
 import { Platform } from 'react-native';
 
-export interface ClipboardResult {
-  success: boolean;
-  error?: string;
-}
+import { ClipboardResult, IClipboardAdapter } from '../../interfaces/chat';
+import { ExpoClipboard, NavigatorWithClipboard, WindowWithSecureContext } from '../../interfaces/shared';
 
 /**
  * Real implementation using Expo Clipboard for native and Navigator API for web
  * Follows the patterns from /src/shared/lib/clipboard.ts
  */
-import { IClipboardAdapter } from '../../interfaces/chat';
-import { NavigatorWithClipboard, WindowWithSecureContext, ExpoClipboard } from '../../interfaces/shared';
 
 export class ClipboardAdapter implements IClipboardAdapter {
   async copyToClipboard(text: string): Promise<ClipboardResult> {

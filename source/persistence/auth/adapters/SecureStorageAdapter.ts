@@ -1,13 +1,9 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { SecureStoreOptions } from '../../interfaces/shared';
 
-export interface SecureStorageOptions {
-  requireAuthentication?: boolean;
-  accessGroup?: string;
-  keychainService?: string;
-}
+import { SecureStorageOptions } from '../../interfaces/auth';
+import { SecureStoreOptions } from '../../interfaces/shared';
 
 export class SecureStorageAdapter {
   private static readonly KEY_REGISTRY = 'secure_storage_keys';

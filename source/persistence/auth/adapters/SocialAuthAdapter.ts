@@ -2,28 +2,9 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { ConfigService, IConfigService } from '../../../service/shared/lib/config';
 import { createSupabaseClient } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
+
+import { SocialAuthAdapterResult, SocialAuthData, SocialAuthOptions } from '../../interfaces/auth';
 import { ILogger } from '../../interfaces/shared';
-import { User, SupabaseSession, SocialAuthData } from '../../interfaces/auth';
-
-export interface SocialAuthOptions {
-  redirectUrl?: string;
-  scopes?: string[];
-}
-
-export interface SocialAuthAdapterResult {
-  success: boolean;
-  user?: User;
-  session?: SupabaseSession;
-  error?: string;
-  isNetworkError?: boolean;
-  requiresAdditionalInfo?: boolean;
-  providerData?: {
-    providerId: string;
-    email?: string;
-    displayName?: string;
-    avatarUrl?: string;
-  };
-}
 
 export class SocialAuthAdapter {
   private static readonly SUPPORTED_PROVIDERS = ['google', 'apple', 'github', 'facebook'] as const;

@@ -1,13 +1,13 @@
 import { Session } from '@supabase/supabase-js';
+import { Logger } from '../../../service/shared/utils/Logger';
 import { SupabaseSession } from '../../interfaces/auth';
 import {
     createSessionFailure,
     createSessionSuccess,
+    IUserSession, IUserSessionFactory,
     SessionValidationError,
     type SessionResult
 } from '../../interfaces/shared';
-import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserSession, IUserSessionFactory } from '../../interfaces/shared';
 import { SessionMapper } from '../mappers/SessionMapper';
 
 /**

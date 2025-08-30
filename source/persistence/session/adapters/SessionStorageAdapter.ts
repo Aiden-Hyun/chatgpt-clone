@@ -1,20 +1,6 @@
 import { Logger } from '../../../service/shared/utils/Logger';
 import { SecureStorageAdapter } from '../../auth/adapters/SecureStorageAdapter';
-import { UserSession } from '../../interfaces/session';
-
-export interface SessionStorageResult {
-  success: boolean;
-  error?: string;
-}
-
-export interface SessionData {
-  userId: string;
-  isActive: boolean;
-  permissions: string[];
-  createdAt: string;
-  expiresAt: string;
-  lastActivity?: string;
-}
+import { SessionData, SessionStorageResult, UserSession } from '../../interfaces/session';
 
 export class SessionStorageAdapter {
   private static readonly SESSION_KEY = 'user_session_data';

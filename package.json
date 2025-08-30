@@ -1,19 +1,20 @@
 {
   "name": "chatgpt-clone",
   "main": "index.ts",
-  "version": "1.0.0","scripts": {
-  "start": "expo start",
-  "reset-project": "node ./scripts/reset-project.js",
-  "android": "expo run:android",
-  "ios": "expo run:ios",
-  "web": "expo start --web",
-  "lint": "npx eslint source/presentation --ext .ts,.tsx --f ./eslintPreciseFormatter.js",
-  "lint:boundaries": "npx eslint source --ext .ts,.tsx --max-warnings 0 -f ./eslintPreciseFormatter.js",
-  "test": "jest",
-  "test:watch": "jest --watch",
-  "test:coverage": "jest --coverage",
-  "typecheck": "tsc --noEmit"
-},
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start",
+    "reset-project": "node ./scripts/reset-project.js",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "npx eslint --ext .ts,.tsx --f ./eslintPreciseFormatter.js",
+    "lint:boundaries": "npx eslint source --ext .ts,.tsx --max-warnings 0 -f ./eslintPreciseFormatter.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "2.1.2",

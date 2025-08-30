@@ -1,18 +1,7 @@
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../service/shared/lib/supabase';
+import { GetMessagesResult } from '../../interfaces/chat';
 import { MessageData } from '../mappers/MessageMapper';
-
-export interface SaveResult {
-  success: boolean;
-  data?: MessageData;
-  error?: string;
-}
-
-export interface GetMessagesResult {
-  success: boolean;
-  data?: MessageData[];
-  error?: string;
-}
 
 export class SupabaseMessageAdapter {
   async save(messageData: MessageData, session: Session): Promise<void> {

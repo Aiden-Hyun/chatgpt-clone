@@ -1,25 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../service/shared/lib/supabase';
-
-export interface RoomData {
-  id: number;
-  name: string;
-  model: string;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface RoomUpdateData {
-  name?: string;
-  model?: string;
-  updated_at?: string;
-}
-
-export interface RoomWithLastMessage extends RoomData {
-  last_message?: string;
-  last_activity?: string;
-}
+import { RoomData, RoomUpdateData, RoomWithLastMessage } from '../../interfaces/chat';
 
 export class SupabaseChatRoomAdapter {
   async createRoom(session: Session, model: string, name?: string): Promise<number | null> {
