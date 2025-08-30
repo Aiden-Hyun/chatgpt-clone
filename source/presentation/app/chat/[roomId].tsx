@@ -43,7 +43,7 @@ interface ChatScreenProps {
 
 function ChatScreen({
   roomId,
-  isTemporaryRoom,
+  isTemporaryRoom: _unusedIsTemporaryRoom,
   numericRoomId,
   chatScreenState,
 }: ChatScreenProps) {

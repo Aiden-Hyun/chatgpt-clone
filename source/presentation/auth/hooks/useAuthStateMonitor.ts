@@ -9,11 +9,10 @@ import { useBusinessContext } from '../../shared/BusinessContextProvider';
  */
 export function useAuthStateMonitor() {
   const { useCaseFactory } = useBusinessContext();
-  const { showSuccess, showError } = useToast();
+  const { showError } = useToast();
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    let mounted = true;
 
     const startMonitoring = async () => {
       try {
@@ -36,7 +35,6 @@ export function useAuthStateMonitor() {
 
     // Cleanup function
     return () => {
-      mounted = false;
       if (unsubscribeRef.current) {
         unsubscribeRef.current();
         unsubscribeRef.current = null;

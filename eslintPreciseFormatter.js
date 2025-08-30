@@ -1,126 +1,133 @@
-// Enhanced ESLint formatter for Expo project with metadata and grep-friendly output
-module.exports = function(results) {
-  // Helper function to get emoji for different rule types
-  function getRuleEmoji(ruleId) {
-    const ruleEmojis = {
-      // TypeScript rules
-      '@typescript-eslint/no-unused-vars': '🫙',
-      '@typescript-eslint/no-explicit-any': '🚫',
-      '@typescript-eslint/naming-convention': '🏷️',
-      '@typescript-eslint/array-type': '📋',
-      '@typescript-eslint/no-empty-object-type': '📭',
-      
-      // Unused imports/variables
-      'unused-imports/no-unused-imports': '📦',
-      'unused-imports/no-unused-vars': '🗑️',
-      
-      // Import rules
-      'import/order': '📚',
-      'import/no-named-as-default': '🏷️',
-      'import/no-duplicates': '🔄',
-      'import/no-cycle': '🔄',
-      
-      // React rules
-      'react-hooks/exhaustive-deps': '🎣',
-      'react/no-unescaped-entities': '🔤',
-      'react/jsx-key': '🔑',
-      
-      // General rules
-      'no-restricted-syntax': '🚫',
-      'no-console': '📺',
-      'prefer-const': '🔒',
-      'no-var': '🚫',
-      
-      // Default emoji for unknown rules
-      'default': '⚙️'
-    };
-    
-    return ruleEmojis[ruleId] || ruleEmojis['default'];
-  }
-  const lines = [];
-  let totalErrors = 0;
-  let totalWarnings = 0;
-  let filesWithIssues = 0;
-  const ruleCounts = {};
-  const startTime = Date.now();
+// eslintPreciseFormatter.js
+/* Enhanced ESLint formatter with aligned columns, emojis, summary */
+module.exports = function format(results) {
+    /* -------- helper: map rule → emoji ------------------------------------ */
+    function getRuleEmoji(ruleId) {
+      const map = {
+        // TypeScript basics
+        '@typescript-eslint/no-unused-vars': '🫙',
+        '@typescript-eslint/no-explicit-any': '🚫',
+        '@typescript-eslint/naming-convention': '🏷️',
+        '@typescript-eslint/array-type': '📋',
+        '@typescript-eslint/no-empty-object-type': '📭',
   
-  // Process each file
-  for (const file of results) {
-    if (file.messages.length > 0) {
-      filesWithIssues++;
-      
-      // Get relative path for cleaner output
-      const relativePath = file.filePath.replace(process.cwd() + '/', '');
-      
-      // Process each message in the file
-      for (const msg of file.messages) {
-        const severity = msg.severity === 2 ? 'ERROR' : 'WARNING';
-        const lineNum = msg.line.toString().padStart(4, ' ');
-        const colNum = msg.column.toString().padStart(3, ' ');
-        
-        // Count rule occurrences
-        ruleCounts[msg.ruleId] = (ruleCounts[msg.ruleId] || 0) + 1;
-        
-        // Grep-friendly format with emojis: 🔴[ERROR] 🫙[RULE] 🧭file:line:col - 📩message
-        const severityEmoji = msg.severity === 2 ? '🔴' : '🟡';
-        const ruleEmoji = getRuleEmoji(msg.ruleId);
-        const fileEmoji = '🧭';
-        const messageEmoji = '📩';
-        
-        lines.push(
-          `${severityEmoji}[${severity}] ${ruleEmoji}[${msg.ruleId}] ${fileEmoji}${relativePath}:${lineNum}:${colNum} - ${messageEmoji}${msg.message}`
-        );
-        
-        // Count by severity
-        if (msg.severity === 2) {
-          totalErrors++;
-        } else {
-          totalWarnings++;
-        }
+        // Unused imports / vars
+        'unused-imports/no-unused-imports': '📦',
+        'unused-imports/no-unused-vars': '🗑️',
+  
+        // Import rules
+        'import/order': '📚',
+        'import/no-named-as-default': '🏷️',
+        'import/no-duplicates': '🔄',
+        'import/no-cycle': '🔄',
+  
+        // React
+        'react-hooks/exhaustive-deps': '🎣',
+        'react/no-unescaped-entities': '🔤',
+        'react/jsx-key': '🔑',
+  
+        // General
+        'no-restricted-syntax': '🚫',
+        'no-console': '📺',
+        'prefer-const': '🔒',
+        'no-var': '🚫',
+  
+        // Fallback
+        default: '⚙️',
+      };
+      return map[ruleId] || map.default;
+    }
+  
+    /* -------- first pass: gather column widths --------------------------- */
+    let maxRule = 0;
+    let maxPath = 0;
+    let maxLine = 0;
+    let maxCol  = 0;
+    let maxSev  = 0; // "ERROR" (5) vs "WARNING" (7)
+  
+    for (const file of results) {
+      const rel = file.filePath.replace(process.cwd() + '/', '');
+      maxPath = Math.max(maxPath, rel.length);
+      for (const m of file.messages) {
+        maxRule = Math.max(maxRule, m.ruleId.length);
+        maxLine = Math.max(maxLine, String(m.line).length);
+        maxCol  = Math.max(maxCol,  String(m.column).length);
+        maxSev  = Math.max(maxSev,  m.severity === 2 ? 5 : 7);
       }
     }
-  }
   
-  // Add summary metadata
-  const totalIssues = totalErrors + totalWarnings;
-  const endTime = Date.now();
-  const duration = endTime - startTime;
+    /* -------- alignment helpers ----------------------------------------- */
+    const padL = (s, n) => s.toString().padStart(n, ' ');
+    const padR = (s, n) => s.toString().padEnd(n, ' ');
   
-  if (totalIssues > 0) {
-    // Add summary at the beginning
-    const summaryLines = [
-      '='.repeat(80),
-      `🔍 Files Scanned: ${results.length}`,
-      `📁 Files with Issues: ${filesWithIssues}`,
-      `📈 Total Issues: ${totalIssues} (🔴${totalErrors} errors, 🟡${totalWarnings} warnings)`,
-      `⏱️  Scan Duration: ${duration}ms`,
-      '='.repeat(80),
-      ''
-    ];
-    
-    // Add top rule violations
-    const topRules = Object.entries(ruleCounts)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 5);
-    
-    if (topRules.length > 0) {
-      summaryLines.push('🔥 TOP RULE VIOLATIONS:');
-      summaryLines.push('─'.repeat(40));
-      topRules.forEach(([rule, count]) => {
-        const ruleEmoji = getRuleEmoji(rule);
-        summaryLines.push(`  ${ruleEmoji} ${rule}: ${count} occurrences`);
-      });
-      summaryLines.push('');
+    /* -------- main loop: build lines ------------------------------------ */
+    const lines = [];
+    let totalErrors = 0;
+    let totalWarnings = 0;
+    let filesWithIssues = 0;
+    const ruleCounts = {};
+    const startTime = Date.now();
+  
+    for (const file of results) {
+      if (!file.messages.length) continue;
+      filesWithIssues++;
+  
+      const rel = file.filePath.replace(process.cwd() + '/', '');
+      for (const msg of file.messages) {
+        const sevTxt   = msg.severity === 2 ? 'ERROR' : 'WARNING';
+        const sevEmoji = msg.severity === 2 ? '🔴'   : '🟡';
+        const ruleEm   = getRuleEmoji(msg.ruleId);
+  
+        ruleCounts[msg.ruleId] = (ruleCounts[msg.ruleId] || 0) + 1;
+        if (msg.severity === 2) totalErrors++; else totalWarnings++;
+  
+        lines.push(
+          `${sevEmoji}[${padR(sevTxt, maxSev)}] ` +
+          `${ruleEm}[${padR(msg.ruleId, maxRule)}] ` +
+          `🧭${padR(rel, maxPath)}:` +
+          `${padL(msg.line, maxLine)}:` +
+          `${padL(msg.column, maxCol)} – ` +
+          `📩${msg.message}`
+        );
+      }
     }
-    
-    // Combine summary and error lines
-    return summaryLines.join('\n') + lines.join('\n');
-  } else {
-    return [
-      '✅ No linting issues found!',
-      `⏱️  Scan Duration: ${duration}ms`,
-      `🔍 Files Scanned: ${results.length}`
-    ].join('\n');
-  }
-};
+  
+    /* -------- summary block --------------------------------------------- */
+    const totalIssues = totalErrors + totalWarnings;
+    const durationMs  = Date.now() - startTime;
+  
+    if (totalIssues === 0) {
+      return [
+        '✅ No linting issues found!',
+        `⏱️  Scan Duration: ${durationMs} ms`,
+        `🔍 Files Scanned: ${results.length}`,
+      ].join('\n');
+    }
+  
+    const summary = [];
+    summary.push('='.repeat(80));
+    summary.push(`🔍 Files Scanned:      ${results.length}`);
+    summary.push(`📁 Files with Issues:  ${filesWithIssues}`);
+    summary.push(
+      `📈 Total Issues:       ${totalIssues} (🔴${totalErrors} errors, 🟡${totalWarnings} warnings)`
+    );
+    summary.push(`⏱️  Scan Duration:     ${durationMs} ms`);
+    summary.push('='.repeat(80), '');
+  
+    // top 5 rules
+    const topRules = Object.entries(ruleCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+    if (topRules.length) {
+      summary.push('🔥 TOP RULE VIOLATIONS:');
+      summary.push('─'.repeat(40));
+      topRules.forEach(([rule, count]) => {
+        summary.push(`  ${getRuleEmoji(rule)} ${padR(rule, maxRule)} : ${count}×`);
+      });
+      summary.push('');
+    }
+  
+    /* -------- output ----------------------------------------------------- */
+    return summary.join('\n') + lines.join('\n');
+  };
   

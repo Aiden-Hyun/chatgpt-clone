@@ -97,17 +97,20 @@ module.exports = defineConfig([
       // LAW: Duplicate imports are strictly forbidden.
       'import/no-duplicates': 'error',
 
-      // LAW: All unused imports and variables shall be reported as errors.
-      'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', {
-        vars: 'all',
-        args: 'after-used',
-        ignoreRestSiblings: true,
-        argsIgnorePattern: '^_unused',
-        varsIgnorePattern: '^_unused',
-        caughtErrors: 'all',
-      }],
+// LAW: All unused imports and variables shall be reported as errors.
+'unused-imports/no-unused-imports': 'error',
+
+// 🔧 give the plugin the same _unused ignore patterns
+'unused-imports/no-unused-vars': ['error', {
+  vars: 'all',
+  args: 'after-used',
+  ignoreRestSiblings: true,
+  varsIgnorePattern: '^_unused.*',
+  argsIgnorePattern: '^_unused.*',
+  caughtErrors: 'all',
+  caughtErrorsIgnorePattern: '^_unused.*',
+}],
+
 
       // LAW: Unsafe types and nonstandard naming conventions are forbidden.
       '@typescript-eslint/no-explicit-any': 'error',

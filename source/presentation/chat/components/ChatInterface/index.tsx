@@ -30,7 +30,7 @@ interface ChatInterfaceProps {
  * Custom hook to manage chat interface dependencies
  * Creates UseCases once at hook level, not in render
  */
-function useChatInterfaceDependencies(roomId: string) {
+function useChatInterfaceDependencies(_unusedRoomId: string) {
   const { businessProvider } = useBusinessContext();
   
   // Create UseCases once using useMemo to prevent recreation on every render
@@ -58,11 +58,6 @@ function useChatInterfaceDependencies(roomId: string) {
  */
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   roomId,
-  initialModel = 'gpt-3.5-turbo',
-  className,
-  showHeader = true,
-  selectedModel,
-  onChangeModel,
   onChatStateChange,
 }) => {
   console.log('🔍 ChatInterface: Starting render with roomId:', roomId);

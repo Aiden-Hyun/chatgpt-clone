@@ -18,7 +18,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { useCaseFactory } = useBusinessContext();
   
   // Use business layer auth state monitoring
-  const { isMonitoring } = useAuthStateMonitor();
+  useAuthStateMonitor();
 
   useEffect(() => {
     console.log('🔑 [AuthContext] Starting auth initialization with business layer');

@@ -20,8 +20,6 @@ export function SignUpForm({
   onSuccess,
   showSocialAuth = true,
   enabledProviders = ['google', 'apple', 'github'],
-  termsUrl: _termsUrl,
-  privacyUrl: _privacyUrl,
   style
 }: SignUpFormProps) {
   const [formValues, setFormValues] = useState<SignUpFormValues>({

@@ -54,7 +54,6 @@ function AppContent() {
 
 function ProtectedRoutes() {
   const { session, isLoading } = useAuth();
-  const theme = useAppTheme();
 
   const router = useRouter();
   const pathname = usePathname();

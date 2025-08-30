@@ -35,10 +35,10 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   onLogout,
   onSettings,
-  onBack,
-  onNewChat,
-  onChatSelect,
-  selectedChatId,
+  onBack: _unusedOnBack,
+  onNewChat: _unusedOnNewChat,
+  onChatSelect: _unusedOnChatSelect,
+  selectedChatId: _unusedSelectedChatId,
   selectedModel,
   onModelChange,
   showModelSelection = true,
@@ -227,7 +227,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             containerStyle={styles.menuButton}
           />
         )}
-        renderCustomItem={({ item, isSelected }) => {
+        renderCustomItem={({ item, isSelected: _unusedIsSelected }) => {
           // Define icon and color for each menu item
           const getIconConfig = (value: string) => {
             switch (value) {

@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { View } from 'react-native';
 
-import { useToast } from '../../../alert';
 import { Button } from '../../../components/ui/Button';
 import { useAppTheme } from '../../../theme/theme';
 
@@ -32,7 +31,6 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createAssistantMessageBarStyles(theme);
-  const { showSuccess } = useToast();
   const handleRegeneratePress = () => {
     onRegenerate?.();
   };

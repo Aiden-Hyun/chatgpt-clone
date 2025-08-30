@@ -269,7 +269,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     );
   }
 
-  const renderMessage = ({ item, index }: { item: ChatMessage; index: number }) => {
+  const renderMessage = ({ item }: { item: ChatMessage; index: number }) => {
     // Handle search results messages
 
 

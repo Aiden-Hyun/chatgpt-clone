@@ -265,7 +265,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom code block renderer using our CodeBlock component
-    code_block: (node: CodeBlockNode, children: React.ReactNode, _unusedParent: MarkdownNode | null, _unusedMdStyles: Record<string, unknown>) => {
+    code_block: (node: CodeBlockNode, _unusedChildren: React.ReactNode, _unusedParent: MarkdownNode | null, _unusedMdStyles: Record<string, unknown>) => {
       const { content } = node;
       const language = node.sourceInfo || "text";
 
@@ -280,7 +280,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom fence renderer (```code``` blocks)
-    fence: (node: CodeBlockNode, children: React.ReactNode, _unusedParent: MarkdownNode | null, _unusedMdStyles: Record<string, unknown>) => {
+    fence: (node: CodeBlockNode, _unusedChildren: React.ReactNode, _unusedParent: MarkdownNode | null, _unusedMdStyles: Record<string, unknown>) => {
       const { content } = node;
       const language = node.sourceInfo || "text";
 
@@ -295,7 +295,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom inline code renderer - simple styled text
-    code_inline: (node: MarkdownNode, children: React.ReactNode, _unusedParent: MarkdownNode | null, _unusedMdStyles: Record<string, unknown>) => {
+    code_inline: (node: MarkdownNode, _unusedChildren: React.ReactNode, _unusedParent: MarkdownNode | null, _unusedMdStyles: Record<string, unknown>) => {
       return (
         <Text key={node.key} style={styles.code_inline}>
           {node.content}

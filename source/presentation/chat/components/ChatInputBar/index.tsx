@@ -52,8 +52,7 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({
   const MIN_INPUT_HEIGHT = 36;
   const MAX_INPUT_HEIGHT = 120;
 
-  // Enable scrolling when content exceeds max height
-  const shouldEnableScrolling = inputHeight >= MAX_INPUT_HEIGHT;
+
 
   // Custom send button icon component with dynamic states
   const SendButtonIcon = () => {

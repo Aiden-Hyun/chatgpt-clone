@@ -46,7 +46,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
     }
     
     try {
-      const result = await updateProfile({ display_name: editedName.trim() });
+      await updateProfile({ display_name: editedName.trim() });
       
       // Small delay to ensure database update is complete
       await new Promise(resolve => setTimeout(resolve, 500));

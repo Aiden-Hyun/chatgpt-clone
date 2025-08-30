@@ -206,8 +206,7 @@ export function ConditionalRender({
   children,
   requiredPermissions = [],
   requireAll = false,
-  fallback = null,
-  session: _session
+  fallback = null
 }: ConditionalRenderProps) {
   const {
     isAuthorized,
