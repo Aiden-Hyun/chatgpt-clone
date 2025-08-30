@@ -1,5 +1,42 @@
 // Enhanced ESLint formatter for Expo project with metadata and grep-friendly output
 module.exports = function(results) {
+  // Helper function to get emoji for different rule types
+  function getRuleEmoji(ruleId) {
+    const ruleEmojis = {
+      // TypeScript rules
+      '@typescript-eslint/no-unused-vars': '🫙',
+      '@typescript-eslint/no-explicit-any': '🚫',
+      '@typescript-eslint/naming-convention': '🏷️',
+      '@typescript-eslint/array-type': '📋',
+      '@typescript-eslint/no-empty-object-type': '📭',
+      
+      // Unused imports/variables
+      'unused-imports/no-unused-imports': '📦',
+      'unused-imports/no-unused-vars': '🗑️',
+      
+      // Import rules
+      'import/order': '📚',
+      'import/no-named-as-default': '🏷️',
+      'import/no-duplicates': '🔄',
+      'import/no-cycle': '🔄',
+      
+      // React rules
+      'react-hooks/exhaustive-deps': '🎣',
+      'react/no-unescaped-entities': '🔤',
+      'react/jsx-key': '🔑',
+      
+      // General rules
+      'no-restricted-syntax': '🚫',
+      'no-console': '📺',
+      'prefer-const': '🔒',
+      'no-var': '🚫',
+      
+      // Default emoji for unknown rules
+      'default': '⚙️'
+    };
+    
+    return ruleEmojis[ruleId] || ruleEmojis['default'];
+  }
   const lines = [];
   let totalErrors = 0;
   let totalWarnings = 0;
@@ -24,9 +61,14 @@ module.exports = function(results) {
         // Count rule occurrences
         ruleCounts[msg.ruleId] = (ruleCounts[msg.ruleId] || 0) + 1;
         
-        // Grep-friendly format: [SEVERITY] [RULE] file:line:col - message
+        // Grep-friendly format with emojis: 🔴[ERROR] 🫙[RULE] 🧭file:line:col - 📩message
+        const severityEmoji = msg.severity === 2 ? '🔴' : '🟡';
+        const ruleEmoji = getRuleEmoji(msg.ruleId);
+        const fileEmoji = '🧭';
+        const messageEmoji = '📩';
+        
         lines.push(
-          `[${severity}] [${msg.ruleId}] ${relativePath}:${lineNum}:${colNum} - ${msg.message}`
+          `${severityEmoji}[${severity}] ${ruleEmoji}[${msg.ruleId}] ${fileEmoji}${relativePath}:${lineNum}:${colNum} - ${messageEmoji}${msg.message}`
         );
         
         // Count by severity
@@ -50,7 +92,7 @@ module.exports = function(results) {
       '='.repeat(80),
       `🔍 Files Scanned: ${results.length}`,
       `📁 Files with Issues: ${filesWithIssues}`,
-      `📈 Total Issues: ${totalIssues} (${totalErrors} errors, ${totalWarnings} warnings)`,
+      `📈 Total Issues: ${totalIssues} (🔴${totalErrors} errors, 🟡${totalWarnings} warnings)`,
       `⏱️  Scan Duration: ${duration}ms`,
       '='.repeat(80),
       ''
@@ -65,7 +107,8 @@ module.exports = function(results) {
       summaryLines.push('🔥 TOP RULE VIOLATIONS:');
       summaryLines.push('─'.repeat(40));
       topRules.forEach(([rule, count]) => {
-        summaryLines.push(`  ${rule}: ${count} occurrences`);
+        const ruleEmoji = getRuleEmoji(rule);
+        summaryLines.push(`  ${ruleEmoji} ${rule}: ${count} occurrences`);
       });
       summaryLines.push('');
     }
