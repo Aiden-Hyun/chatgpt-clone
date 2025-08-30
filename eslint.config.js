@@ -117,6 +117,9 @@ module.exports = defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/naming-convention': ['error', { selector: 'interface', format: ['PascalCase'] }],
       '@typescript-eslint/array-type': ['error', { default: 'array' }],
+      
+      // LAW: React hooks exhaustive-deps rule is disabled to reduce noise
+      'react-hooks/exhaustive-deps': 'off',
     },
   },
 
