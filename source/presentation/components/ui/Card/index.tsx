@@ -1,10 +1,10 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
 
+import { CardProps } from '../../../interfaces/ui/Card.types';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
-import createCardStyles from './Card.styles';
-import { CardProps } from '../../../interfaces/ui/Card.types';
+import { createCardStyles } from './Card.styles';
 
 /**
  * Card component for containing related content with various visual styles.

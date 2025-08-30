@@ -1,5 +1,4 @@
 import { PresentationTheme } from '../../../interfaces/theme';
-
 import { ListItemVariant } from '../../../interfaces/ui/ListItem.types';
 
 /**

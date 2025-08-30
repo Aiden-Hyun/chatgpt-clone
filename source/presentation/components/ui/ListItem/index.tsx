@@ -1,10 +1,10 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { ListItemProps } from '../../../interfaces/ui/ListItem.types';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
-import createListItemStyles from './ListItem.styles';
-import { ListItemProps } from '../../../interfaces/ui/ListItem.types';
+import { createListItemStyles } from './ListItem.styles';
 
 /**
  * ListItem component for creating consistent list items with various styles.

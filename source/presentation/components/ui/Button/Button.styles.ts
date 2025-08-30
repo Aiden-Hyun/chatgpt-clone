@@ -1,5 +1,4 @@
 import { PresentationTheme } from '../../../interfaces/theme';
-
 import { ButtonSize, ButtonStatus, ButtonVariant } from '../../../interfaces/ui/Button.types';
 
 /**

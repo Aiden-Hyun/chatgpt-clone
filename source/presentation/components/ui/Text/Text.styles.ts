@@ -1,5 +1,4 @@
 import { PresentationTheme } from '../../../interfaces/theme';
-
 import { TextSize, TextVariant, TextWeight } from '../../../interfaces/ui/Text.types';
 
 /**

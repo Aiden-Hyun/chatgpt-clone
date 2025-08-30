@@ -99,6 +99,7 @@ module.exports = defineConfig([
 
 // LAW: All unused imports and variables shall be reported as errors.
 'unused-imports/no-unused-imports': 'error',
+'@typescript-eslint/no-unused-vars': 'off',
 
 // 🔧 give the plugin the same _unused ignore patterns
 'unused-imports/no-unused-vars': ['error', {

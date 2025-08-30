@@ -1,5 +1,4 @@
 import { PresentationTheme } from '../../../interfaces/theme';
-
 import { CardPadding, CardVariant } from '../../../interfaces/ui/Card.types';
 
 /**

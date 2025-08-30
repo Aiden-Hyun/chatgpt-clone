@@ -146,7 +146,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onDislike={handleDislike}
           />
         );
-      }, [messages, loading, handleLike, handleDislike, handleRegenerate, handleUserEditRegenerate])}
+      }, [messages, handleLike, handleDislike, handleRegenerate, handleUserEditRegenerate])}
     </View>
   );
 };

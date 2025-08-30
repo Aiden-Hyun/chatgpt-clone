@@ -1,10 +1,10 @@
 import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 
+import { ButtonProps } from '../../../interfaces/ui/Button.types';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
-import createButtonStyles from './Button.styles';
-import { ButtonProps } from '../../../interfaces/ui/Button.types';
+import { createButtonStyles } from './Button.styles';
 
 /**
  * Button component that supports various styles, sizes, and states.

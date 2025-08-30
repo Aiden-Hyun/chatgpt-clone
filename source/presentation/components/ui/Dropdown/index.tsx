@@ -13,10 +13,10 @@ import {
     View
 } from "react-native";
 
+import { DropdownProps, DropdownItem } from '../../../interfaces/ui/Dropdown.types';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
-import createDropdownStyles from './Dropdown.styles';
-import { DropdownProps, DropdownItem } from '../../../interfaces/ui/Dropdown.types';
+import { createDropdownStyles } from './Dropdown.styles';
 
 const SCREEN = Dimensions.get("window");
 const SCALE = Dimensions.get("window").scale;

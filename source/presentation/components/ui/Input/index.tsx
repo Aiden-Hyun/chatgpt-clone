@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
+import { InputProps } from '../../../interfaces/ui/Input.types';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
-import createInputStyles from './Input.styles';
-import { InputProps } from '../../../interfaces/ui/Input.types';
+import { createInputStyles } from './Input.styles';
 
 /**
  * Input component that supports various styles, sizes, and validation states.

@@ -1,5 +1,6 @@
 // Theme registry for managing available themes
 import { ThemeWithMetadata } from '../interfaces/theme';
+
 import claymorphismTheme from './themes/claymorphism';
 import defaultTheme from './themes/default';
 import glassmorphismTheme from './themes/glassmorphism';

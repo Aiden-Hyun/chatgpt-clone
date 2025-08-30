@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text as RNText } from 'react-native';
 
+import { TextProps } from '../../../interfaces/ui/Text.types';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
-import createTextStyles from './Text.styles';
-import { TextProps } from '../../../interfaces/ui/Text.types';
+import { createTextStyles } from './Text.styles';
 
 /**
  * Text component that supports various styles, sizes, and semantic variants.

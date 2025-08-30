@@ -1,5 +1,4 @@
 import { PresentationTheme } from '../../../interfaces/theme';
-
 import { InputStatus, InputVariant } from '../../../interfaces/ui/Input.types';
 
 /**
