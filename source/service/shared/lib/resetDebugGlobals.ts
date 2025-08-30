@@ -16,8 +16,8 @@ export const resetDebugGlobals = () => {
     ];
 
     globalKeys.forEach(key => {
-      if ((global as any)[key] !== undefined) {
-        delete (global as any)[key];
+      if ((global as Record<string, unknown>)[key] !== undefined) {
+        delete (global as Record<string, unknown>)[key];
       }
     });
 

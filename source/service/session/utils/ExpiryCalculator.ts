@@ -63,7 +63,6 @@ export class ExpiryCalculator {
 
   static getOptimalRefreshTime(sessionData: SessionTimeData): Date {
     // Refresh when 15 minutes remain or when 25% of session time is left, whichever is earlier
-    const timeUntilExpiry = this.getTimeUntilExpiry(sessionData);
     const sessionDuration = sessionData.expiresAt.getTime() - sessionData.lastActivity.getTime();
     const twentyFivePercent = sessionDuration * 0.25;
     const fifteenMinutes = 15 * 60 * 1000;

@@ -1,7 +1,5 @@
-import { ILogger } from '../interfaces';
+import { ILogger, IThemeService } from '../interfaces';
 import { Logger } from '../shared/utils/Logger';
-
-import { IThemeService } from '../interfaces';
 
 /**
  * Theme service implementation

@@ -8,6 +8,15 @@ import { IClipboardService } from '../interfaces';
  * - Native: uses expo-clipboard.
  */
 export class ClipboardService implements IClipboardService {
+  copyToClipboard(_unusedText: string): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
+  getFromClipboard(): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+  hasString(): Promise<boolean> {
+    throw new Error('Method not implemented.');
+  }
   async copy(text: string): Promise<void> {
     if (!text || text.length === 0) {
       return;
@@ -15,10 +24,10 @@ export class ClipboardService implements IClipboardService {
 
     if (Platform.OS === 'web') {
       try {
-        const hasNavigator = typeof navigator !== 'undefined' && !!(navigator as any);
-        const isSecure = typeof window !== 'undefined' && (window as any).isSecureContext !== false;
-        if (hasNavigator && (navigator as any).clipboard && isSecure) {
-          await (navigator as any).clipboard.writeText(text);
+        const hasNavigator = typeof navigator !== 'undefined' && !!navigator;
+        const isSecure = typeof window !== 'undefined' && window.isSecureContext !== false;
+        if (hasNavigator && navigator.clipboard && isSecure) {
+          await navigator.clipboard.writeText(text);
           return;
         }
       } catch {}
@@ -38,12 +47,12 @@ export class ClipboardService implements IClipboardService {
             document.execCommand('copy');
             document.body.removeChild(textarea);
             return;
-          } catch (err) {
+          } catch (_unusedErr) {
             document.body.removeChild(textarea);
-            throw err;
+            throw _unusedErr;
           }
         }
-      } catch (err) {
+      } catch (_unusedErr) {
         throw new Error('Failed to copy to clipboard');
       }
       throw new Error('Clipboard API is not available');
@@ -52,14 +61,14 @@ export class ClipboardService implements IClipboardService {
     // Native (iOS/Android)
     try {
       const Clipboard = await import('expo-clipboard');
-      if ((Clipboard as any).setStringAsync) {
-        await (Clipboard as any).setStringAsync(text);
-      } else if ((Clipboard as any).setString) {
-        (Clipboard as any).setString(text);
+      if (Clipboard.setStringAsync) {
+        await Clipboard.setStringAsync(text);
+      } else if (Clipboard.setString) {
+        Clipboard.setString(text);
       } else {
         throw new Error('Clipboard module missing setString methods');
       }
-    } catch (err) {
+    } catch (_unusedErr) {
       throw new Error('Failed to copy to clipboard (native)');
     }
   }

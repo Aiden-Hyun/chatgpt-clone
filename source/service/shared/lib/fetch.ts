@@ -54,21 +54,22 @@ export async function fetchJson<T>(
     const text = await res.text();
     try {
       return JSON.parse(text) as T;
-    } catch (error) {
+    } catch (_unusedError) {
       logger.error('Failed to parse JSON response', { text });
       throw new Error('Failed to parse JSON response.');
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Normalize abort/timeout errors
-    const isAbort = err && (err.name === 'AbortError' || err.code === 'ABORT_ERR');
+    const error = err as Error;
+    const isAbort = error && (error.name === 'AbortError' || (error as { code?: string }).code === 'ABORT_ERR');
     if (isAbort || timedOut) {
       const errorMessage = timedOut ? 'Request timed out' : 'The operation was aborted';
       logger.warn(errorMessage);
-      const error = new Error(errorMessage);
-      (error as any).name = timedOut ? 'TimeoutError' : 'AbortError';
-      throw error;
+      const abortError = new Error(errorMessage);
+      abortError.name = timedOut ? 'TimeoutError' : 'AbortError';
+      throw abortError;
     }
-    logger.error('Fetch error', { error: err.message });
+    logger.error('Fetch error', { error: error.message });
     throw err;
   } finally {
     clearTimeout(timeoutId);

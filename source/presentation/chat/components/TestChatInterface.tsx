@@ -114,7 +114,7 @@ export function TestChatInterface({ userId }: TestChatInterfaceProps) {
     if (session) {
       createOrReuseTestRoom();
     }
-   
+  
   }, [session]);
 
   if (isCreatingRoom) {

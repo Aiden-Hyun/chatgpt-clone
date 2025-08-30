@@ -1,7 +1,7 @@
 // source/service/shared/lib/supabase/getSession.ts
 import { Session, SupabaseClient } from '@supabase/supabase-js';
 
-import { ILogger } from '../../interfaces/ILogger';
+import { ILogger } from '../../../interfaces/core';
 import { Logger } from '../../utils/Logger';
 
 import { supabase } from './index';
