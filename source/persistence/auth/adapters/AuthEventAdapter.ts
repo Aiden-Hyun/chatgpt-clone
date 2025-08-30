@@ -1,7 +1,7 @@
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { AuthEventCallback, IAuthEventEmitter, Unsubscribe, SupabaseUser } from '../../interfaces/auth';
+import { AuthEventCallback, IAuthEventEmitter, SupabaseUser, Unsubscribe } from '../../interfaces/auth';
 
 export class AuthEventAdapter implements IAuthEventEmitter {
   private activeSubscriptions: Set<() => void> = new Set();
@@ -99,7 +99,7 @@ export class AuthEventAdapter implements IAuthEventEmitter {
    * @returns Unsubscribe function
    */
   onSignOut(callback: () => void): Unsubscribe {
-    return this.subscribeToAuthChanges((event, session) => {
+    return this.subscribeToAuthChanges((event, _unusedSession) => {
       if (event === 'SIGNED_OUT') {
         try {
           callback();

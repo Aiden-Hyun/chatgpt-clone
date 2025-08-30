@@ -82,7 +82,7 @@ export class SecureStorageAdapter {
 
         try {
           return atob(encodedValue);
-        } catch (decodeError) {
+        } catch (_unusedDecodeError) {
           Logger.warn('SecureStorageAdapter: Failed to decode value, returning raw value', { key });
           return encodedValue;
         }
@@ -181,7 +181,7 @@ export class SecureStorageAdapter {
       } else {
         try {
           await SecureStore.deleteItemAsync(SecureStorageAdapter.KEY_REGISTRY);
-        } catch (error) {
+        } catch (_unusedError) {
           // Registry might not exist, ignore error
         }
       }

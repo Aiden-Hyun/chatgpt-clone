@@ -10,7 +10,7 @@ export interface ClipboardResult {
  * Follows the patterns from /src/shared/lib/clipboard.ts
  */
 import { IClipboardAdapter } from '../../interfaces/chat';
-import { NavigatorWithClipboard, WindowWithSecureContext, ClipboardAPI, ExpoClipboard } from '../../interfaces/shared';
+import { NavigatorWithClipboard, WindowWithSecureContext, ExpoClipboard } from '../../interfaces/shared';
 
 export class ClipboardAdapter implements IClipboardAdapter {
   async copyToClipboard(text: string): Promise<ClipboardResult> {

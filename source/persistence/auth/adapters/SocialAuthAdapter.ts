@@ -60,7 +60,7 @@ export class SocialAuthAdapter {
       const redirectTo = options.redirectUrl || this.getDefaultRedirectUrl();
 
       // Initiate OAuth flow with Supabase
-      const { data, error } = await this.supabase.auth.signInWithOAuth({
+      const { data: _unusedData, error } = await this.supabase.auth.signInWithOAuth({
         provider: provider as 'google' | 'apple' | 'github' | 'facebook',
         options: {
           redirectTo,

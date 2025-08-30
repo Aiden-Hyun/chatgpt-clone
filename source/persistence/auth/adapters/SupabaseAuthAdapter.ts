@@ -1,5 +1,5 @@
 import { supabase } from '../../../service/shared/lib/supabase';
-import { User, SupabaseUser, SupabaseSession } from '../../interfaces/auth';
+import { SupabaseUser, SupabaseSession } from '../../interfaces/auth';
 
 export interface SupabaseAuthResult {
   success: boolean;
