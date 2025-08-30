@@ -1,6 +1,6 @@
 import { PresentationTheme } from '../../../interfaces/theme';
 
-import { TextSize, TextVariant, TextWeight } from './Text.types';
+import { TextSize, TextVariant, TextWeight } from '../../../interfaces/ui/Text.types';
 
 /**
  * Creates text styles based on the current theme

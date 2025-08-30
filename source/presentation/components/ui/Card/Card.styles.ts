@@ -1,6 +1,6 @@
 import { PresentationTheme } from '../../../interfaces/theme';
 
-import { CardPadding, CardVariant } from './Card.types';
+import { CardPadding, CardVariant } from '../../../interfaces/ui/Card.types';
 
 /**
  * Creates card styles based on the current theme

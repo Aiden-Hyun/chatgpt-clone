@@ -4,7 +4,7 @@ import { Pressable, View } from 'react-native';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
 import createCardStyles from './Card.styles';
-import { CardProps } from './Card.types';
+import { CardProps } from '../../../interfaces/ui/Card.types';
 
 /**
  * Card component for containing related content with various visual styles.

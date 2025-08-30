@@ -1,6 +1,6 @@
 import { PresentationTheme } from '../../../interfaces/theme';
 
-import { ListItemVariant } from './ListItem.types';
+import { ListItemVariant } from '../../../interfaces/ui/ListItem.types';
 
 /**
  * Creates list item styles based on the current theme

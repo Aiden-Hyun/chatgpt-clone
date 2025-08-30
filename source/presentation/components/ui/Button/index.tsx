@@ -4,7 +4,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
 import createButtonStyles from './Button.styles';
-import { ButtonProps } from './Button.types';
+import { ButtonProps } from '../../../interfaces/ui/Button.types';
 
 /**
  * Button component that supports various styles, sizes, and states.

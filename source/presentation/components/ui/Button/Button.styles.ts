@@ -1,6 +1,6 @@
 import { PresentationTheme } from '../../../interfaces/theme';
 
-import { ButtonSize, ButtonStatus, ButtonVariant } from './Button.types';
+import { ButtonSize, ButtonStatus, ButtonVariant } from '../../../interfaces/ui/Button.types';
 
 /**
  * Creates button styles based on the current theme

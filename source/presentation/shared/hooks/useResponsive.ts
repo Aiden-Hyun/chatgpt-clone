@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 
-// Define breakpoints for responsive design
-export const BREAKPOINTS = {
-  mobile: 768, // iPhone 14 is 393px, so this will catch mobile devices
-  tablet: 1024,
-  desktop: 1200,
-} as const;
-
-export type Breakpoint = keyof typeof BREAKPOINTS;
+import { BREAKPOINTS, Breakpoint } from '../../interfaces/ui/Responsive.types';
 
 export const useResponsive = () => {
   const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);

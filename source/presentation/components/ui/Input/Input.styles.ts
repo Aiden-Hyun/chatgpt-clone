@@ -1,6 +1,6 @@
 import { PresentationTheme } from '../../../interfaces/theme';
 
-import { InputStatus, InputVariant } from './Input.types';
+import { InputStatus, InputVariant } from '../../../interfaces/ui/Input.types';
 
 /**
  * Creates input styles based on the current theme
