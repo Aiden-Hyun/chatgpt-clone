@@ -1,19 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { ChatRoomActions, ChatRoomState, IUserSession } from '../../interfaces';
-import { CreateRoomUseCase } from '../use-cases/CreateRoomUseCase';
-import { DeleteRoomUseCase } from '../use-cases/DeleteRoomUseCase';
-import { ListRoomsUseCase } from '../use-cases/ListRoomsUseCase';
-import { UpdateRoomUseCase } from '../use-cases/UpdateRoomUseCase';
-
-
-
-interface ChatRoomViewModelDependencies {
-  createRoomUseCase: CreateRoomUseCase;
-  updateRoomUseCase: UpdateRoomUseCase;
-  deleteRoomUseCase: DeleteRoomUseCase;
-  listRoomsUseCase: ListRoomsUseCase;
-}
+import { ChatRoomActions, ChatRoomState, ChatRoomViewModelDependencies, IUserSession } from '../../interfaces';
 
 export function useChatRoomViewModel(dependencies: ChatRoomViewModelDependencies, session: IUserSession | null): ChatRoomState & ChatRoomActions {
   

@@ -1,13 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import { LoadingScreenProps } from '../interfaces/components';
 import { useAppTheme } from '../theme/hooks/useTheme';
-
-interface LoadingScreenProps {
-  message?: string;
-  size?: 'small' | 'large';
-  fullScreen?: boolean;
-}
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({ 
   message, 

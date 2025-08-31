@@ -1,24 +1,4 @@
-export interface ExpiryCalculationResult {
-  expiryDate: Date;
-  durationMs: number;
-  isValid: boolean;
-}
-
-export interface TimeUntilExpiryResult {
-  timeRemaining: number; // milliseconds
-  isExpired: boolean;
-  isExpiringSoon: boolean;
-  hoursRemaining: number;
-  minutesRemaining: number;
-  secondsRemaining: number;
-}
-
-export interface RefreshRecommendation {
-  shouldRefresh: boolean;
-  reason: string;
-  timeUntilExpiry: number;
-  thresholdUsed: number;
-}
+import { ExpiryCalculationResult, TimeUntilExpiryResult, RefreshRecommendation } from '../../interfaces';
 
 export class SessionExpiryCalculator {
   // Default session duration: 24 hours

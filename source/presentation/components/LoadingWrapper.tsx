@@ -1,12 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { LoadingWrapperProps } from '../interfaces/components';
 import { useAppTheme } from '../theme/hooks/useTheme';
-
-interface LoadingWrapperProps {
-  loading: boolean;
-  children: React.ReactNode;
-}
 
 export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ loading, children }) => {
   const theme = useAppTheme();

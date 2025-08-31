@@ -102,6 +102,34 @@ export interface ClipboardData {
   hasContent: boolean;
 }
 
+// ============================================================================
+// BUSINESS CONTEXT INTERFACES
+// ============================================================================
+
+/**
+ * Business context value
+ */
+export interface BusinessContextValue {
+  useCaseFactory: any; // UseCaseFactory
+  businessProvider: any; // BusinessLayerProvider
+  clipboard: IClipboardAdapter;
+  languageService: ILanguageService;
+  toastService: any; // IToastService
+  alertService: IAlertService;
+  navigationService: INavigationService;
+  navigationTracker: any; // INavigationTracker
+  storageService: IStorageService;
+  secureStorageService: any; // ISecureStorageService
+  getAccessToken: () => Promise<string | null>;
+}
+
+/**
+ * Business context provider props
+ */
+export interface BusinessContextProviderProps {
+  children: React.ReactNode;
+}
+
 /**
  * Language service interface
  */

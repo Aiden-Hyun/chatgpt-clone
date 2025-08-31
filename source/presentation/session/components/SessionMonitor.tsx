@@ -4,28 +4,8 @@ import { AppState, AppStateStatus } from 'react-native';
 import { SessionExpiryCalculator } from '../../../service/session/utils/SessionExpiryCalculator';
 import { Logger } from '../../../service/shared/utils/Logger';
 import { useAutoLogout } from '../../auth/hooks/useAutoLogout';
-import { UserSession } from '../../interfaces/auth';
+import { SessionMonitorProps, SessionMonitorState } from '../../interfaces/session';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
-
-export interface SessionMonitorProps {
-  session: UserSession | null;
-  onSessionExpired?: () => void;
-  onSessionExpiring?: (timeRemaining: number) => void;
-  onSessionRefreshed?: (session: UserSession) => void;
-  onSessionError?: (error: string) => void;
-  enableAutoRefresh?: boolean;
-  enableAutoLogout?: boolean;
-  warningThresholdMinutes?: number;
-  refreshThresholdMinutes?: number;
-  children?: React.ReactNode;
-}
-
-export interface SessionMonitorState {
-  isMonitoring: boolean;
-  lastCheck: Date | null;
-  refreshAttempts: number;
-  autoLogoutScheduled: boolean;
-}
 
 /**
  * SessionMonitor - Background component that monitors session state

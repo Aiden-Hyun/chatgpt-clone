@@ -1,13 +1,7 @@
 import { ValidationResult } from '../../auth/validators/EmailValidator';
+import { SessionData } from '../../interfaces';
 
 // Service layer validator - uses interface instead of concrete business entity
-export interface SessionData {
-  userId: string;
-  isAuthenticated: boolean;
-  permissions: string[];
-  lastActivity: Date;
-  expiresAt: Date;
-}
 
 export class SessionValidator {
   static validateSession(session: SessionData | null): ValidationResult {

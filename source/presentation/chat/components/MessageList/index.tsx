@@ -8,19 +8,10 @@ import {
     CURSOR_BLINK_DURATION_MS,
     TYPING_ANIMATION_SPEED,
 } from '../../../chat/constants';
-import { MessageEntity as ChatMessage } from '../../../interfaces/chat';
+import { MessageEntity as ChatMessage, MessageListProps } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { MessageItem } from '../MessageItem';
-
-
-interface MessageListProps {
-  messages: ChatMessage[];
-  // ✅ STATE MACHINE: Remove legacy loading flag - derive from message states
-  regeneratingIndex: number | null;
-  onRegenerate: (index: number) => void;
-  showWelcomeText: boolean;
-}
 
 export const MessageList: React.FC<MessageListProps> = ({
   messages,

@@ -3,6 +3,7 @@ import { Platform, ScrollView, View } from 'react-native';
 import SyntaxHighlighter from 'react-native-syntax-highlighter';
 import { nightOwl, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import { CodeStylerProps } from '../../../interfaces/chat';
 import { useThemeContext } from '../../../theme';
 import { useAppTheme } from '../../../theme/theme';
 
@@ -12,12 +13,6 @@ import { createCodeStylerStyles } from './CodeStyler.styles';
 // @ts-ignore - library lacks proper types for RN env
  
 // @ts-ignore - use Prism styles for richer, IDE-like colorization
-
-interface CodeStylerProps {
-  code: string;
-  language: string;
-  showLineNumbers?: boolean;
-}
 
 export const CodeStyler: React.FC<CodeStylerProps> = ({
   code,

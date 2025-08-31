@@ -2,28 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { SessionExpiryCalculator } from '../../../service/session/utils/SessionExpiryCalculator';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { UserSession } from '../../interfaces/auth';
+import { UseSessionHook } from '../../interfaces/session';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
-
-export interface SessionState {
-  session: UserSession | null;
-  isLoading: boolean;
-  error: string | null;
-  isExpired: boolean;
-  isExpiringSoon: boolean;
-  timeUntilExpiry: number;
-  sessionHealth: 'healthy' | 'warning' | 'expired';
-}
-
-export interface SessionActions {
-  refreshSession: () => Promise<boolean>;
-  validateSession: () => Promise<boolean>;
-  clearError: () => void;
-  updateLastActivity: () => Promise<void>;
-  getSessionDetails: () => Promise<SessionState['session']>;
-}
-
-export interface UseSessionHook extends SessionState, SessionActions {}
 
 export function useSession(): UseSessionHook {
   const [session, setSession] = useState<UserSession | null>(null);

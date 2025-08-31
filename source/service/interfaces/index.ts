@@ -34,3 +34,8 @@ export * from './alert';
 export * from './domain';
 
 export * from './language';
+
+// ============================================================================
+// SESSION INTERFACES - Session management and validation
+// ============================================================================
+export * from './session';

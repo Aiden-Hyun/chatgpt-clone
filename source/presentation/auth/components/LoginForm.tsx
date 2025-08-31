@@ -3,16 +3,8 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AuthProvider } from '../../../business/auth/use-cases/SocialAuthUseCase';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { LoginFormComponentProps } from '../../interfaces/auth';
 import { LoginFormValues, useAuthForms } from '../hooks/useAuthForms';
-
-export interface LoginFormProps {
-  onForgotPassword?: () => void;
-  onSignUpPress?: () => void;
-  onSuccess?: () => void;
-  showSocialAuth?: boolean;
-  enabledProviders?: AuthProvider[];
-  style?: Record<string, unknown>;
-}
 
 export function LoginForm({
   onForgotPassword,
@@ -21,7 +13,7 @@ export function LoginForm({
   showSocialAuth = true,
   enabledProviders = ['google', 'apple', 'github'],
   style
-}: LoginFormProps) {
+}: LoginFormComponentProps) {
   const [formValues, setFormValues] = useState<LoginFormValues>({
     email: '',
     password: '',

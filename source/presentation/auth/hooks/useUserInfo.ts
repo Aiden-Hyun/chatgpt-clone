@@ -1,16 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import { useUserProfileViewModel } from '../../../business/auth/view-models/useUserProfileViewModel';
+import { UserInfo } from '../../interfaces/auth';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useAuth } from '../context/AuthContext';
-
-interface UserInfo {
-  userName: string;
-  email: string | null;
-  userId: string | null;
-  loading: boolean;
-  refresh: () => Promise<void>;
-}
 
 /**
  * Hook for fetching and managing user information from the current session

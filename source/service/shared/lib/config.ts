@@ -1,7 +1,7 @@
 // source/service/shared/lib/config.ts
 import Constants from 'expo-constants';
 
-import { ILogger } from '../../interfaces';
+import { IConfigService, ILogger } from '../../interfaces';
 import { Logger } from '../utils/Logger';
 
 // Create a logger instance for config
@@ -29,11 +29,6 @@ export const appConfig = {
 };
 
 // Config service interface for DI
-export interface IConfigService {
-  getSupabaseUrl(): string;
-  getSupabaseAnonKey(): string;
-  getEdgeFunctionBaseUrl(): string;
-}
 
 // Config service implementation
 export class ConfigService implements IConfigService {

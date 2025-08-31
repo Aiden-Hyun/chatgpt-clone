@@ -2,15 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Logger } from '../../../service/shared/utils/Logger';
+import { PasswordResetFormComponentProps } from '../../interfaces/auth';
 import { PasswordResetRequestValues, ResetFormValues, useAuthForms } from '../hooks/useAuthForms';
-
-export interface PasswordResetFormProps {
-  mode?: 'request' | 'reset';
-  resetToken?: string;
-  onBackToLogin?: () => void;
-  onSuccess?: () => void;
-  style?: Record<string, unknown>;
-}
 
 export function PasswordResetForm({
   mode = 'request',
@@ -18,7 +11,7 @@ export function PasswordResetForm({
   onBackToLogin,
   onSuccess,
   style
-}: PasswordResetFormProps) {
+}: PasswordResetFormComponentProps) {
   const [requestValues, setRequestValues] = useState<PasswordResetRequestValues>({
     email: ''
   });

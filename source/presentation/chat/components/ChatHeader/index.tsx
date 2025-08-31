@@ -6,7 +6,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { AnthropicLogo, OpenAILogo } from '../../../components';
 import type { DropdownItem } from '../../../components/ui';
 import { Button, Dropdown } from '../../../components/ui';
-import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../../interfaces/chat';
+import { AVAILABLE_MODELS, ChatHeaderProps, DEFAULT_MODEL, getModelInfo } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
@@ -14,19 +14,6 @@ import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
 import { createChatHeaderStyles } from './ChatHeader.styles';
 
 console.log('🔍 ChatHeader module: Loading ChatHeader file');
-
-interface ChatHeaderProps {
-  onLogout: () => void;
-  onSettings: () => void;
-  onBack: () => void;
-  onNewChat: () => void;
-  onChatSelect: (roomId: string) => void;
-  selectedChatId?: string;
-  // Model selection props for chat rooms
-  selectedModel?: string;
-  onModelChange?: (model: string) => void;
-  showModelSelection?: boolean;
-}
 
 /**
  * ChatHeader

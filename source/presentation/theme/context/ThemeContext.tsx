@@ -2,32 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
-import type { AppTheme, ThemeMode, ThemeStyle } from '../../interfaces/theme';
+import { ThemeContextType, ThemeMode, ThemeStyle } from '../../interfaces/theme';
 import { themeRegistry } from '../themeRegistry';
 
 // Storage keys for persisting theme preferences
 const THEME_MODE_STORAGE_KEY = '@theme_mode';
 const THEME_STYLE_STORAGE_KEY = '@theme_style';
-
-// Context type definition with enhanced theme switching capabilities
-interface ThemeContextType {
-  // Theme mode (light, dark, system)
-  themeMode: ThemeMode;
-  setThemeMode: (mode: ThemeMode) => void;
-  
-  // Theme style (which theme set to use, e.g., 'default', 'glassmorphism')
-  themeStyle: ThemeStyle;
-  setThemeStyle: (style: ThemeStyle) => void;
-  
-  // Current active theme based on mode and style
-  currentTheme: AppTheme;
-  
-  // Available themes for UI selection
-  availableThemes: ReturnType<typeof themeRegistry.getAllThemes>;
-  
-  // Loading state to track when theme preferences are being loaded
-  isLoading: boolean;
-}
 
 // Create context with undefined default value
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

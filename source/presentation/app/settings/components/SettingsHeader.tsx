@@ -3,13 +3,9 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { Button, Text } from '../../../components/ui';
+import { SettingsHeaderProps } from '../../../interfaces/app';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createSettingsStyles } from '../settings.styles';
-
-interface SettingsHeaderProps {
-  onBack: () => void;
-  title: string;
-}
 
 export const SettingsHeader: React.FC<SettingsHeaderProps> = ({ onBack, title }) => {
   const theme = useAppTheme();

@@ -1,6 +1,7 @@
 // Enhanced theme types to support theme switching
 
 
+
 // Helper type for deep partial objects
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -453,3 +454,29 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 // Theme style (which theme set to use)
 export type ThemeStyle = string;
+
+// ============================================================================
+// THEME CONTEXT INTERFACES
+// ============================================================================
+
+/**
+ * Theme context type
+ */
+export interface ThemeContextType {
+  // Theme mode (light, dark, system)
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  
+  // Theme style (which theme set to use, e.g., 'default', 'glassmorphism')
+  themeStyle: ThemeStyle;
+  setThemeStyle: (style: ThemeStyle) => void;
+  
+  // Current active theme based on mode and style
+  currentTheme: AppTheme;
+  
+  // Available themes for UI selection
+  availableThemes: any; // ReturnType<typeof themeRegistry.getAllThemes>
+  
+  // Loading state to track when theme preferences are being loaded
+  isLoading: boolean;
+}

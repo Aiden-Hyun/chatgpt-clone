@@ -5,15 +5,10 @@ import { View } from 'react-native';
 import { useCustomAlert } from '../../../alert/dialog/useCustomAlert';
 import { useUpdateProfile } from '../../../auth/hooks/useUpdateProfile';
 import { Button, Card, Input, ListItem, Text } from '../../../components/ui';
+import { AccountSectionProps } from '../../../interfaces/app';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createSettingsStyles } from '../settings.styles';
-
-interface AccountSectionProps {
-  userName: string | null;
-  email: string | null;
-  onRefresh: () => Promise<void>;
-}
 
 export const AccountSection: React.FC<AccountSectionProps> = ({ 
   userName, 

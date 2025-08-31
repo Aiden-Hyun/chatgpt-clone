@@ -3,44 +3,12 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { RoutePermissionChecker } from '../../../service/auth/utils/RoutePermissionChecker';
 import { Logger } from '../../../service/shared/utils/Logger';
-import { IUserSession } from '../../interfaces/auth';
+import {
+    ProtectedRouteState,
+    UseProtectedRouteHook,
+    UseProtectedRouteOptions
+} from '../../interfaces/auth';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
-
-export interface ProtectedRouteState {
-  isAuthorized: boolean;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  session: IUserSession | null;
-  error: string | null;
-  redirectTo: string | null;
-  authorizationDetails: {
-    hasValidSession: boolean;
-    sessionExpired: boolean;
-    hasRequiredPermissions: boolean;
-    userPermissions: string[];
-    requiredPermissions: string[];
-    missingPermissions: string[];
-  };
-}
-
-export interface ProtectedRouteActions {
-  redirectToLogin: (returnUrl?: string) => void;
-  redirectToUnauthorized: () => void;
-  checkAuthorization: (route?: string, permissions?: string[]) => Promise<boolean>;
-  refreshAuthorization: () => Promise<void>;
-  clearError: () => void;
-}
-
-export interface UseProtectedRouteOptions {
-  route?: string;
-  requiredPermissions?: string[];
-  requireAuthentication?: boolean;
-  autoRedirect?: boolean;
-  onUnauthorized?: (reason: string) => void;
-  onAuthenticationRequired?: () => void;
-}
-
-export interface UseProtectedRouteHook extends ProtectedRouteState, ProtectedRouteActions {}
 
 export function useProtectedRoute(options: UseProtectedRouteOptions = {}): UseProtectedRouteHook {
   const {

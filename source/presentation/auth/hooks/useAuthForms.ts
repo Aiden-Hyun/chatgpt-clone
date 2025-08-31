@@ -6,69 +6,16 @@ import { EmailValidator } from '../../../service/auth/validators/EmailValidator'
 import { PasswordResetValidator } from '../../../service/auth/validators/PasswordResetValidator';
 import { PasswordValidator } from '../../../service/auth/validators/PasswordValidator';
 import { Logger } from '../../../service/shared/utils/Logger';
+import {
+    AuthFormState,
+    LoginFormValues,
+    PasswordResetRequestValues,
+    ResetFormValues,
+    SignUpFormValues,
+    UseAuthFormsHook
+} from '../../interfaces/auth';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
-
 import { useAuthNavigation } from './useAuthNavigation';
-
-export interface LoginFormValues {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-export interface SignUpFormValues {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  displayName: string;
-  acceptTerms: boolean;
-}
-
-export interface PasswordResetRequestValues {
-  email: string;
-}
-
-export interface ResetFormValues {
-  token: string;
-  newPassword: string;
-  confirmPassword: string;
-}
-
-export interface AuthFormState {
-  isLoading: boolean;
-  error: string | null;
-  success: string | null;
-}
-
-export interface UseAuthFormsHook {
-  // State
-  loginState: AuthFormState;
-  signUpState: AuthFormState;
-  passwordResetState: AuthFormState;
-  resetPasswordState: AuthFormState;
-
-  // Actions
-  handleLoginSubmit: (values: LoginFormValues) => Promise<void>;
-  handleSignUpSubmit: (values: SignUpFormValues) => Promise<void>;
-  handlePasswordResetRequest: (email: string) => Promise<void>;
-  handlePasswordResetSubmit: (values: ResetFormValues) => Promise<void>;
-  handleSocialAuth: (provider: AuthProvider) => Promise<void>;
-  
-  // Validation
-  validateLoginForm: (values: Partial<LoginFormValues>) => Record<string, string>;
-  validateSignUpForm: (values: Partial<SignUpFormValues>) => Record<string, string>;
-  validatePasswordResetForm: (values: Partial<PasswordResetRequestValues>) => Record<string, string>;
-  validateResetForm: (values: Partial<ResetFormValues>) => Record<string, string>;
-
-  // Utilities
-  clearErrors: () => void;
-  clearSuccess: () => void;
-  getPasswordStrength: (password: string) => {
-    score: number;
-    level: 'weak' | 'fair' | 'good' | 'strong';
-    feedback: string[];
-  };
-}
 
 export function useAuthForms(): UseAuthFormsHook {
   const [loginState, setLoginState] = useState<AuthFormState>({

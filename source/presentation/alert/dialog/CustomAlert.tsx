@@ -8,19 +8,9 @@ import {
     View,
 } from 'react-native';
 
+import { CustomAlertProps } from '../../interfaces/alert';
 import { PresentationTheme } from '../../interfaces/theme';
 import { useAppTheme } from '../../theme/theme';
-
-interface CustomAlertProps {
-  visible: boolean;
-  title: string;
-  message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  type?: 'success' | 'error' | 'warning' | 'info';
-}
 
 export const CustomAlert: React.FC<CustomAlertProps> = ({
   visible,

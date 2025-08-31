@@ -15,7 +15,8 @@ const ALLOWED = {
   database: ['database'],
 };
 
-// LAW: All imports between layers not explicitly allowed are strictly forbidden.
+// LAW: All imports between layers not explicitly allowed are 
+// strictly forbidden.
 const zones = [];
 for (const target of LAYERS) {
   const allowed = new Set(ALLOWED[target]);

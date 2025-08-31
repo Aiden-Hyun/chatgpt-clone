@@ -4,17 +4,11 @@ import { Text, TextInput, View } from 'react-native';
 
 import { useToast } from '../../../alert/toast';
 import { Button } from '../../../components/ui/Button';
-import { ChatMessage } from '../../../interfaces/chat';
+import { IUserMessageProps } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 
 import { createUserMessageStyles } from './UserMessage.styles';
-
-interface IUserMessageProps {
-  message: ChatMessage;
-  isLastInGroup?: boolean;
-  onSendEdited?: (newText: string) => void;
-}
 
 export const UserMessage: React.FC<IUserMessageProps> = ({
   message,

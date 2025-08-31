@@ -3,28 +3,11 @@ import { View } from 'react-native';
 
 import { useChatViewModel } from '../../../../business/chat/view-models/useChatViewModel';
 import { createChatStyles } from '../../../app/chat/chat.styles';
+import { ChatInterfaceComponentProps } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { useMessageActions } from '../../hooks/useMessageActions';
 import { MessageList } from '../MessageList';
-
-interface ChatInterfaceProps {
-  roomId: string | number;
-  initialModel?: string;
-  className?: string;
-  showHeader?: boolean;
-  selectedModel?: string;
-  onChangeModel?: (model: string) => void;
-  onChatStateChange?: (state: {
-    input: string;
-    handleInputChange: (text: string) => void;
-    sendMessage: () => void;
-    sending: boolean;
-    isTyping: boolean;
-    isSearchMode: boolean;
-    onSearchToggle: () => void;
-  }) => void;
-}
 
 /**
  * Custom hook to manage chat interface dependencies
@@ -56,7 +39,7 @@ function useChatInterfaceDependencies(_unusedRoomId: string) {
  * This component now only handles messages, with chat input moved to parent.
  * This provides better layout control and responsive behavior.
  */
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({
+export const ChatInterface: React.FC<ChatInterfaceComponentProps> = ({
   roomId,
   onChatStateChange,
 }) => {

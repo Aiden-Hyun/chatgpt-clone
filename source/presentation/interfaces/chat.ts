@@ -370,6 +370,48 @@ export interface ChatInputBarProps extends BaseComponentProps {
 }
 
 /**
+ * Assistant message bar props
+ */
+export interface AssistantMessageBarProps {
+  onRegenerate?: () => void;
+  onLike?: () => void;
+  onDislike?: () => void;
+  onShare?: () => void;
+  onCopy?: () => void;
+  onAudio?: () => void;
+  // Like/dislike state
+  isLiked?: boolean;
+  isDisliked?: boolean;
+}
+
+/**
+ * Chat header props
+ */
+export interface ChatHeaderProps {
+  onLogout: () => void;
+  onSettings: () => void;
+  onBack: () => void;
+  onNewChat: () => void;
+  onChatSelect: (roomId: string) => void;
+  selectedChatId?: string;
+  // Model selection props for chat rooms
+  selectedModel?: string;
+  onModelChange?: (model: string) => void;
+  showModelSelection?: boolean;
+}
+
+/**
+ * Chat input props
+ */
+export interface ChatInputProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  onSendMessage: (message: string) => void;
+  isLoading: boolean;
+  disabled?: boolean;
+}
+
+/**
  * Chat input state
  */
 export interface ChatInputState {
@@ -456,6 +498,34 @@ export interface ModelSelectorProps extends BaseComponentProps {
   isLoading?: boolean;
 }
 
+/**
+ * Model selector component props
+ */
+export interface ModelSelectorComponentProps {
+  selectedModel: string;
+  onModelChange: (model: string) => Promise<void>;
+  disabled?: boolean;
+}
+
+/**
+ * Room management props
+ */
+export interface RoomManagementProps {
+  onRoomSelect?: (room: ChatRoom) => void;
+  onRoomCreated?: (room: ChatRoom) => void;
+  onRoomDeleted?: (roomId: string) => void;
+  style?: Record<string, unknown>;
+}
+
+/**
+ * Sidebar props
+ */
+export interface SidebarProps {
+  onNewChat?: () => void;
+  onChatSelect?: (roomId: string) => void;
+  onSettings?: () => void;
+}
+
 // ============================================================================
 // CHAT INTERFACE INTERFACES
 // ============================================================================
@@ -480,6 +550,114 @@ export interface ChatInterfaceProps extends BaseComponentProps {
   onSendMessage: (message: string) => void;
   onRegenerateMessage: (messageId: string) => void;
   isLoading?: boolean;
+}
+
+/**
+ * Chat interface component props
+ */
+export interface ChatInterfaceComponentProps {
+  roomId: string | number;
+  initialModel?: string;
+  className?: string;
+  showHeader?: boolean;
+  selectedModel?: string;
+  onChangeModel?: (model: string) => void;
+  onChatStateChange?: (state: {
+    input: string;
+    handleInputChange: (text: string) => void;
+    sendMessage: () => void;
+    sending: boolean;
+    isTyping: boolean;
+    isSearchMode: boolean;
+    onSearchToggle: () => void;
+  }) => void;
+}
+
+/**
+ * Code block props
+ */
+export interface CodeBlockProps {
+  code: string;
+  language?: string;
+  showLineNumbers?: boolean;
+}
+
+/**
+ * Code styler props
+ */
+export interface CodeStylerProps {
+  code: string;
+  language: string;
+  showLineNumbers?: boolean;
+}
+
+/**
+ * Error message props
+ */
+export interface ErrorMessageProps {
+  message: ChatMessage;
+  onRetry: () => void;
+  style?: Record<string, unknown>;
+}
+
+/**
+ * Loading message props
+ */
+export interface LoadingMessageProps {
+  style?: Record<string, unknown>;
+}
+
+/**
+ * Markdown renderer props
+ */
+export interface MarkdownRendererProps {
+  children: string;
+  isAnimating?: boolean;
+}
+
+/**
+ * Assistant message props
+ */
+export interface IAssistantMessageProps {
+  message: ChatMessage;
+  onRegenerate?: () => void;
+}
+
+/**
+ * System message props
+ */
+export interface SystemMessageProps {
+  message: ChatMessage;
+}
+
+/**
+ * User message props
+ */
+export interface IUserMessageProps {
+  message: ChatMessage;
+  isLastInGroup?: boolean;
+  onSendEdited?: (newText: string) => void;
+}
+
+/**
+ * Message list props
+ */
+export interface MessageListProps {
+  messages: ChatMessage[];
+  // ✅ STATE MACHINE: Remove legacy loading flag - derive from message states
+  regeneratingIndex: number | null;
+  onRegenerate: (index: number) => void;
+  showWelcomeText: boolean;
+}
+
+/**
+ * Model capability icons props
+ */
+export interface ModelCapabilityIconsProps {
+  capabilities: ModelCapabilities;
+  size?: number;
+  showLabels?: boolean;
+  containerStyle?: Record<string, unknown>;
 }
 
 // ============================================================================

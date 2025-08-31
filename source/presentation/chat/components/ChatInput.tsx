@@ -1,14 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
-interface ChatInputProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  onSendMessage: (message: string) => void;
-  isLoading: boolean;
-  disabled?: boolean;
-}
+import { ChatInputProps } from '../../interfaces/chat';
 
 export function ChatInput({ 
   value, 

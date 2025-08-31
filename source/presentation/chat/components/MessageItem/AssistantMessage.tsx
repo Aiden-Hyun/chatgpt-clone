@@ -2,17 +2,12 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import { useToast } from '../../../alert/toast';
-import { ChatMessage } from '../../../interfaces/chat';
+import { IAssistantMessageProps } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { AssistantMessageBar } from '../AssistantMessageBar';
 
 import { createAssistantMessageStyles } from './AssistantMessage.styles';
-
-interface IAssistantMessageProps {
-  message: ChatMessage;
-  onRegenerate?: () => void;
-}
 
 export const AssistantMessage: React.FC<IAssistantMessageProps> = React.memo(function AssistantMessage({
   message,

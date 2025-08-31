@@ -1,26 +1,12 @@
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
-import { ILogger } from '../../../interfaces/shared';
+import { ComponentsContextValue, ComponentsProviderProps } from '../../../interfaces/components';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
-
-/**
- * Interface for UI component-specific context
- */
-interface ComponentsContextValue {
-  logger: ILogger;
-}
 
 /**
  * Context for UI component-specific dependencies
  */
 const ComponentsContext = createContext<ComponentsContextValue | undefined>(undefined);
-
-/**
- * Props for ComponentsProvider
- */
-interface ComponentsProviderProps {
-  children: ReactNode;
-}
 
 /**
  * Provider for UI component-specific dependencies

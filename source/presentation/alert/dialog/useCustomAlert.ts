@@ -1,15 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
-interface AlertState {
-  visible: boolean;
-  title: string;
-  message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmText: string;
-  cancelText: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-}
+import { AlertState } from '../../interfaces/alert';
 
 export const useCustomAlert = () => {
   const [alert, setAlert] = useState<AlertState>({

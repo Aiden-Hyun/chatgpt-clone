@@ -1,10 +1,7 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 import { ComponentsProvider as UIComponentsProvider } from '../components/ui/context/ComponentsContext';
-
-interface ComponentsProviderProps {
-  children: ReactNode;
-}
+import { ComponentsProviderProps } from '../interfaces/components';
 
 /**
  * Provider that wraps all UI component providers

@@ -1,11 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 
-interface FormWrapperProps {
-  children: React.ReactNode;
-  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
-  style?: Record<string, unknown>;
-}
+import { FormWrapperProps } from '../interfaces/components';
 
 export const FormWrapper: React.FC<FormWrapperProps> = ({ 
   children, 

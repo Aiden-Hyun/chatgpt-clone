@@ -4,14 +4,11 @@ import { Switch, View } from 'react-native';
 
 import { useToast } from '../../../alert/toast/ToastContext';
 import { Card, ListItem, Text } from '../../../components/ui';
+import { PreferencesSectionProps } from '../../../interfaces/app';
 import { LanguageSelector, useLanguageContext } from '../../../language';
 import { useThemeMode, useThemeStyle } from '../../../theme/hooks';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { createSettingsStyles } from '../settings.styles';
-
-interface PreferencesSectionProps {
-  onNavigateToThemes: () => void;
-}
 
 export const PreferencesSection: React.FC<PreferencesSectionProps> = ({ 
   onNavigateToThemes 

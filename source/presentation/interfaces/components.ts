@@ -7,7 +7,7 @@
 import * as React from 'react';
 import { PressableProps, TextProps as RNTextProps, TextInputProps, TouchableOpacityProps } from 'react-native';
 
-import { BaseComponentProps, ComponentSize } from './shared';
+import { BaseComponentProps, ComponentSize, ILogger } from './shared';
 
 // ============================================================================
 // BUTTON INTERFACES
@@ -233,4 +233,59 @@ export interface LoadingWrapperProps extends BaseComponentProps {
   loadingText?: string;
   error?: string;
   onRetry?: () => void;
+}
+
+// ============================================================================
+// LOGO INTERFACES
+// ============================================================================
+
+/**
+ * Anthropic logo props
+ */
+export interface AnthropicLogoProps {
+  size?: number;
+}
+
+/**
+ * Form wrapper props
+ */
+export interface FormWrapperProps {
+  children: React.ReactNode;
+  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
+  style?: Record<string, unknown>;
+}
+
+/**
+ * Loading screen props
+ */
+export interface LoadingScreenProps {
+  message?: string;
+  size?: 'small' | 'large';
+  fullScreen?: boolean;
+}
+
+/**
+ * OpenAI logo props
+ */
+export interface OpenAILogoProps {
+  size?: number;
+  variant?: 'white' | 'black';
+}
+
+// ============================================================================
+// CONTEXT INTERFACES
+// ============================================================================
+
+/**
+ * Interface for UI component-specific context
+ */
+export interface ComponentsContextValue {
+  logger: ILogger;
+}
+
+/**
+ * Props for ComponentsProvider
+ */
+export interface ComponentsProviderProps {
+  children: ReactNode;
 }

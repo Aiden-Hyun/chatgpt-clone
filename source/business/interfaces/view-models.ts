@@ -146,3 +146,33 @@ export interface ISessionViewModelDependencies {
   validateSessionUseCase: any; // ValidateSessionUseCase
   updateActivityUseCase: any; // UpdateSessionActivityUseCase
 }
+
+// ============================================================================
+// VIEW MODEL DEPENDENCIES INTERFACES
+// ============================================================================
+
+/**
+ * Chat room view model dependencies interface
+ */
+export interface ChatRoomViewModelDependencies {
+  createRoomUseCase: any; // CreateRoomUseCase
+  updateRoomUseCase: any; // UpdateRoomUseCase
+  deleteRoomUseCase: any; // DeleteRoomUseCase
+  listRoomsUseCase: any; // ListRoomsUseCase
+}
+
+/**
+ * Chat view model dependencies interface
+ */
+export interface ChatViewModelDependencies {
+  sendMessageUseCase: any; // SendMessageUseCase
+  receiveMessageUseCase: any; // ReceiveMessageUseCase
+  deleteMessageUseCase: any; // DeleteMessageUseCase
+  copyMessageUseCase: any; // CopyMessageUseCase
+  editMessageUseCase: any; // EditMessageUseCase
+  resendMessageUseCase: any; // ResendMessageUseCase
+  regenerateAssistantUseCase: any; // RegenerateAssistantUseCase
+  messageRepository: any; // IMessageRepository
+  chatRoomRepository: any; // IChatRoomRepository
+  getAccessToken: () => Promise<string | null>;
+}

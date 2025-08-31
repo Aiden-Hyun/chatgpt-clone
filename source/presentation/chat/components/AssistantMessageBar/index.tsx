@@ -3,21 +3,10 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { Button } from '../../../components/ui/Button';
+import { AssistantMessageBarProps } from '../../../interfaces/chat';
 import { useAppTheme } from '../../../theme/theme';
 
 import { createAssistantMessageBarStyles } from './AssistantMessageBar.styles';
-
-interface AssistantMessageBarProps {
-  onRegenerate?: () => void;
-  onLike?: () => void;
-  onDislike?: () => void;
-  onShare?: () => void;
-  onCopy?: () => void;
-  onAudio?: () => void;
-  // Like/dislike state
-  isLiked?: boolean;
-  isDisliked?: boolean;
-}
 
 export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
   onRegenerate,

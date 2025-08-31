@@ -1,22 +1,10 @@
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { LanguageContextType, LanguageProviderProps } from '../interfaces/language';
 import { useBusinessContext } from '../shared/BusinessContextProvider';
-
-// Define the context type
-interface LanguageContextType {
-  t: (key: string) => string;
-  currentLanguage: string;
-  setLanguage: (language: string) => void;
-  formatTranslation: (key: string, variables: Record<string, string>) => string;
-}
 
 // Create the context
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
-
-// Language provider component
-interface LanguageProviderProps {
-  children: ReactNode;
-}
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const { languageService } = useBusinessContext();

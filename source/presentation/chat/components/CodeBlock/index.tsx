@@ -4,17 +4,12 @@ import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { useToast } from '../../../alert/toast';
+import { CodeBlockProps } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { CodeStyler } from '../CodeStyler';
 
 import { createCodeBlockStyles } from './CodeBlock.styles';
-
-interface CodeBlockProps {
-  code: string;
-  language?: string;
-  showLineNumbers?: boolean;
-}
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ 
   code, 

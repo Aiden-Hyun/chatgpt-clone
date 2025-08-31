@@ -1,18 +1,9 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { Logger } from '../../../service/shared/utils/Logger';
+import { ConditionalRenderProps, PermissionGateProps, ProtectedRouteComponentProps } from '../../interfaces/auth';
 import { useProtectedRoute, UseProtectedRouteOptions } from '../hooks/useProtectedRoute';
-
-export interface ProtectedRouteProps extends UseProtectedRouteOptions {
-  children: ReactNode;
-  fallback?: ReactNode;
-  loadingComponent?: ReactNode;
-  unauthorizedComponent?: ReactNode;
-  errorComponent?: (error: string) => ReactNode;
-  showAuthorizationDetails?: boolean;
-  onAuthorizationChange?: (isAuthorized: boolean, isAuthenticated: boolean) => void;
-}
 
 /**
  * ProtectedRoute - Component wrapper for route protection
@@ -34,7 +25,7 @@ export function ProtectedRoute({
   showAuthorizationDetails = false,
   onAuthorizationChange,
   ...protectedRouteOptions
-}: ProtectedRouteProps) {
+}: ProtectedRouteComponentProps) {
   const {
     isAuthorized,
     isLoading,
@@ -194,13 +185,6 @@ export function withProtectedRoute<P extends object>(
 /**
  * Conditional rendering based on permissions
  */
-export interface ConditionalRenderProps {
-  children: ReactNode;
-  requiredPermissions?: string[];
-  requireAll?: boolean;
-  fallback?: ReactNode;
-  session?: unknown;
-}
 
 export function ConditionalRender({
   children,
@@ -244,13 +228,6 @@ export function ConditionalRender({
 /**
  * Permission-based component visibility
  */
-export interface PermissionGateProps {
-  children: ReactNode;
-  permissions: string | string[];
-  requireAll?: boolean;
-  fallback?: ReactNode;
-  inverse?: boolean; // Show when user DOESN'T have permissions
-}
 
 export function PermissionGate({
   children,

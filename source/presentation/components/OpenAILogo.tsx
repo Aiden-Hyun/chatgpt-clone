@@ -1,12 +1,8 @@
 import { Image } from 'expo-image';
 import React from 'react';
 
+import { OpenAILogoProps } from '../interfaces/components';
 import { useThemeContext } from '../theme/context/ThemeContext';
-
-interface OpenAILogoProps {
-  size?: number;
-  variant?: 'white' | 'black';
-}
 
 export const OpenAILogo: React.FC<OpenAILogoProps> = ({ size = 16, variant }) => {
   const { themeMode, currentTheme } = useThemeContext();

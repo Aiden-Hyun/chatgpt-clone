@@ -5,14 +5,10 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useToast } from '../alert/toast';
 import type { DropdownItem } from '../components/ui';
 import { Dropdown } from '../components/ui';
+import { LanguageSelectorProps } from '../interfaces/language';
 import { PresentationTheme } from '../interfaces/theme';
 import { useBusinessContext } from '../shared/BusinessContextProvider';
-
 import { useLanguageContext } from './LanguageContext';
-
-interface LanguageSelectorProps {
-  style?: Record<string, unknown>;
-}
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
   const { currentLanguage, setLanguage, formatTranslation } = useLanguageContext();

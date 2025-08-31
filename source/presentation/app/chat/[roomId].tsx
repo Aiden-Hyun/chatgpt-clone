@@ -7,6 +7,7 @@ import { useModelSelection } from '../../../presentation/chat/hooks/useModelSele
 import { useLogout } from '../../auth/hooks/useLogout';
 import { ChatInputBar, ChatInterface } from '../../chat/components';
 import ChatHeader from '../../chat/components/ChatHeader';
+import { ChatScreenProps } from '../../interfaces/app';
 import { useAppTheme } from '../../theme/hooks/useTheme';
 
 import { createChatStyles } from './chat.styles';
@@ -24,22 +25,7 @@ console.log('🔍 ChatRoomScreen imports:', {
 
 
 // �� CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
-interface ChatScreenProps {
-  roomId?: string;
-  isTemporaryRoom: boolean;
-  numericRoomId: number | null;
-  chatScreenState: {
-    inputRef: React.RefObject<TextInput> | null;
-    inputValue: string;
-    setInputValue: (value: string) => void;
-    handleSendMessage: () => void;
-    isLoading: boolean;
-    selectedModel: string;
-    handleModelChange: (model: string) => void;
-    handleLogout: () => void;
-    handleBack: () => void;
-  };
-}
+
 
 function ChatScreen({
   roomId,

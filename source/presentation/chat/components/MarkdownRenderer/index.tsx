@@ -3,39 +3,35 @@ import * as FileSystem from "expo-file-system";
 import { Image as ExpoImage } from "expo-image";
 import React from "react";
 import {
-    ActivityIndicator,
-    Platform,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import MarkdownDisplay, { MarkdownIt } from "react-native-markdown-display";
 
 import { useToast } from "../../../alert/toast";
 import {
-    MARKDOWN_IMAGE_FILENAME_MAX_LENGTH,
-    SHORT_CODE_SNIPPET_THRESHOLD,
+  MARKDOWN_IMAGE_FILENAME_MAX_LENGTH,
+  SHORT_CODE_SNIPPET_THRESHOLD,
 } from "../../../chat/constants";
+import { MarkdownRendererProps } from "../../../interfaces/chat";
 import {
-    CodeBlockNode,
-    MarkdownNode,
-    TableBodyNode,
-    TableCellNode,
-    TableHeaderNode,
-    TableNode,
-    TableRowNode
+  CodeBlockNode,
+  MarkdownNode,
+  TableBodyNode,
+  TableCellNode,
+  TableHeaderNode,
+  TableNode,
+  TableRowNode
 } from "../../../interfaces/markdown";
 import { useResponsive } from "../../../shared/hooks/useResponsive";
 import { useAppTheme } from "../../../theme/hooks/useTheme";
 import { CodeBlock } from "../CodeBlock";
 
 import { createMarkdownRendererStyles } from "./MarkdownRenderer.styles";
-
-interface MarkdownRendererProps {
-  children: string;
-  isAnimating?: boolean;
-}
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   children,

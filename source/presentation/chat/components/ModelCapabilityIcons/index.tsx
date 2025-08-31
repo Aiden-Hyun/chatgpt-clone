@@ -2,15 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import { ModelCapabilities } from '../../../interfaces/chat';
+import { ModelCapabilities, ModelCapabilityIconsProps } from '../../../interfaces/chat';
 import { useAppTheme } from '../../../theme/theme';
-
-interface ModelCapabilityIconsProps {
-  capabilities: ModelCapabilities;
-  size?: number;
-  showLabels?: boolean;
-  containerStyle?: Record<string, unknown>;
-}
 
 /**
  * ModelCapabilityIcons

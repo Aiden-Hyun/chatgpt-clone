@@ -3,25 +3,8 @@ import { useCallback } from 'react';
 
 import { useStorageViewModel } from '../../../business/session/view-models/useStorageViewModel';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { AuthNavigationHook, AuthNavigationOptions } from '../../interfaces/auth';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
-
-export interface AuthNavigationOptions {
-  preserveRoute?: boolean;
-  clearHistory?: boolean;
-  redirectPath?: string;
-}
-
-export interface AuthNavigationHook {
-  navigateToProtectedRoute: (route: string, options?: AuthNavigationOptions) => Promise<void>;
-  navigateToAuth: (options?: AuthNavigationOptions) => Promise<void>;
-  handleAuthSuccess: (options?: AuthNavigationOptions) => Promise<void>;
-  navigateToSignUp: () => void;
-  navigateToForgotPassword: () => void;
-  navigateBack: () => void;
-  getCurrentRoute: () => string | null;
-  getPreviousRoute: () => Promise<string | null>;
-  setPreviousRoute: (route: string) => Promise<void>;
-}
 
 // Storage key for preserving the intended route
 const INTENDED_ROUTE_KEY = 'auth_intended_route';

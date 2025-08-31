@@ -3,17 +3,8 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 
 import { AuthProvider } from '../../../business/auth/use-cases/SocialAuthUseCase';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { SignUpFormComponentProps } from '../../interfaces/auth';
 import { SignUpFormValues, useAuthForms } from '../hooks/useAuthForms';
-
-export interface SignUpFormProps {
-  onSignInPress?: () => void;
-  onSuccess?: () => void;
-  showSocialAuth?: boolean;
-  enabledProviders?: AuthProvider[];
-  termsUrl?: string;
-  privacyUrl?: string;
-  style?: Record<string, unknown>;
-}
 
 export function SignUpForm({
   onSignInPress,
@@ -21,7 +12,7 @@ export function SignUpForm({
   showSocialAuth = true,
   enabledProviders = ['google', 'apple', 'github'],
   style
-}: SignUpFormProps) {
+}: SignUpFormComponentProps) {
   const [formValues, setFormValues] = useState<SignUpFormValues>({
     email: '',
     password: '',

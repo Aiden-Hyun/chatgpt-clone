@@ -1,28 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { ChatActions, ChatState, IChatRoomRepository, IMessageRepository, IUserSession } from '../../interfaces';
-import { CopyMessageUseCase } from '../use-cases/CopyMessageUseCase';
-import { DeleteMessageUseCase } from '../use-cases/DeleteMessageUseCase';
-import { EditMessageUseCase } from '../use-cases/EditMessageUseCase';
-import { ReceiveMessageUseCase } from '../use-cases/ReceiveMessageUseCase';
-import { RegenerateAssistantUseCase } from '../use-cases/RegenerateAssistantUseCase';
-import { ResendMessageUseCase } from '../use-cases/ResendMessageUseCase';
-import { SendMessageUseCase } from '../use-cases/SendMessageUseCase';
-
-
-
-interface ChatViewModelDependencies {
-  sendMessageUseCase: SendMessageUseCase;
-  receiveMessageUseCase: ReceiveMessageUseCase;
-  deleteMessageUseCase: DeleteMessageUseCase;
-  copyMessageUseCase: CopyMessageUseCase;
-  editMessageUseCase: EditMessageUseCase;
-  resendMessageUseCase: ResendMessageUseCase;
-  regenerateAssistantUseCase: RegenerateAssistantUseCase;
-  messageRepository: IMessageRepository;
-  chatRoomRepository: IChatRoomRepository;
-  getAccessToken: () => Promise<string | null>;
-}
+import { ChatActions, ChatState, ChatViewModelDependencies, IUserSession } from '../../interfaces';
 
 export function useChatViewModel(
   userId: string,

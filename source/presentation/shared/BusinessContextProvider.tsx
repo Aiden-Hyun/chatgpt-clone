@@ -5,27 +5,9 @@ import React, { createContext, useContext, useMemo } from 'react';
 
 import { BusinessLayerProvider } from '../../business/shared/BusinessLayerProvider';
 import { UseCaseFactory } from '../../business/shared/UseCaseFactory';
-import { IAlertService, IClipboardAdapter, ILanguageService, INavigationService, INavigationTracker, ISecureStorageService, IStorageService, IToastService } from '../interfaces/shared';
-
-interface BusinessContextValue {
-  useCaseFactory: UseCaseFactory;
-  businessProvider: BusinessLayerProvider;
-  clipboard: IClipboardAdapter;
-  languageService: ILanguageService;
-  toastService: IToastService;
-  alertService: IAlertService;
-  navigationService: INavigationService;
-  navigationTracker: INavigationTracker;
-  storageService: IStorageService;
-  secureStorageService: ISecureStorageService;
-  getAccessToken: () => Promise<string | null>;
-}
+import { BusinessContextValue, BusinessContextProviderProps } from '../interfaces/shared';
 
 const BusinessContext = createContext<BusinessContextValue | null>(null);
-
-interface BusinessContextProviderProps {
-  children: React.ReactNode;
-}
 
 /**
  * React Context Provider for business layer dependencies

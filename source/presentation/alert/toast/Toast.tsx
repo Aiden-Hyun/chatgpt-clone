@@ -6,19 +6,10 @@ import {
     View,
 } from 'react-native';
 
+import { ToastProps } from '../../interfaces/alert';
 import { PresentationTheme } from '../../interfaces/theme';
 import { useAppTheme } from '../../theme/theme';
 import { DEFAULT_TOAST_DURATION_MS } from '../constants';
-
-interface ToastProps {
-  visible: boolean;
-  message: string;
-  type?: 'success' | 'error' | 'warning' | 'info';
-  duration?: number;
-  onHide?: () => void;
-  onPress?: () => void;
-  position?: 'bottom' | 'top';
-}
 
 export const Toast: React.FC<ToastProps> = ({
   visible,

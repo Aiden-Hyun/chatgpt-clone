@@ -1,19 +1,11 @@
 import { usePathname, useRouter, useSearchParams } from 'expo-router';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { RoutePermissionChecker } from '../../../service/auth/utils/RoutePermissionChecker';
 import { Logger } from '../../../service/shared/utils/Logger';
+import { AuthCallbackHandlerProps, AuthRedirectComponentProps } from '../../interfaces/auth';
 import { useProtectedRoute } from '../hooks/useProtectedRoute';
-
-export interface AuthRedirectProps {
-  children?: ReactNode;
-  defaultAuthenticatedRoute?: string;
-  defaultUnauthenticatedRoute?: string;
-  preserveReturnUrl?: boolean;
-  loadingComponent?: ReactNode;
-  onRedirect?: (from: string, to: string, reason: string) => void;
-}
 
 /**
  * AuthRedirect - Component that handles authentication-based redirects
@@ -31,7 +23,7 @@ export function AuthRedirect({
   preserveReturnUrl = true,
   loadingComponent,
   onRedirect
-}: AuthRedirectProps) {
+}: AuthRedirectComponentProps) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [redirectReason, setRedirectReason] = useState<string>('');
 
@@ -300,11 +292,6 @@ export function useAuthRedirect() {
 /**
  * Component for handling OAuth callbacks and deep links
  */
-export interface AuthCallbackHandlerProps {
-  onSuccess?: (destination: string) => void;
-  onError?: (error: string) => void;
-  defaultSuccessRoute?: string;
-}
 
 export function AuthCallbackHandler({
   onSuccess,

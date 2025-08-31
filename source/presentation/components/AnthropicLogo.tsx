@@ -2,9 +2,7 @@
 import { Image } from 'expo-image';
 import React from 'react';
 
-interface AnthropicLogoProps {
-  size?: number;
-}
+import { AnthropicLogoProps } from '../interfaces/components';
 
 export const AnthropicLogo: React.FC<AnthropicLogoProps> = ({ size = 16 }) => {
   return (

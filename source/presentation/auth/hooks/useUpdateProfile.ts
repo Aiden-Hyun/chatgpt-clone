@@ -1,13 +1,9 @@
 import { useCallback } from 'react';
 
 import { useUserProfileViewModel } from '../../../business/auth/view-models/useUserProfileViewModel';
+import { UpdateProfileData } from '../../interfaces/auth';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
 import { useAuth } from '../context/AuthContext';
-
-interface UpdateProfileData {
-  display_name?: string;
-  avatar_url?: string;
-}
 
 /**
  * Hook for updating user profile information

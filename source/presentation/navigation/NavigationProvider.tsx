@@ -1,41 +1,11 @@
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { AppRoute, NavigationState, ParamsOf } from '../../business/navigation';
+import { NavigationContextType, NavigationProviderProps } from '../interfaces/navigation';
 import { useBusinessContext } from '../shared/BusinessContextProvider';
-
-/**
- * Navigation context type
- */
-interface NavigationContextType {
-  // Navigation state
-  navigationState: NavigationState;
-  
-  // Navigation methods
-  navigate: <T extends AppRoute>(route: T, params?: ParamsOf<T>) => void;
-  replace: <T extends AppRoute>(route: T, params?: ParamsOf<T>) => void;
-  goBack: () => void;
-  reset: <T extends AppRoute>(route: T, params?: ParamsOf<T>) => void;
-  
-  // Convenience navigation methods
-  navigateToRoom: (roomId: string) => void;
-  navigateToHome: () => void;
-  navigateToNewChat: () => void;
-  
-  // Navigation state helpers
-  isCurrentRoute: (route: AppRoute | string) => boolean;
-  getPreviousRoute: () => string | null;
-  getHistory: () => readonly string[];
-}
 
 // Create the context
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
-
-/**
- * Navigation provider props
- */
-interface NavigationProviderProps {
-  children: ReactNode;
-}
 
 /**
  * Provider component for navigation context

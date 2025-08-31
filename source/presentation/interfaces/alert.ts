@@ -55,8 +55,9 @@ export interface ToastProps extends BaseComponentProps {
   type: ToastType;
   visible: boolean;
   duration?: number;
-  onHide: () => void;
-  position?: 'top' | 'bottom' | 'center';
+  onHide?: () => void;
+  onPress?: () => void;
+  position?: 'top' | 'bottom';
 }
 
 // ============================================================================
@@ -92,6 +93,34 @@ export interface AlertContextType {
  */
 export interface AlertProviderProps {
   children: React.ReactNode;
+}
+
+/**
+ * Custom alert props interface
+ */
+export interface CustomAlertProps {
+  visible: boolean;
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  type?: 'success' | 'error' | 'warning' | 'info';
+}
+
+/**
+ * Alert state interface for useCustomAlert hook
+ */
+export interface AlertState {
+  visible: boolean;
+  title: string;
+  message: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText: string;
+  cancelText: string;
+  type: 'success' | 'error' | 'warning' | 'info';
 }
 
 // ============================================================================

@@ -1,8 +1,5 @@
 // Service layer utility - pure functions only, no business entity dependencies
-export interface SessionTimeData {
-  expiresAt: Date;
-  lastActivity: Date;
-}
+import { SessionTimeData } from '../../interfaces';
 
 export class ExpiryCalculator {
   static calculateExpiryTime(durationHours: number = 24): Date {

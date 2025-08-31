@@ -10,18 +10,12 @@ import { useToast } from '../../../alert/toast';
 import { useUserInfo } from '../../../auth/hooks/useUserInfo';
 import { SIDEBAR_SNIPPET_MAX_LENGTH } from '../../../chat/constants';
 import { Button, ListItem, Text } from '../../../components/ui';
+import { SidebarProps } from '../../../interfaces/chat';
 import { useLanguageContext } from '../../../language/LanguageContext';
 import { useAppTheme } from '../../../theme/hooks/useTheme';
 import { useChatRooms } from '../../hooks/useChatRooms';
 
 import { createSidebarStyles } from './Sidebar.styles';
-
-
-interface SidebarProps {
-  onNewChat?: () => void;
-  onChatSelect?: (roomId: string) => void;
-  onSettings?: () => void;
-}
 
 export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
