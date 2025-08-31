@@ -1508,11 +1508,6 @@
       - /Users/aidenhyun/chatgpt-clone/source/presentation/alert/dialog/useCustomAlert.ts (line: 3)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/alert/dialog/useCustomAlert.ts (line: 6)
 
-🔍 Interface: NotificationAction
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/alert.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
 🔍 Type Alias: ToastType
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/alert.ts
    Total References: 3
@@ -2094,23 +2089,19 @@
 
 🔍 Interface: MarkdownNode
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts
-   Total References: 28
-   ✅ Used in 28 place(s):
+   Total References: 24
+   ✅ Used in 24 place(s):
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 23)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 29)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 37)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 31)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 32)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 38)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 44)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 39)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 45)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 51)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 46)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 52)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 58)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 53)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 59)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 65)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 66)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 76)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 76)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 79)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts (line: 60)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 23)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 202)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 218)
@@ -2124,11 +2115,6 @@
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 294)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 303)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 303)
-
-🔍 Interface: LinkNode
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts
-   Total References: 0
-   ❌ UNUSED - No references found
 
 🔍 Interface: CodeBlockNode
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts
@@ -2173,11 +2159,6 @@
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 25)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 232)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/chat/components/MarkdownRenderer/index.tsx (line: 248)
-
-🔍 Type Alias: MarkdownRenderer
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/markdown.ts
-   Total References: 0
-   ❌ UNUSED - No references found
 
 🔍 Interface: NavigationContextType
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/navigation.ts
@@ -2330,53 +2311,12 @@
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/components.ts (line: 9)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/components.ts (line: 35)
 
-🔍 Interface: LoadingState
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: ErrorState
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
 🔍 Interface: FormState
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
    Total References: 2
    ✅ Used in 2 place(s):
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/auth.ts (line: 9)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/auth.ts (line: 188)
-
-🔍 Interface: FormSubmissionResult
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: ComponentSize
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: ComponentVariant
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: ComponentAlignment
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: Breakpoint
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 1
-   ✅ Used in 1 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts (line: 221)
-
-🔍 Type Alias: ResponsiveValue
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/shared.ts
-   Total References: 0
-   ❌ UNUSED - No references found
 
 🔍 Interface: RequiredColors
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
@@ -2452,13 +2392,12 @@
 
 🔍 Interface: BaseTheme
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
-   Total References: 17
-   ✅ Used in 17 place(s):
+   Total References: 16
+   ✅ Used in 16 place(s):
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 427)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 428)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 447)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 448)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 449)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 472)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/themes/claymorphism/index.ts (line: 4)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/themes/claymorphism/index.ts (line: 272)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/themes/claymorphism/index.ts (line: 286)
@@ -2509,10 +2448,9 @@
 
 🔍 Type Alias: DeepPartial
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
-   Total References: 2
-   ✅ Used in 2 place(s):
+   Total References: 1
+   ✅ Used in 1 place(s):
       - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 7)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 450)
 
 🔍 Type Alias: ColorVariant
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
@@ -2614,29 +2552,12 @@
       - /Users/aidenhyun/chatgpt-clone/source/presentation/components/ui/utils/styleUtils.ts (line: 3)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/components/ui/utils/styleUtils.ts (line: 47)
 
-🔍 Type Alias: AppTheme
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
-   Total References: 2
-   ✅ Used in 2 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 450)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 475)
-
-🔍 Type Alias: AppThemeColors
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: PartialAppTheme
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
 🔍 Type Alias: ThemeMode
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
    Total References: 13
    ✅ Used in 13 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 467)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 468)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 464)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 465)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/context/ThemeContext.tsx (line: 5)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/context/ThemeContext.tsx (line: 18)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/context/ThemeContext.tsx (line: 39)
@@ -2653,91 +2574,11 @@
    File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts
    Total References: 5
    ✅ Used in 5 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 471)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 472)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 468)
+      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/theme.ts (line: 469)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/context/ThemeContext.tsx (line: 5)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/context/ThemeContext.tsx (line: 21)
       - /Users/aidenhyun/chatgpt-clone/source/presentation/theme/context/ThemeContext.tsx (line: 70)
-
-🔍 Interface: PlatformFonts
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: PlatformStyles
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: StyleParams
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 2
-   ✅ Used in 2 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts (line: 44)
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts (line: 44)
-
-🔍 Interface: ButtonProps
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: InputProps
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: CardProps
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: TextProps
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: DropdownProps
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: ListItemProps
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Interface: ThemeColors
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 1
-   ✅ Used in 1 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts (line: 188)
-
-🔍 Interface: ThemeSpacing
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 1
-   ✅ Used in 1 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts (line: 189)
-
-🔍 Interface: ThemeBorders
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 1
-   ✅ Used in 1 place(s):
-      - /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts (line: 190)
-
-🔍 Interface: AppTheme
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: StyleFunction
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
-
-🔍 Type Alias: StyleUtility
-   File: /Users/aidenhyun/chatgpt-clone/source/presentation/interfaces/ui.ts
-   Total References: 0
-   ❌ UNUSED - No references found
 
 🔍 Interface: AlertDialog
    File: /Users/aidenhyun/chatgpt-clone/source/service/interfaces/alert.ts

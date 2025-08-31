@@ -168,8 +168,3 @@ export interface FormState<T = Record<string, any>> {
 // ============================================================================
 // UI UTILITY INTERFACES
 // ============================================================================
-
-/**
- * Responsive breakpoint types
- */
-export type Breakpoint = 'mobile' | 'tablet' | 'desktop' | 'wide';
