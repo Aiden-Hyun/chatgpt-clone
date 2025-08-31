@@ -6,7 +6,7 @@
 
 import * as React from 'react';
 
-import { BaseComponentProps, FormState, FormSubmissionResult } from './shared';
+import { FormState } from './shared';
 
 // ============================================================================
 // AUTH PROVIDER TYPES
@@ -117,19 +117,6 @@ export class UserSession implements IUserSession {
 }
 
 // ============================================================================
-// PASSWORD RESET VIEW MODEL - From business layer
-// ============================================================================
-
-/**
- * Password reset response
- */
-export interface PasswordResetResponse {
-  success: boolean;
-  message?: string;
-  error?: string;
-}
-
-// ============================================================================
 // AUTH CONTEXT INTERFACES
 // ============================================================================
 
@@ -151,15 +138,6 @@ export interface AuthProviderProps {
 // ============================================================================
 // AUTH FORM INTERFACES
 // ============================================================================
-
-/**
- * Sign in form values
- */
-export interface SignInFormValues {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
 
 /**
  * Login form values (alias for SignInFormValues)

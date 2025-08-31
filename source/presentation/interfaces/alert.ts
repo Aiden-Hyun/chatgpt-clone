@@ -65,21 +65,6 @@ export interface ToastProps extends BaseComponentProps {
 // ============================================================================
 
 /**
- * Alert dialog props
- */
-export interface AlertDialogProps extends BaseComponentProps {
-  visible: boolean;
-  title?: string;
-  message: string;
-  type?: ToastType;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  showCancel?: boolean;
-}
-
-/**
  * Custom alert props interface
  */
 export interface CustomAlertProps {
@@ -110,26 +95,3 @@ export interface AlertState {
 // ============================================================================
 // NOTIFICATION INTERFACES
 // ============================================================================
-
-/**
- * Notification interface
- */
-export interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: ToastType;
-  timestamp: Date;
-  read: boolean;
-  actions?: NotificationAction[];
-}
-
-/**
- * Notification action interface
- */
-export interface NotificationAction {
-  id: string;
-  label: string;
-  action: () => void;
-  style?: 'default' | 'destructive';
-}

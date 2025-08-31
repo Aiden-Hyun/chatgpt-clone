@@ -445,9 +445,6 @@ export interface ThemeWithMetadata extends ThemeMetadata {
 
 // Legacy type aliases for backward compatibility
 export type PresentationTheme = BaseTheme;
-export type AppTheme = BaseTheme; // Keep for backward compatibility
-export type AppThemeColors = BaseTheme['colors'];
-export type PartialAppTheme = DeepPartial<AppTheme>;
 
 // Theme mode type
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -472,7 +469,7 @@ export interface ThemeContextType {
   setThemeStyle: (style: ThemeStyle) => void;
   
   // Current active theme based on mode and style
-  currentTheme: AppTheme;
+  currentTheme: BaseTheme;
   
   // Available themes for UI selection
   availableThemes: any; // ReturnType<typeof themeRegistry.getAllThemes>

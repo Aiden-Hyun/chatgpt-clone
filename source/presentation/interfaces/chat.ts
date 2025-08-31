@@ -316,19 +316,6 @@ export interface ChatMessage {
 }
 
 /**
- * Message display props (for UI rendering)
- */
-export interface MessageDisplayProps {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant' | 'system';
-  timestamp: Date;
-  isLoading?: boolean;
-  showAvatar?: boolean;
-  showTimestamp?: boolean;
-}
-
-/**
  * Message item component props (extracted from MessageItem/index.tsx)
  */
 export interface MessageItemProps extends BaseComponentProps {
@@ -403,16 +390,6 @@ export interface ChatInputProps {
   disabled?: boolean;
 }
 
-/**
- * Chat input state
- */
-export interface ChatInputState {
-  message: string;
-  isComposing: boolean;
-  isSending: boolean;
-  attachments: File[];
-}
-
 // ============================================================================
 // CHAT ROOM INTERFACES
 // ============================================================================
@@ -455,18 +432,6 @@ export interface RoomListProps extends BaseComponentProps {
 // ============================================================================
 // MODEL SELECTION INTERFACES
 // ============================================================================
-
-/**
- * Model option interface
- */
-export interface ModelOption {
-  id: string;
-  name: string;
-  displayName: string;
-  description?: string;
-  capabilities: string[];
-  isAvailable: boolean;
-}
 
 /**
  * Model selector component props
