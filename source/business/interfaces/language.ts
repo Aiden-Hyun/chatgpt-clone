@@ -88,58 +88,6 @@ export class Language {
   }
 }
 
-/**
- * Translation entry interface
- */
-export interface TranslationEntry {
-  key: string;
-  value: string;
-  context?: string;
-  pluralForms?: Record<string, string>;
-}
-
-/**
- * TranslationEntry entity class representing a single translation key-value pair
- */
-export class TranslationEntryEntity {
-  private readonly _key: string;
-  private readonly _value: string;
-  
-  constructor(key: string, value: string) {
-    this._key = key;
-    this._value = value;
-  }
-  
-  /**
-   * Get the translation key
-   */
-  public getKey(): string {
-    return this._key;
-  }
-  
-  /**
-   * Get the translated value
-   */
-  public getValue(): string {
-    return this._value;
-  }
-  
-  /**
-   * Create a TranslationEntry from a key-value pair
-   */
-  public static fromKeyValue(key: string, value: string): TranslationEntryEntity {
-    return new TranslationEntryEntity(key, value);
-  }
-}
-
-/**
- * Translation namespace interface
- */
-export interface TranslationNamespace {
-  namespace: string;
-  translations: Record<string, TranslationEntry>;
-}
-
 // ============================================================================
 // LANGUAGE SERVICE INTERFACES - Language service abstractions
 // ============================================================================
@@ -174,71 +122,8 @@ export interface ILanguageService {
   formatTranslation(key: string, variables: Record<string, string>): string;
 }
 
-/**
- * Interface for language repository
- */
-export interface ILanguageRepository {
-  /**
-   * Load translations for a specific language
-   */
-  loadTranslations(languageCode: string): Promise<Result<Record<string, string>>>;
-  
-  /**
-   * Save current language preference
-   */
-  saveLanguagePreference(languageCode: string): Promise<Result<void>>;
-  
-  /**
-   * Get saved language preference
-   */
-  getLanguagePreference(): Promise<Result<string | null>>;
-  
-  /**
-   * Get available languages
-   */
-  getAvailableLanguages(): Promise<Result<LanguageInfo[]>>;
-  
-  /**
-   * Check if language is supported
-   */
-  isLanguageSupported(languageCode: string): Promise<Result<boolean>>;
-}
-
 // ============================================================================
 // LANGUAGE OPERATION RESULTS - Business operation results
-// ============================================================================
-
-/**
- * Language change result
- */
-export interface LanguageChangeResult {
-  success: boolean;
-  previousLanguage?: string;
-  newLanguage?: string;
-  error?: string;
-}
-
-/**
- * Translation load result
- */
-export interface TranslationLoadResult {
-  success: boolean;
-  languageCode?: string;
-  translationCount?: number;
-  error?: string;
-}
-
-/**
- * Language validation result
- */
-export interface LanguageValidationResult {
-  isValid: boolean;
-  languageCode?: string;
-  error?: string;
-}
-
-// ============================================================================
-// LANGUAGE EVENTS - Language system events
 // ============================================================================
 
 /**
@@ -249,17 +134,6 @@ export enum LanguageEvent {
   TRANSLATIONS_LOADED = 'translations_loaded',
   TRANSLATION_MISSING = 'translation_missing',
   LANGUAGE_DETECTION_FAILED = 'language_detection_failed'
-}
-
-/**
- * Language event data
- */
-export interface LanguageEventData {
-  languageCode?: string;
-  previousLanguage?: string;
-  translationKey?: string;
-  timestamp: Date;
-  metadata?: Record<string, any>;
 }
 
 // ============================================================================

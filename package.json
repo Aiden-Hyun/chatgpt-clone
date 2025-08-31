@@ -11,10 +11,13 @@
     "lint": "npx eslint --ext .ts,.tsx --f ./eslintPreciseFormatter.js",
     "lint:boundaries": "npx eslint source --ext .ts,.tsx --max-warnings 0 -f ./eslintPreciseFormatter.js",
     "check:dup-types": "tsx findTypeClones.ts",
+    "check:unused-exports": "ts-unused-exports tsconfig.json | grep source",
+    "check:all-types": "npm run check:dup-types && npm run check:unused-exports && npm run check:unused-types",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:unused-types": "tsx scripts/findUnusedTypes.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

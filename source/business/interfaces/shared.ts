@@ -30,11 +30,6 @@ export interface Failure {
 export type Result<T> = Success<T> | Failure;
 
 /**
- * Async version of Result
- */
-export type AsyncResult<T> = Promise<Result<T>>;
-
-/**
  * Create a successful result
  */
 export function createSuccess<T>(data: T): Success<T> {
@@ -133,62 +128,35 @@ export interface IUserSession {
 }
 
 /**
- * Factory interface for creating user sessions
- * Used by the persistence layer to create session instances
+ * User session entity implementation
  */
-export interface IUserSessionFactory {
-  /**
-   * Create a user session from raw session data
-   * 
-   * @param sessionData - Raw session data from authentication provider
-   * @returns IUserSession instance or null if invalid
-   */
-  createSession(sessionData: unknown): IUserSession | null;
+export class UserSession implements IUserSession {
+  constructor(
+    readonly userId: string,
+    readonly accessToken: string,
+    readonly expiresAt: Date,
+    readonly userEmail?: string,
+    readonly createdAt: Date = new Date()
+  ) {}
 
-  /**
-   * Create a session from individual components
-   * 
-   * @param params - Session parameters
-   * @returns IUserSession instance
-   */
-  createSessionFromParams(params: {
-    userId: string;
-    accessToken: string;
-    expiresAt: Date;
-    userEmail?: string;
-    createdAt?: Date;
-  }): IUserSession;
+  isValid(): boolean {
+    return !this.isExpired();
+  }
+
+  isExpired(): boolean {
+    return this.expiresAt < new Date();
+  }
+
+  getTimeToExpiry(): number {
+    const now = new Date();
+    const diff = this.expiresAt.getTime() - now.getTime();
+    return diff > 0 ? diff : 0;
+  }
+
+  expiresWithin(withinMs: number): boolean {
+    return this.getTimeToExpiry() <= withinMs;
+  }
 }
-
-/**
- * Session validation result
- * Used for session validation operations
- */
-export interface SessionValidationResult {
-  /**
-   * Whether the session is valid
-   */
-  isValid: boolean;
-
-  /**
-   * Validation error message if invalid
-   */
-  error?: string;
-
-  /**
-   * Whether the session is expired specifically
-   */
-  isExpired?: boolean;
-
-  /**
-   * Whether the session format is invalid
-   */
-  isInvalidFormat?: boolean;
-}
-
-// ============================================================================
-// SESSION TYPES - Session management types
-// ============================================================================
 
 /**
  * Session status enumeration
@@ -212,29 +180,9 @@ export enum SessionEvent {
 }
 
 /**
- * Session metadata for tracking
- */
-export interface SessionMetadata {
-  lastActivity: Date;
-  deviceId?: string;
-  ipAddress?: string;
-  userAgent?: string;
-}
-
-/**
  * Session operation result
  */
 export type SessionResult<T = void> = Result<T>;
-
-/**
- * Session refresh operation result
- */
-export interface SessionRefreshResult {
-  success: boolean;
-  session?: IUserSession;
-  error?: string;
-  requiresReauth?: boolean;
-}
 
 /**
  * Session validation error types

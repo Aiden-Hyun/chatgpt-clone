@@ -96,17 +96,6 @@ export interface Message {
   metadata?: Record<string, unknown>;
 }
 
-// Mapper interfaces
-export interface IChatRoomMapper {
-  toEntity(dbRoom: unknown): ChatRoom;
-  toDatabase(room: ChatRoom): unknown;
-}
-
-export interface IMessageMapper {
-  toEntity(dbMessage: unknown): Message;
-  toDatabase(message: Message): unknown;
-}
-
 // Supabase adapter interfaces
 export interface RoomData {
   id: string;
@@ -130,20 +119,6 @@ export interface RoomWithLastMessage extends RoomData {
     role: string;
     timestamp: string;
   };
-}
-
-export interface ISupabaseChatRoomAdapter {
-  createRoom(data: Omit<RoomData, 'id' | 'created_at' | 'updated_at'>): Promise<{ success: boolean; room?: RoomData; error?: string }>;
-  updateRoom(id: string, data: RoomUpdateData): Promise<{ success: boolean; room?: RoomData; error?: string }>;
-  deleteRoom(id: string): Promise<{ success: boolean; error?: string }>;
-  getRoom(id: string): Promise<{ success: boolean; room?: RoomData; error?: string }>;
-  getRoomsByUserId(userId: string): Promise<{ success: boolean; rooms?: RoomData[]; error?: string }>;
-}
-
-export interface SaveResult {
-  success: boolean;
-  data?: MessageData;
-  error?: string;
 }
 
 export interface SaveMessageResult {
@@ -179,29 +154,4 @@ export interface ChatRoomData {
   updatedAt: Date;
   lastMessage?: string;
   lastActivity?: Date;
-}
-
-export interface DatabaseMessage {
-  id: string;
-  room_id: string;
-  content: string;
-  role: string;
-  timestamp: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface MessageDTO {
-  id: string;
-  roomId: string;
-  content: string;
-  role: string;
-  timestamp: string;
-  metadata?: Record<string, unknown>;
-}
-
-export interface ISupabaseMessageAdapter {
-  saveMessage(message: Partial<Message>): Promise<SaveResult>;
-  getMessages(roomId: string): Promise<GetMessagesResult>;
-  updateMessage(id: string, updates: Partial<Message>): Promise<{ success: boolean; error?: string }>;
-  deleteMessage(id: string): Promise<{ success: boolean; error?: string }>;
 }

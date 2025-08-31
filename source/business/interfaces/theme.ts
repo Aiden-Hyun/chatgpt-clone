@@ -1,6 +1,5 @@
 // Enhanced theme types to support theme switching
 
-import { Result } from './shared';
 
 // Helper type for deep partial objects
 type DeepPartial<T> = {
@@ -422,105 +421,9 @@ export interface BaseTheme {
   breakpoints: RequiredBreakpoints;     // ← NEW: Breakpoint control
 }
 
-// Complete theme with both light and dark variants
-export interface CompleteTheme {
-  light: BaseTheme;
-  dark: BaseTheme;
-}
-
-// Theme metadata
-export interface ThemeMetadata {
-  id: string;
-  name: string;
-  description: string;
-  version: string;
-  author: string;
-  preview?: any; // Image source
-}
-
-// Complete theme with metadata
-export interface ThemeWithMetadata extends ThemeMetadata {
-  theme: CompleteTheme;
-}
-
-// Legacy type aliases for backward compatibility
-export type AppTheme = BaseTheme;
-export type AppThemeColors = BaseTheme['colors'];
-export type PartialAppTheme = DeepPartial<AppTheme>;
-
-// Theme mode type
-export type ThemeMode = 'light' | 'dark' | 'system';
-
-// Theme style (which theme set to use)
-export type ThemeStyle = string;
-
-// ============================================================================
-// THEME SERVICE INTERFACES
-// ============================================================================
-
-/**
- * Interface for theme service operations
- * Provides methods for managing theme preferences and theme data
- */
-export interface IThemeService {
-  /**
-   * Get the current theme mode (light, dark, system)
-   */
-  getThemeMode(): Promise<Result<ThemeMode>>;
-  
-  /**
-   * Set the theme mode
-   */
-  setThemeMode(mode: ThemeMode): Promise<Result<void>>;
-  
-  /**
-   * Get the current theme style
-   */
-  getThemeStyle(): Promise<Result<ThemeStyle>>;
-  
-  /**
-   * Set the theme style
-   */
-  setThemeStyle(style: ThemeStyle): Promise<Result<void>>;
-  
-  /**
-   * Get all available themes
-   */
-  getAvailableThemes(): Promise<Result<ThemeWithMetadata[]>>;
-  
-  /**
-   * Get a specific theme by ID
-   */
-  getTheme(themeId: string): Promise<Result<ThemeWithMetadata>>;
-  
-  /**
-   * Get the default theme
-   */
-  getDefaultTheme(): Promise<Result<ThemeWithMetadata>>;
-  
-  /**
-   * Reset theme preferences to defaults
-   */
-  resetThemePreferences(): Promise<Result<void>>;
-  
-  /**
-   * Check if a theme exists
-   */
-  hasTheme(themeId: string): Promise<Result<boolean>>;
-}
-
 // ============================================================================
 // THEME PREFERENCE INTERFACES
 // ============================================================================
-
-/**
- * Theme preferences data structure
- */
-export interface ThemePreferences {
-  mode: ThemeMode;
-  style: ThemeStyle;
-  lastUpdated: Date;
-}
 
 /**
  * Theme preference storage keys

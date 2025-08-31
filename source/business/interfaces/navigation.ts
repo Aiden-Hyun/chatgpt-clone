@@ -57,25 +57,6 @@ export interface NavigationState {
 // ============================================================================
 
 /**
- * Navigation history entry
- */
-export interface NavigationHistoryEntry {
-  route: string;
-  params?: Record<string, any>;
-  timestamp: Date;
-}
-
-/**
- * Navigation context
- */
-export interface NavigationContext {
-  currentRoute: string;
-  previousRoute?: string;
-  routeStack: NavigationHistoryEntry[];
-  metadata?: Record<string, any>;
-}
-
-/**
  * Maximum number of routes to keep in history
  */
 const MAX_HISTORY_LENGTH = 10;
@@ -281,28 +262,6 @@ export interface INavigationTracker {
 }
 
 // ============================================================================
-// NAVIGATION OPERATION RESULTS - Business operation results
-// ============================================================================
-
-/**
- * Navigation operation result
- */
-export interface NavigationResult {
-  success: boolean;
-  route?: string;
-  error?: string;
-}
-
-/**
- * Route validation result
- */
-export interface RouteValidationResult {
-  isValid: boolean;
-  route?: AppRoute;
-  error?: string;
-}
-
-// ============================================================================
 // NAVIGATION EVENTS - Navigation system events
 // ============================================================================
 
@@ -316,17 +275,6 @@ export enum NavigationEvent {
   NAVIGATION_FAILED = 'navigation_failed',
   BACK_NAVIGATION = 'navigation_back',
   ROUTE_RESET = 'navigation_reset'
-}
-
-/**
- * Navigation event data
- */
-export interface NavigationEventData {
-  fromRoute?: string;
-  toRoute: string;
-  params?: Record<string, any>;
-  timestamp: Date;
-  navigationMethod: 'navigate' | 'replace' | 'goBack' | 'reset';
 }
 
 // ============================================================================

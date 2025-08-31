@@ -35,16 +35,6 @@ export const DEFAULT_CANCEL_TEXT = 'Cancel';
 // ============================================================================
 
 /**
- * Options for alert dialogs
- */
-export interface AlertOptions {
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-}
-
-/**
  * Represents an alert dialog
  */
 export class AlertDialog {
@@ -66,7 +56,7 @@ export class AlertDialog {
     title: string,
     message: string,
     type: AlertType,
-    options?: AlertOptions
+    options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }
   ) {
     this._id = id;
     this._title = title;
@@ -91,19 +81,19 @@ export class AlertDialog {
   public getTimestamp(): number { return this._timestamp; }
 
   // Factory methods
-  public static createSuccess(id: string, title: string, message: string, options?: AlertOptions): AlertDialog {
+  public static createSuccess(id: string, title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): AlertDialog {
     return new AlertDialog(id, title, message, AlertType.SUCCESS, options);
   }
 
-  public static createError(id: string, title: string, message: string, options?: AlertOptions): AlertDialog {
+  public static createError(id: string, title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): AlertDialog {
     return new AlertDialog(id, title, message, AlertType.ERROR, options);
   }
 
-  public static createWarning(id: string, title: string, message: string, options?: AlertOptions): AlertDialog {
+  public static createWarning(id: string, title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): AlertDialog {
     return new AlertDialog(id, title, message, AlertType.WARNING, options);
   }
 
-  public static createInfo(id: string, title: string, message: string, options?: AlertOptions): AlertDialog {
+  public static createInfo(id: string, title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): AlertDialog {
     return new AlertDialog(id, title, message, AlertType.INFO, options);
   }
 }
@@ -170,7 +160,7 @@ export interface IAlertService {
   /**
    * Show an alert dialog
    */
-  showAlert(title: string, message: string, type: AlertType, options?: AlertOptions): Result<void>;
+  showAlert(title: string, message: string, type: AlertType, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): Result<void>;
   
   /**
    * Hide the current alert dialog
@@ -180,22 +170,22 @@ export interface IAlertService {
   /**
    * Show a success alert dialog
    */
-  showSuccessAlert(title: string, message: string, options?: AlertOptions): Result<void>;
+  showSuccessAlert(title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): Result<void>;
   
   /**
    * Show an error alert dialog
    */
-  showErrorAlert(title: string, message: string, options?: AlertOptions): Result<void>;
+  showErrorAlert(title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): Result<void>;
   
   /**
    * Show a warning alert dialog
    */
-  showWarningAlert(title: string, message: string, options?: AlertOptions): Result<void>;
+  showWarningAlert(title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): Result<void>;
   
   /**
    * Show an info alert dialog
    */
-  showInfoAlert(title: string, message: string, options?: AlertOptions): Result<void>;
+  showInfoAlert(title: string, message: string, options?: { onConfirm?: () => void; onCancel?: () => void; confirmText?: string; cancelText?: string }): Result<void>;
   
   /**
    * Get the current alert dialog
@@ -254,28 +244,6 @@ export interface IToastService {
 }
 
 // ============================================================================
-// ALERT OPERATION RESULTS - Business operation results
-// ============================================================================
-
-/**
- * Alert operation result
- */
-export interface AlertOperationResult {
-  success: boolean;
-  alertId?: string;
-  error?: string;
-}
-
-/**
- * Toast operation result
- */
-export interface ToastOperationResult {
-  success: boolean;
-  toastId?: string;
-  error?: string;
-}
-
-// ============================================================================
 // ALERT EVENTS - Alert system events
 // ============================================================================
 
@@ -290,15 +258,4 @@ export enum AlertEvent {
   TOAST_SHOWN = 'toast_shown',
   TOAST_HIDDEN = 'toast_hidden',
   TOAST_EXPIRED = 'toast_expired'
-}
-
-/**
- * Alert event data
- */
-export interface AlertEventData {
-  alertId?: string;
-  toastId?: string;
-  type: AlertType;
-  message: string;
-  timestamp: Date;
 }

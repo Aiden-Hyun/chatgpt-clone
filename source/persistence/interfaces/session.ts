@@ -43,12 +43,6 @@ export class UserSession {
   }
 }
 
-// Session mapper interface
-export interface ISessionMapper {
-  toEntity(dbSession: unknown): UserSession;
-  toDatabase(session: UserSession): unknown;
-}
-
 // Session storage adapter interfaces
 export interface SessionStorageResult {
   success: boolean;
@@ -63,12 +57,6 @@ export interface SessionData {
   expiresAt: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface ISessionStorageAdapter {
-  save(data: SessionData): Promise<SessionStorageResult>;
-  load(): Promise<{ success: boolean; data?: SessionData; error?: string }>;
-  clear(): Promise<SessionStorageResult>;
 }
 
 // Supabase session adapter interfaces
@@ -99,23 +87,10 @@ export interface SessionDTO {
   updatedAt: string;
 }
 
-export interface ISupabaseSessionAdapter {
-  getSession(): Promise<SupabaseSessionResult>;
-  setSession(session: unknown): Promise<{ success: boolean; error?: string }>;
-  clearSession(): Promise<{ success: boolean; error?: string }>;
-}
-
 // Token repository interfaces
 export interface TokenData {
   accessToken: string;
   refreshToken?: string;
   expiresAt: string;
   tokenType: string;
-}
-
-export interface ITokenRepository {
-  saveTokens(tokens: TokenData): Promise<{ success: boolean; error?: string }>;
-  getTokens(): Promise<{ success: boolean; tokens?: TokenData; error?: string }>;
-  clearTokens(): Promise<{ success: boolean; error?: string }>;
-  refreshTokens(): Promise<{ success: boolean; tokens?: TokenData; error?: string }>;
 }

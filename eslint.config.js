@@ -114,6 +114,8 @@ module.exports = defineConfig([
       }],
 
 
+
+
       // LAW: Unsafe types and nonstandard naming conventions are forbidden.
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/naming-convention': ['error', { selector: 'interface', format: ['PascalCase'] }],

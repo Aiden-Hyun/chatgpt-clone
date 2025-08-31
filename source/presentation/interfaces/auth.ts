@@ -116,43 +116,9 @@ export class UserSession implements IUserSession {
   }
 }
 
-/**
- * User session data interface
- */
-export interface UserSessionData {
-  userId: string;
-  accessToken: string;
-  expiresAt: Date;
-  userEmail?: string;
-  createdAt?: Date;
-}
-
-/**
- * User session entity for the presentation layer
- * This is referenced in the import error for 'business/session/entities/UserSession'
- */
-export interface UserSessionEntity {
-  userId: string;
-  accessToken: string;
-  expiresAt: Date;
-  userEmail?: string;
-  createdAt: Date;
-  isValid(): boolean;
-  isExpired(): boolean;
-  getTimeToExpiry(): number;
-  expiresWithin(withinMs: number): boolean;
-}
-
 // ============================================================================
 // PASSWORD RESET VIEW MODEL - From business layer
 // ============================================================================
-
-/**
- * Password reset request parameters
- */
-export interface PasswordResetRequest {
-  email: string;
-}
 
 /**
  * Password reset response
@@ -161,36 +127,6 @@ export interface PasswordResetResponse {
   success: boolean;
   message?: string;
   error?: string;
-}
-
-/**
- * Password reset view model interface
- */
-export interface UseRequestPasswordResetViewModel {
-  /**
-   * Request password reset for the given email
-   */
-  requestReset: (email: string) => Promise<PasswordResetResponse>;
-  
-  /**
-   * Check if request is in progress
-   */
-  isLoading: boolean;
-  
-  /**
-   * Error message if request failed
-   */
-  error: string | null;
-  
-  /**
-   * Success message if request succeeded
-   */
-  success: string | null;
-  
-  /**
-   * Reset the view model state
-   */
-  reset: () => void;
 }
 
 // ============================================================================
@@ -282,15 +218,6 @@ export interface AuthFormState extends FormState {
 // ============================================================================
 
 /**
- * Login form component props
- */
-export interface LoginFormProps extends BaseComponentProps {
-  onSubmit: (values: SignInFormValues) => Promise<FormSubmissionResult>;
-  initialValues?: Partial<SignInFormValues>;
-  isLoading?: boolean;
-}
-
-/**
  * Login form component props for the specific LoginForm component
  */
 export interface LoginFormComponentProps {
@@ -300,15 +227,6 @@ export interface LoginFormComponentProps {
   showSocialAuth?: boolean;
   enabledProviders?: AuthProvider[];
   style?: Record<string, unknown>;
-}
-
-/**
- * Sign up form component props
- */
-export interface SignUpFormProps extends BaseComponentProps {
-  onSubmit: (values: SignUpFormValues) => Promise<FormSubmissionResult>;
-  initialValues?: Partial<SignUpFormValues>;
-  isLoading?: boolean;
 }
 
 /**
@@ -334,15 +252,6 @@ export interface SocialAuthButtonsProps {
 }
 
 /**
- * Password reset form component props
- */
-export interface PasswordResetFormProps extends BaseComponentProps {
-  onSubmit: (values: PasswordResetFormValues) => Promise<FormSubmissionResult>;
-  initialValues?: Partial<PasswordResetFormValues>;
-  isLoading?: boolean;
-}
-
-/**
  * Password reset form component props for the specific PasswordResetForm component
  */
 export interface PasswordResetFormComponentProps {
@@ -351,16 +260,6 @@ export interface PasswordResetFormComponentProps {
   onBackToLogin?: () => void;
   onSuccess?: () => void;
   style?: Record<string, unknown>;
-}
-
-/**
- * Protected route component props
- */
-export interface ProtectedRouteProps extends BaseComponentProps {
-  requiredPermissions?: string[];
-  unauthorizedRedirect?: string;
-  unauthenticatedRedirect?: string;
-  showLoading?: boolean;
 }
 
 /**
@@ -403,14 +302,6 @@ export interface PermissionGateProps {
   requireAll?: boolean;
   fallback?: React.ReactNode;
   inverse?: boolean; // Show when user DOESN'T have permissions
-}
-
-/**
- * Auth redirect component props
- */
-export interface AuthRedirectProps extends BaseComponentProps {
-  to: string;
-  replace?: boolean;
 }
 
 /**
@@ -532,20 +423,6 @@ export interface UserInfo {
 // ============================================================================
 // AUTH HOOK INTERFACES
 // ============================================================================
-
-/**
- * Auth hook return type
- */
-export interface UseAuthReturn {
-  session: IUserSession | null; // Updated to use IUserSession
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  userId: string | null;
-  accessToken: string | null;
-  isExpired: boolean;
-  signOut: () => Promise<void>;
-  refreshSession: () => Promise<boolean>;
-}
 
 /**
  * Auth forms hook return type

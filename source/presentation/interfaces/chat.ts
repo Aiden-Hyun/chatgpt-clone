@@ -49,14 +49,6 @@ export interface ModelInfo {
  */
 export type ModelValue = string;
 
-/**
- * Model constants for presentation layer
- */
-export interface ModelConstants {
-  availableModels: ModelInfo[];
-  defaultModel: ModelValue;
-}
-
 // ============================================================================
 // MESSAGE ENTITY TYPES - Business layer message entities
 // ============================================================================
@@ -442,18 +434,6 @@ export interface ChatRoom {
 }
 
 /**
- * Chat room display props
- */
-export interface ChatRoomDisplayProps {
-  id: string;
-  title: string;
-  lastMessage?: string;
-  lastMessageTime?: Date;
-  unreadCount: number;
-  isActive: boolean;
-}
-
-/**
  * Create room button props (extracted from CreateRoomButton.tsx)
  */
 export interface CreateRoomButtonProps extends BaseComponentProps {
@@ -489,16 +469,6 @@ export interface ModelOption {
 }
 
 /**
- * Model selector props
- */
-export interface ModelSelectorProps extends BaseComponentProps {
-  selectedModel: string;
-  onModelChange: (modelId: string) => void;
-  availableModels: ModelOption[];
-  isLoading?: boolean;
-}
-
-/**
  * Model selector component props
  */
 export interface ModelSelectorComponentProps {
@@ -529,28 +499,6 @@ export interface SidebarProps {
 // ============================================================================
 // CHAT INTERFACE INTERFACES
 // ============================================================================
-
-/**
- * Chat interface state
- */
-export interface ChatInterfaceState {
-  messages: MessageDisplayProps[];
-  isLoading: boolean;
-  isGenerating: boolean;
-  selectedModel: string;
-  inputState: ChatInputState;
-}
-
-/**
- * Chat interface props
- */
-export interface ChatInterfaceProps extends BaseComponentProps {
-  roomId?: string;
-  messages: ChatMessage[];
-  onSendMessage: (message: string) => void;
-  onRegenerateMessage: (messageId: string) => void;
-  isLoading?: boolean;
-}
 
 /**
  * Chat interface component props
@@ -663,22 +611,6 @@ export interface ModelCapabilityIconsProps {
 // ============================================================================
 // CHAT ACTION INTERFACES
 // ============================================================================
-
-/**
- * Message action types
- */
-export type MessageAction = 'copy' | 'edit' | 'delete' | 'regenerate' | 'like' | 'dislike';
-
-/**
- * Chat theme customization
- */
-export interface ChatThemeCustomization {
-  messageSpacing: number;
-  bubbleRadius: number;
-  showAvatars: boolean;
-  showTimestamps: boolean;
-  compactMode: boolean;
-}
 
 /**
  * Test chat interface props

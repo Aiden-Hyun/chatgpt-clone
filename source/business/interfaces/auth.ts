@@ -65,85 +65,6 @@ export class User {
   }
 }
 
-// ============================================================================
-// AUTH RESULT TYPES - Authentication operation results
-// ============================================================================
-
-/**
- * Basic authentication result
- */
-export interface AuthResult {
-  success: boolean;
-  user?: User;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * User creation result
- */
-export interface CreateUserResult {
-  success: boolean;
-  user: User;
-  requiresEmailVerification?: boolean;
-  error?: string;
-}
-
-/**
- * Sign out result
- */
-export interface SignOutResult {
-  success: boolean;
-  error?: string;
-}
-
-/**
- * Token refresh result
- */
-export interface RefreshTokenResult {
-  success: boolean;
-  session?: any; // Supabase Session type
-  accessToken?: string;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * Password reset request result
- */
-export interface RequestResetResult {
-  success: boolean;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * Password reset completion result
- */
-export interface ResetPasswordResult {
-  success: boolean;
-  error?: string;
-  isNetworkError?: boolean;
-}
-
-/**
- * Social authentication result
- */
-export interface SocialAuthResult {
-  success: boolean;
-  user?: User;
-  session?: any;
-  error?: string;
-  isNetworkError?: boolean;
-  requiresAdditionalInfo?: boolean;
-  providerData?: {
-    providerId: string;
-    email?: string;
-    displayName?: string;
-    avatarUrl?: string;
-  };
-}
-
 /**
  * Profile update result
  */
@@ -195,14 +116,6 @@ export interface UpdateUserProfileParams {
 export interface UpdateUserProfileResult {
   success: boolean;
   profile?: UserProfile;
-  error?: string;
-}
-
-/**
- * User deletion result
- */
-export interface DeleteUserResult {
-  success: boolean;
   error?: string;
 }
 
@@ -318,17 +231,6 @@ export enum AuthEvent {
 }
 
 /**
- * Authentication event data
- */
-export interface AuthEventData {
-  userId?: string;
-  email?: string;
-  provider?: string;
-  timestamp: Date;
-  metadata?: Record<string, any>;
-}
-
-/**
  * Authentication event emitter interface
  */
 export interface IAuthEventEmitter {
@@ -354,35 +256,6 @@ export interface IAuthEventEmitter {
 }
 
 // ============================================================================
-// AUTH VALIDATION TYPES - Input validation
-// ============================================================================
-
-/**
- * Email validation result
- */
-export interface EmailValidationResult {
-  isValid: boolean;
-  error?: string;
-}
-
-/**
- * Password validation result
- */
-export interface PasswordValidationResult {
-  isValid: boolean;
-  errors: string[];
-  strength: 'weak' | 'medium' | 'strong';
-}
-
-/**
- * User data validation result
- */
-export interface UserDataValidationResult {
-  isValid: boolean;
-  errors: Record<string, string>;
-}
-
-// ============================================================================
 // AUTH PERMISSIONS - Authorization types
 // ============================================================================
 
@@ -404,13 +277,4 @@ export enum FeatureAccess {
   USER = 'user',
   PREMIUM = 'premium',
   ADMIN = 'admin'
-}
-
-/**
- * Authorization check result
- */
-export interface AuthorizationResult {
-  authorized: boolean;
-  reason?: string;
-  requiredPermissions?: Permission[];
 }

@@ -80,22 +80,6 @@ export interface AlertDialogProps extends BaseComponentProps {
 }
 
 /**
- * Alert context interface
- */
-export interface AlertContextType {
-  showAlert: (props: Omit<AlertDialogProps, 'visible'>) => void;
-  hideAlert: () => void;
-  isVisible: boolean;
-}
-
-/**
- * Alert provider props
- */
-export interface AlertProviderProps {
-  children: React.ReactNode;
-}
-
-/**
  * Custom alert props interface
  */
 export interface CustomAlertProps {
@@ -148,40 +132,4 @@ export interface NotificationAction {
   label: string;
   action: () => void;
   style?: 'default' | 'destructive';
-}
-
-/**
- * Notification center props
- */
-export interface NotificationCenterProps extends BaseComponentProps {
-  notifications: Notification[];
-  onNotificationRead: (id: string) => void;
-  onNotificationDismiss: (id: string) => void;
-  onActionPress: (notificationId: string, actionId: string) => void;
-}
-
-// ============================================================================
-// ALERT HOOK INTERFACES
-// ============================================================================
-
-/**
- * Toast hook return type
- */
-export interface UseToastReturn {
-  showToast: (message: string, type?: ToastType, duration?: number) => void;
-  showSuccess: (message: string, duration?: number) => void;
-  showError: (message: string, duration?: number) => void;
-  showWarning: (message: string, duration?: number) => void;
-  showInfo: (message: string, duration?: number) => void;
-  hideToast: () => void;
-  isVisible: boolean;
-}
-
-/**
- * Alert hook return type
- */
-export interface UseAlertReturn {
-  showAlert: (props: Omit<AlertDialogProps, 'visible'>) => void;
-  hideAlert: () => void;
-  isVisible: boolean;
 }
