@@ -1,5 +1,6 @@
-import { AppTheme } from '../../../features/theme/theme.types';
-import { TextSize, TextVariant, TextWeight } from './Text.types';
+import { AppTheme } from "@/features/theme";
+
+import { TextSize, TextVariant, TextWeight } from "./Text.types";
 
 /**
  * Creates text styles based on the current theme
@@ -81,7 +82,7 @@ export const createTextStyles = (theme: AppTheme) => {
       fontSize: fontSizes.md,
       fontWeight: fontWeights.medium,
       color: theme.colors.primary,
-      textDecorationLine: 'underline' as const,
+      textDecorationLine: "underline" as const,
       fontFamily: theme.typography.fontFamily.primary,
     },
     error: {
@@ -94,7 +95,7 @@ export const createTextStyles = (theme: AppTheme) => {
       fontSize: fontSizes.sm,
       fontWeight: fontWeights.regular,
       color: theme.colors.text.primary,
-      fontFamily: 'monospace', // Use monospace font for code
+      fontFamily: "monospace", // Use monospace font for code
       backgroundColor: theme.colors.background.tertiary,
       paddingHorizontal: theme.spacing.xs,
       paddingVertical: theme.spacing.xxs,
@@ -122,23 +123,23 @@ export const createTextStyles = (theme: AppTheme) => {
     text: {
       fontFamily: theme.typography.fontFamily.primary,
     },
-    
+
     // Alignment styles
     center: {
-      textAlign: 'center' as const,
+      textAlign: "center" as const,
     },
     right: {
-      textAlign: 'right' as const,
+      textAlign: "right" as const,
     },
-    
+
     // Style modifiers
     italic: {
-      fontStyle: 'italic' as const,
+      fontStyle: "italic" as const,
     },
     underline: {
-      textDecorationLine: 'underline' as const,
+      textDecorationLine: "underline" as const,
     },
-    
+
     // Helper functions
     getVariantStyle,
     getSizeStyle,

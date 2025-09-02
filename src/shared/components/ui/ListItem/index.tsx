@@ -1,22 +1,24 @@
-import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { useAppTheme } from '../../../features/theme/theme';
-import createListItemStyles from './ListItem.styles';
-import { ListItemProps } from './ListItem.types';
+import React from "react";
+import { Pressable, Text, View } from "react-native";
+
+import { useAppTheme } from "@/features/theme";
+
+import { createListItemStyles } from "./ListItem.styles";
+import { ListItemProps } from "./ListItem.types";
 
 /**
  * ListItem component for creating consistent list items with various styles.
- * 
+ *
  * @example
  * // Basic list item
- * <ListItem 
- *   title="Item title" 
- *   onPress={() => console.log('Item pressed')} 
+ * <ListItem
+ *   title="Item title"
+ *   onPress={() => console.log('Item pressed')}
  * />
- * 
+ *
  * @example
  * // Settings-style list item with icon
- * <ListItem 
+ * <ListItem
  *   variant="settings"
  *   title="Notifications"
  *   subtitle="Manage notification preferences"
@@ -24,10 +26,10 @@ import { ListItemProps } from './ListItem.types';
  *   rightElement={<Icon name="chevron-right" />}
  *   onPress={() => navigation.navigate('NotificationSettings')}
  * />
- * 
+ *
  * @example
  * // Chat list item
- * <ListItem 
+ * <ListItem
  *   variant="chat"
  *   title="John Doe"
  *   subtitle="Hey, how's it going?"
@@ -37,8 +39,8 @@ import { ListItemProps } from './ListItem.types';
  * />
  */
 export const ListItem = ({
-  variant = 'default',
-  size = 'md',
+  variant = "default",
+  size = "md",
   title,
   subtitle,
   description,
@@ -74,34 +76,25 @@ export const ListItem = ({
       {...rest}
     >
       {leftElement && (
-        <View style={styles.leftElementContainer}>
-          {leftElement}
-        </View>
+        <View style={styles.leftElementContainer}>{leftElement}</View>
       )}
-      
+
       <View style={styles.contentContainer}>
-        <Text 
-          style={[
-            styles.title, 
-            selected && styles.selectedTitle,
-            titleStyle
-          ]}
+        <Text
+          style={[styles.title, selected && styles.selectedTitle, titleStyle]}
           numberOfLines={1}
         >
           {title}
         </Text>
-        
+
         {subtitle && (
-          <Text 
-            style={[styles.subtitle, subtitleStyle]}
-            numberOfLines={1}
-          >
+          <Text style={[styles.subtitle, subtitleStyle]} numberOfLines={1}>
             {subtitle}
           </Text>
         )}
-        
+
         {description && (
-          <Text 
+          <Text
             style={[styles.description, descriptionStyle]}
             numberOfLines={1}
           >
@@ -109,11 +102,9 @@ export const ListItem = ({
           </Text>
         )}
       </View>
-      
+
       {rightElement && (
-        <View style={styles.rightElementContainer}>
-          {rightElement}
-        </View>
+        <View style={styles.rightElementContainer}>{rightElement}</View>
       )}
     </Pressable>
   );

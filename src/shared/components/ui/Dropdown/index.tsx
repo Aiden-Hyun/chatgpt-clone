@@ -1,19 +1,27 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
-    Animated,
-    Dimensions,
-    Easing,
-    FlatList,
-    GestureResponderEvent,
-    LayoutRectangle,
-    Modal,
-    Platform,
-    Pressable,
-    Text,
-    View
+  Animated,
+  Dimensions,
+  Easing,
+  FlatList,
+  GestureResponderEvent,
+  LayoutRectangle,
+  Modal,
+  Platform,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
-import { useAppTheme } from '../../../features/theme/theme';
-import createDropdownStyles from './Dropdown.styles';
+
+import { useAppTheme } from "@/features/theme";
+
+import { createDropdownStyles } from "./Dropdown.styles";
 
 export type DropdownItem = {
   label: string;
@@ -31,19 +39,25 @@ export interface DropdownProps {
   /** Called when an item is chosen */
   onChange?: (item: DropdownItem) => void;
   /** Optional: render the trigger yourself */
-  renderTrigger?: (args: { open: () => void; selected?: DropdownItem }) => React.ReactNode;
+  renderTrigger?: (args: {
+    open: () => void;
+    selected?: DropdownItem;
+  }) => React.ReactNode;
   /** Optional: render each item yourself */
-  renderCustomItem?: (args: { item: DropdownItem; isSelected: boolean }) => React.ReactNode;
+  renderCustomItem?: (args: {
+    item: DropdownItem;
+    isSelected: boolean;
+  }) => React.ReactNode;
   /** Width of dropdown list (defaults to trigger width) */
   dropdownWidth?: number;
   /** Max height before list scrolls */
   maxHeight?: number;
   /** Menu placement */
   placement?: Placement;
-  /** 
+  /**
    * Optional style overrides for the menu container
    * ⚠️  WARNING: Do NOT include positioning properties (marginTop, marginLeft, top, left, transform, etc.)
-   *     This component calculates positioning internally. Only use for: backgroundColor, borderRadius, 
+   *     This component calculates positioning internally. Only use for: backgroundColor, borderRadius,
    *     padding, shadows, etc.
    */
   menuStyle?: object;
@@ -85,9 +99,14 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const triggerRef = useRef<View>(null);
   const [open, setOpen] = useState(false);
   const [triggerRect, setTriggerRect] = useState<LayoutRectangle | null>(null);
-  const [internalValue, setInternalValue] = useState<DropdownItem["value"] | undefined>(value);
+  const [internalValue, setInternalValue] = useState<
+    DropdownItem["value"] | undefined
+  >(value);
   const selected = useMemo(
-    () => items.find((i) => (value !== undefined ? i.value === value : i.value === internalValue)),
+    () =>
+      items.find((i) =>
+        value !== undefined ? i.value === value : i.value === internalValue
+      ),
     [items, value, internalValue]
   );
 
@@ -98,18 +117,48 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   const runIn = useCallback(() => {
     Animated.parallel([
-      Animated.timing(fade, { toValue: 1, duration: 140, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(scale, { toValue: 1, duration: 140, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      Animated.timing(chevronRotation, { toValue: 1, duration: 140, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 140,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 140,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(chevronRotation, {
+        toValue: 1,
+        duration: 140,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
     ]).start();
   }, [fade, scale, chevronRotation]);
 
   const runOut = useCallback(
     (cb?: () => void) => {
       Animated.parallel([
-        Animated.timing(fade, { toValue: 0, duration: 120, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
-        Animated.timing(scale, { toValue: 0.95, duration: 120, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
-        Animated.timing(chevronRotation, { toValue: 0, duration: 120, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(fade, {
+          toValue: 0,
+          duration: 120,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(scale, {
+          toValue: 0.95,
+          duration: 120,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(chevronRotation, {
+          toValue: 0,
+          duration: 120,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
       ]).start(() => cb && cb());
     },
     [fade, scale, chevronRotation]
@@ -129,9 +178,14 @@ export const Dropdown: React.FC<DropdownProps> = ({
     // measureInWindow handles parents with overflow/transform better across platforms
     // (same positioning idea as the Medium article’s measure usage). :contentReference[oaicite:1]{index=1}
     triggerRef.current.measureInWindow((x, y, width, height) => {
-      console.log('📏 [Dropdown] measureInWindow raw values:', { x, y, width, height });
-      console.log('📏 [Dropdown] Screen scale:', SCALE);
-      console.log('📏 [Dropdown] Platform:', Platform.OS);
+      console.log("📏 [Dropdown] measureInWindow raw values:", {
+        x,
+        y,
+        width,
+        height,
+      });
+      console.log("📏 [Dropdown] Screen scale:", SCALE);
+      console.log("📏 [Dropdown] Platform:", Platform.OS);
       setTriggerRect({ x, y, width, height });
     });
   }, []);
@@ -162,20 +216,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
   // ⚠️  IMPORTANT: This component calculates absolute positioning based on trigger measurements.
   //     External menuStyle props should NOT include positioning properties like:
   //     - marginTop/marginBottom (affects Y position)
-  //     - marginLeft/marginRight (affects X position) 
+  //     - marginLeft/marginRight (affects X position)
   //     - top/left/right/bottom (conflicts with computed position)
   //     - transform with translateY/translateX (offsets the menu)
   //
   //     Only use menuStyle for: backgroundColor, borderRadius, padding, shadows, etc.
   //     The component handles all positioning internally via measureInWindow + useMemo.
   const { menuLeft, menuTop, menuWidth } = useMemo(() => {
-    if (!triggerRect) return { menuLeft: 0, menuTop: 0, menuWidth: dropdownWidth ?? 200 };
+    if (!triggerRect)
+      return { menuLeft: 0, menuTop: 0, menuWidth: dropdownWidth ?? 200 };
     const width = dropdownWidth ?? triggerRect.width;
-    
+
     // Convert physical pixels to logical pixels for vertical positioning only
-    const triggerY = triggerRect.y ;
-    const triggerHeight = triggerRect.height ;
-    
+    const triggerY = triggerRect.y;
+    const triggerHeight = triggerRect.height;
+
     // Position menu centered below the trigger (horizontal positioning works fine without scale conversion)
     const leftCalc = triggerRect.x + (triggerRect.width - width) / 2;
     const leftMin = Math.min(leftCalc, SCREEN.width - width - 8);
@@ -184,7 +239,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
     // Determine placement based on available space
     const topCalcBelow = triggerY + triggerHeight + 6;
     const topCalcAbove = triggerY - maxHeight + 6;
-    
+
     let wantTop = false;
     if (placement === "top") {
       wantTop = true;
@@ -195,42 +250,98 @@ export const Dropdown: React.FC<DropdownProps> = ({
       wantTop = !hasSpaceBelow && hasSpaceAbove;
     }
     // For "bottom" placement, always prefer below (default behavior)
-    
-    const top = wantTop ? Math.max(8, topCalcAbove) : Math.min(SCREEN.height - 8, topCalcBelow);
+
+    const top = wantTop
+      ? Math.max(8, topCalcAbove)
+      : Math.min(SCREEN.height - 8, topCalcBelow);
 
     // Console logs for debugging
-    console.log('🔍 [Dropdown] Positioning Debug:');
-    console.log('  Screen info:', { 
-      width: SCREEN.width, 
-      height: SCREEN.height, 
+    console.log("🔍 [Dropdown] Positioning Debug:");
+    console.log("  Screen info:", {
+      width: SCREEN.width,
+      height: SCREEN.height,
       scale: SCALE,
-      pixelRatio: Dimensions.get('window').scale,
-      platform: Platform.OS
+      pixelRatio: Dimensions.get("window").scale,
+      platform: Platform.OS,
     });
-    console.log('  Trigger rect:', triggerRect);
-    console.log('  Menu width:', width);
-    console.log('  Placement:', placement);
-    console.log('  Want top:', wantTop);
-    console.log('  LEFT calculation:');
-    console.log('    Raw trigger x:', triggerRect.x, '(physical pixels)');
-    console.log('    Raw trigger width:', triggerRect.width, '(physical pixels)');
-    console.log('    Scale factor:', SCALE);
-    console.log('    Center calc:', leftCalc, '=', triggerRect.x, '+ (', triggerRect.width, '-', width, ') / 2');
-    console.log('    Min with right edge:', leftMin, '= Math.min(', leftCalc, ',', SCREEN.width - width - 8, ')');
-    console.log('    Final left:', left, '= Math.max(8,', leftMin, ')');
-    console.log('  TOP calculation:');
-    console.log('    Raw trigger y:', triggerRect.y, '(physical pixels)');
-    console.log('    Raw trigger height:', triggerRect.height, '(physical pixels)');
-    console.log('    Converted y:', triggerY, '(logical pixels)');
-    console.log('    Converted height:', triggerHeight, '(logical pixels)');
+    console.log("  Trigger rect:", triggerRect);
+    console.log("  Menu width:", width);
+    console.log("  Placement:", placement);
+    console.log("  Want top:", wantTop);
+    console.log("  LEFT calculation:");
+    console.log("    Raw trigger x:", triggerRect.x, "(physical pixels)");
+    console.log(
+      "    Raw trigger width:",
+      triggerRect.width,
+      "(physical pixels)"
+    );
+    console.log("    Scale factor:", SCALE);
+    console.log(
+      "    Center calc:",
+      leftCalc,
+      "=",
+      triggerRect.x,
+      "+ (",
+      triggerRect.width,
+      "-",
+      width,
+      ") / 2"
+    );
+    console.log(
+      "    Min with right edge:",
+      leftMin,
+      "= Math.min(",
+      leftCalc,
+      ",",
+      SCREEN.width - width - 8,
+      ")"
+    );
+    console.log("    Final left:", left, "= Math.max(8,", leftMin, ")");
+    console.log("  TOP calculation:");
+    console.log("    Raw trigger y:", triggerRect.y, "(physical pixels)");
+    console.log(
+      "    Raw trigger height:",
+      triggerRect.height,
+      "(physical pixels)"
+    );
+    console.log("    Converted y:", triggerY, "(logical pixels)");
+    console.log("    Converted height:", triggerHeight, "(logical pixels)");
     if (wantTop) {
-      console.log('    Above calc:', topCalcAbove, '=', triggerY, '-', maxHeight, '+ 6');
-      console.log('    Final top:', top, '= Math.max(8,', topCalcAbove, ')');
+      console.log(
+        "    Above calc:",
+        topCalcAbove,
+        "=",
+        triggerY,
+        "-",
+        maxHeight,
+        "+ 6"
+      );
+      console.log("    Final top:", top, "= Math.max(8,", topCalcAbove, ")");
     } else {
-      console.log('    Below calc:', topCalcBelow, '=', triggerY, '+', triggerHeight, '+ 6');
-      console.log('    Final top:', top, '= Math.min(', SCREEN.height - 8, ',', topCalcBelow, ')');
+      console.log(
+        "    Below calc:",
+        topCalcBelow,
+        "=",
+        triggerY,
+        "+",
+        triggerHeight,
+        "+ 6"
+      );
+      console.log(
+        "    Final top:",
+        top,
+        "= Math.min(",
+        SCREEN.height - 8,
+        ",",
+        topCalcBelow,
+        ")"
+      );
     }
-    console.log('  Final positions:', { menuLeft: left, menuTop: top, menuWidth: width });
+    console.log("  Final positions:", {
+      menuLeft: left,
+      menuTop: top,
+      menuWidth: width,
+    });
 
     return { menuLeft: left, menuTop: top, menuWidth: width };
   }, [triggerRect, dropdownWidth, placement, maxHeight]);
@@ -247,29 +358,38 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <Text style={styles.triggerText} numberOfLines={1}>
           {selected?.label ?? placeholder}
         </Text>
-        <Animated.Text 
+        <Animated.Text
           style={[
             styles.chevron,
             {
-              transform: [{
-                rotate: chevronRotation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '180deg']
-                })
-              }]
-            }
+              transform: [
+                {
+                  rotate: chevronRotation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0deg", "180deg"],
+                  }),
+                },
+              ],
+            },
           ]}
         >
           ▾
         </Animated.Text>
       </Pressable>
     );
-  }, [openMenu, placeholder, selected?.label, disabled, accessibilityLabel, chevronRotation]);
+  }, [
+    openMenu,
+    placeholder,
+    selected?.label,
+    disabled,
+    accessibilityLabel,
+    chevronRotation,
+  ]);
 
   const renderItem = useCallback(
     ({ item }: { item: DropdownItem }) => {
       const isSelected = selected?.value === item.value;
-      
+
       // Use custom renderItem if provided
       if (renderCustomItem) {
         const customElement = renderCustomItem({ item, isSelected });
@@ -285,7 +405,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
           );
         }
       }
-      
+
       // Default rendering
       return (
         <Pressable
@@ -313,16 +433,27 @@ export const Dropdown: React.FC<DropdownProps> = ({
         </Pressable>
       );
     },
-    [handleSelect, itemStyle, itemTextStyle, selected?.value, selectedItemStyle, selectedItemTextStyle, renderCustomItem]
+    [
+      handleSelect,
+      itemStyle,
+      itemTextStyle,
+      selected?.value,
+      selectedItemStyle,
+      selectedItemTextStyle,
+      renderCustomItem,
+    ]
   );
 
   const keyExtractor = useCallback((it: DropdownItem) => String(it.value), []);
 
   // Dismiss if user taps outside
-  const onBackdrop = useCallback((e: GestureResponderEvent) => {
-    // No special hit testing needed; full-screen backdrop
-    closeMenu();
-  }, [closeMenu]);
+  const onBackdrop = useCallback(
+    (_e: GestureResponderEvent) => {
+      // No special hit testing needed; full-screen backdrop
+      closeMenu();
+    },
+    [closeMenu]
+  );
 
   // Re-measure on rotation
   useEffect(() => {
@@ -336,7 +467,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
     <View>
       {/* Trigger */}
       <View collapsable={false} ref={triggerRef}>
-        {renderTrigger ? renderTrigger({ open: openMenu, selected }) : DefaultTrigger}
+        {renderTrigger
+          ? renderTrigger({ open: openMenu, selected })
+          : DefaultTrigger}
       </View>
 
       {/* Menu */}
@@ -382,5 +515,3 @@ export const Dropdown: React.FC<DropdownProps> = ({
     </View>
   );
 };
-
-

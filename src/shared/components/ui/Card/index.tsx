@@ -1,28 +1,30 @@
-import React from 'react';
-import { Pressable, View } from 'react-native';
-import { useAppTheme } from '../../../features/theme/theme';
-import createCardStyles from './Card.styles';
-import { CardProps } from './Card.types';
+import React from "react";
+import { Pressable, View } from "react-native";
+
+import { useAppTheme } from "@/features/theme";
+
+import { createCardStyles } from "./Card.styles";
+import { CardProps } from "./Card.types";
 
 /**
  * Card component for containing related content with various visual styles.
- * 
+ *
  * @example
  * // Basic card
  * <Card>
  *   <Text>Card content</Text>
  * </Card>
- * 
+ *
  * @example
  * // Elevated card with header and footer
- * <Card 
+ * <Card
  *   variant="elevated"
  *   header={<Text style={{fontWeight: 'bold'}}>Card Title</Text>}
  *   footer={<Button label="Action" size="sm" />}
  * >
  *   <Text>This is the main content of the card.</Text>
  * </Card>
- * 
+ *
  * @example
  * // Pressable card
  * <Card pressable onPress={() => console.log('Card pressed')}>
@@ -30,8 +32,8 @@ import { CardProps } from './Card.types';
  * </Card>
  */
 export const Card = ({
-  variant = 'default',
-  padding = 'md',
+  variant = "default",
+  padding = "md",
   fullWidth = true,
   header,
   footer,
@@ -64,21 +66,11 @@ export const Card = ({
   // Render the card content
   const renderContent = () => (
     <>
-      {header && (
-        <View style={[styles.header, headerStyle]}>
-          {header}
-        </View>
-      )}
-      
-      <View style={contentStyles}>
-        {children}
-      </View>
-      
-      {footer && (
-        <View style={[styles.footer, footerStyle]}>
-          {footer}
-        </View>
-      )}
+      {header && <View style={[styles.header, headerStyle]}>{header}</View>}
+
+      <View style={contentStyles}>{children}</View>
+
+      {footer && <View style={[styles.footer, footerStyle]}>{footer}</View>}
     </>
   );
 

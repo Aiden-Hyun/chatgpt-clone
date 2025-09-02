@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../features/theme/theme.types';
+
+import { AppTheme } from '@/features/theme';
 
 /**
  * Creates dropdown styles based on the current theme

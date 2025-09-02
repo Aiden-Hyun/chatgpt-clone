@@ -1,5 +1,6 @@
-import { AppTheme } from '../../../features/theme/theme.types';
-import { InputStatus, InputVariant } from './Input.types';
+import { AppTheme } from "@/features/theme";
+
+import { InputStatus, InputVariant } from "./Input.types";
 
 /**
  * Creates input styles based on the current theme
@@ -43,7 +44,7 @@ export const createInputStyles = (theme: AppTheme) => {
   const statusColors = {
     default: {
       border: theme.borders.colors.medium,
-      background: 'transparent',
+      background: "transparent",
     },
     success: {
       border: theme.colors.status.success.primary,
@@ -62,55 +63,61 @@ export const createInputStyles = (theme: AppTheme) => {
   // Create styles for each variant
   const getVariantStyle = (variant: InputVariant, status: InputStatus) => {
     const colors = statusColors[status];
-    
+
     switch (variant) {
-      case 'default':
+      case "default":
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           borderWidth: theme.borders.widths.thin,
           borderColor: colors.border,
           borderRadius: theme.borders.radius.md,
         };
-      case 'filled':
+      case "filled":
         return {
           backgroundColor: theme.colors.background.secondary,
           borderWidth: theme.borders.widths.thin,
-          borderColor: status !== 'default' ? colors.border : theme.colors.background.secondary,
+          borderColor:
+            status !== "default"
+              ? colors.border
+              : theme.colors.background.secondary,
           borderRadius: theme.borders.radius.md,
         };
-      case 'outlined':
+      case "outlined":
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           borderWidth: theme.borders.widths.medium,
           borderColor: colors.border,
           borderRadius: theme.borders.radius.md,
         };
-      case 'underlined':
+      case "underlined":
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           borderBottomWidth: theme.borders.widths.thin,
           borderBottomColor: colors.border,
           borderRadius: 0,
         };
-      case 'search':
+      case "search":
         return {
           backgroundColor: theme.colors.background.secondary,
           borderWidth: theme.borders.widths.thin,
-          borderColor: status !== 'default' ? colors.border : theme.colors.background.secondary,
+          borderColor:
+            status !== "default"
+              ? colors.border
+              : theme.colors.background.secondary,
           borderRadius: theme.borders.radius.round,
           paddingLeft: theme.spacing.xl,
         };
-      case 'chat':
+      case "chat":
         return {
-          backgroundColor: 'transparent', // Let the bubble handle background
+          backgroundColor: "transparent", // Let the bubble handle background
           borderWidth: 0, // No border - bubble handles styling
           borderRadius: 0, // No border radius - bubble handles it
           // minHeight: 36, // iOS Messages height
           // maxHeight: 120,
           // Web-style focus outline removal for all platforms
           outlineWidth: 0,
-          outlineColor: 'transparent',
-          boxShadow: 'none',
+          outlineColor: "transparent",
+          boxShadow: "none",
         };
       default:
         return {};
@@ -121,17 +128,17 @@ export const createInputStyles = (theme: AppTheme) => {
     // Base styles
     container: baseContainer,
     input: baseInput,
-    
+
     // Size variations
     sizes,
-    
+
     // Helper functions to get specific styles
     getVariantStyle,
-    
+
     // Additional styles
     label: {
       fontSize: theme.typography.fontSizes.sm,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
       color: theme.colors.text.primary,
       marginBottom: theme.spacing.xs,
     },
@@ -146,22 +153,22 @@ export const createInputStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.xs,
     },
     fullWidth: {
-      width: '100%',
+      width: "100%",
     },
     disabled: {
       opacity: theme.opacity.disabled,
     },
     leftIconContainer: {
-      position: 'absolute',
+      position: "absolute",
       left: theme.spacing.sm,
       height: theme.layout.dimensions.chat.sendButtonSize * 2,
-      justifyContent: 'center',
+      justifyContent: "center",
     },
     rightIconContainer: {
-      position: 'absolute',
+      position: "absolute",
       right: theme.spacing.sm,
       height: theme.layout.dimensions.chat.sendButtonSize * 2,
-      justifyContent: 'center',
+      justifyContent: "center",
     },
     inputWithLeftIcon: {
       paddingLeft: theme.spacing.xl + theme.spacing.md,

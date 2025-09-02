@@ -1,4 +1,5 @@
-import { AppTheme } from '../../../features/theme/theme.types';
+import { AppTheme } from '@/features/theme';
+
 import { CardPadding, CardVariant } from './Card.types';
 
 /**

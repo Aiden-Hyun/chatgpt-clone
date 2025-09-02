@@ -1,6 +1,7 @@
-import { useAppTheme } from '@/features/theme/theme';
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
+
+import { useAppTheme } from '@/features/theme';
 
 interface LoadingScreenProps {
   message?: string;

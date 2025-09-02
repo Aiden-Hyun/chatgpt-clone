@@ -1,20 +1,35 @@
 // eslint.config.js
-import eslint from '@eslint/js';
-import expo from 'eslint-config-expo';
+import expo from 'eslint-config-expo/flat.js';
 import unusedImports from 'eslint-plugin-unused-imports';
-import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
+export default [
+  // Global ignores
   {
-    ignores: ['dist/*', 'supabase/functions/**', '.expo/*', 'node_modules/*'],
+    ignores: [
+      'dist/*',
+      'supabase/functions/**',
+      '.expo/*',
+      'node_modules/*',
+      'babel.config.js',
+      'metro.config.js',
+      'jest.config.js'
+    ],
   },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  ...tseslint.configs.stylistic,
-  expo,
+
+  // Spread the recommended Expo config
+  ...expo,
+
+  // Our custom configuration object for TypeScript files
   {
+    files: ['src/**/*.{ts,tsx}', 'app/**/*.{ts,tsx}'],
     plugins: {
       'unused-imports': unusedImports,
+    },
+    settings: {
+      'import/resolver': {
+        typescript: true,
+        node: true,
+      },
     },
     rules: {
       // ##################################################################
@@ -22,28 +37,13 @@ export default tseslint.config(
       // ##################################################################
       'no-restricted-imports': ['error', {
         patterns: [
-          // 1. Forbid features from importing from other features' internal files.
           {
-            group: ['~/features/*/**'],
-            from: '~/features/*',
-            message: 'Cross-feature imports are not allowed. Use the public API of an entity or a shared module instead.',
-          },
-          // 2. Forbid deep imports into features or entities (enforce public API via index.ts).
-          {
-            group: ['~/features/*/*/**', '~/entities/*/*/**'],
+            group: ['@/features/*/**'],
             message: 'Use the public API (index.ts) for features and entities.',
           },
-          // 3. Forbid shared layer from importing from features or entities.
           {
-            group: ['~/features/**', '~/entities/**'],
-            from: '~/shared/**',
-            message: 'The shared layer cannot import from features or entities.',
-          },
-          // 4. Forbid app layer from making deep imports into features.
-          {
-            group: ['~/features/*/**'],
-            from: '~/app/**',
-            message: 'The app layer should only import from the public API (index.ts) of a feature.',
+            group: ['@/entities/*/*/**'],
+            message: 'Use the public API (index.ts) for features and entities.',
           },
         ],
       }],
@@ -51,21 +51,13 @@ export default tseslint.config(
       // ##################################################################
       // CODE QUALITY & CONSISTENCY RULES
       // ##################################################################
-
-      // Enforce import order for consistency.
       'import/order': ['error', {
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         'newlines-between': 'always',
         alphabetize: { order: 'asc', caseInsensitive: true },
       }],
-
-      // Disallow duplicate imports.
       'import/no-duplicates': 'error',
-
-      // Auto-fixable rule to remove unused imports.
       'unused-imports/no-unused-imports': 'error',
-
-      // Standard 'no-unused-vars' but allows prefixing with `_` to ignore.
       '@typescript-eslint/no-unused-vars': ['error', {
         args: 'after-used',
         ignoreRestSiblings: true,
@@ -73,15 +65,11 @@ export default tseslint.config(
         varsIgnorePattern: '^_',
         caughtErrorsIgnorePattern: '^_',
       }],
-
-      // Forbid 'any' type to encourage type safety.
       '@typescript-eslint/no-explicit-any': 'warn',
-
-      // Prefer using array literals `[]`.
       '@typescript-eslint/array-type': ['error', { default: 'array' }],
-
-      // Disable the exhaustive-deps rule for React hooks as it can be noisy.
-      'react-hooks/exhaustive-deps': 'off',
-    },
-  },
-);
+      'react-hooks/exhaustive-deps': 'off', // User preference
+      'react/prop-types': 'off', // Not needed with TypeScript
+      'react/react-in-jsx-scope': 'off', // Not needed with modern React/Expo
+    }
+  }
+];

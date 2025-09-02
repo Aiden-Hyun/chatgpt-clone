@@ -1,30 +1,32 @@
-import React from 'react';
-import { Text as RNText } from 'react-native';
-import { useAppTheme } from '../../../features/theme/theme';
-import createTextStyles from './Text.styles';
-import { TextProps } from './Text.types';
+import React from "react";
+import { Text as RNText } from "react-native";
+
+import { useAppTheme } from "@/features/theme";
+
+import { createTextStyles } from "./Text.styles";
+import { TextProps } from "./Text.types";
 
 /**
  * Text component that supports various styles, sizes, and semantic variants.
- * 
+ *
  * @example
  * // Body text (default)
  * <Text>This is regular body text</Text>
- * 
+ *
  * @example
  * // Heading
  * <Text variant="h1">Page Title</Text>
- * 
+ *
  * @example
  * // Error message
  * <Text variant="error">Something went wrong</Text>
- * 
+ *
  * @example
  * // Custom styling
  * <Text size="lg" weight="bold" color="#ff0000">Important message</Text>
  */
 export const Text = ({
-  variant = 'body',
+  variant = "body",
   weight,
   size,
   center = false,
@@ -40,7 +42,7 @@ export const Text = ({
   const styles = createTextStyles(theme);
 
   // Default underline value for links
-  const shouldUnderline = underline ?? (variant === 'link');
+  const shouldUnderline = underline ?? variant === "link";
 
   // Combine styles based on props
   const textStyle = [

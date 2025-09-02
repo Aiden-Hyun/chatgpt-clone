@@ -1,38 +1,40 @@
-import React from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
-import { useAppTheme } from '../../../features/theme/theme';
-import createButtonStyles from './Button.styles';
-import { ButtonProps } from './Button.types';
+import React from "react";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+
+import { useAppTheme } from "@/features/theme";
+
+import { createButtonStyles } from "./Button.styles";
+import { ButtonProps } from "./Button.types";
 
 /**
  * Button component that supports various styles, sizes, and states.
- * 
+ *
  * @example
  * // Primary button (default)
  * <Button label="Submit" onPress={handleSubmit} />
- * 
+ *
  * @example
  * // Outline button with error status
- * <Button 
- *   variant="outline" 
- *   status="error" 
- *   label="Delete" 
- *   onPress={handleDelete} 
+ * <Button
+ *   variant="outline"
+ *   status="error"
+ *   label="Delete"
+ *   onPress={handleDelete}
  * />
- * 
+ *
  * @example
  * // Button with loading state
- * <Button 
- *   label="Save" 
+ * <Button
+ *   label="Save"
  *   isLoading={isSaving}
  *   loadingText="Saving..."
- *   onPress={handleSave} 
+ *   onPress={handleSave}
  * />
  */
 export const Button = ({
-  variant = 'primary',
-  size = 'md',
-  status = 'default',
+  variant = "primary",
+  size = "md",
+  status = "default",
   label,
   leftIcon,
   rightIcon,
@@ -68,10 +70,14 @@ export const Button = ({
   const renderContent = () => {
     if (isLoading) {
       return (
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <ActivityIndicator 
-            size={size === 'xs' || size === 'sm' ? 'small' : 'small'} 
-            color={variant === 'primary' ? theme.colors.text.inverted : theme.colors.primary} 
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <ActivityIndicator
+            size={size === "xs" || size === "sm" ? "small" : "small"}
+            color={
+              variant === "primary"
+                ? theme.colors.text.inverted
+                : theme.colors.primary
+            }
           />
           {loadingText && (
             <Text style={[buttonTextStyle, { marginLeft: theme.spacing.sm }]}>

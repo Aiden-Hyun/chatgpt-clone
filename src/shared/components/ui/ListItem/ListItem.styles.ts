@@ -1,5 +1,6 @@
-import { AppTheme } from '../../../features/theme/theme.types';
-import { ListItemVariant } from './ListItem.types';
+import { AppTheme } from "@/features/theme";
+
+import { ListItemVariant } from "./ListItem.types";
 
 /**
  * Creates list item styles based on the current theme
@@ -7,9 +8,9 @@ import { ListItemVariant } from './ListItem.types';
 export const createListItemStyles = (theme: AppTheme) => {
   // Base styles for all list items
   const baseItem = {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    width: '100%',
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    width: "100%",
     backgroundColor: theme.colors.background.primary,
   };
 
@@ -35,17 +36,17 @@ export const createListItemStyles = (theme: AppTheme) => {
   // Create styles for each variant
   const getVariantStyle = (variant: ListItemVariant) => {
     switch (variant) {
-      case 'default':
+      case "default":
         return {};
-      case 'settings':
+      case "settings":
         return {
           backgroundColor: theme.colors.background.secondary,
         };
-      case 'chat':
+      case "chat":
         return {
           backgroundColor: theme.colors.background.primary,
         };
-      case 'menu':
+      case "menu":
         return {
           backgroundColor: theme.colors.background.primary,
           paddingVertical: theme.spacing.sm,
@@ -60,23 +61,23 @@ export const createListItemStyles = (theme: AppTheme) => {
   return {
     // Base styles
     item: baseItem,
-    
+
     // Size variations
     sizes,
-    
+
     // Helper functions to get specific styles
     getVariantStyle,
-    
+
     // Content container
     contentContainer: {
       flex: 1,
-      justifyContent: 'center',
+      justifyContent: "center",
     },
-    
+
     // Text styles
     title: {
       fontSize: theme.typography.fontSizes.md,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fontFamily.primary,
     },
@@ -92,7 +93,7 @@ export const createListItemStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.xs,
       fontFamily: theme.typography.fontFamily.primary,
     },
-    
+
     // Element containers
     leftElementContainer: {
       marginRight: theme.spacing.md,
@@ -100,14 +101,14 @@ export const createListItemStyles = (theme: AppTheme) => {
     rightElementContainer: {
       marginLeft: theme.spacing.md,
     },
-    
+
     // States
     selected: {
       backgroundColor: theme.colors.background.secondary,
     },
     selectedTitle: {
       color: theme.colors.primary,
-      fontWeight: theme.typography.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as "600",
     },
     disabled: {
       opacity: 0.6,
@@ -115,7 +116,7 @@ export const createListItemStyles = (theme: AppTheme) => {
     pressed: {
       backgroundColor: theme.colors.interactive.hover.primary,
     },
-    
+
     // Border
     border: {
       borderBottomWidth: theme.borders.widths.thin,

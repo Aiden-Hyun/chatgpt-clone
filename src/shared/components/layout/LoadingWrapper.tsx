@@ -1,13 +1,17 @@
-import { useAppTheme } from '@/features/theme/theme';
-import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import React from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+
+import { useAppTheme } from "@/features/theme";
 
 interface LoadingWrapperProps {
   loading: boolean;
   children: React.ReactNode;
 }
 
-export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ loading, children }) => {
+export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
+  loading,
+  children,
+}) => {
   const theme = useAppTheme();
   const styles = createStyles(theme);
 
@@ -26,9 +30,8 @@ const createStyles = (theme: ReturnType<typeof useAppTheme>) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       backgroundColor: theme.colors.background.primary,
     },
   });
-
