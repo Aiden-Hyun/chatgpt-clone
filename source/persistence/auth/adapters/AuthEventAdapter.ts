@@ -27,6 +27,10 @@ export class AuthEventAdapter implements IAuthEventEmitter {
           // Map Supabase events to our internal events
           let mappedEvent = event;
           switch (event) {
+            case 'INITIAL_SESSION':
+              // Ignore INITIAL_SESSION events to prevent startup noise and infinite loops
+              Logger.info('AuthEventAdapter: Ignoring INITIAL_SESSION event');
+              return;
             case 'SIGNED_IN':
               mappedEvent = 'SIGNED_IN';
               break;

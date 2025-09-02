@@ -1,11 +1,5 @@
 // Enhanced theme types to support theme switching
 
-
-// Helper type for deep partial objects
-type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
-};
-
 // Required color structure (ALL color properties that themes can customize)
 export interface RequiredColors {
   // Core colors

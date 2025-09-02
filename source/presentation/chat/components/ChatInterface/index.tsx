@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { useChatViewModel } from '../../../../business/chat/view-models/useChatViewModel';
-import { createChatStyles } from '../../../app/chat/chat.styles';
+import { createChatStyles } from '../../../app/(private)/chat/chat.styles';
 import { ChatInterfaceComponentProps } from '../../../interfaces/chat';
 import { useBusinessContext } from '../../../shared/BusinessContextProvider';
 import { useAppTheme } from '../../../theme/hooks/useTheme';

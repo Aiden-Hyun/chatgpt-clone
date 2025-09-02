@@ -81,11 +81,24 @@ export interface UserDTO {
   updatedAt: string;
 }
 
+// User mapper interface
+export interface IUserMapper {
+  toEntity(dbUser: unknown): User;
+  toDatabase(user: User): unknown;
+}
+
 // Secure storage adapter interface
 export interface SecureStorageOptions {
   requireAuthentication?: boolean;
   accessGroup?: string;
   keychainService?: string;
+}
+
+export interface ISecureStorageAdapter {
+  set(key: string, value: string, options?: SecureStorageOptions): Promise<void>;
+  get(key: string): Promise<string | null>;
+  remove(key: string): Promise<void>;
+  clear(): Promise<void>;
 }
 
 // Social auth adapter interfaces
@@ -107,6 +120,11 @@ export interface SocialAuthAdapterResult {
     displayName?: string;
     avatarUrl?: string;
   };
+}
+
+export interface ISocialAuthAdapter {
+  signIn(options: SocialAuthOptions): Promise<SocialAuthAdapterResult>;
+  signOut(): Promise<{ success: boolean; error?: string }>;
 }
 
 // Supabase auth adapter interfaces
@@ -151,3 +169,12 @@ export interface SocialAuthData {
   refreshToken?: string;
   user?: Record<string, unknown>;
 }
+export interface ISupabaseAuthAdapter {
+  signUp(email: string, password: string): Promise<SupabaseSignUpResult>;
+  signIn(email: string, password: string): Promise<SupabaseAuthResult>;
+  signOut(): Promise<{ success: boolean; error?: string }>;
+  resetPassword(email: string): Promise<{ success: boolean; error?: string }>;
+  updatePassword(password: string): Promise<{ success: boolean; error?: string }>;
+  getCurrentUser(): Promise<{ success: boolean; user?: User; error?: string }>;
+}
+

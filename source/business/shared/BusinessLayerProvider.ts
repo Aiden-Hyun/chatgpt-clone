@@ -25,6 +25,7 @@ import { MobileStorageService, SecureStorageService } from '../../service/storag
 import {
     IAIProvider,
     IAlertService,
+    IAuthEventEmitter,
     IChatRoomRepository,
     IClipboardAdapter,
     ILanguageService,
@@ -39,6 +40,7 @@ import {
 } from '../interfaces';
 
 // Import business layer components
+import { AuthEventAdapter } from '../../persistence/auth/adapters/AuthEventAdapter';
 import { UseCaseFactory } from './UseCaseFactory';
 
 /**
@@ -59,6 +61,8 @@ export class BusinessLayerProvider {
   private aiProvider: IAIProvider;
   private clipboardAdapter: IClipboardAdapter;
   private storageAdapter: AsyncStorageAdapter;
+  private authEventAdapter: AuthEventAdapter;
+  private authEventEmitter: IAuthEventEmitter;
   
   // Service instances
   private logger: ILogger;
@@ -85,6 +89,8 @@ export class BusinessLayerProvider {
       this.chatRoomRepository,
       this.aiProvider,
       this.clipboardAdapter,
+      this.authEventEmitter,
+      this.storageService,
       this.logger,
       this.messageValidator,
       this.idGenerator
@@ -114,6 +120,16 @@ export class BusinessLayerProvider {
     this.chatRoomRepository = new ChatRoomRepository();
     this.aiProvider = new AIProvider(this.configService, this.logger);
     this.clipboardAdapter = new ClipboardAdapter();
+
+    // Initialize auth event adapter and wrapper that satisfies business interface
+    this.authEventAdapter = new AuthEventAdapter();
+    this.authEventEmitter = {
+      subscribeToAuthChanges: (callback) => this.authEventAdapter.subscribeToAuthChanges(callback),
+      emit: () => {},
+      on: () => {},
+      off: () => {},
+      once: () => {}
+    } as IAuthEventEmitter;
     
     // Initialize language repository and service
     this.languageRepository = new LanguageRepository(this.storageAdapter, this.logger);

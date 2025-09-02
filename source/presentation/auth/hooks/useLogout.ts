@@ -1,30 +1,47 @@
-import { router } from 'expo-router';
-import { useCallback } from 'react';
+/**
+ * Simplified Logout Hook
+ * Uses business layer through useBusinessAuth hook
+ * Matches /src reference pattern but with business layer
+ */
 
-import { useSignOutViewModel } from '../../../business/auth/view-models/useSignOutViewModel';
-import { useStorageViewModel } from '../../../business/session/view-models/useStorageViewModel';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { router } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
+
+import { useBusinessAuth } from './useBusinessAuth';
+import { UseLogoutResult } from '../types/auth.types';
 
 /**
  * Hook for handling user logout functionality
- * Centralizes logout logic and provides loading state
+ * Simplified version that matches /src reference implementation
  */
-export const useLogout = () => {
-  const useCaseFactory = useUseCaseFactory();
-  const signOutViewModel = useSignOutViewModel(useCaseFactory.createSignOutUseCase());
-  const storageViewModel = useStorageViewModel(
-    useCaseFactory.createClearStorageUseCase(),
-    useCaseFactory.createGetStoredRouteUseCase(),
-    useCaseFactory.createSetStoredRouteUseCase()
-  );
+export const useLogout = (): UseLogoutResult => {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { signOut } = useBusinessAuth();
 
   const logout = useCallback(async () => {
     try {
-      // Clear storage first
-      await storageViewModel.clearStorage('all');
+      setIsLoggingOut(true);
       
-      // Then sign out
-      await signOutViewModel.signOut();
+      // On web, clear localStorage first to prevent race conditions
+      if (Platform.OS === 'web') {
+        try {
+          // Clear all Supabase-related localStorage items
+          const keysToRemove: string[] = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(key => localStorage.removeItem(key));
+        } catch (error) {
+          console.warn('Failed to clear localStorage:', error);
+        }
+      }
+      
+      // Sign out using business layer
+      await signOut();
       
       // Navigate to login screen
       router.replace('/auth');
@@ -32,11 +49,13 @@ export const useLogout = () => {
       console.error('Error during logout:', error);
       // Even if there's an error, try to navigate to login
       router.replace('/auth');
+    } finally {
+      setIsLoggingOut(false);
     }
-  }, [signOutViewModel, storageViewModel]);
+  }, [signOut]);
 
   return {
     logout,
-    isLoggingOut: signOutViewModel.isLoading || storageViewModel.isLoading,
+    isLoggingOut,
   };
 }; 

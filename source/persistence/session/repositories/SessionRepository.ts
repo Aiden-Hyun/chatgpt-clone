@@ -17,8 +17,17 @@ export class SessionRepository implements ISessionRepository {
 
   async save(session: UserSession): Promise<SaveSessionResult> {
     try {
+      // Get existing session to compare and prevent redundant saves
+      const existingSession = await this.get();
+      
+      // Compare sessions to avoid unnecessary writes
+      if (existingSession && this.areSessionsEqual(existingSession, session)) {
+        Logger.debug('Session unchanged, skipping save', { userId: session.userId });
+        return { success: true };
+      }
+      
       const sessionData = this.sessionMapper.toStorage(session);
-      await this.storageAdapter.setItem('user_session', sessionData);
+      await this.storageAdapter.setItem('user_session', JSON.stringify(sessionData));
       
       // Save tokens separately in secure storage
       if (session.accessToken) {
@@ -46,7 +55,25 @@ export class SessionRepository implements ISessionRepository {
         return null;
       }
 
-      const session = this.sessionMapper.toDomain(sessionData);
+      let parsed: any;
+      try {
+        parsed = JSON.parse(sessionData);
+      } catch (e) {
+        Logger.warn('SessionRepository: Invalid session JSON in storage, clearing', { preview: String(sessionData).slice(0, 60) });
+        await this.clear();
+        return null;
+      }
+      // Handle accidental double-stringify cases
+      if (typeof parsed === 'string') {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch {
+          Logger.warn('SessionRepository: Nested session JSON parse failed, clearing');
+          await this.clear();
+          return null;
+        }
+      }
+      const session = this.sessionMapper.toDomain(parsed);
       
       // Check if session is expired
       if (session.isExpired()) {
@@ -58,8 +85,12 @@ export class SessionRepository implements ISessionRepository {
       const accessToken = await this.tokenRepository.getAccessToken();
       const refreshToken = await this.tokenRepository.getRefreshToken();
       
-      if (accessToken && refreshToken) {
-        return session.withTokens(accessToken, refreshToken);
+      // Attach tokens onto the session object if they exist
+      if (accessToken) {
+        (session as any).accessToken = accessToken;
+      }
+      if (refreshToken) {
+        (session as any).refreshToken = refreshToken;
       }
 
       return session;
@@ -139,8 +170,8 @@ export class SessionRepository implements ISessionRepository {
     try {
       const session = await this.get();
       if (session && session.userId === userId) {
-        const updatedSession = session.updateLastActivity();
-        await this.save(updatedSession);
+        const updated = this.sessionMapper.updateSession(session, { lastActivity: new Date() });
+        await this.save(updated);
         Logger.debug('Session last activity updated', { userId });
       } else {
         Logger.warn('Cannot update last activity: session not found or user mismatch', { userId });
@@ -181,6 +212,27 @@ export class SessionRepository implements ISessionRepository {
       return await this.tokenRepository.hasValidTokens();
     } catch (error) {
       Logger.error('Failed to check token validity', { error });
+      return false;
+    }
+  }
+
+  /**
+   * Compare two sessions to determine if they are equal
+   * Used to prevent redundant saves
+   */
+  private areSessionsEqual(session1: UserSession, session2: UserSession): boolean {
+    try {
+      // Compare core session properties
+      return (
+        session1.userId === session2.userId &&
+        session1.isActive === session2.isActive &&
+        session1.expiresAt.getTime() === session2.expiresAt.getTime() &&
+        (session1 as any).accessToken === (session2 as any).accessToken &&
+        (session1 as any).refreshToken === (session2 as any).refreshToken &&
+        JSON.stringify(session1.permissions) === JSON.stringify(session2.permissions)
+      );
+    } catch (error) {
+      Logger.warn('Failed to compare sessions, assuming different', { error });
       return false;
     }
   }

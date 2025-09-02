@@ -5,7 +5,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 
 import { BusinessLayerProvider } from '../../business/shared/BusinessLayerProvider';
 import { UseCaseFactory } from '../../business/shared/UseCaseFactory';
-import { BusinessContextValue, BusinessContextProviderProps } from '../interfaces/shared';
+import { BusinessContextProviderProps, BusinessContextValue } from '../interfaces/shared';
 
 const BusinessContext = createContext<BusinessContextValue | null>(null);
 

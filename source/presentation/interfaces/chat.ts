@@ -470,6 +470,7 @@ export interface SidebarProps {
  */
 export interface ChatInterfaceComponentProps {
   roomId: string | number;
+  userId?: string;  // Added userId as optional prop
   initialModel?: string;
   className?: string;
   showHeader?: boolean;

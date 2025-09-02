@@ -96,6 +96,14 @@ export const Input = forwardRef<TextInput, InputProps>(({
           style={inputStyles}
           placeholderTextColor={theme.colors.text.quaternary}
           editable={editable}
+          onFocus={(e) => {
+            console.log('[Input] onFocus', { placeholder: rest.placeholder });
+            rest.onFocus?.(e as any);
+          }}
+          onChangeText={(text) => {
+            console.log('[Input] onChangeText', { placeholder: rest.placeholder, textSample: text?.slice?.(0, 3) });
+            rest.onChangeText?.(text);
+          }}
           {...rest}
         />
         

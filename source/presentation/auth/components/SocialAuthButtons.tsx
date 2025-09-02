@@ -51,7 +51,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
         onPress={() => handleSocialAuth('google', authenticateWithGoogle)}
         disabled={isLoading}
         containerStyle={{
-          borderColor: theme.colors.border.primary,
+          borderColor: theme.borders.colors.light,
           backgroundColor: theme.colors.background.primary
         }}
       />
@@ -65,7 +65,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
         onPress={() => handleSocialAuth('github', authenticateWithGitHub)}
         disabled={isLoading}
         containerStyle={{
-          borderColor: theme.colors.border.primary,
+          borderColor: theme.borders.colors.light,
           backgroundColor: theme.colors.background.primary
         }}
       />
@@ -79,7 +79,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
         onPress={() => handleSocialAuth('microsoft', authenticateWithMicrosoft)}
         disabled={isLoading}
         containerStyle={{
-          borderColor: theme.colors.border.primary,
+          borderColor: theme.borders.colors.light,
           backgroundColor: theme.colors.background.primary
         }}
       />
@@ -93,7 +93,7 @@ export const SocialAuthButtons: React.FC<SocialAuthButtonsProps> = ({
         onPress={() => handleSocialAuth('apple', authenticateWithApple)}
         disabled={isLoading}
         containerStyle={{
-          borderColor: theme.colors.border.primary,
+          borderColor: theme.borders.colors.light,
           backgroundColor: theme.colors.background.primary
         }}
       />

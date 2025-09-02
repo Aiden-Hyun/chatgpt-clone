@@ -2,24 +2,31 @@ import { SupabaseSession } from '../../interfaces/auth';
 import { DatabaseSession, SessionDTO, UserSession } from '../../interfaces/session';
 
 export class SessionMapper {
-  toDomain(sessionData: DatabaseSession): UserSession {
+  toDomain(sessionData: SessionDTO): UserSession {
     return new UserSession(
       sessionData.userId,
       sessionData.isAuthenticated,
       sessionData.permissions || [],
       new Date(sessionData.lastActivity),
-      new Date(sessionData.expiresAt)
+      new Date(sessionData.expiresAt),
+      sessionData.accessToken,
+      sessionData.refreshToken
     );
   }
 
   toStorage(session: UserSession): SessionDTO {
     return {
+      id: session.userId,
       userId: session.userId,
+      accessToken: session.accessToken || '',
+      refreshToken: session.refreshToken,
       isAuthenticated: session.isAuthenticated,
       permissions: session.permissions,
       lastActivity: session.lastActivity.toISOString(),
-      expiresAt: session.expiresAt.toISOString()
-    };
+      expiresAt: session.expiresAt.toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    } as unknown as SessionDTO;
   }
 
   toDatabase(session: UserSession): DatabaseSession {

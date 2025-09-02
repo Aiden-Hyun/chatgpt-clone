@@ -253,6 +253,11 @@ export interface IAuthEventEmitter {
    * Subscribe to authentication events (once)
    */
   once(event: AuthEvent, handler: (data: AuthEventData) => void): void;
+
+  /**
+   * Subscribe to global authentication state changes
+   */
+  subscribeToAuthChanges(callback: (event: string, session: any | null) => Promise<void>): () => void;
 }
 
 // ============================================================================
@@ -277,4 +282,59 @@ export enum FeatureAccess {
   USER = 'user',
   PREMIUM = 'premium',
   ADMIN = 'admin'
+}
+
+export interface AuthEventData {
+  session?: any | null;
+  error?: string;
+}
+
+export interface AuthResult {
+  success: boolean;
+  user?: User;
+  error?: string;
+}
+
+export interface CreateUserResult {
+  success: boolean;
+  user?: User;
+  error?: string;
+}
+
+export interface DeleteUserResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface SignOutResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface RefreshTokenResult {
+  success: boolean;
+  session?: any;
+  error?: string;
+}
+
+export interface RequestResetResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface ResetPasswordResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface SocialAuthResult {
+  success: boolean;
+  user?: User;
+  error?: string;
+}
+
+export interface MonitorAuthStateResult {
+  success: boolean;
+  unsubscribe?: () => void;
+  error?: string;
 }

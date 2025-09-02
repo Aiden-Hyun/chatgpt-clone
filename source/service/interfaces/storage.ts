@@ -42,11 +42,11 @@ export interface ISecureStorageService {
 // ============================================================================
 
 export interface IStorageAdapter {
-  get<T>(key: StorageKey): Promise<Result<T>>;
-  set<T>(key: StorageKey, value: T): Promise<Result<void>>;
-  remove(key: StorageKey): Promise<Result<void>>;
+  setItem(key: StorageKey, value: string): Promise<Result<void>>;
+  getItem(key: StorageKey): Promise<Result<string | null>>;
+  removeItem(key: StorageKey): Promise<Result<void>>;
+  hasKey(key: StorageKey): Promise<Result<boolean>>;
   clear(): Promise<Result<void>>;
-  has(key: StorageKey): Promise<Result<boolean>>;
 }
 
 export interface ISecureStorageAdapter {

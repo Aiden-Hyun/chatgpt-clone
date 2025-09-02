@@ -1,2 +1,2 @@
-// src/features/auth/context/index.ts
+// Simplified Auth Context Exports
 export * from './AuthContext';

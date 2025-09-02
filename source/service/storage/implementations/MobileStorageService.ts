@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 
-import { StorageKey, IStorageService, Result, ILogger, IStorageAdapter } from '../../interfaces';
+import { ILogger, IStorageAdapter, IStorageService, Result, StorageKey, WebStorageType } from '../../interfaces';
 
 import { AsyncStorageAdapter } from './AsyncStorageAdapter';
-import { WebStorageAdapter, WebStorageType } from './WebStorageAdapter';
+import { WebStorageAdapter } from './WebStorageAdapter';
 
 /**
  * Implementation of the IStorageService interface

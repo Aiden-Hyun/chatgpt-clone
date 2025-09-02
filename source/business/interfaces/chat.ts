@@ -295,64 +295,66 @@ export interface ModelInfo {
 export type ModelValue = string;
 
 // ============================================================================
-// REPOSITORY INTERFACES - Data access abstractions
+// DOMAIN RESULT TYPES - Consolidated result interfaces
 // ============================================================================
 
 /**
- * Chat room repository result types
+ * Room operation result - All room CRUD operations
  */
-export interface CreateRoomResult {
+export interface RoomResult {
   success: boolean;
   room?: ChatRoomEntity;
   error?: string;
 }
 
-export interface UpdateRoomResult {
+/**
+ * Message operation result - All message operations
+ */
+export interface MessageResult {
   success: boolean;
-  room?: ChatRoomEntity;
+  message?: MessageEntity;
+  assistantMessage?: MessageEntity; // For SendMessageResult
   error?: string;
 }
 
-export interface DeleteRoomResult {
+/**
+ * Storage operation result - All storage/clipboard operations
+ */
+export interface StorageResult {
   success: boolean;
+  data?: any; // string, string[], etc.
   error?: string;
 }
+
+// ============================================================================
+// CHAT ROOM REPOSITORY INTERFACE - Data access abstraction
+// ============================================================================
 
 /**
  * Chat room repository interface
  */
 export interface IChatRoomRepository {
-  create(model: string, session: IUserSession, name?: string): Promise<CreateRoomResult>;
-  update(room: ChatRoomEntity, session: IUserSession): Promise<UpdateRoomResult>;
+  create(model: string, session: IUserSession, name?: string): Promise<RoomResult>;
+  update(room: ChatRoomEntity, session: IUserSession): Promise<RoomResult>;
   getById(roomId: string, session: IUserSession): Promise<ChatRoomEntity | null>;
   listByUserId(userId: string, session: IUserSession): Promise<ChatRoomEntity[]>;
-  delete(roomId: string, session: IUserSession): Promise<DeleteRoomResult>;
+  delete(roomId: string, session: IUserSession): Promise<RoomResult>;
 }
 
-/**
- * Message repository result types
- */
-export interface SaveMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  error?: string;
-}
-
-export interface DeleteMessageResult {
-  success: boolean;
-  error?: string;
-}
+// ============================================================================
+// MESSAGE REPOSITORY INTERFACE - Data access abstraction
+// ============================================================================
 
 /**
  * Message repository interface
  */
 export interface IMessageRepository {
-  save(message: MessageEntity, session: IUserSession): Promise<SaveMessageResult>;
-  update(message: MessageEntity, session: IUserSession): Promise<SaveMessageResult>;
+  save(message: MessageEntity, session: IUserSession): Promise<MessageResult>;
+  update(message: MessageEntity, session: IUserSession): Promise<MessageResult>;
   getById(messageId: string, session: IUserSession): Promise<MessageEntity | null>;
   getByRoomId(roomId: string, session: IUserSession): Promise<MessageEntity[]>;
   getRecentByRoomId(roomId: string, limit: number, session: IUserSession): Promise<MessageEntity[]>;
-  delete(messageId: string, session: IUserSession): Promise<DeleteMessageResult>;
+  delete(messageId: string, session: IUserSession): Promise<MessageResult>;
 }
 
 // ============================================================================
@@ -392,26 +394,11 @@ export interface IAIProvider {
 // ============================================================================
 
 /**
- * Clipboard operation result
- */
-export interface ClipboardResult {
-  success: boolean;
-  error?: string;
-}
-
-/**
- * Clipboard get result (extends ClipboardResult)
- */
-export interface ClipboardGetResult extends ClipboardResult {
-  text?: string;
-}
-
-/**
  * Clipboard adapter interface
  */
 export interface IClipboardAdapter {
-  copyToClipboard(text: string): Promise<ClipboardResult>;
-  getFromClipboard(): Promise<ClipboardGetResult>;
+  copyToClipboard(text: string): Promise<StorageResult>;
+  getFromClipboard(): Promise<StorageResult>;
   hasString(): Promise<boolean>;
 }
 
@@ -419,40 +406,23 @@ export interface IClipboardAdapter {
 // CHAT OPERATION TYPES - Business operation results
 // ============================================================================
 
-/**
- * Send message operation result
- */
-export interface SendMessageResult {
-  success: boolean;
-  userMessage?: MessageEntity;
-  assistantMessage?: MessageEntity;
-  error?: string;
-}
+// Note: All chat operation results now use the domain-based types above
+// SendMessageResult, CopyMessageResult, EditMessageResult, RegenerateAssistantResult
+// are replaced by MessageResult and StorageResult
+
+// ============================================================================
+// USE CASE INTERFACES
+// ============================================================================
 
 /**
- * Copy message operation result
+ * Create chat room use case interface
  */
-export interface CopyMessageResult {
-  success: boolean;
-  error?: string;
-}
-
-/**
- * Edit message operation result
- */
-export interface EditMessageResult {
-  success: boolean;
-  message?: MessageEntity;
-  error?: string;
-}
-
-/**
- * Regenerate assistant response result
- */
-export interface RegenerateAssistantResult {
-  success: boolean;
-  newMessage?: MessageEntity;
-  error?: string;
+export interface ICreateChatRoomUseCase {
+  execute(params: {
+    model: string;
+    session: IUserSession;
+    name?: string;
+  }): Promise<RoomResult>;
 }
 
 // ============================================================================

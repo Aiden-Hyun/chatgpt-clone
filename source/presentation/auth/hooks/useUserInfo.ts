@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import { useUserProfileViewModel } from '../../../business/auth/view-models/useUserProfileViewModel';
-import { UserInfo } from '../../interfaces/auth';
-import { useUseCaseFactory } from '../../shared/BusinessContextProvider';
+import { Logger } from '../../../service/shared/utils/Logger';
+import { useBusinessContext } from '../../shared/BusinessContextProvider';
 import { useAuth } from '../context/AuthContext';
+import { UserInfo } from '../types/auth.types';
 
 /**
- * Hook for fetching and managing user information from the current session
- * Uses business layer UseCases instead of direct database access
+ * Simplified User Info Hook
+ * Uses simplified auth context and business layer
+ * Matches /src reference pattern but with business layer
  */
 export const useUserInfo = (): UserInfo => {
   const { session } = useAuth();
@@ -16,32 +17,30 @@ export const useUserInfo = (): UserInfo => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const useCaseFactory = useUseCaseFactory();
-  const userProfileViewModel = useUserProfileViewModel(
-    useCaseFactory.createGetUserProfileUseCase(),
-    useCaseFactory.createUpdateUserProfileUseCase()
-  );
+  const { useCaseFactory } = useBusinessContext();
 
   const getUserInfo = async () => {
     try {
-      if (session?.user) {
-        // Extract user ID
-        setUserId(session.user.id);
+      if (session) {
+        // Extract user ID and email from session
+        setUserId(session.userId);
+        setEmail(session.userEmail || null);
         
-        // Extract email
-        setEmail(session.user.email || null);
-        
-        // Get profile from business layer
-        const result = await userProfileViewModel.getUserProfile(session.user.id);
-        
-        if (result.success && result.profile) {
-          setUserName(result.profile.displayName);
-        } else {
-          // Fall back to metadata if profile not found
-          const name = session.user.user_metadata?.full_name || 
-                      session.user.user_metadata?.name || 
-                      session.user.email?.split('@')[0] || 
-                      'User';
+        // Try to get profile from business layer
+        try {
+          const getUserProfileUseCase = useCaseFactory.createGetUserProfileUseCase();
+          const result = await getUserProfileUseCase.execute({ userId: session.userId });
+          
+          if (result.success && result.profile) {
+            setUserName(result.profile.displayName);
+          } else {
+            // Fall back to email-based name
+            const name = session.userEmail?.split('@')[0] || 'User';
+            setUserName(name);
+          }
+        } catch (error) {
+          Logger.warn('useUserInfo: Failed to get profile, using fallback', { error });
+          const name = session.userEmail?.split('@')[0] || 'User';
           setUserName(name);
         }
       } else {
@@ -51,8 +50,7 @@ export const useUserInfo = (): UserInfo => {
         setUserId(null);
       }
     } catch (error) {
-      // Log the error for debugging
-      console.error('Failed to get user info:', error);
+      Logger.error('useUserInfo: Failed to get user info', { error });
       // On error, set default values
       setUserName('User');
       setEmail(null);

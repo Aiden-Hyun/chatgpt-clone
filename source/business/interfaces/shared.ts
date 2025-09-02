@@ -127,36 +127,7 @@ export interface IUserSession {
   expiresWithin(withinMs: number): boolean;
 }
 
-/**
- * User session entity implementation
- */
-export class UserSession implements IUserSession {
-  constructor(
-    readonly userId: string,
-    readonly accessToken: string,
-    readonly expiresAt: Date,
-    readonly userEmail?: string,
-    readonly createdAt: Date = new Date()
-  ) {}
-
-  isValid(): boolean {
-    return !this.isExpired();
-  }
-
-  isExpired(): boolean {
-    return this.expiresAt < new Date();
-  }
-
-  getTimeToExpiry(): number {
-    const now = new Date();
-    const diff = this.expiresAt.getTime() - now.getTime();
-    return diff > 0 ? diff : 0;
-  }
-
-  expiresWithin(withinMs: number): boolean {
-    return this.getTimeToExpiry() <= withinMs;
-  }
-}
+// UserSession class implementation moved to session.ts
 
 /**
  * Session status enumeration

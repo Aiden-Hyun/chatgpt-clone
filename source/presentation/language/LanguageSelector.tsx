@@ -8,6 +8,7 @@ import { Dropdown } from '../components/ui';
 import { LanguageSelectorProps } from '../interfaces/language';
 import { PresentationTheme } from '../interfaces/theme';
 import { useBusinessContext } from '../shared/BusinessContextProvider';
+import { useAppTheme } from '../theme/hooks/useTheme';
 import { useLanguageContext } from './LanguageContext';
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => {
@@ -16,36 +17,29 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
   const theme = useAppTheme();
   const { languageService } = useBusinessContext();
   
-  const languages = languageService.getSupportedLanguages().map(lang => ({
-    code: lang.getCode(),
-    name: lang.getName(),
-  }));
+  const available: string[] = (languageService as any).getSupportedLanguages?.() ?? (languageService as any).getAvailableLanguages?.() ?? [];
+  console.log('LanguageSelector available languages', available);
+  const languages = available.map((code: string) => ({ code, name: code.toUpperCase() }));
 
-  const currentLanguageInfo = languages.find(lang => lang.code === currentLanguage) || languages[0];
+  const currentLanguageInfo = languages.find((lang: { code: string; name: string }) => lang.code === currentLanguage) || languages[0];
 
   const handleLanguageChange = (item: DropdownItem) => {
     const newLanguage = item.value as string;
-    
-    // Set the new language
     setLanguage(newLanguage);
-    
-    // Language names for display
+
     const languageNames: Record<string, string> = {};
-    languages.forEach(lang => {
+    languages.forEach((lang: { code: string; name: string }) => {
       languageNames[lang.code] = lang.name;
     });
-    
-    // Get the appropriate translation key based on the new language
+
     const translationKey = newLanguage === 'en' ? 'toast.language_changed' :
                           newLanguage === 'es' ? 'toast.language_changed_es' :
                           'toast.language_changed_ko';
-    
-    // Replace the placeholder with the actual language name
+
     const message = formatTranslation(translationKey, { 
       language: languageNames[newLanguage] 
     });
-    
-    // Show success toast
+
     showSuccess(message, 3000);
   };
 
@@ -54,7 +48,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
   return (
     <View style={[styles.container, style]}>
       <Dropdown
-        items={languages.map(lang => ({
+        items={languages.map((lang: { code: string; name: string }) => ({
           value: lang.code,
           label: lang.name,
           disabled: false,
@@ -68,7 +62,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ style }) => 
             activeOpacity={0.7}
           >
             <Text style={styles.selectorText}>
-              {currentLanguageInfo.name}
+              {currentLanguageInfo?.name || '—'}
             </Text>
             <Ionicons 
               name="chevron-down-outline" 
@@ -124,7 +118,7 @@ const createLanguageSelectorStyles = (theme: PresentationTheme) => ({
   selectorText: {
     fontSize: theme.typography.fontSizes.md,
     color: theme.colors.text.primary,
-    fontWeight: theme.typography.fontWeights.medium,
+    fontWeight: theme.typography.fontWeights.medium as any,
     marginRight: theme.spacing.xs,
   },
   languageMenuItemContainer: {
@@ -148,11 +142,11 @@ const createLanguageSelectorStyles = (theme: PresentationTheme) => ({
   languageMenuText: {
     fontSize: theme.typography.fontSizes.md,
     color: theme.colors.text.primary,
-    fontWeight: theme.typography.fontWeights.medium,
+    fontWeight: theme.typography.fontWeights.medium as any,
   },
   selectedLanguageMenuText: {
     color: theme.colors.status.info.primary,
-    fontWeight: theme.typography.fontWeights.semibold,
+    fontWeight: theme.typography.fontWeights.semibold as any,
   },
   languageItemRight: {
     alignItems: 'center' as const,

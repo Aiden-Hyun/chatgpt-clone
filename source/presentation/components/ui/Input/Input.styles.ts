@@ -156,12 +156,14 @@ export const createInputStyles = (theme: PresentationTheme) => {
       left: theme.spacing.sm,
       height: theme.layout.dimensions.chat.sendButtonSize * 2,
       justifyContent: 'center',
+      pointerEvents: 'none' as const,
     },
     rightIconContainer: {
       position: 'absolute',
       right: theme.spacing.sm,
       height: theme.layout.dimensions.chat.sendButtonSize * 2,
       justifyContent: 'center',
+      pointerEvents: 'none' as const,
     },
     inputWithLeftIcon: {
       paddingLeft: theme.spacing.xl + theme.spacing.md,

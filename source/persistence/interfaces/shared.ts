@@ -22,6 +22,20 @@ export interface IUserSessionFactory {
   isValidSession(sessionData: unknown): boolean;
 }
 
+export interface ISessionAdapter {
+  getSession(): Promise<{ success: boolean; session?: IUserSession; error?: string }>;
+  setSession(session: IUserSession): Promise<{ success: boolean; error?: string }>;
+  clearSession(): Promise<{ success: boolean; error?: string }>;
+  validateSession(session: unknown): SessionValidationResult;
+}
+
+// Session mapper interface
+export interface ISharedSessionMapper {
+  toEntity(dbSession: unknown): IUserSession;
+  toDatabase(session: IUserSession): unknown;
+  isValidSessionData(data: unknown): boolean;
+}
+
 // Storage adapter interface
 export interface IStorageAdapter {
   get(key: string): Promise<{ success: boolean; value?: string; error?: string }>;
@@ -55,6 +69,18 @@ export function createFailure<T>(error: string): Result<T> {
 
 export function isFailure<T>(result: Result<T>): boolean {
   return !result.success;
+}
+
+export interface PaginatedResult<T> {
+  success: boolean;
+  data?: T[];
+  error?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+  };
 }
 
 // Session validation error types
@@ -105,6 +131,12 @@ export enum PersistenceError {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
+export interface PersistenceErrorResult {
+  error: PersistenceError;
+  message: string;
+  details?: unknown;
+}
+
 // SecureStore options interface
 export interface SecureStoreOptions {
   requireAuthentication?: boolean;
@@ -121,9 +153,42 @@ export interface WindowWithSecureContext {
   isSecureContext?: boolean;
 }
 
+export interface ClipboardAPI {
+  writeText(text: string): Promise<void>;
+  readText(): Promise<string>;
+}
+
 export interface ExpoClipboard {
   setStringAsync(text: string): Promise<void>;
   setString(text: string): void;
   getStringAsync(): Promise<string>;
   getString(): string;
 }
+// Common configuration types
+export interface DatabaseConfig {
+  url: string;
+  apiKey: string;
+  options?: Record<string, unknown>;
+}
+
+export interface StorageConfig {
+  type: 'local' | 'secure' | 'remote';
+  options?: Record<string, unknown>;
+}
+
+// Common validation types
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+export interface ValidationRule {
+  field: string;
+  required?: boolean;
+  type?: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  minLength?: number;
+  maxLength?: number;
+  pattern?: RegExp;
+  custom?: (value: unknown) => boolean;
+}
+

@@ -7,6 +7,7 @@ import { IIdGenerator, ILogger } from '../../service/interfaces/core';
 // Business layer interfaces
 // Auth Use Cases
 import { CheckAuthorizationUseCase } from '../auth/use-cases/CheckAuthorizationUseCase';
+import { GetAuthStateUseCase } from '../auth/use-cases/GetAuthStateUseCase';
 import { GetUserProfileUseCase } from '../auth/use-cases/GetUserProfileUseCase';
 import { MonitorAuthStateUseCase } from '../auth/use-cases/MonitorAuthStateUseCase';
 import { RefreshTokenUseCase } from '../auth/use-cases/RefreshTokenUseCase';
@@ -36,9 +37,11 @@ import {
     IClipboardAdapter,
     IMessageRepository,
     ISessionRepository,
+    IStorageService,
     IUserRepository
 } from '../interfaces';
 // Session Use Cases
+import { GetPreviousRouteUseCase } from '../navigation/use-cases/GetPreviousRouteUseCase';
 import { GetStoredRouteUseCase } from '../navigation/use-cases/GetStoredRouteUseCase';
 import { SetStoredRouteUseCase } from '../navigation/use-cases/SetStoredRouteUseCase';
 import { AutoLogoutUseCase } from '../session/use-cases/AutoLogoutUseCase';
@@ -117,6 +120,12 @@ export class UseCaseFactory {
   createMonitorAuthStateUseCase(): MonitorAuthStateUseCase {
     return new MonitorAuthStateUseCase(
       this.authEventEmitter,
+      this.sessionRepository
+    );
+  }
+
+  createGetAuthStateUseCase(): GetAuthStateUseCase {
+    return new GetAuthStateUseCase(
       this.sessionRepository
     );
   }
@@ -260,6 +269,12 @@ export class UseCaseFactory {
     return new SetStoredRouteUseCase(
       this.storageService,
       this.logger
+    );
+  }
+
+  createGetPreviousRouteUseCase(): GetPreviousRouteUseCase {
+    return new GetPreviousRouteUseCase(
+      this.navigationTracker
     );
   }
 

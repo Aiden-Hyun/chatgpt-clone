@@ -1,5 +1,5 @@
 // source/presentation/chat/hooks/useModelSelection.ts
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useAuth } from '../../auth/context/AuthContext';
 import { useUseCaseFactory } from '../../shared/BusinessContextProvider';

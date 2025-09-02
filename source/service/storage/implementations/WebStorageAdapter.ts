@@ -1,4 +1,4 @@
-import { Result, ILogger, IStorageAdapter, WebStorageType } from '../../interfaces';
+import { ILogger, IStorageAdapter, Result, WebStorageType } from '../../interfaces';
 
 /**
  * Implementation of the IStorageAdapter interface using Web Storage

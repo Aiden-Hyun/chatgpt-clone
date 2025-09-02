@@ -15,9 +15,9 @@ export interface RefreshResult {
 
 export interface ISessionRepository {
   save(session: UserSession): Promise<SaveSessionResult>;
-  get(): Promise<{ success: boolean; session?: UserSession; error?: string }>;
-  refresh(): Promise<RefreshResult>;
-  clear(): Promise<{ success: boolean; error?: string }>;
+  get(): Promise<UserSession | null>;
+  refresh(refreshToken?: string): Promise<RefreshResult>;
+  clear(): Promise<void>;
 }
 
 // Session entity
@@ -27,7 +27,9 @@ export class UserSession {
     public readonly isAuthenticated: boolean = false,
     public readonly permissions: string[] = [],
     public readonly lastActivity: Date = new Date(),
-    public readonly expiresAt: Date = new Date(Date.now() + 24 * 60 * 60 * 1000) // Default 24 hours
+    public readonly expiresAt: Date = new Date(Date.now() + 24 * 60 * 60 * 1000), // Default 24 hours
+    public accessToken?: string,
+    public refreshToken?: string
   ) {}
 
   isValid(): boolean {
@@ -60,9 +62,11 @@ export interface SessionData {
 }
 
 // Supabase session adapter interfaces
+import type { SupabaseSession } from '../interfaces/auth';
+
 export interface SupabaseSessionResult {
   success: boolean;
-  session?: unknown;
+  session?: SupabaseSession;
   error?: string;
 }
 
