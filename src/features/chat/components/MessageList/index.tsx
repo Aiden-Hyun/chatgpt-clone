@@ -1,6 +1,6 @@
 import type { ChatMessage } from "@/entities/message";
 import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme/theme";
+import { useAppTheme } from "@/features/theme";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {

@@ -1,5 +1,5 @@
 import { useToast } from "@/features/alert";
-import { useAppTheme } from "@/features/theme/theme";
+import { useAppTheme } from "@/features/theme";
 import type { DropdownItem } from "@/shared/components/ui";
 import { Dropdown } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";

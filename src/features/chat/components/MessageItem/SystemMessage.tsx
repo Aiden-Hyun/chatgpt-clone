@@ -1,5 +1,5 @@
 import type { ChatMessage } from "@/entities/message";
-import { useAppTheme } from "@/features/theme/theme";
+import { useAppTheme } from "@/features/theme";
 import React from "react";
 import { Text, View } from "react-native";
 

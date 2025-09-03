@@ -1,5 +1,5 @@
-import { AppTheme } from '@/features/theme/theme.types'; // ← Use absolute path with @ alias
-import { StyleSheet } from 'react-native';
+import { AppTheme } from "@/features/theme"; // ← Use absolute path with @ alias
+import { StyleSheet } from "react-native";
 
 export const createSidebarStyles = (theme: AppTheme) => {
   return StyleSheet.create({
@@ -22,13 +22,13 @@ export const createSidebarStyles = (theme: AppTheme) => {
       paddingVertical: theme.spacing.sm,
       borderTopWidth: 1,
       borderTopColor: theme.borders.colors.light,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
     userInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       flex: 1,
     },
     userName: {
@@ -39,7 +39,7 @@ export const createSidebarStyles = (theme: AppTheme) => {
       marginLeft: theme.spacing.sm,
     },
     newChatButton: {
-      width: '100%',
+      width: "100%",
     },
     chatItem: {
       marginVertical: 2,
@@ -50,8 +50,8 @@ export const createSidebarStyles = (theme: AppTheme) => {
       borderRadius: theme.borders.radius.sm,
     },
     subtitleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       marginTop: theme.spacing.xs,
       gap: theme.spacing.xs,
     },
@@ -62,22 +62,22 @@ export const createSidebarStyles = (theme: AppTheme) => {
       borderRadius: theme.borders.radius.sm,
     },
     testButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       marginTop: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
       paddingHorizontal: theme.spacing.sm,
-      backgroundColor: 'rgba(255, 107, 53, 0.1)',
+      backgroundColor: "rgba(255, 107, 53, 0.1)",
       borderRadius: theme.borders.radius.md,
       borderWidth: 1,
-      borderColor: '#FF6B35',
+      borderColor: "#FF6B35",
     },
     testButtonText: {
       marginLeft: theme.spacing.xs,
       fontSize: 12,
-      fontWeight: '600',
-      color: '#FF6B35',
+      fontWeight: "600",
+      color: "#FF6B35",
     },
   });
 };

@@ -1,8 +1,8 @@
 import { useUserInfo } from "@/entities/user";
 import { useToast } from "@/features/alert";
-import { useChatRooms } from "@/features/chat/hooks";
+import { useChatRooms } from "@/features/chat";
 import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme/theme";
+import { useAppTheme } from "@/features/theme";
 import { Button, ListItem, Text } from "@/shared/components";
 import { Ionicons } from "@expo/vector-icons";
 import { router, usePathname } from "expo-router";

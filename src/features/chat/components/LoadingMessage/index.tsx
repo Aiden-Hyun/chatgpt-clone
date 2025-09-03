@@ -1,12 +1,12 @@
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
-import React, { useEffect, useState } from 'react';
-import { Animated, View } from 'react-native';
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+import React, { useEffect, useState } from "react";
+import { Animated, View } from "react-native";
 import {
-    LOADING_ANIMATION_START_DELAY_MS,
-    LOADING_DOT_INTERVAL_MS,
-} from '../../constants';
-import { createLoadingMessageStyles } from './LoadingMessage.styles';
+  LOADING_ANIMATION_START_DELAY_MS,
+  LOADING_DOT_INTERVAL_MS,
+} from "../../constants";
+import { createLoadingMessageStyles } from "./LoadingMessage.styles";
 
 interface LoadingMessageProps {
   style?: any;
@@ -23,13 +23,13 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
   const dot2Anim = React.useRef(new Animated.Value(0.7)).current;
   const dot3Anim = React.useRef(new Animated.Value(1)).current;
 
-  const simpleLoadingText = t('loading.thinking');
+  const simpleLoadingText = t("loading.thinking");
   const detailedLoadingTexts = [
-    t('loading.analyzing'),
-    t('loading.generating'),
-    t('loading.processing'),
-    t('loading.creating'),
-    t('loading.almost_ready'),
+    t("loading.analyzing"),
+    t("loading.generating"),
+    t("loading.processing"),
+    t("loading.creating"),
+    t("loading.almost_ready"),
   ];
 
   // Show detailed messages after 3 seconds
@@ -48,7 +48,7 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
     const interval = setInterval(() => {
       // Update text first
       setCurrentTextIndex((prev) => (prev + 1) % detailedLoadingTexts.length);
-      
+
       // Then animate fade out and in
       Animated.sequence([
         Animated.timing(fadeAnim, {
@@ -138,9 +138,11 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
         <View style={styles.dotsContainer}>
           <Animated.View style={[styles.dot, { opacity: dot1Anim }]} />
           <Animated.View style={[styles.dot, { opacity: dot2Anim }]} />
-          <Animated.View style={[styles.dot, { opacity: dot3Anim, marginRight: 0 }]} />
+          <Animated.View
+            style={[styles.dot, { opacity: dot3Anim, marginRight: 0 }]}
+          />
         </View>
       )}
     </View>
   );
-}; 
+};
