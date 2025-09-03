@@ -12,7 +12,10 @@ export const selectRoomsByModel = (
   rooms: ChatRoom[] | ChatRoomWithLastMsg[],
   model: string
 ): ChatRoom[] | ChatRoomWithLastMsg[] =>
-  rooms.filter((room) => (room as any).model === model);
+  rooms.filter((room) => {
+    // Check if room has model property (ChatRoomWithLastMsg might have it)
+    return "model" in room && (room as { model?: string }).model === model;
+  });
 
 export const selectMostRecentRoom = (
   rooms: ChatRoomWithLastMsg[]

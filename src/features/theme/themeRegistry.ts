@@ -1,9 +1,11 @@
 // Theme registry for managing available themes
 import { ThemeWithMetadata } from "./theme.types";
-import claymorphismTheme from "./themes/claymorphism";
-import defaultTheme from "./themes/default";
-import glassmorphismTheme from "./themes/glassmorphism";
-import gradientNeumorphismTheme from "./themes/gradient-neumorphism";
+import {
+  claymorphismTheme,
+  defaultTheme,
+  glassmorphismTheme,
+  gradientNeumorphismTheme,
+} from "./themes";
 
 /**
  * Registry of all available themes

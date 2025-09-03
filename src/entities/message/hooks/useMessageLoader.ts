@@ -6,7 +6,7 @@ import {
 } from "../../../features/chat/constants";
 import { ServiceFactory } from "../../../features/chat/services/core";
 import { generateMessageId } from "../../../features/chat/utils/messageIdGenerator";
-import type { ChatMessage } from "../model/types";
+import type { ChatMessage, MessageWithoutId } from "../model/types";
 
 type UseMessageLoaderDeps = {
   roomId: number | null;
@@ -38,18 +38,20 @@ export function useMessageLoader({
         const history = await messageService.loadMessages(roomId);
 
         if (history.length > 0) {
-          const hydratedHistory = history.map((msg) => ({
+          const hydratedHistory = history.map((msg: MessageWithoutId) => ({
             ...msg,
             state: "hydrated" as const,
-            id: (msg as any).id || generateId(),
+            id: msg.id || generateId(),
           }));
           setMessages(hydratedHistory);
         } else if (optimisticMessages && optimisticMessages.length > 0) {
-          const hydratedOptimisticMessages = optimisticMessages.map((msg) => ({
-            ...msg,
-            state: "hydrated" as const,
-            id: (msg as any).id || generateId(),
-          }));
+          const hydratedOptimisticMessages = optimisticMessages.map(
+            (msg: MessageWithoutId) => ({
+              ...msg,
+              state: "hydrated" as const,
+              id: msg.id || generateId(),
+            })
+          );
           setMessages(hydratedOptimisticMessages);
 
           const pollForDatabaseSync = async () => {
@@ -64,11 +66,13 @@ export function useMessageLoader({
               try {
                 const dbMessages = await messageService.loadMessages(roomId);
                 if (dbMessages.length > 0) {
-                  const hydratedDbMessages = dbMessages.map((msg) => ({
-                    ...msg,
-                    state: "hydrated" as const,
-                    id: (msg as any).id || generateId(),
-                  }));
+                  const hydratedDbMessages = dbMessages.map(
+                    (msg: MessageWithoutId) => ({
+                      ...msg,
+                      state: "hydrated" as const,
+                      id: msg.id || generateId(),
+                    })
+                  );
                   setMessages(hydratedDbMessages);
                   break;
                 }
@@ -85,11 +89,13 @@ export function useMessageLoader({
           error
         );
         if (optimisticMessages && optimisticMessages.length > 0) {
-          const hydratedOptimisticMessages = optimisticMessages.map((msg) => ({
-            ...msg,
-            state: "hydrated" as const,
-            id: (msg as any).id || generateId(),
-          }));
+          const hydratedOptimisticMessages = optimisticMessages.map(
+            (msg: MessageWithoutId) => ({
+              ...msg,
+              state: "hydrated" as const,
+              id: msg.id || generateId(),
+            })
+          );
           setMessages(hydratedOptimisticMessages);
         } else {
           setMessages([]);

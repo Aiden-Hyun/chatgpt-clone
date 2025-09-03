@@ -36,7 +36,7 @@ export class SupabaseChatRoomService implements IChatRoomService {
       updatedAt?: string;
     }
   ): Promise<void> {
-    const updateData: any = {};
+    const updateData: Record<string, string> = {};
 
     // Only update name if it's provided and not empty
     if (updates.name !== undefined && updates.name.trim()) {

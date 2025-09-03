@@ -6,7 +6,12 @@ import { useAuth } from "@/entities/session";
 import { chatDebugLog } from "../../../features/chat/constants";
 import mobileStorage from "../../../shared/lib/mobileStorage"; // Add this import
 import { supabase } from "../../../shared/lib/supabase";
-import type { ChatRoomWithLastMsg } from "../model/types";
+import type {
+  ChatRoomRow,
+  ChatRoomWithLastMsg,
+  MessageRow,
+  SupabaseChannel,
+} from "../model/types";
 
 export const useChatRooms = () => {
   const { session } = useAuth();
@@ -87,7 +92,7 @@ export const useChatRooms = () => {
         name: latestByRoom.get(roomId)?.content || "New Chat",
         last_message: latestByRoom.get(roomId)?.content,
         last_activity: latestByRoom.get(roomId)?.created_at,
-        updated_at: (allRoomRows.find((r) => r.id === roomId) as any)
+        updated_at: (allRoomRows.find((r) => r.id === roomId) as ChatRoomRow)
           ?.updated_at as string | undefined,
       }))
       .sort((a, b) => {
@@ -105,7 +110,7 @@ export const useChatRooms = () => {
     // Local event fallback removed to avoid adding empty rooms; rely on Realtime message inserts
     const off = () => {};
     // Realtime: listen for message inserts to reflect new rooms instantly
-    let channel: any;
+    let channel: SupabaseChannel;
     (async () => {
       if (!session) return;
       channel = supabase
@@ -120,7 +125,7 @@ export const useChatRooms = () => {
           },
           async (payload) => {
             try {
-              const roomId = (payload.new as any).room_id as number;
+              const roomId = (payload.new as MessageRow).room_id as number;
               chatDebugLog("[ROOMS-RT] insert for room", { roomId });
               // Fetch room metadata
               const { data: roomRow } = await supabase
@@ -137,11 +142,13 @@ export const useChatRooms = () => {
                     id: roomId,
                     name: existing?.name || roomRow?.name || "New Chat",
                     last_message:
-                      ((payload.new as any).content as string | undefined) ??
-                      existing?.last_message,
+                      ((payload.new as MessageRow).content as
+                        | string
+                        | undefined) ?? existing?.last_message,
                     last_activity:
-                      ((payload.new as any).created_at as string | undefined) ??
-                      existing?.last_activity,
+                      ((payload.new as MessageRow).created_at as
+                        | string
+                        | undefined) ?? existing?.last_activity,
                     updated_at: roomRow?.updated_at ?? existing?.updated_at,
                   },
                   ...filtered,

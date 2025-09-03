@@ -18,3 +18,6 @@ export type ChatMessage = {
   isDisliked?: boolean;
   // Search-related fields
 };
+
+// Type for messages that might not have an ID (from database or optimistic)
+export type MessageWithoutId = Omit<ChatMessage, "id">;

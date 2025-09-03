@@ -48,3 +48,35 @@ export interface IChatRoomService {
    */
   deleteRoom(roomId: number): Promise<void>;
 }
+
+// Database row types for Supabase operations
+export interface ChatRoomRow {
+  id: number;
+  name: string;
+  updated_at: string;
+}
+
+export interface MessageRow {
+  room_id: number;
+  content: string;
+  created_at: string;
+}
+
+export interface SupabaseChannel {
+  on: (
+    event: string,
+    config: {
+      event: string;
+      schema?: string;
+      table?: string;
+      filter?: string;
+    },
+    callback: (payload: SupabasePayload) => void
+  ) => SupabaseChannel;
+  subscribe: () => void;
+}
+
+export interface SupabasePayload {
+  new: MessageRow;
+  eventType: string;
+}

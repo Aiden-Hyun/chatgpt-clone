@@ -1,5 +1,11 @@
 import { Platform } from "react-native";
 
+import type {
+  ExpoClipboard,
+  NavigatorWithClipboard,
+  WindowWithSecureContext,
+} from "../types/browser";
+
 /**
  * Cross-platform clipboard helper.
  * - Web: prefers Navigator Clipboard API, falls back to hidden textarea.
@@ -13,12 +19,17 @@ export async function copy(text: string): Promise<void> {
   if (Platform.OS === "web") {
     try {
       const hasNavigator =
-        typeof navigator !== "undefined" && !!(navigator as any);
+        typeof navigator !== "undefined" &&
+        !!(navigator as NavigatorWithClipboard);
       const isSecure =
         typeof window !== "undefined" &&
-        (window as any).isSecureContext !== false;
-      if (hasNavigator && (navigator as any).clipboard && isSecure) {
-        await (navigator as any).clipboard.writeText(text);
+        (window as WindowWithSecureContext).isSecureContext !== false;
+      if (
+        hasNavigator &&
+        (navigator as NavigatorWithClipboard).clipboard &&
+        isSecure
+      ) {
+        await (navigator as NavigatorWithClipboard).clipboard!.writeText(text);
         return;
       }
     } catch {}
@@ -52,10 +63,10 @@ export async function copy(text: string): Promise<void> {
   // Native (iOS/Android)
   try {
     const Clipboard = await import("expo-clipboard");
-    if ((Clipboard as any).setStringAsync) {
-      await (Clipboard as any).setStringAsync(text);
-    } else if ((Clipboard as any).setString) {
-      (Clipboard as any).setString(text);
+    if ((Clipboard as ExpoClipboard).setStringAsync) {
+      await (Clipboard as ExpoClipboard).setStringAsync(text);
+    } else if ((Clipboard as ExpoClipboard).setString) {
+      (Clipboard as ExpoClipboard).setString(text);
     } else {
       throw new Error("Clipboard module missing setString methods");
     }

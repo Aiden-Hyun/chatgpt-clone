@@ -22,8 +22,12 @@ export interface AIApiResponse {
   }[];
   content?: string;
   model?: string;
-  error?: any;
+  error?: string | { message: string; code?: string };
   // Search-specific fields
-  citations?: any[];
+  citations?: {
+    title?: string;
+    url?: string;
+    content?: string;
+  }[];
   time_warning?: string;
 }

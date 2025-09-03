@@ -1,9 +1,11 @@
-type Listener<T = any> = (payload?: T) => void;
+import type { EventPayload } from "../types/events";
+
+type Listener<T = EventPayload> = (payload?: T) => void;
 
 class SimpleEventEmitter {
   private listeners = new Map<string, Set<Listener>>();
 
-  on<T = any>(event: string, listener: Listener<T>): () => void {
+  on<T = EventPayload>(event: string, listener: Listener<T>): () => void {
     if (!this.listeners.has(event)) this.listeners.set(event, new Set());
     this.listeners.get(event)!.add(listener as Listener);
     return () => this.off(event, listener as Listener);
@@ -13,18 +15,18 @@ class SimpleEventEmitter {
     this.listeners.get(event)?.delete(listener);
   }
 
-  emit<T = any>(event: string, payload?: T): void {
+  emit<T = EventPayload>(event: string, payload?: T): void {
     const set = this.listeners.get(event);
     if (!set) return;
     set.forEach((fn) => {
-      try { fn(payload); } catch {}
+      try {
+        fn(payload);
+      } catch {}
     });
   }
 }
 
 export const GlobalEvents = new SimpleEventEmitter();
 export const GLOBAL_EVENT_TYPES = {
-  ROOMS_CREATED: 'rooms:created',
+  ROOMS_CREATED: "rooms:created",
 };
-
-
