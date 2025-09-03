@@ -1,5 +1,5 @@
+import { useUserInfo } from "@/entities/user";
 import { useToast } from "@/features/alert";
-import { useUserInfo } from "@/features/auth";
 import { useChatRooms } from "@/features/chat/hooks";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme/theme";

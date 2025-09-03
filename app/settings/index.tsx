@@ -1,9 +1,13 @@
-import { Button } from "@/shared/components/ui";
 import { Platform, SafeAreaView, ScrollView } from "react-native";
+
+import { Button } from "@/shared/components/ui";
+
+import { useUserInfo } from "../../src/entities/user";
 import { CustomAlert, useCustomAlert } from "../../src/features/alert";
-import { useLogout, useUserInfo } from "../../src/features/auth";
+import { useLogout } from "../../src/features/auth";
 import { useLanguageContext } from "../../src/features/language";
 import { useAppTheme } from "../../src/features/theme/theme";
+
 import {
   AboutSection,
   AccountSection,

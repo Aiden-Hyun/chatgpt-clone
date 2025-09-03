@@ -1,14 +1,8 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../../../shared/lib/supabase';
-import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from "react";
 
-interface UserInfo {
-  userName: string;
-  email: string | null;
-  userId: string | null;
-  loading: boolean;
-  refresh: () => Promise<void>;
-}
+import { useAuth } from "../../../features/auth/context/AuthContext";
+import { supabase } from "../../../shared/lib/supabase";
+import type { UserInfo } from "../model/types";
 
 /**
  * Hook for fetching and managing user information from the current session
@@ -16,7 +10,7 @@ interface UserInfo {
  */
 export const useUserInfo = (): UserInfo => {
   const { session } = useAuth();
-  const [userName, setUserName] = useState<string>('');
+  const [userName, setUserName] = useState<string>("");
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,37 +20,38 @@ export const useUserInfo = (): UserInfo => {
       if (session?.user) {
         // Extract user ID
         setUserId(session.user.id);
-        
+
         // Extract email
         setEmail(session.user.email || null);
-        
+
         // Try to get display name from profiles table first
         const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('display_name')
-          .eq('id', session.user.id)
+          .from("profiles")
+          .select("display_name")
+          .eq("id", session.user.id)
           .maybeSingle();
-        
+
         if (profileError) {
           // Profile might not exist yet, that's okay
         }
-        
+
         // Use profile display_name if available, otherwise fall back to metadata
-        const name = profileData?.display_name || 
-                    session.user.user_metadata?.full_name || 
-                    session.user.user_metadata?.name || 
-                    session.user.email?.split('@')[0] || 
-                    'User';
+        const name =
+          profileData?.display_name ||
+          session.user.user_metadata?.full_name ||
+          session.user.user_metadata?.name ||
+          session.user.email?.split("@")[0] ||
+          "User";
         setUserName(name);
       } else {
         // No session, reset user info
-        setUserName('');
+        setUserName("");
         setEmail(null);
         setUserId(null);
       }
-    } catch (error) {
+    } catch (_error) {
       // On error, set default values
-      setUserName('User');
+      setUserName("User");
       setEmail(null);
       setUserId(null);
     } finally {
@@ -80,4 +75,4 @@ export const useUserInfo = (): UserInfo => {
     loading,
     refresh,
   };
-}; 
+};
