@@ -1,9 +1,9 @@
 // Theme registry for managing available themes
-import { ThemeWithMetadata } from './theme.types';
-import claymorphismTheme from './themes/claymorphism';
-import defaultTheme from './themes/default';
-import glassmorphismTheme from './themes/glassmorphism';
-import gradientNeumorphismTheme from './themes/gradient-neumorphism';
+import { ThemeWithMetadata } from "./theme.types";
+import claymorphismTheme from "./themes/claymorphism";
+import defaultTheme from "./themes/default";
+import glassmorphismTheme from "./themes/glassmorphism";
+import gradientNeumorphismTheme from "./themes/gradient-neumorphism";
 
 /**
  * Registry of all available themes
@@ -17,7 +17,9 @@ class ThemeRegistry {
    */
   register(theme: ThemeWithMetadata): void {
     if (this.themes.has(theme.id)) {
-      console.warn(`Theme with ID ${theme.id} is already registered. It will be overwritten.`);
+      console.warn(
+        `Theme with ID ${theme.id} is already registered. It will be overwritten.`
+      );
     }
     this.themes.set(theme.id, theme);
   }
@@ -63,11 +65,11 @@ class ThemeRegistry {
 
   getDefaultTheme(): ThemeWithMetadata {
     if (this.themes.size === 0) {
-      throw new Error('No themes registered');
+      throw new Error("No themes registered");
     }
-    
+
     // Try to get the default theme, fallback to first theme if not found
-    return this.themes.get('default') || this.themes.values().next().value!;
+    return this.themes.get("default") || this.themes.values().next().value!;
   }
 }
 

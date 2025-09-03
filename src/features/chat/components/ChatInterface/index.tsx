@@ -6,7 +6,7 @@ import { createChatStyles } from "~/app/chat/chat.styles";
 
 import { useAppTheme } from "../../../theme/theme";
 import { useChat } from "../../hooks";
-import MessageList from "../MessageList";
+import { MessageList } from "../MessageList";
 
 interface ChatInterfaceProps {
   roomId?: number;

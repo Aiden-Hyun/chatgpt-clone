@@ -1,14 +1,14 @@
 // theme.ts - Main theme file with enhanced theme switching support
 
-import { useThemeContext } from './context/ThemeContext';
-import { AppTheme } from './theme.types';
-import themeRegistry from './themeRegistry';
+import { useThemeContext } from "./context/ThemeContext";
+import { AppTheme } from "./theme.types";
+import { themeRegistry } from "./themeRegistry";
 
 // Re-export theme types
-export * from './theme.types';
+export * from "./theme.types";
 
 // Re-export ThemeContext and provider
-export { ThemeProvider, useThemeContext } from './context/ThemeContext';
+export { ThemeProvider, useThemeContext } from "./context/ThemeContext";
 
 // Re-export theme registry
 export { themeRegistry };
@@ -50,6 +50,6 @@ export function useThemeMode() {
 
 // For backward compatibility, export the default theme
 export const theme = {
-  light: themeRegistry.getTheme('default')?.theme.light,
-  dark: themeRegistry.getTheme('default')?.theme.dark,
+  light: themeRegistry.getTheme("default")?.theme.light,
+  dark: themeRegistry.getTheme("default")?.theme.dark,
 };

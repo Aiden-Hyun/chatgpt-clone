@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useChatRooms } from "@/entities/chatRoom";
 import { useUserInfo } from "@/entities/user";
 import { useToast } from "@/features/alert";
-import { useChatRooms } from "@/features/chat";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Button, ListItem, Text } from "@/shared/components";

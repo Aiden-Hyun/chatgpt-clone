@@ -10,14 +10,10 @@ import {
 import { useAppTheme, useThemeMode, useThemeStyle } from "../theme";
 import { ThemeMode, ThemeWithMetadata } from "../theme.types";
 
-interface ThemeSelectorProps {
-  // Optional props can be added here
-}
-
 /**
  * Component for selecting theme style and mode
  */
-export const ThemeSelector: React.FC<ThemeSelectorProps> = () => {
+export const ThemeSelector: React.FC = () => {
   const theme = useAppTheme();
   const { themeMode, setThemeMode } = useThemeMode();
   const { themeStyle, setThemeStyle, availableThemes } = useThemeStyle();

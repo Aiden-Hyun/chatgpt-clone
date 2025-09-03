@@ -1,18 +1,14 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { useAppTheme } from '../theme';
+import { useAppTheme } from "../theme";
 
-import ThemeSelector from './ThemeSelector';
-
-interface ThemeSettingsSectionProps {
-  // Optional props can be added here
-}
+import { ThemeSelector } from "./ThemeSelector";
 
 /**
  * Theme settings section component for the settings screen
  */
-export const ThemeSettingsSection: React.FC<ThemeSettingsSectionProps> = () => {
+export const ThemeSettingsSection: React.FC = () => {
   const theme = useAppTheme();
 
   const styles = StyleSheet.create({
@@ -38,7 +34,8 @@ export const ThemeSettingsSection: React.FC<ThemeSettingsSectionProps> = () => {
     <View style={styles.container}>
       <Text style={styles.sectionHeader}>Appearance</Text>
       <Text style={styles.description}>
-        Customize the look and feel of the application by selecting a theme and appearance mode.
+        Customize the look and feel of the application by selecting a theme and
+        appearance mode.
       </Text>
       <ThemeSelector />
     </View>
