@@ -17,8 +17,7 @@ import { ServiceRegistry } from "./ServiceRegistry";
 export class ServiceFactory {
   static createMessageSender(
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-    setIsTyping: React.Dispatch<React.SetStateAction<boolean>>,
-    setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>
+    setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
   ): MessageOrchestrator {
     // Create all service instances using the registry
     const chatRoomService = ServiceRegistry.createChatRoomService();

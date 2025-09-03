@@ -38,7 +38,7 @@ export const useChatSearch = (
         } else {
           setIsSearchMode(false);
         }
-      } catch (error) {
+      } catch {
         // Ignore storage errors
       }
     };

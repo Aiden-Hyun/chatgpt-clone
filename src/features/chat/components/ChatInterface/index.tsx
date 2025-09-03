@@ -10,9 +10,6 @@ import MessageList from "../MessageList";
 
 interface ChatInterfaceProps {
   roomId?: number;
-  initialModel?: string;
-  className?: string;
-  showHeader?: boolean;
   selectedModel?: string;
   onChangeModel?: (model: string) => void | Promise<void>;
   // New props to expose chat state to parent
@@ -35,9 +32,6 @@ interface ChatInterfaceProps {
  */
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   roomId,
-  initialModel = "gpt-3.5-turbo",
-  className,
-  showHeader = true,
   selectedModel,
   onChangeModel,
   onChatStateChange,

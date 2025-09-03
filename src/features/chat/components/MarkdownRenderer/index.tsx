@@ -1,4 +1,3 @@
-
 import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { Image as ExpoImage } from "expo-image";
@@ -200,7 +199,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     table: (
       node: ASTNode,
       children: ReactNode[],
-      parent: ASTNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       if (isMobile) {
@@ -221,7 +220,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     thead: (
       node: ASTNode,
       children: ReactNode[],
-      parent: ASTNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       return <View style={styles.thead}>{children}</View>;
@@ -231,7 +230,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     tbody: (
       node: ASTNode,
       children: ReactNode[],
-      parent: ASTNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       return <View style={styles.tbody}>{children}</View>;
@@ -241,7 +240,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     tr: (
       node: ASTNode,
       children: ReactNode[],
-      parent: ASTNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       return <View style={styles.tr}>{children}</View>;
@@ -250,7 +249,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     th: (
       node: ASTNode,
       children: ReactNode[],
-      parent: ASTNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       return (
@@ -271,7 +270,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     td: (
       node: ASTNode,
       children: ReactNode[],
-      parent: ASTNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       return (
@@ -291,8 +290,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Custom code block renderer using our CodeBlock component
     code_block: (
       node: ASTNode,
-      children: ReactNode[],
-      parent: ASTNode[],
+      _children: ReactNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       const { content } = node;
@@ -311,8 +310,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Custom fence renderer (```code``` blocks)
     fence: (
       node: ASTNode,
-      children: ReactNode[],
-      parent: ASTNode[],
+      _children: ReactNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       const { content } = node;
@@ -331,8 +330,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Custom inline code renderer - simple styled text
     code_inline: (
       node: ASTNode,
-      children: ReactNode[],
-      parent: ASTNode[],
+      _children: ReactNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       return (
@@ -345,8 +344,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     // Custom image renderer to avoid key spread warnings from default implementation
     image: (
       node: ASTNode,
-      children: ReactNode[],
-      parent: ASTNode[],
+      _children: ReactNode[],
+      _parent: ASTNode[],
       _mdStyles: Record<string, unknown>
     ) => {
       const src =

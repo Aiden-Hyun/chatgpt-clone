@@ -28,7 +28,6 @@ export const useChat = (
     getAnimatingMessages,
     isNewMessageLoading,
     setMessages,
-    setLoading,
     startRegenerating,
     stopRegenerating,
     isRegenerating,

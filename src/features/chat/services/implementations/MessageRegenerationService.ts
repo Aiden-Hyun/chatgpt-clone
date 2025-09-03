@@ -32,8 +32,7 @@ export class MessageRegenerationService implements IRegenerationService {
   async regenerateMessage(
     messageId: string,
     messages: ChatMessage[],
-    userContent: string,
-    originalContent: string
+    userContent: string
   ): Promise<void> {
     // Resolve index from messageId for UI tracking and history slicing
     const index = messages.findIndex((m) => m.id === messageId);

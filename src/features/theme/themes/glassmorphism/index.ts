@@ -1,19 +1,19 @@
 // Glassmorphism theme - Index file
 // Exports both light and dark variants along with theme metadata
 
-import { BaseTheme } from '../../theme.types';
-import { spacing } from '../tokens';
+import { BaseTheme } from "../../theme.types";
+import { spacing } from "../tokens";
 
-import { darkColors, darkShadows } from './dark';
-import { lightColors, lightShadows } from './light';
+import { darkColors, darkShadows } from "./dark";
+import { lightColors, lightShadows } from "./light";
 
 // Theme metadata
 export const glassmorphismThemeMetadata = {
-  id: 'glassmorphism',
-  name: 'Glassmorphism',
-  description: 'Frosted glass effect with transparency and subtle blur',
-  version: '1.0.0',
-  author: 'ChatGPT Clone Team',
+  id: "glassmorphism",
+  name: "Glassmorphism",
+  description: "Frosted glass effect with transparency and subtle blur",
+  version: "1.0.0",
+  author: "ChatGPT Clone Team",
   // Preview image would be imported here if available
   // preview: require('./preview.png'),
 };
@@ -32,13 +32,13 @@ const glassmorphismTypography = {
     xxl: 25,
   },
   fontWeights: {
-    regular: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
+    regular: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
   },
   fontFamily: {
-    primary: 'System', // Uses San Francisco on iOS and Roboto on Android
+    primary: "System", // Uses San Francisco on iOS and Roboto on Android
   },
   letterSpacing: {
     tight: 0,
@@ -50,9 +50,9 @@ const glassmorphismTypography = {
 // Glassmorphism border values (subtle and refined)
 const glassmorphismBorders = {
   colors: {
-    light: 'rgba(255, 255, 255, 0.6)',      // White with 60% transparency for light borders
-    medium: 'rgba(226, 232, 240, 0.4)',     // Light gray with 40% transparency for medium borders
-    dark: 'rgba(203, 213, 225, 0.3)',       // Medium gray with 30% transparency for dark borders
+    light: "rgba(255, 255, 255, 0.6)", // White with 60% transparency for light borders
+    medium: "rgba(226, 232, 240, 0.4)", // Light gray with 40% transparency for medium borders
+    dark: "rgba(203, 213, 225, 0.3)", // Medium gray with 30% transparency for dark borders
   },
   radius: {
     xs: 4,
@@ -70,18 +70,18 @@ const glassmorphismBorders = {
     heavy: 3,
   },
   styles: {
-    solid: 'solid',
-    dashed: 'dashed',
-    dotted: 'dotted',
+    solid: "solid",
+    dashed: "dashed",
+    dotted: "dotted",
   },
 };
 
 // Dark mode borders for glassmorphism
 const glassmorphismDarkBorders = {
   colors: {
-    light: 'rgba(148, 163, 184, 0.5)',      // Slate-400 with 50% transparency for light borders
-    medium: 'rgba(100, 116, 139, 0.4)',     // Slate-500 with 40% transparency for medium borders
-    dark: 'rgba(71, 85, 105, 0.3)',         // Slate-600 with 30% transparency for dark borders
+    light: "rgba(148, 163, 184, 0.5)", // Slate-400 with 50% transparency for light borders
+    medium: "rgba(100, 116, 139, 0.4)", // Slate-500 with 40% transparency for medium borders
+    dark: "rgba(71, 85, 105, 0.3)", // Slate-600 with 30% transparency for dark borders
   },
   radius: {
     xs: 4,
@@ -99,9 +99,9 @@ const glassmorphismDarkBorders = {
     heavy: 3,
   },
   styles: {
-    solid: 'solid',
-    dashed: 'dashed',
-    dotted: 'dotted',
+    solid: "solid",
+    dashed: "dashed",
+    dotted: "dotted",
   },
 };
 
@@ -174,45 +174,6 @@ const glassmorphismLayout = {
   spacing: spacing,
 };
 
-// Glassmorphism shadow values (subtle for glass effect)
-const glassmorphismShadows = {
-  light: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  medium: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  heavy: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  button: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  card: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-};
-
 // Glassmorphism animation values (smooth and elegant)
 const glassmorphismAnimations = {
   durations: {
@@ -221,9 +182,9 @@ const glassmorphismAnimations = {
     slow: 550,
   },
   easings: {
-    easeIn: 'ease-in',
-    easeOut: 'ease-out',
-    easeInOut: 'ease-in-out',
+    easeIn: "ease-in",
+    easeOut: "ease-out",
+    easeInOut: "ease-in-out",
   },
 };
 
@@ -258,9 +219,9 @@ const glassmorphismTransforms = {
     active: 1.05,
   },
   rotate: {
-    loading: '360deg',
-    chevron: '180deg',
-    arrow: '90deg',
+    loading: "360deg",
+    chevron: "180deg",
+    arrow: "90deg",
   },
   translate: {
     pressed: { x: 0, y: 1 },
@@ -276,10 +237,10 @@ const glassmorphismTransitions = {
     slow: 550,
   },
   easings: {
-    easeIn: 'ease-in',
-    easeOut: 'ease-out',
-    easeInOut: 'ease-in-out',
-    linear: 'linear',
+    easeIn: "ease-in",
+    easeOut: "ease-out",
+    easeInOut: "ease-in-out",
+    linear: "linear",
   },
 };
 

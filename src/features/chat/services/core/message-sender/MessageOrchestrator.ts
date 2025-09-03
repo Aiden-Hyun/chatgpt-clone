@@ -3,7 +3,7 @@ import {
   MESSAGE_SEND_MAX_RETRIES,
 } from "../../../constants";
 import { IAIApiService } from "../../interfaces/IAIApiService";
-import { INavigationService } from "../../interfaces/INavigationService";
+
 import { IAIResponseProcessor } from "../AIResponseProcessor";
 import { LoggingService } from "../LoggingService";
 import { RetryService } from "../RetryService";
@@ -35,8 +35,7 @@ export class MessageOrchestrator {
     messageService: unknown,
     animationService: unknown,
     messageStateService: unknown,
-    typingStateService: unknown,
-    navigationService: INavigationService
+    typingStateService: unknown
   ) {
     this.retryService = new RetryService({
       maxRetries: MESSAGE_SEND_MAX_RETRIES,

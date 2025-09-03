@@ -78,7 +78,7 @@ export const ModelCapabilityIcons: React.FC<ModelCapabilityIconsProps> = ({
         containerStyle,
       ]}
     >
-      {activeCapabilities.map((capability, index) => (
+      {activeCapabilities.map((capability) => (
         <View key={capability.key} style={{ alignItems: "center" }}>
           <Ionicons
             name={

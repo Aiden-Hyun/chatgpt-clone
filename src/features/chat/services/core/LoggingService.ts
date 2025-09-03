@@ -39,7 +39,7 @@ export class LoggingService implements ILoggingService {
     data?: unknown
   ): void {
     const timestamp = new Date().toISOString();
-    const logEntry: LogEntry = {
+    const _logEntry: LogEntry = {
       timestamp,
       level,
       message,

@@ -8,7 +8,6 @@ import {
   View,
 } from "react-native";
 
-
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 
@@ -64,9 +63,6 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({
   const hasText = input.trim().length > 0;
   const MIN_INPUT_HEIGHT = 36;
   const MAX_INPUT_HEIGHT = 120;
-
-  // Enable scrolling when content exceeds max height
-  const shouldEnableScrolling = inputHeight >= MAX_INPUT_HEIGHT;
 
   // Custom send button icon component with dynamic states
   const SendButtonIcon = () => {

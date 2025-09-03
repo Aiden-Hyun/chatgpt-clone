@@ -22,7 +22,7 @@ interface CodeStylerProps {
 export const CodeStyler: React.FC<CodeStylerProps> = ({ code, language }) => {
   const theme = useAppTheme();
   const { themeMode } = useThemeContext();
-  const styles = React.useMemo(() => createCodeStylerStyles(theme), [theme]);
+  const styles = React.useMemo(() => createCodeStylerStyles(), []);
 
   const prismTheme =
     themeMode === "dark" ||

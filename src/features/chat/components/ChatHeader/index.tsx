@@ -3,7 +3,6 @@ import { router, useNavigation } from "expo-router";
 import React, { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-
 import { AnthropicLogo, OpenAILogo } from "@/shared/components/brand";
 import type { DropdownItem } from "@/shared/components/ui";
 import { Button, Dropdown } from "@/shared/components/ui";
@@ -18,10 +17,6 @@ import { createChatHeaderStyles } from "./ChatHeader.styles";
 interface ChatHeaderProps {
   onLogout: () => void;
   onSettings: () => void;
-  onBack: () => void;
-  onNewChat: () => void;
-  onChatSelect: (roomId: string) => void;
-  selectedChatId?: string;
   // Model selection props for chat rooms
   selectedModel?: string;
   onModelChange?: (model: string) => void;
@@ -35,10 +30,6 @@ interface ChatHeaderProps {
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   onLogout,
   onSettings,
-  onBack,
-  onNewChat,
-  onChatSelect,
-  selectedChatId,
   selectedModel,
   onModelChange,
   showModelSelection = true,
@@ -253,7 +244,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             containerStyle={styles.menuButton}
           />
         )}
-        renderCustomItem={({ item, isSelected }) => {
+        renderCustomItem={({ item }) => {
           // Define icon and color for each menu item
           const getIconConfig = (value: string) => {
             switch (value) {

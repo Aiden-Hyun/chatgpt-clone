@@ -21,16 +21,12 @@ interface SidebarProps {
   onNewChat?: () => void;
   onChatSelect?: (roomId: string) => void;
   onSettings?: () => void;
-  onLogout?: () => void;
-  selectedChatId?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
   onChatSelect,
   onSettings,
-  onLogout,
-  selectedChatId,
 }) => {
   const theme = useAppTheme();
   const { t } = useLanguageContext();

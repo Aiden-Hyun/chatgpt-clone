@@ -14,7 +14,6 @@ import { createAssistantMessageStyles } from "./AssistantMessage.styles";
 interface AssistantMessageProps {
   message: ChatMessage;
   onRegenerate?: () => void;
-  showAvatar?: boolean;
   isLastInGroup?: boolean;
   // Like/dislike handlers
   onLike?: (messageId: string) => void;
@@ -25,7 +24,6 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = React.memo(
   function AssistantMessage({
     message,
     onRegenerate,
-    showAvatar = true, // (kept for future use)
     isLastInGroup = true,
     onLike,
     onDislike,

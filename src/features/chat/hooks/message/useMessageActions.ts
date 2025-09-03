@@ -12,10 +12,6 @@ interface UseMessageActionsProps {
   setMessages: (
     messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])
   ) => void;
-  // ✅ STATE MACHINE: Simplified interface using state machine
-  startRegenerating: (index: number) => void;
-  stopRegenerating: (index: number) => void;
-  drafts: Record<string, string>;
   setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   selectedModel: string;
   isSearchMode?: boolean;
@@ -25,10 +21,6 @@ export const useMessageActions = ({
   roomId,
   messages,
   setMessages,
-  // ✅ STATE MACHINE: Simplified parameters
-  startRegenerating,
-  stopRegenerating,
-  drafts,
   setDrafts,
   selectedModel,
   isSearchMode = false,

@@ -26,7 +26,6 @@ export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {
   const dot2Anim = React.useRef(new Animated.Value(0.7)).current;
   const dot3Anim = React.useRef(new Animated.Value(1)).current;
 
-  const simpleLoadingText = t("loading.thinking");
   const detailedLoadingTexts = [
     t("loading.analyzing"),
     t("loading.generating"),
