@@ -1,6 +1,6 @@
 // src/features/chat/services/sendMessage/handlePostAnimation.ts
-import { Session } from '@supabase/supabase-js';
-import { ChatMessage } from '../../types';
+import type { Session } from "@/entities/session";
+import { ChatMessage } from "../../types";
 
 /**
  * Handles database operations after animation completes
@@ -38,7 +38,6 @@ export const handlePostAnimation = async ({
     // If regenerating, update the assistant message in the database
     // Otherwise, insert both user and assistant messages
     if (regenerateIndex !== undefined) {
-
       if (originalAssistantContent) {
         await updateAssistantMessage({
           roomId,
@@ -47,18 +46,19 @@ export const handlePostAnimation = async ({
           session,
         });
       } else {
-        console.warn('[regen] originalAssistantContent missing; skipping DB update');
+        console.warn(
+          "[regen] originalAssistantContent missing; skipping DB update"
+        );
       }
     } else {
-
       await insertMessages({
         roomId,
         userMessage: userMsg,
-        assistantMessage: { role: 'assistant', content: fullContent },
+        assistantMessage: { role: "assistant", content: fullContent },
         session,
       });
     }
   } catch (error) {
-    console.error('❌ Error in handlePostAnimation:', error);
+    console.error("❌ Error in handlePostAnimation:", error);
   }
 };

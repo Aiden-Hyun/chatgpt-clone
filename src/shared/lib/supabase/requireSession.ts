@@ -1,11 +1,11 @@
 // src/shared/lib/supabase/requireSession.ts
-import { Session } from '@supabase/supabase-js';
-import { getSession } from './getSession';
+import type { Session } from "@/entities/session";
+import { getSession } from "./getSession";
 
 export class UnauthenticatedError extends Error {
-  constructor(message: string = 'User is not authenticated') {
+  constructor(message: string = "User is not authenticated") {
     super(message);
-    this.name = 'UnauthenticatedError';
+    this.name = "UnauthenticatedError";
   }
 }
 
@@ -15,7 +15,9 @@ export type OnUnauthenticated = () => void | Promise<void>;
  * Returns a Session if present; otherwise triggers the onUnauthenticated handler and throws.
  * The unauthenticated path is effectively `never` for callers.
  */
-export async function requireSession(onUnauthenticated?: OnUnauthenticated): Promise<Session> {
+export async function requireSession(
+  onUnauthenticated?: OnUnauthenticated
+): Promise<Session> {
   const session = await getSession();
   if (!session) {
     if (onUnauthenticated) {
@@ -25,5 +27,3 @@ export async function requireSession(onUnauthenticated?: OnUnauthenticated): Pro
   }
   return session;
 }
-
-

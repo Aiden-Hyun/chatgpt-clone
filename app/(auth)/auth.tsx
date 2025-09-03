@@ -9,8 +9,9 @@ import {
   View,
 } from "react-native";
 
+import { useAuth } from "@/entities/session";
 import { useToast } from "@/features/alert";
-import { useAuth, useEmailSignin } from "@/features/auth";
+import { useEmailSignin } from "@/features/auth";
 import { LanguageSelector, useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import {

@@ -1,17 +1,17 @@
 // src/features/chat/services/core/ServiceRegistry.ts
-import { Session } from '@supabase/supabase-js';
-import { IAIApiService } from '../interfaces/IAIApiService';
-import { IAnimationService } from '../interfaces/IAnimationService';
-import { IAuthService } from '../interfaces/IAuthService';
-import { IChatRoomService } from '../interfaces/IChatRoomService';
-import { IMessageService } from '../interfaces/IMessageService';
-import { IMessageStateService } from '../interfaces/IMessageStateService';
-import { INavigationService } from '../interfaces/INavigationService';
-import { IRegenerationService } from '../interfaces/IRegenerationService';
+import type { Session } from "@/entities/session";
+import { IAIApiService } from "../interfaces/IAIApiService";
+import { IAnimationService } from "../interfaces/IAnimationService";
+import { IAuthService } from "../interfaces/IAuthService";
+import { IChatRoomService } from "../interfaces/IChatRoomService";
+import { IMessageService } from "../interfaces/IMessageService";
+import { IMessageStateService } from "../interfaces/IMessageStateService";
+import { INavigationService } from "../interfaces/INavigationService";
+import { IRegenerationService } from "../interfaces/IRegenerationService";
 
-import { ITypingStateService } from '../interfaces/ITypingStateService';
-import { IUIStateService } from '../interfaces/IUIStateService';
-import { ChatMessage } from '../types';
+import { ITypingStateService } from "../interfaces/ITypingStateService";
+import { IUIStateService } from "../interfaces/IUIStateService";
+import { ChatMessage } from "../types";
 
 export interface ServiceConfig {
   aiApiService: { new (): IAIApiService };
@@ -69,7 +69,7 @@ export class ServiceRegistry {
 
   static getConfig(): ServiceConfig {
     if (!this.config) {
-      throw new Error('ServiceRegistry not configured. Call register() first.');
+      throw new Error("ServiceRegistry not configured. Call register() first.");
     }
     return this.config;
   }
@@ -89,8 +89,6 @@ export class ServiceRegistry {
     return new config.messageService();
   }
 
-
-
   static createNavigationService(): INavigationService {
     const config = this.getConfig();
     return new config.navigationService();
@@ -104,7 +102,9 @@ export class ServiceRegistry {
   ): IUIStateService {
     const config = this.getConfig();
     if (!config.uiStateService) {
-      throw new Error('uiStateService not registered. Use segregated services instead.');
+      throw new Error(
+        "uiStateService not registered. Use segregated services instead."
+      );
     }
     return new config.uiStateService(setMessages, setIsTyping, setDrafts);
   }
@@ -130,7 +130,7 @@ export class ServiceRegistry {
     const config = this.getConfig();
     return new config.animationService(setMessages);
   }
-  
+
   static createRegenerationService(
     messageStateManager: any, // Using any to avoid circular dependency
     aiApiService: IAIApiService,
@@ -160,6 +160,4 @@ export class ServiceRegistry {
     const config = this.getConfig();
     return new config.authService();
   }
-
-
-} 
+}

@@ -20,7 +20,7 @@ export default [
   // Spread the recommended Expo config
   ...expo,
 
-  // Custom rules for TypeScript files
+  // Custom rules for TypeScript files - OVERRIDE Expo config
   {
     files: ['src/**/*.{ts,tsx}', 'app/**/*.{ts,tsx}'],
     plugins: {
@@ -28,7 +28,7 @@ export default [
       n: nPlugin,
     },
     settings: {
-      // Ensure import/no-unresolved can resolve TS path aliases and extensions
+      // OVERRIDE Expo's import resolver with our custom one
       'import/resolver': {
         typescript: {
           project: ['./tsconfig.json'],
@@ -42,7 +42,7 @@ export default [
     },
     rules: {
       // ##################################################################
-      // ARCHITECTURAL BOUNDARY RULES
+      // ARCHITECTURAL BOUNDARY RULES - OVERRIDE EXPO CONFIG
       // ##################################################################
       'no-restricted-imports': ['error', {
         patterns: [
@@ -81,10 +81,13 @@ export default [
       'react/react-in-jsx-scope': 'off',
 
       // ##################################################################
-      // IMPORT VALIDATION RULES
+      // IMPORT VALIDATION RULES - OVERRIDE EXPO CONFIG
       // ##################################################################
-      // Make sure resolver above is configured so this rule can work with TS aliases
+      // OVERRIDE Expo's import/no-unresolved rule with our custom resolver
       'import/no-unresolved': 'error',
+      
+      // OVERRIDE Expo's import/named rule to catch missing named exports
+      'import/named': 'error',
 
       // Use eslint-plugin-n to catch missing require() imports (CommonJS)
       'n/no-missing-require': 'error',

@@ -1,5 +1,4 @@
-// src/features/auth/context/AuthContext.tsx
-import { Session } from '@supabase/supabase-js';
+// src/entities/session/hooks/useSession.ts
 import React, {
   createContext,
   ReactNode,
@@ -7,13 +6,12 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from 'react';
-import { supabase } from '../../../shared/lib/supabase';
+} from "react";
+import type { Session } from "../model/types";
 
-type AuthContextType = {
-  session: Session | null;
-  isLoading: boolean;
-};
+import { supabase } from "../../../shared/lib/supabase";
+import { AUTH_EVENTS } from "../model/constants";
+import type { AuthContextType } from "../model/types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -26,20 +24,22 @@ export function AuthProvider({ children }: Props) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔑 [AuthContext] Starting auth initialization');
+    console.log("🔑 [AuthContext] Starting auth initialization");
     let mounted = true;
 
     const initializeAuth = async () => {
       try {
         const { data } = await supabase.auth.getSession();
-        console.log('📋 [AuthContext] Initial session result:', { hasSession: !!data.session });
-        
+        console.log("📋 [AuthContext] Initial session result:", {
+          hasSession: !!data.session,
+        });
+
         if (mounted) {
           setSession(data.session);
           setIsLoading(false);
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
+        console.error("Error getting initial session:", error);
         if (mounted) {
           setSession(null);
           setIsLoading(false);
@@ -52,10 +52,13 @@ export function AuthProvider({ children }: Props) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔄 [AuthContext] Auth state change:', { event, hasSession: !!session });
+      console.log("🔄 [AuthContext] Auth state change:", {
+        event,
+        hasSession: !!session,
+      });
       if (mounted) {
         // Handle logout events more explicitly
-        if (event === 'SIGNED_OUT') {
+        if (event === AUTH_EVENTS.SIGNED_OUT) {
           setSession(null);
           setIsLoading(false);
         } else {
@@ -76,17 +79,13 @@ export function AuthProvider({ children }: Props) {
     return { session, isLoading };
   }, [session, isLoading]); // Only recreate when these actually change
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

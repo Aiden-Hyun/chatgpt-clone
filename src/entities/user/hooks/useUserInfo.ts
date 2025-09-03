@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useAuth } from "../../../features/auth/context/AuthContext";
+import { useAuth } from "../../../entities/session";
 import { supabase } from "../../../shared/lib/supabase";
 import type { UserInfo } from "../model/types";
 

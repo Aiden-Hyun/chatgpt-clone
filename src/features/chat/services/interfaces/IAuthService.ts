@@ -1,8 +1,6 @@
 // src/features/chat/services/interfaces/IAuthService.ts
-import { Session } from '@supabase/supabase-js';
+import type { Session } from "@/entities/session";
 
 export interface IAuthService {
   getSession(): Promise<Session | null>;
 }
-
-

@@ -1,12 +1,12 @@
 // src/features/chat/services/core/ServiceFactory.ts
-import { Session } from '@supabase/supabase-js';
-import { ChatMessage } from '../../types';
-import { IAIApiService } from '../interfaces/IAIApiService';
-import { IMessageService } from '../interfaces/IMessageService';
-import { IRegenerationService } from '../interfaces/IRegenerationService';
-import { OpenAIResponseProcessor } from './AIResponseProcessor';
-import { MessageOrchestrator } from './message-sender';
-import { ServiceRegistry } from './ServiceRegistry';
+import type { Session } from "@/entities/session";
+import { ChatMessage } from "../../types";
+import { IAIApiService } from "../interfaces/IAIApiService";
+import { IMessageService } from "../interfaces/IMessageService";
+import { IRegenerationService } from "../interfaces/IRegenerationService";
+import { OpenAIResponseProcessor } from "./AIResponseProcessor";
+import { MessageOrchestrator } from "./message-sender";
+import { ServiceRegistry } from "./ServiceRegistry";
 
 /**
  * Factory for creating service instances with proper dependency injection
@@ -26,11 +26,12 @@ export class ServiceFactory {
     const responseProcessor = new OpenAIResponseProcessor();
 
     // Use the new, more focused services
-    const messageStateService = ServiceRegistry.createMessageStateService(setMessages);
-    const typingStateService = ServiceRegistry.createTypingStateService(setIsTyping);
-    const animationService = ServiceRegistry.createAnimationService(setMessages);
-
-
+    const messageStateService =
+      ServiceRegistry.createMessageStateService(setMessages);
+    const typingStateService =
+      ServiceRegistry.createTypingStateService(setIsTyping);
+    const animationService =
+      ServiceRegistry.createAnimationService(setMessages);
 
     // Create and return the orchestrator with all dependencies injected
     return new MessageOrchestrator(
@@ -70,7 +71,11 @@ export class ServiceFactory {
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>,
     setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>
   ) {
-    return ServiceRegistry.createUIStateService(setMessages, setIsTyping, setDrafts);
+    return ServiceRegistry.createUIStateService(
+      setMessages,
+      setIsTyping,
+      setDrafts
+    );
   }
 
   // New service creators
@@ -115,4 +120,4 @@ export class ServiceFactory {
       isSearchMode
     );
   }
-} 
+}

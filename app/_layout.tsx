@@ -1,13 +1,14 @@
 // app/_layout.tsx
-import { LoadingScreen } from "@/shared/components/feedback/LoadingScreen";
 import { useFonts } from "expo-font";
 import { usePathname, useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { useCallback, useEffect, useMemo } from "react";
 import { AppState } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
+import { LoadingScreen } from "@/shared/components/feedback/LoadingScreen";
+import { AuthProvider, useAuth } from "../src/entities/session";
 import { ToastContainer, ToastProvider } from "../src/features/alert";
-import { AuthProvider, useAuth } from "../src/features/auth";
 import { Sidebar } from "../src/features/chat/components/Sidebar";
 import { configureServices } from "../src/features/chat/services/config/ServiceConfiguration";
 import { LanguageProvider } from "../src/features/language";
