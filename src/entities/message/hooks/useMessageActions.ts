@@ -1,8 +1,9 @@
-import type { ChatMessage } from "@/entities/message";
 import { useCallback } from "react";
-import { sendMessageHandler } from "../../services/sendMessage";
-import { logger } from "../../utils/logger";
-import { generateMessageId } from "../../utils/messageIdGenerator";
+
+import { sendMessageHandler } from "../../../features/chat/services/sendMessage";
+import { logger } from "../../../features/chat/utils/logger";
+import { generateMessageId } from "../../../features/chat/utils/messageIdGenerator";
+import type { ChatMessage } from "../model/types";
 
 interface UseMessageActionsProps {
   roomId: number | null;
@@ -24,9 +25,9 @@ export const useMessageActions = ({
   messages,
   setMessages,
   // ✅ STATE MACHINE: Simplified parameters
-  startRegenerating,
-  stopRegenerating,
-  drafts,
+  startRegenerating: _startRegenerating,
+  stopRegenerating: _stopRegenerating,
+  drafts: _drafts,
   setDrafts,
   selectedModel,
   isSearchMode = false,

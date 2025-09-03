@@ -1,18 +1,30 @@
 // src/features/chat/services/implementations/MessageAnimationService.ts
-import { TYPING_ANIMATION_CHUNK_SIZE, TYPING_ANIMATION_MIN_TICK_MS } from '../../constants';
-import { computeAnimationParams } from '../core/AnimationPolicy';
-import { IAnimationService } from '../interfaces/IAnimationService';
-import { MessageStateManager } from '../MessageStateManager';
-import { ChatMessage } from '../types';
+import type { ChatMessage } from "@/entities/message";
+import {
+  TYPING_ANIMATION_CHUNK_SIZE,
+  TYPING_ANIMATION_MIN_TICK_MS,
+} from "../../constants";
+import { computeAnimationParams } from "../core/AnimationPolicy";
+import { IAnimationService } from "../interfaces/IAnimationService";
+import { MessageStateManager } from "../MessageStateManager";
 
 export class MessageAnimationService implements IAnimationService {
   private messageStateManager: MessageStateManager;
-  private runningJobs: Map<string, { timer: ReturnType<typeof setTimeout> | null; index: number; target: string; speedMs: number; chunkSize: number }> = new Map();
+  private runningJobs: Map<
+    string,
+    {
+      timer: ReturnType<typeof setTimeout> | null;
+      index: number;
+      target: string;
+      speedMs: number;
+      chunkSize: number;
+    }
+  > = new Map();
 
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    console.log('[Service] MessageAnimationService initialized');
+    console.log("[Service] MessageAnimationService initialized");
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 
@@ -38,7 +50,7 @@ export class MessageAnimationService implements IAnimationService {
       });
       return;
     }
-    
+
     // Case 2: Direct message ID
     if (args.messageId) {
       // For new messages, use regular animation
@@ -49,14 +61,12 @@ export class MessageAnimationService implements IAnimationService {
       this.startTypewriterJob(args.messageId, args.fullContent);
       return;
     }
-    
+
     // Case 3: Normal case for new messages (find last loading message)
     this.setMessages((prev) => {
       const lastLoadingAssistant = [...prev]
         .reverse()
-        .find(
-          (msg) => msg.role === 'assistant' && msg.state === 'loading'
-        );
+        .find((msg) => msg.role === "assistant" && msg.state === "loading");
       if (lastLoadingAssistant?.id) {
         this.messageStateManager.finishStreamingAndAnimate(
           lastLoadingAssistant.id,
@@ -77,12 +87,26 @@ export class MessageAnimationService implements IAnimationService {
     args.onComplete();
   }
 
-  private startTypewriterJob(messageId: string, fullContent: string, speedMs?: number): void {
+  private startTypewriterJob(
+    messageId: string,
+    fullContent: string,
+    speedMs?: number
+  ): void {
     // Stop existing job if any
     this.stopTypewriterJob(messageId);
-    const { speedMs: computedSpeed, chunkSize } = computeAnimationParams(fullContent);
-    const effectiveSpeed = Math.max(TYPING_ANIMATION_MIN_TICK_MS, speedMs ?? computedSpeed);
-    this.runningJobs.set(messageId, { timer: null, index: 0, target: fullContent, speedMs: effectiveSpeed, chunkSize });
+    const { speedMs: computedSpeed, chunkSize } =
+      computeAnimationParams(fullContent);
+    const effectiveSpeed = Math.max(
+      TYPING_ANIMATION_MIN_TICK_MS,
+      speedMs ?? computedSpeed
+    );
+    this.runningJobs.set(messageId, {
+      timer: null,
+      index: 0,
+      target: fullContent,
+      speedMs: effectiveSpeed,
+      chunkSize,
+    });
     const tick = () => {
       const job = this.runningJobs.get(messageId);
       if (!job) return;
@@ -91,16 +115,28 @@ export class MessageAnimationService implements IAnimationService {
         const currentChar = job.target[nextIndex];
 
         if (/\s/.test(currentChar)) {
-          while (nextIndex < job.target.length && /\s/.test(job.target[nextIndex])) {
+          while (
+            nextIndex < job.target.length &&
+            /\s/.test(job.target[nextIndex])
+          ) {
             nextIndex++;
           }
         } else {
-          nextIndex = Math.min(job.target.length, nextIndex + (job.chunkSize ?? TYPING_ANIMATION_CHUNK_SIZE));
+          nextIndex = Math.min(
+            job.target.length,
+            nextIndex + (job.chunkSize ?? TYPING_ANIMATION_CHUNK_SIZE)
+          );
         }
 
         const nextSlice = job.target.slice(0, nextIndex);
         // Throttled state update: bump only content substring
-        this.setMessages(prev => prev.map(msg => msg.id === messageId ? { ...msg, content: nextSlice, state: 'animating' } : msg));
+        this.setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId
+              ? { ...msg, content: nextSlice, state: "animating" }
+              : msg
+          )
+        );
         job.index = nextIndex;
         job.timer = setTimeout(tick, job.speedMs);
       } else {

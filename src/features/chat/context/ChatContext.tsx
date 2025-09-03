@@ -1,6 +1,6 @@
 // src/features/chat/context/ChatContext.tsx
-import React, { createContext, ReactNode, useContext } from 'react';
-import { ChatMessage } from '../types';
+import type { ChatMessage } from "@/entities/message";
+import React, { createContext, ReactNode, useContext } from "react";
 
 // Define the shape of the context
 interface ChatContextType {
@@ -28,7 +28,7 @@ export const ChatProvider = ({ children, value }: ChatProviderProps) => {
 export const useChatContext = () => {
   const context = useContext(ChatContext);
   if (context === undefined) {
-    throw new Error('useChatContext must be used within a ChatProvider');
+    throw new Error("useChatContext must be used within a ChatProvider");
   }
   return context;
 };

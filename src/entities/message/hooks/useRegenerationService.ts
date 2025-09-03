@@ -1,11 +1,11 @@
-// src/features/chat/hooks/useRegenerationService.ts
+// src/entities/message/hooks/useRegenerationService.ts
 import { useCallback, useMemo } from "react";
 
 import { useAuth } from "@/entities/session";
 
-import { ServiceFactory } from "../../services/core";
-import { MessageStateManager } from "../../services/MessageStateManager";
-import type { ChatMessage } from "../../types";
+import { ServiceFactory } from "../../../features/chat/services/core";
+import { MessageStateManager } from "../../../features/chat/services/MessageStateManager";
+import type { ChatMessage } from "../model/types";
 
 type Deps = {
   messages: ChatMessage[];

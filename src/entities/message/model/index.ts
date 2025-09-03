@@ -1,5 +1,5 @@
-// src/features/chat/services/types/index.ts
-import { ChatMessage } from '../../types';
+// src/entities/message/model/index.ts
+import type { ChatMessage } from "./types";
 
 // Re-export ChatMessage for services
 export type { ChatMessage };
@@ -11,7 +11,6 @@ export interface AIApiRequest {
   // Optional idempotency and control flags
   clientMessageId?: string;
   skipPersistence?: boolean;
-
 }
 
 export interface AIApiResponse {
@@ -27,4 +26,4 @@ export interface AIApiResponse {
   // Search-specific fields
   citations?: any[];
   time_warning?: string;
-} 
+}

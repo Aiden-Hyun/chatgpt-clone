@@ -1,6 +1,6 @@
 // src/features/chat/services/implementations/MessageRegenerationService.ts
+import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
-import { ChatMessage } from "../../types";
 // Import removed: import { logger } from '../../utils/logger';
 import { supabase } from "../../../../shared/lib/supabase";
 

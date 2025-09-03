@@ -1,6 +1,6 @@
 // src/features/chat/services/core/ServiceFactory.ts
+import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
-import { ChatMessage } from "../../types";
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IRegenerationService } from "../interfaces/IRegenerationService";

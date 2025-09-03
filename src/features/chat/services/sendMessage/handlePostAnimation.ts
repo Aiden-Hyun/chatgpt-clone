@@ -1,6 +1,6 @@
 // src/features/chat/services/sendMessage/handlePostAnimation.ts
+import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
-import { ChatMessage } from "../../types";
 
 /**
  * Handles database operations after animation completes

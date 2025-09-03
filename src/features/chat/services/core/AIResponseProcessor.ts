@@ -1,5 +1,5 @@
 // src/features/chat/services/core/AIResponseProcessor.ts
-import { AIApiResponse } from '../types';
+import type { AIApiResponse } from "@/entities/message";
 
 export interface IAIResponseProcessor {
   validateResponse(response: AIApiResponse): boolean;
@@ -12,7 +12,7 @@ export class OpenAIResponseProcessor implements IAIResponseProcessor {
     if (response.content) {
       return true;
     }
-    
+
     // Handle chat responses (choices format)
     if (!response || !response.choices || !Array.isArray(response.choices)) {
       return false;
@@ -39,4 +39,4 @@ export class OpenAIResponseProcessor implements IAIResponseProcessor {
     // Handle chat responses (choices format)
     return response.choices![0].message.content;
   }
-} 
+}

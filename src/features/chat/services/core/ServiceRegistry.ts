@@ -9,9 +9,9 @@ import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { INavigationService } from "../interfaces/INavigationService";
 import { IRegenerationService } from "../interfaces/IRegenerationService";
 
+import type { ChatMessage } from "@/entities/message";
 import { ITypingStateService } from "../interfaces/ITypingStateService";
 import { IUIStateService } from "../interfaces/IUIStateService";
-import { ChatMessage } from "../types";
 
 export interface ServiceConfig {
   aiApiService: { new (): IAIApiService };

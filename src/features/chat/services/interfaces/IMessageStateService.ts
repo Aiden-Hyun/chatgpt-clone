@@ -1,5 +1,5 @@
 // src/features/chat/services/interfaces/IMessageStateService.ts
-import { ChatMessage } from '../types';
+import type { ChatMessage } from "@/entities/message";
 
 export interface IMessageStateService {
   /**
@@ -11,7 +11,7 @@ export interface IMessageStateService {
     assistantMsg: ChatMessage;
     messageId?: string;
   }): void;
-  
+
   /**
    * Add error message to chat
    */
@@ -26,4 +26,4 @@ export interface IMessageStateService {
    * Fallback: find the last assistant message in 'loading' state and mark it as error
    */
   markLastAssistantLoadingAsError(errorMessage?: string): void;
-} 
+}

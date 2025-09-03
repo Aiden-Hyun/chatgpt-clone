@@ -1,5 +1,5 @@
 // src/features/chat/services/interfaces/IRegenerationService.ts
-import { ChatMessage } from '../../types';
+import type { ChatMessage } from "@/entities/message";
 
 /**
  * Interface for handling message regeneration

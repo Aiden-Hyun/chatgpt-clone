@@ -1,10 +1,10 @@
 // src/features/chat/services/sendMessage/index.ts
-import { logger } from '../../utils/logger';
-import { getModelInfo } from '../../constants/models';
-import { SendMessageRequest } from '../core/message-sender';
-import { ServiceFactory } from '../core/ServiceFactory';
-import { ServiceRegistry } from '../core/ServiceRegistry';
-import { ChatMessage } from '../types';
+import type { ChatMessage } from "@/entities/message";
+import { getModelInfo } from "../../constants/models";
+import { logger } from "../../utils/logger";
+import { SendMessageRequest } from "../core/message-sender";
+import { ServiceFactory } from "../core/ServiceFactory";
+import { ServiceRegistry } from "../core/ServiceRegistry";
 
 export type SendMessageArgs = {
   userContent: string;
@@ -26,7 +26,9 @@ export type SendMessageArgs = {
  * Main controller for sending or regenerating messages
  * Now uses SOLID architecture with clean separation of concerns
  */
-export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> => {
+export const sendMessageHandler = async (
+  args: SendMessageArgs
+): Promise<void> => {
   const {
     userContent,
     numericRoomId,
@@ -40,13 +42,16 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     messageId,
     isSearchMode = false,
   } = args;
-  
+
   // Validate search mode is supported for this model
   if (isSearchMode) {
     const modelInfo = getModelInfo(model);
     if (!modelInfo?.capabilities.search) {
       const error = `Search is not supported for model: ${model}`;
-      logger.error('Search validation failed', { error: new Error(error), model });
+      logger.error("Search validation failed", {
+        error: new Error(error),
+        model,
+      });
       throw new Error(error);
     }
   }
@@ -54,15 +59,22 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
   // Use injected auth service via ServiceRegistry
   const authService = ServiceRegistry.createAuthService();
   const session = await authService.getSession();
-  logger.debug('🔄 SEND-MESSAGE: Session fetched', { hasSession: !!session, userId: session?.user?.id });
+  logger.debug("🔄 SEND-MESSAGE: Session fetched", {
+    hasSession: !!session,
+    userId: session?.user?.id,
+  });
 
   if (!session) {
-    logger.warn('🔒 No active session. Aborting sendMessageHandler');
+    logger.warn("🔒 No active session. Aborting sendMessageHandler");
     return;
   }
 
   // Create the MessageSenderService with all dependencies injected
-  const messageSender = ServiceFactory.createMessageSender(setMessages, setIsTyping, setDrafts);
+  const messageSender = ServiceFactory.createMessageSender(
+    setMessages,
+    setIsTyping,
+    setDrafts
+  );
 
   // Prepare the request
   const request: SendMessageRequest = {
@@ -76,14 +88,12 @@ export const sendMessageHandler = async (args: SendMessageArgs): Promise<void> =
     messageId, // ✅ Phase 2: Pass message ID to service
     isSearchMode, // Pass search mode to service
   };
-  
-
 
   // Send the message using the SOLID architecture
   const result = await messageSender.sendMessage(request);
 
   if (!result.success && result.error) {
-    logger.error('Message sending failed', { error: new Error(result.error) });
+    logger.error("Message sending failed", { error: new Error(result.error) });
     throw new Error(result.error);
   }
 };

@@ -1,8 +1,12 @@
-import { useEffect } from 'react';
-import { DB_MESSAGE_POLL_ATTEMPTS, MESSAGE_FETCH_DELAY_MS } from '../../constants';
-import { ServiceFactory } from '../../services/core';
-import type { ChatMessage } from '../../types';
-import { generateMessageId } from '../../utils/messageIdGenerator';
+import { useEffect } from "react";
+
+import {
+  DB_MESSAGE_POLL_ATTEMPTS,
+  MESSAGE_FETCH_DELAY_MS,
+} from "../../../features/chat/constants";
+import { ServiceFactory } from "../../../features/chat/services/core";
+import { generateMessageId } from "../../../features/chat/utils/messageIdGenerator";
+import type { ChatMessage } from "../model/types";
 
 type UseMessageLoaderDeps = {
   roomId: number | null;
@@ -34,29 +38,35 @@ export function useMessageLoader({
         const history = await messageService.loadMessages(roomId);
 
         if (history.length > 0) {
-          const hydratedHistory = history.map(msg => ({
+          const hydratedHistory = history.map((msg) => ({
             ...msg,
-            state: 'hydrated' as const,
+            state: "hydrated" as const,
             id: (msg as any).id || generateId(),
           }));
           setMessages(hydratedHistory);
         } else if (optimisticMessages && optimisticMessages.length > 0) {
-          const hydratedOptimisticMessages = optimisticMessages.map(msg => ({
+          const hydratedOptimisticMessages = optimisticMessages.map((msg) => ({
             ...msg,
-            state: 'hydrated' as const,
+            state: "hydrated" as const,
             id: (msg as any).id || generateId(),
           }));
           setMessages(hydratedOptimisticMessages);
 
           const pollForDatabaseSync = async () => {
-            for (let attempt = 1; attempt <= DB_MESSAGE_POLL_ATTEMPTS; attempt++) {
-              await new Promise(resolve => setTimeout(resolve, MESSAGE_FETCH_DELAY_MS));
+            for (
+              let attempt = 1;
+              attempt <= DB_MESSAGE_POLL_ATTEMPTS;
+              attempt++
+            ) {
+              await new Promise((resolve) =>
+                setTimeout(resolve, MESSAGE_FETCH_DELAY_MS)
+              );
               try {
                 const dbMessages = await messageService.loadMessages(roomId);
                 if (dbMessages.length > 0) {
-                  const hydratedDbMessages = dbMessages.map(msg => ({
+                  const hydratedDbMessages = dbMessages.map((msg) => ({
                     ...msg,
-                    state: 'hydrated' as const,
+                    state: "hydrated" as const,
                     id: (msg as any).id || generateId(),
                   }));
                   setMessages(hydratedDbMessages);
@@ -70,11 +80,14 @@ export function useMessageLoader({
           setMessages([]);
         }
       } catch (error) {
-        console.error(`[MESSAGE-LOAD] Failed to load messages for room ${roomId}:`, error);
+        console.error(
+          `[MESSAGE-LOAD] Failed to load messages for room ${roomId}:`,
+          error
+        );
         if (optimisticMessages && optimisticMessages.length > 0) {
-          const hydratedOptimisticMessages = optimisticMessages.map(msg => ({
+          const hydratedOptimisticMessages = optimisticMessages.map((msg) => ({
             ...msg,
-            state: 'hydrated' as const,
+            state: "hydrated" as const,
             id: (msg as any).id || generateId(),
           }));
           setMessages(hydratedOptimisticMessages);
@@ -89,5 +102,3 @@ export function useMessageLoader({
     loadMessages();
   }, [roomId, optimisticMessages, setMessages, setLoading, generateId]);
 }
-
-

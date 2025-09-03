@@ -7,11 +7,10 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import type { Session } from "../model/types";
 
 import { supabase } from "../../../shared/lib/supabase";
 import { AUTH_EVENTS } from "../model/constants";
-import type { AuthContextType } from "../model/types";
+import type { AuthContextType, Session } from "../model/types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

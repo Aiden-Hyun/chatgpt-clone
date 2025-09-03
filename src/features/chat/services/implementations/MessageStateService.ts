@@ -1,8 +1,9 @@
 // src/features/chat/services/implementations/MessageStateService.ts
-import { generateMessageId } from '../../utils/messageIdGenerator';
-import { IMessageStateService } from '../interfaces/IMessageStateService';
-import { MessageStateManager } from '../MessageStateManager';
-import { ChatMessage } from '../types';
+import type { ChatMessage } from "@/entities/message";
+
+import { generateMessageId } from "../../utils/messageIdGenerator";
+import { IMessageStateService } from "../interfaces/IMessageStateService";
+import { MessageStateManager } from "../MessageStateManager";
 
 export class MessageStateService implements IMessageStateService {
   private messageStateManager: MessageStateManager;
@@ -10,7 +11,7 @@ export class MessageStateService implements IMessageStateService {
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    console.log('[Service] MessageStateService initialized');
+    console.log("[Service] MessageStateService initialized");
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 
@@ -27,13 +28,16 @@ export class MessageStateService implements IMessageStateService {
           // Forward to the MessageStateManager
           // We can't call handleRegeneration here directly as we don't have new content yet
           // Just mark for regeneration and let MessageAnimationService handle full regeneration later
-          this.messageStateManager.transition(messageToRegenerate.id, 'loading');
+          this.messageStateManager.transition(
+            messageToRegenerate.id,
+            "loading"
+          );
         } else {
           const updated = [...prev];
           updated[args.regenerateIndex!] = {
             ...updated[args.regenerateIndex!],
-            content: '',
-            state: 'loading',
+            content: "",
+            state: "loading",
             id: generateMessageId(),
           };
           return updated;
@@ -58,37 +62,39 @@ export class MessageStateService implements IMessageStateService {
     this.setMessages((prev) => [
       ...prev,
       {
-        role: 'assistant',
+        role: "assistant",
         content: message,
-        state: 'error',
+        state: "error",
         id: errorMessageId,
       },
     ]);
   }
 
   markMessageErrorById(messageId: string, errorMessage?: string): void {
-    this.setMessages((prev) => prev.map(msg => {
-      if (msg.id === messageId) {
-        return {
-          ...msg,
-          content: errorMessage ?? (msg.content || 'An error occurred'),
-          state: 'error'
-        } as ChatMessage;
-      }
-      return msg;
-    }));
+    this.setMessages((prev) =>
+      prev.map((msg) => {
+        if (msg.id === messageId) {
+          return {
+            ...msg,
+            content: errorMessage ?? (msg.content || "An error occurred"),
+            state: "error",
+          } as ChatMessage;
+        }
+        return msg;
+      })
+    );
   }
 
   markLastAssistantLoadingAsError(errorMessage?: string): void {
     this.setMessages((prev) => {
       for (let i = prev.length - 1; i >= 0; i--) {
         const msg = prev[i];
-        if (msg.role === 'assistant' && msg.state === 'loading') {
+        if (msg.role === "assistant" && msg.state === "loading") {
           const updated = [...prev];
           updated[i] = {
             ...msg,
-            content: errorMessage ?? (msg.content || 'An error occurred'),
-            state: 'error',
+            content: errorMessage ?? (msg.content || "An error occurred"),
+            state: "error",
           } as ChatMessage;
           return updated;
         }

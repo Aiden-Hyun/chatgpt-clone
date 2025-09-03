@@ -1,3 +1,4 @@
+import type { ChatMessage } from "@/entities/message";
 import { Button } from "@/shared/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -5,7 +6,6 @@ import { Text, TextInput, View } from "react-native";
 import { copy as copyToClipboard } from "../../../../shared/lib/clipboard";
 import { useToast } from "../../../alert";
 import { useAppTheme } from "../../../theme/theme";
-import { ChatMessage } from "../../types";
 import { createUserMessageStyles } from "./UserMessage.styles";
 
 interface UserMessageProps {

@@ -1,9 +1,9 @@
 // src/features/chat/services/implementations/SupabaseMessageService.ts
+import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
 import { supabase } from "../../../../shared/lib/supabase";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 import { IMessageService } from "../interfaces/IMessageService";
-import { ChatMessage } from "../types";
 
 export class SupabaseMessageService implements IMessageService {
   async insertMessages(args: {

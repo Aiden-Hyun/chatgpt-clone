@@ -1,7 +1,7 @@
-import { useAppTheme } from '@/features/theme/theme';
-import React from 'react';
-import { Text, View } from 'react-native';
-import { ChatMessage } from '../../types';
+import type { ChatMessage } from "@/entities/message";
+import { useAppTheme } from "@/features/theme/theme";
+import React from "react";
+import { Text, View } from "react-native";
 
 interface SystemMessageProps {
   message: ChatMessage;
@@ -9,11 +9,11 @@ interface SystemMessageProps {
 
 export const SystemMessage: React.FC<SystemMessageProps> = ({ message }) => {
   const theme = useAppTheme();
-  
+
   const styles = {
     container: {
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
       paddingVertical: theme.spacing.sm,
       paddingHorizontal: theme.spacing.lg,
       marginVertical: theme.spacing.xs,
@@ -32,10 +32,10 @@ export const SystemMessage: React.FC<SystemMessageProps> = ({ message }) => {
     },
     text: {
       fontSize: theme.typography.fontSizes.sm,
-              fontFamily: theme.typography.fontFamily.primary,
+      fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.secondary,
-              fontWeight: theme.typography.fontWeights.medium as '500',
-      textAlign: 'center' as const,
+      fontWeight: theme.typography.fontWeights.medium as "500",
+      textAlign: "center" as const,
     },
   };
 
