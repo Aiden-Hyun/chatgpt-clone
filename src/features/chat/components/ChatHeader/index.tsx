@@ -1,15 +1,15 @@
-import type { DropdownItem } from '@/components/ui';
-import { Button, Dropdown } from '@/components/ui';
-import { Ionicons } from '@expo/vector-icons';
-import { router, useNavigation } from 'expo-router';
-import React, { useMemo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { AnthropicLogo, OpenAILogo } from '../../../../components';
-import { useLanguageContext } from '../../../language';
-import { useAppTheme } from '../../../theme/theme';
-import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from '../../constants';
-import { ModelCapabilityIcons } from '../ModelCapabilityIcons';
-import { createChatHeaderStyles } from './ChatHeader.styles';
+import { AnthropicLogo, OpenAILogo } from "@/shared/components/brand";
+import type { DropdownItem } from "@/shared/components/ui";
+import { Button, Dropdown } from "@/shared/components/ui";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useNavigation } from "expo-router";
+import React, { useMemo } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { useLanguageContext } from "../../../language";
+import { useAppTheme } from "../../../theme/theme";
+import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from "../../constants";
+import { ModelCapabilityIcons } from "../ModelCapabilityIcons";
+import { createChatHeaderStyles } from "./ChatHeader.styles";
 
 interface ChatHeaderProps {
   onLogout: () => void;
@@ -50,14 +50,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     return getModelInfo(current);
   }, [selectedModel]);
 
-  const selectedModelLabel = selectedModelInfo?.label ?? selectedModel ?? DEFAULT_MODEL;
+  const selectedModelLabel =
+    selectedModelInfo?.label ?? selectedModel ?? DEFAULT_MODEL;
 
   const handleSettings = () => {
     onSettings();
   };
 
   const handleDesignShowcase = () => {
-    router.push('/design-showcase');
+    router.push("/design-showcase");
   };
 
   const handleLogout = () => {
@@ -74,7 +75,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button
         variant="ghost"
         size="sm"
-        leftIcon={<Ionicons name="menu-outline" size={24} color={theme.colors.text.primary} />}
+        leftIcon={
+          <Ionicons
+            name="menu-outline"
+            size={24}
+            color={theme.colors.text.primary}
+          />
+        }
         onPress={toggleDrawer}
         containerStyle={styles.menuButton}
       />
@@ -82,50 +89,71 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       {/* Inline Model Selector (Center) */}
       {showModelSelection ? (
         <Dropdown
-          items={AVAILABLE_MODELS.map(model => ({
+          items={AVAILABLE_MODELS.map((model) => ({
             value: model.value,
             label: model.label,
             disabled: false,
           }))}
           value={selectedModel ?? DEFAULT_MODEL}
-          onChange={(item: DropdownItem) => onModelChange?.(item.value as string)}
+          onChange={(item: DropdownItem) =>
+            onModelChange?.(item.value as string)
+          }
           renderTrigger={({ open, selected }) => {
-            const selectedModelData = selected ? getModelInfo(selected.value as string) : selectedModelInfo;
+            const selectedModelData = selected
+              ? getModelInfo(selected.value as string)
+              : selectedModelInfo;
             const provider = selectedModelData?.provider;
-            
+
             return (
-              <TouchableOpacity
-                onPress={open}
-                style={styles.modelSelector}
-              >
+              <TouchableOpacity onPress={open} style={styles.modelSelector}>
                 <View style={styles.providerLogo}>
-                  {provider === 'anthropic' ? <AnthropicLogo size={16} /> : <OpenAILogo size={16} />}
+                  {provider === "anthropic" ? (
+                    <AnthropicLogo size={16} />
+                  ) : (
+                    <OpenAILogo size={16} />
+                  )}
                 </View>
                 <Text style={styles.modelSelectorText}>
                   {selected?.label ?? selectedModelLabel}
                 </Text>
-                <Ionicons name="chevron-down-outline" size={24} color={theme.colors.text.primary} />
+                <Ionicons
+                  name="chevron-down-outline"
+                  size={24}
+                  color={theme.colors.text.primary}
+                />
               </TouchableOpacity>
             );
           }}
           renderCustomItem={({ item, isSelected }) => {
-            const model = AVAILABLE_MODELS.find(m => m.value === item.value);
-            
+            const model = AVAILABLE_MODELS.find((m) => m.value === item.value);
+
             if (!model) return null;
-            
+
             return (
               <View style={styles.modelMenuItemContainer}>
-                <View style={[styles.modelMenuItem, isSelected && styles.selectedModelMenuItem]}>
+                <View
+                  style={[
+                    styles.modelMenuItem,
+                    isSelected && styles.selectedModelMenuItem,
+                  ]}
+                >
                   <View style={styles.modelItemLeft}>
                     {/* Provider Logo */}
                     <View style={styles.providerLogo}>
-                      {model.provider === 'openai' && <OpenAILogo size={24} />}
-                      {model.provider === 'anthropic' && <AnthropicLogo size={24} />}
+                      {model.provider === "openai" && <OpenAILogo size={24} />}
+                      {model.provider === "anthropic" && (
+                        <AnthropicLogo size={24} />
+                      )}
                     </View>
-                    
+
                     {/* Model Name */}
                     <View style={styles.modelInfo}>
-                      <Text style={[styles.modelMenuText, isSelected && styles.selectedModelMenuText]}>
+                      <Text
+                        style={[
+                          styles.modelMenuText,
+                          isSelected && styles.selectedModelMenuText,
+                        ]}
+                      >
                         {model.label}
                       </Text>
                       {model.description && (
@@ -135,7 +163,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                       )}
                     </View>
                   </View>
-                  
+
                   <View style={styles.modelItemRight}>
                     {/* Capability Icons */}
                     <ModelCapabilityIcons
@@ -143,13 +171,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                       size={14}
                       containerStyle={styles.capabilityIcons}
                     />
-                    
+
                     {/* Selection Check */}
                     {isSelected && (
-                      <Ionicons 
-                        name="checkmark-outline" 
-                        size={20} 
-                        color={theme.colors.status.info.primary} 
+                      <Ionicons
+                        name="checkmark-outline"
+                        size={20}
+                        color={theme.colors.status.info.primary}
                         style={styles.checkIcon}
                       />
                     )}
@@ -170,39 +198,35 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       ) : (
         <View style={styles.titleContainer} />
       )}
-      
-
-
-
 
       {/* Quick Actions Menu Dropdown */}
       <Dropdown
         items={[
           {
-            value: 'settings',
-            label: t('menu.settings'),
+            value: "settings",
+            label: t("menu.settings"),
             disabled: false,
           },
           {
-            value: 'design_showcase',
-            label: t('menu.design_showcase'),
+            value: "design_showcase",
+            label: t("menu.design_showcase"),
             disabled: false,
           },
           {
-            value: 'logout',
-            label: t('menu.logout'),
+            value: "logout",
+            label: t("menu.logout"),
             disabled: false,
           },
         ]}
         onChange={(item: DropdownItem) => {
           switch (item.value) {
-            case 'settings':
+            case "settings":
               handleSettings();
               break;
-            case 'design_showcase':
+            case "design_showcase":
               handleDesignShowcase();
               break;
-            case 'logout':
+            case "logout":
               handleLogout();
               break;
           }
@@ -211,9 +235,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            leftIcon={<Ionicons name="ellipsis-vertical-outline" size={24} color={theme.colors.text.primary} />}
+            leftIcon={
+              <Ionicons
+                name="ellipsis-vertical-outline"
+                size={24}
+                color={theme.colors.text.primary}
+              />
+            }
             onPress={() => {
-              console.log('🔍 [ChatHeader] More options button pressed');
+              console.log("🔍 [ChatHeader] More options button pressed");
               open();
             }}
             containerStyle={styles.menuButton}
@@ -223,24 +253,24 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           // Define icon and color for each menu item
           const getIconConfig = (value: string) => {
             switch (value) {
-              case 'settings':
+              case "settings":
                 return {
-                  name: 'settings-outline' as const,
+                  name: "settings-outline" as const,
                   color: theme.colors.status.info.primary,
                 };
-              case 'design_showcase':
+              case "design_showcase":
                 return {
-                  name: 'color-palette-outline' as const,
+                  name: "color-palette-outline" as const,
                   color: theme.colors.status.success.primary,
                 };
-              case 'logout':
+              case "logout":
                 return {
-                  name: 'log-out-outline' as const,
+                  name: "log-out-outline" as const,
                   color: theme.colors.status.error.primary,
                 };
               default:
                 return {
-                  name: 'ellipsis-horizontal-outline' as const,
+                  name: "ellipsis-horizontal-outline" as const,
                   color: theme.colors.text.secondary,
                 };
             }
@@ -251,15 +281,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           return (
             <View style={styles.quickActionsMenuItem}>
               <View style={styles.quickActionsItemLeft}>
-                <Ionicons 
-                  name={iconConfig.name} 
-                  size={20} 
+                <Ionicons
+                  name={iconConfig.name}
+                  size={20}
                   color={iconConfig.color}
                   style={styles.quickActionsIcon}
                 />
-                <Text style={styles.quickActionsMenuText}>
-                  {item.label}
-                </Text>
+                <Text style={styles.quickActionsMenuText}>{item.label}</Text>
               </View>
             </View>
           );

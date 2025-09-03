@@ -1,28 +1,40 @@
-import type { DropdownItem } from '@/components/ui';
-import { Button, Dropdown, Input, Text } from '@/components/ui';
-import { LanguageSelector, useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
+import { LanguageSelector, useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme/theme";
+import type { DropdownItem } from "@/shared/components/ui";
+import { Button, Dropdown, Input, Text } from "@/shared/components/ui";
 
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, Switch, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Switch,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function DesignShowcaseScreen() {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
 
   // State for interactive elements
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [switchValue, setSwitchValue] = useState(false);
-  const [activeSearchButtons, setActiveSearchButtons] = useState<Set<string>>(new Set());
-  
+  const [activeSearchButtons, setActiveSearchButtons] = useState<Set<string>>(
+    new Set()
+  );
+
   // State for dropdown examples
-  const [dropdownValue, setDropdownValue] = useState<string>('');
-  const [dropdownWithIconsValue, setDropdownWithIconsValue] = useState<string>('');
-  const [dropdownWithDescValue, setDropdownWithDescValue] = useState<string>('');
-  const [searchableDropdownValue, setSearchableDropdownValue] = useState<string>('');
-  const [variantDropdownValue, setVariantDropdownValue] = useState<string>('');
+  const [dropdownValue, setDropdownValue] = useState<string>("");
+  const [dropdownWithIconsValue, setDropdownWithIconsValue] =
+    useState<string>("");
+  const [dropdownWithDescValue, setDropdownWithDescValue] =
+    useState<string>("");
+  const [searchableDropdownValue, setSearchableDropdownValue] =
+    useState<string>("");
+  const [variantDropdownValue, setVariantDropdownValue] = useState<string>("");
 
   const handleBack = () => {
     try {
@@ -30,15 +42,15 @@ export default function DesignShowcaseScreen() {
       if (canGoBack) {
         router.back();
       } else {
-        router.replace('/chat');
+        router.replace("/chat");
       }
     } catch {
-      router.replace('/chat');
+      router.replace("/chat");
     }
   };
 
   const toggleSearchButton = (buttonId: string) => {
-    setActiveSearchButtons(prev => {
+    setActiveSearchButtons((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(buttonId)) {
         newSet.delete(buttonId);
@@ -55,11 +67,11 @@ export default function DesignShowcaseScreen() {
       backgroundColor: theme.colors.background.primary,
     },
     header: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       padding: theme.spacing.lg,
       borderBottomWidth: 1,
-              borderBottomColor: theme.borders.colors.light,
+      borderBottomColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.primary,
     },
     backButton: {
@@ -67,8 +79,8 @@ export default function DesignShowcaseScreen() {
       height: 44,
       borderRadius: 22,
       backgroundColor: theme.colors.background.secondary,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
       marginRight: theme.spacing.md,
       ...theme.shadows.light,
       borderWidth: 1,
@@ -77,13 +89,13 @@ export default function DesignShowcaseScreen() {
     backButtonText: {
       fontSize: theme.typography.fontSizes.lg,
       color: theme.colors.text.primary,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
     },
     headerTitle: {
       fontSize: theme.typography.fontSizes.xl,
       fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.typography.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as "600",
     },
     content: {
       flex: 1,
@@ -96,7 +108,7 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.typography.fontSizes.lg,
       fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.typography.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as "600",
       marginBottom: theme.spacing.lg,
     },
     card: {
@@ -109,10 +121,10 @@ export default function DesignShowcaseScreen() {
       borderColor: theme.borders.colors.light,
     },
     row: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       marginBottom: theme.spacing.lg,
-      flexWrap: 'wrap' as const,
+      flexWrap: "wrap" as const,
       gap: theme.spacing.sm,
     },
     button: {
@@ -121,15 +133,15 @@ export default function DesignShowcaseScreen() {
       borderRadius: theme.borders.radius.md,
       marginRight: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
       minWidth: 100,
       ...theme.shadows.light,
     },
     buttonText: {
       fontSize: theme.typography.fontSizes.md,
       fontFamily: theme.typography.fontFamily.primary,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
     },
     primaryButton: {
       backgroundColor: theme.colors.primary,
@@ -164,7 +176,7 @@ export default function DesignShowcaseScreen() {
       color: theme.colors.text.inverted,
     },
     outlineButton: {
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       borderWidth: 2,
       borderColor: theme.colors.primary,
     },
@@ -172,7 +184,7 @@ export default function DesignShowcaseScreen() {
       color: theme.colors.primary,
     },
     ghostButton: {
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
     },
     ghostButtonText: {
       color: theme.colors.primary,
@@ -205,7 +217,7 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.typography.fontSizes.md,
       fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
       marginBottom: theme.spacing.sm,
     },
     input: {
@@ -219,8 +231,8 @@ export default function DesignShowcaseScreen() {
       marginBottom: theme.spacing.lg,
     },
     chatInputContainer: {
-      flexDirection: 'row' as const,
-      alignItems: 'flex-end' as const,
+      flexDirection: "row" as const,
+      alignItems: "flex-end" as const,
       gap: theme.spacing.sm,
     },
     chatInput: {
@@ -233,24 +245,24 @@ export default function DesignShowcaseScreen() {
       color: theme.colors.text.primary,
       backgroundColor: theme.colors.background.primary,
       minHeight: 80,
-      textAlignVertical: 'top' as const,
+      textAlignVertical: "top" as const,
     },
     sendButton: {
       backgroundColor: theme.colors.primary,
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
       borderRadius: theme.borders.radius.md,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
     },
     sendButtonText: {
       color: theme.colors.text.inverted,
       fontSize: theme.typography.fontSizes.md,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
     },
     searchButtonRow: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       marginBottom: theme.spacing.md,
       gap: theme.spacing.sm,
     },
@@ -259,8 +271,8 @@ export default function DesignShowcaseScreen() {
       height: 36,
       borderRadius: 18,
       backgroundColor: theme.colors.background.secondary,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
       shadowColor: theme.colors.text.primary,
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
@@ -271,11 +283,11 @@ export default function DesignShowcaseScreen() {
       fontSize: theme.typography.fontSizes.md,
       fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.text.primary,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
       flex: 1,
     },
     iconShowcase: {
-      alignItems: 'center' as const,
+      alignItems: "center" as const,
       marginBottom: theme.spacing.md,
     },
     iconLabel: {
@@ -290,7 +302,11 @@ export default function DesignShowcaseScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
+          <Ionicons
+            name="arrow-back-outline"
+            size={24}
+            color={theme.colors.text.primary}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Design Showcase</Text>
       </View>
@@ -299,23 +315,23 @@ export default function DesignShowcaseScreen() {
         {/* Buttons Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Buttons</Text>
-          
+
           <View style={styles.card}>
             <Text style={styles.label}>Primary Buttons</Text>
             <View style={styles.row}>
               <Button
                 label="Primary"
-                onPress={() => console.log('Primary button pressed')}
+                onPress={() => console.log("Primary button pressed")}
                 containerStyle={[styles.button, styles.primaryButton]}
               />
               <Button
                 label="Success"
-                onPress={() => console.log('Success button pressed')}
+                onPress={() => console.log("Success button pressed")}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error"
-                onPress={() => console.log('Error button pressed')}
+                onPress={() => console.log("Error button pressed")}
                 containerStyle={[styles.button, styles.errorButton]}
               />
             </View>
@@ -324,17 +340,17 @@ export default function DesignShowcaseScreen() {
             <View style={styles.row}>
               <Button
                 label="Secondary"
-                onPress={() => console.log('Secondary button pressed')}
+                onPress={() => console.log("Secondary button pressed")}
                 containerStyle={[styles.button, styles.secondaryButton]}
               />
               <Button
                 label="Outline"
-                onPress={() => console.log('Outline button pressed')}
+                onPress={() => console.log("Outline button pressed")}
                 containerStyle={[styles.button, styles.outlineButton]}
               />
               <Button
                 label="Ghost"
-                onPress={() => console.log('Ghost button pressed')}
+                onPress={() => console.log("Ghost button pressed")}
                 containerStyle={[styles.button, styles.ghostButton]}
               />
             </View>
@@ -343,17 +359,17 @@ export default function DesignShowcaseScreen() {
             <View style={styles.row}>
               <Button
                 label="Small"
-                onPress={() => console.log('Small button pressed')}
+                onPress={() => console.log("Small button pressed")}
                 containerStyle={[styles.button, styles.smallButton]}
               />
               <Button
                 label="Medium"
-                onPress={() => console.log('Medium button pressed')}
+                onPress={() => console.log("Medium button pressed")}
                 containerStyle={[styles.button, styles.mediumButton]}
               />
               <Button
                 label="Large"
-                onPress={() => console.log('Large button pressed')}
+                onPress={() => console.log("Large button pressed")}
                 containerStyle={[styles.button, styles.largeButton]}
               />
             </View>
@@ -363,12 +379,12 @@ export default function DesignShowcaseScreen() {
         {/* Input Fields Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Fields</Text>
-          
+
           <View style={styles.card}>
             <Text style={styles.label}>Text Input</Text>
             <Input
               inputStyle={styles.input}
-              placeholder={t('placeholder.enter_text')}
+              placeholder={t("placeholder.enter_text")}
               placeholderTextColor={theme.colors.text.tertiary}
               value={inputValue}
               onChangeText={setInputValue}
@@ -393,15 +409,22 @@ export default function DesignShowcaseScreen() {
         {/* Switches Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Switches</Text>
-          
+
           <View style={styles.card}>
             <View style={styles.row as any}>
               <Text style={styles.label}>Toggle Switch</Text>
               <Switch
                 value={switchValue}
                 onValueChange={setSwitchValue}
-                trackColor={{ false: theme.borders.colors.light, true: theme.colors.primary }}
-                thumbColor={switchValue ? theme.colors.button.text : theme.colors.text.secondary}
+                trackColor={{
+                  false: theme.borders.colors.light,
+                  true: theme.colors.primary,
+                }}
+                thumbColor={
+                  switchValue
+                    ? theme.colors.button.text
+                    : theme.colors.text.secondary
+                }
               />
             </View>
           </View>
@@ -410,7 +433,7 @@ export default function DesignShowcaseScreen() {
         {/* Language Selector Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Language Selector</Text>
-          
+
           <View style={styles.card}>
             <LanguageSelector />
           </View>
@@ -419,23 +442,25 @@ export default function DesignShowcaseScreen() {
         {/* Toast Notifications Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toast Notifications</Text>
-          
+
           <View style={styles.card}>
-            <Text style={styles.label}>Test different types of toast notifications</Text>
+            <Text style={styles.label}>
+              Test different types of toast notifications
+            </Text>
             <View style={styles.row}>
               <Button
                 label="Success"
-                onPress={() => console.log('Success toast')}
+                onPress={() => console.log("Success toast")}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error"
-                onPress={() => console.log('Error toast')}
+                onPress={() => console.log("Error toast")}
                 containerStyle={[styles.button, styles.errorButton]}
               />
               <Button
                 label="Info"
-                onPress={() => console.log('Info toast')}
+                onPress={() => console.log("Info toast")}
                 containerStyle={[styles.button, styles.infoButton]}
               />
             </View>
@@ -445,23 +470,23 @@ export default function DesignShowcaseScreen() {
         {/* Alert Dialogs Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Alert Dialogs</Text>
-          
+
           <View style={styles.card}>
             <Text style={styles.label}>Test different types of alerts</Text>
             <View style={styles.row}>
               <Button
                 label="Success Alert"
-                onPress={() => console.log('Success alert')}
+                onPress={() => console.log("Success alert")}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error Alert"
-                onPress={() => console.log('Error alert')}
+                onPress={() => console.log("Error alert")}
                 containerStyle={[styles.button, styles.errorButton]}
               />
               <Button
                 label="Confirm Alert"
-                onPress={() => console.log('Confirm alert')}
+                onPress={() => console.log("Confirm alert")}
                 containerStyle={[styles.button, styles.infoButton]}
               />
             </View>
@@ -471,37 +496,56 @@ export default function DesignShowcaseScreen() {
         {/* Dropdown Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Dropdowns</Text>
-          
+
           <View style={styles.card}>
             <Text style={styles.label}>Basic Dropdown</Text>
             <Dropdown
               items={[
-                { value: 'option1', label: 'Option 1' },
-                { value: 'option2', label: 'Option 2' },
-                { value: 'option3', label: 'Option 3' }
+                { value: "option1", label: "Option 1" },
+                { value: "option2", label: "Option 2" },
+                { value: "option3", label: "Option 3" },
               ]}
               value={dropdownValue}
-              onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+              onChange={(item: DropdownItem) =>
+                setDropdownValue(item.value as string)
+              }
               placeholder="Select an option"
             />
 
             <Text style={styles.label}>Dropdown with Custom Trigger</Text>
             <Dropdown
               items={[
-                { value: 'apple', label: 'Apple' },
-                { value: 'android', label: 'Android' },
-                { value: 'windows', label: 'Windows' }
+                { value: "apple", label: "Apple" },
+                { value: "android", label: "Android" },
+                { value: "windows", label: "Windows" },
               ]}
               value={dropdownWithIconsValue}
-              onChange={(item: DropdownItem) => setDropdownWithIconsValue(item.value as string)}
-              renderTrigger={({ open, selected }: { open: () => void; selected?: DropdownItem }) => (
+              onChange={(item: DropdownItem) =>
+                setDropdownWithIconsValue(item.value as string)
+              }
+              renderTrigger={({
+                open,
+                selected,
+              }: {
+                open: () => void;
+                selected?: DropdownItem;
+              }) => (
                 <Pressable
                   onPress={open}
-                  style={[styles.button, styles.outlineButton, { flexDirection: 'row', alignItems: 'center' }]}
+                  style={[
+                    styles.button,
+                    styles.outlineButton,
+                    { flexDirection: "row", alignItems: "center" },
+                  ]}
                 >
-                  <Ionicons name="logo-apple" size={16} color={theme.colors.text.primary} style={{ marginRight: theme.spacing.sm }} />
+                  <Ionicons
+                    name="logo-apple"
+                    size={16}
+                    color={theme.colors.text.primary}
+                    style={{ marginRight: theme.spacing.sm }}
+                  />
                   <Text style={[styles.buttonText, styles.outlineButtonText]}>
-                    {selected?.label || 'Select platform'}
+                    {selected?.label || "Select platform"}
                   </Text>
                 </Pressable>
               )}
@@ -511,22 +555,26 @@ export default function DesignShowcaseScreen() {
             <View style={styles.row}>
               <Dropdown
                 items={[
-                  { value: 'top', label: 'Top Placement' },
-                  { value: 'bottom', label: 'Bottom Placement' }
+                  { value: "top", label: "Top Placement" },
+                  { value: "bottom", label: "Bottom Placement" },
                 ]}
                 value={dropdownValue}
-                onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+                onChange={(item: DropdownItem) =>
+                  setDropdownValue(item.value as string)
+                }
                 placeholder="Auto placement"
                 placement="auto"
                 dropdownWidth={150}
               />
               <Dropdown
                 items={[
-                  { value: 'top', label: 'Top Placement' },
-                  { value: 'bottom', label: 'Bottom Placement' }
+                  { value: "top", label: "Top Placement" },
+                  { value: "bottom", label: "Bottom Placement" },
                 ]}
                 value={dropdownValue}
-                onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+                onChange={(item: DropdownItem) =>
+                  setDropdownValue(item.value as string)
+                }
                 placeholder="Top placement"
                 placement="top"
                 dropdownWidth={150}
@@ -536,15 +584,17 @@ export default function DesignShowcaseScreen() {
             <Text style={styles.label}>Dropdown with Custom Styling</Text>
             <Dropdown
               items={[
-                { value: 'react', label: 'React Native' },
-                { value: 'flutter', label: 'Flutter' },
-                { value: 'xamarin', label: 'Xamarin' },
-                { value: 'ionic', label: 'Ionic' },
-                { value: 'cordova', label: 'Cordova' },
-                { value: 'native', label: 'Native iOS/Android' }
+                { value: "react", label: "React Native" },
+                { value: "flutter", label: "Flutter" },
+                { value: "xamarin", label: "Xamarin" },
+                { value: "ionic", label: "Ionic" },
+                { value: "cordova", label: "Cordova" },
+                { value: "native", label: "Native iOS/Android" },
               ]}
               value={searchableDropdownValue}
-              onChange={(item: DropdownItem) => setSearchableDropdownValue(item.value as string)}
+              onChange={(item: DropdownItem) =>
+                setSearchableDropdownValue(item.value as string)
+              }
               placeholder="Select framework..."
               maxHeight={200}
             />
@@ -552,19 +602,19 @@ export default function DesignShowcaseScreen() {
             <Text style={styles.label}>Disabled Dropdown</Text>
             <Dropdown
               items={[
-                { value: 'enabled', label: 'Enabled Option' },
-                { value: 'disabled', label: 'Disabled Option', disabled: true }
+                { value: "enabled", label: "Enabled Option" },
+                { value: "disabled", label: "Disabled Option", disabled: true },
               ]}
               value={dropdownValue}
-              onChange={(item: DropdownItem) => setDropdownValue(item.value as string)}
+              onChange={(item: DropdownItem) =>
+                setDropdownValue(item.value as string)
+              }
               placeholder="Disabled dropdown"
               disabled={true}
             />
           </View>
         </View>
-
-
       </ScrollView>
     </SafeAreaView>
   );
-} 
+}

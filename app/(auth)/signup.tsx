@@ -1,15 +1,21 @@
+import { useToast } from "@/features/alert";
+import { useEmailSignup } from "@/features/auth";
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme/theme";
+import { FormWrapper } from "@/shared/components/layout/FormWrapper";
+import { Button, Input, Text } from "@/shared/components/ui";
 
-import { FormWrapper } from '@/components/FormWrapper';
-import { Button, Input, Text } from '@/components/ui';
-import { useToast } from '@/features/alert';
-import { useEmailSignup } from '@/features/auth';
-import { useLanguageContext } from '@/features/language';
-import { useAppTheme } from '@/features/theme/theme';
-
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function SignupScreen() {
   const { t } = useLanguageContext();
@@ -17,9 +23,9 @@ export default function SignupScreen() {
   const { signUp, isLoading } = useEmailSignup();
   const { showSuccess, showError } = useToast();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
@@ -31,23 +37,23 @@ export default function SignupScreen() {
 
     // Email validation
     if (!email.trim()) {
-      newErrors.email = t('auth.email_required');
+      newErrors.email = t("auth.email_required");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = t('auth.email_invalid');
+      newErrors.email = t("auth.email_invalid");
     }
 
     // Password validation
     if (!password) {
-      newErrors.password = t('auth.password_required');
+      newErrors.password = t("auth.password_required");
     } else if (password.length < 6) {
-      newErrors.password = t('auth.password_too_short');
+      newErrors.password = t("auth.password_too_short");
     }
 
     // Confirm password validation
     if (!confirmPassword) {
-      newErrors.confirmPassword = t('auth.confirm_password_required');
+      newErrors.confirmPassword = t("auth.confirm_password_required");
     } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = t('auth.passwords_dont_match');
+      newErrors.confirmPassword = t("auth.passwords_dont_match");
     }
 
     setErrors(newErrors);
@@ -61,18 +67,24 @@ export default function SignupScreen() {
 
     try {
       await signUp(email.trim(), password);
-      showSuccess(t('auth.account_created'));
-      router.replace('/auth');
+      showSuccess(t("auth.account_created"));
+      router.replace("/auth");
     } catch (error: any) {
-      console.error('Signup error:', error);
-      
+      console.error("Signup error:", error);
+
       // Handle specific error cases
-      if (error?.message?.includes('email')) {
-        setErrors(prev => ({ ...prev, email: t('auth.email_already_exists') }));
-      } else if (error?.message?.includes('password')) {
-        setErrors(prev => ({ ...prev, password: t('auth.password_too_weak') }));
+      if (error?.message?.includes("email")) {
+        setErrors((prev) => ({
+          ...prev,
+          email: t("auth.email_already_exists"),
+        }));
+      } else if (error?.message?.includes("password")) {
+        setErrors((prev) => ({
+          ...prev,
+          password: t("auth.password_too_weak"),
+        }));
       } else {
-        showError(t('auth.signup_failed'));
+        showError(t("auth.signup_failed"));
       }
     }
   };
@@ -83,10 +95,10 @@ export default function SignupScreen() {
       if (canGoBack) {
         router.back();
       } else {
-        router.replace('/auth');
+        router.replace("/auth");
       }
     } catch {
-      router.replace('/auth');
+      router.replace("/auth");
     }
   };
 
@@ -101,53 +113,69 @@ export default function SignupScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background.primary }}>
-      <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.colors.background.primary }}
+    >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {/* Header with Back Button */}
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: theme.spacing.md,
-          paddingVertical: theme.spacing.md,
-          borderBottomWidth: 1,
-          borderBottomColor: theme.borders.colors.light,
-          backgroundColor: theme.colors.background.primary,
-        }}>
-          <TouchableOpacity 
-            onPress={handleGoBack} 
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: theme.spacing.md,
+            paddingVertical: theme.spacing.md,
+            borderBottomWidth: 1,
+            borderBottomColor: theme.borders.colors.light,
+            backgroundColor: theme.colors.background.primary,
+          }}
+        >
+          <TouchableOpacity
+            onPress={handleGoBack}
             style={{
               padding: theme.spacing.sm,
               marginRight: theme.spacing.md,
               // Use consistent button size for all platforms
               minWidth: theme.layout.buttonSizes.action,
               minHeight: theme.layout.buttonSizes.action,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Ionicons name="arrow-back-outline" size={24} color={theme.colors.text.primary} />
+            <Ionicons
+              name="arrow-back-outline"
+              size={24}
+              color={theme.colors.text.primary}
+            />
           </TouchableOpacity>
-          <Text variant="h3" weight="semibold" style={{ flex: 1, textAlign: 'center', marginRight: theme.layout.buttonSizes.header }}>
-            {t('auth.create_account')}
+          <Text
+            variant="h3"
+            weight="semibold"
+            style={{
+              flex: 1,
+              textAlign: "center",
+              marginRight: theme.layout.buttonSizes.header,
+            }}
+          >
+            {t("auth.create_account")}
           </Text>
         </View>
 
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.container}>
-            <FormWrapper onSubmit={handleSignup} style={{ width: '100%' }}>
+            <FormWrapper onSubmit={handleSignup} style={{ width: "100%" }}>
               <Input
-                placeholder={t('auth.email')}
+                placeholder={t("auth.email")}
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
                   if (errors.email) {
-                    setErrors(prev => ({ ...prev, email: undefined }));
+                    setErrors((prev) => ({ ...prev, email: undefined }));
                   }
                 }}
                 keyboardType="email-address"
@@ -158,19 +186,19 @@ export default function SignupScreen() {
                 returnKeyType="next"
                 onSubmitEditing={handleEmailSubmit}
                 blurOnSubmit={false}
-                onFocus={() => console.log('Email input focused on signup')}
-                onBlur={() => console.log('Email input blurred on signup')}
-                status={errors.email ? 'error' : 'default'}
+                onFocus={() => console.log("Email input focused on signup")}
+                onBlur={() => console.log("Email input blurred on signup")}
+                status={errors.email ? "error" : "default"}
                 errorText={errors.email}
               />
-              
+
               <Input
-                placeholder={t('auth.password')}
+                placeholder={t("auth.password")}
                 value={password}
                 onChangeText={(text) => {
                   setPassword(text);
                   if (errors.password) {
-                    setErrors(prev => ({ ...prev, password: undefined }));
+                    setErrors((prev) => ({ ...prev, password: undefined }));
                   }
                 }}
                 secureTextEntry
@@ -180,17 +208,20 @@ export default function SignupScreen() {
                 returnKeyType="next"
                 onSubmitEditing={handlePasswordSubmit}
                 blurOnSubmit={false}
-                status={errors.password ? 'error' : 'default'}
+                status={errors.password ? "error" : "default"}
                 errorText={errors.password}
               />
-              
+
               <Input
-                placeholder={t('auth.confirm_password')}
+                placeholder={t("auth.confirm_password")}
                 value={confirmPassword}
                 onChangeText={(text) => {
                   setConfirmPassword(text);
                   if (errors.confirmPassword) {
-                    setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+                    setErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: undefined,
+                    }));
                   }
                 }}
                 secureTextEntry
@@ -199,12 +230,12 @@ export default function SignupScreen() {
                 variant="filled"
                 returnKeyType="done"
                 onSubmitEditing={handleSignup}
-                status={errors.confirmPassword ? 'error' : 'default'}
+                status={errors.confirmPassword ? "error" : "default"}
                 errorText={errors.confirmPassword}
               />
-              
+
               <Button
-                label={isLoading ? t('common.loading') : t('auth.sign_up')}
+                label={isLoading ? t("common.loading") : t("auth.sign_up")}
                 onPress={handleSignup}
                 disabled={isLoading}
                 isLoading={isLoading}
@@ -222,6 +253,6 @@ const styles = {
   container: {
     flex: 1,
     padding: 24,
-    justifyContent: 'center' as const,
+    justifyContent: "center" as const,
   },
-}; 
+};

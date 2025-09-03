@@ -1,5 +1,5 @@
 // app/_layout.tsx
-import { LoadingScreen } from "@/components";
+import { LoadingScreen } from "@/shared/components/feedback/LoadingScreen";
 import { useFonts } from "expo-font";
 import { usePathname, useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
@@ -77,7 +77,7 @@ function ProtectedRoutes() {
       },
       drawerType: "front" as const,
     };
-  }, []); 
+  }, []);
 
   // Reset debug globals when app backgrounds
   useEffect(() => {

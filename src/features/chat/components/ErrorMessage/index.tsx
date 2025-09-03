@@ -1,10 +1,10 @@
 // src/features/chat/components/ErrorMessage/index.tsx
-import { Button, Text } from '@/components/ui';
-import React from 'react';
-import { View } from 'react-native';
-import { useAppTheme } from '../../../theme/theme';
-import { ChatMessage } from '../../types';
-import { createErrorMessageStyles } from './ErrorMessage.styles';
+import { Button, Text } from "@/shared/components/ui";
+import React from "react";
+import { View } from "react-native";
+import { useAppTheme } from "../../../theme/theme";
+import { ChatMessage } from "../../types";
+import { createErrorMessageStyles } from "./ErrorMessage.styles";
 
 interface ErrorMessageProps {
   message: ChatMessage;
@@ -12,7 +12,11 @@ interface ErrorMessageProps {
   style?: any;
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry, style }) => {
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({
+  message,
+  onRetry,
+  style,
+}) => {
   const theme = useAppTheme();
   const styles = createErrorMessageStyles(theme);
 
@@ -20,12 +24,16 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry, st
     <View style={[styles.container, style]}>
       <View style={styles.errorContent}>
         <Text style={styles.errorText}>
-          {message?.content?.trim()?.length ? message.content : 'Failed to generate response'}
+          {message?.content?.trim()?.length
+            ? message.content
+            : "Failed to generate response"}
         </Text>
         {!message?.content?.trim()?.length && (
-          <Text style={styles.errorSubtext}>Something went wrong. Please try again.</Text>
+          <Text style={styles.errorSubtext}>
+            Something went wrong. Please try again.
+          </Text>
         )}
-        
+
         <Button
           label="Retry"
           variant="primary"

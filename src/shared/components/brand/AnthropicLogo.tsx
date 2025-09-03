@@ -1,6 +1,6 @@
 // src/components/AnthropicLogo.tsx
-import { Image } from 'expo-image';
-import React from 'react';
+import { Image } from "expo-image";
+import React from "react";
 
 interface AnthropicLogoProps {
   size?: number;
@@ -9,7 +9,7 @@ interface AnthropicLogoProps {
 export const AnthropicLogo: React.FC<AnthropicLogoProps> = ({ size = 16 }) => {
   return (
     <Image
-      source={require('../../assets/Anthropic/images.png')}
+      source={require("../../../../assets/Anthropic/images.png")}
       style={{ width: size, height: size }}
       contentFit="contain"
     />

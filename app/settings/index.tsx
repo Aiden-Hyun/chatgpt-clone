@@ -1,18 +1,18 @@
-import { Button } from '@/components/ui';
-import { Platform, SafeAreaView, ScrollView } from 'react-native';
-import { CustomAlert, useCustomAlert } from '../../src/features/alert';
-import { useLogout, useUserInfo } from '../../src/features/auth';
-import { useLanguageContext } from '../../src/features/language';
-import { useAppTheme } from '../../src/features/theme/theme';
+import { Button } from "@/shared/components/ui";
+import { Platform, SafeAreaView, ScrollView } from "react-native";
+import { CustomAlert, useCustomAlert } from "../../src/features/alert";
+import { useLogout, useUserInfo } from "../../src/features/auth";
+import { useLanguageContext } from "../../src/features/language";
+import { useAppTheme } from "../../src/features/theme/theme";
 import {
   AboutSection,
   AccountSection,
   DataPrivacySection,
   PreferencesSection,
-  SettingsHeader
-} from './components';
-import { useSettingsNavigation } from './hooks/useSettingsNavigation';
-import { createSettingsStyles } from './settings.styles';
+  SettingsHeader,
+} from "./components";
+import { useSettingsNavigation } from "./hooks/useSettingsNavigation";
+import { createSettingsStyles } from "./settings.styles";
 
 export default function SettingsScreen() {
   const { t } = useLanguageContext();
@@ -21,8 +21,9 @@ export default function SettingsScreen() {
   const { logout, isLoggingOut } = useLogout();
   const { alert, hideAlert } = useCustomAlert();
   const styles = createSettingsStyles(theme);
-  
-  const { handleBack, handleLogout, navigateToThemes } = useSettingsNavigation();
+
+  const { handleBack, handleLogout, navigateToThemes } =
+    useSettingsNavigation();
 
   const onLogout = async () => {
     await handleLogout(logout);
@@ -31,21 +32,17 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <SettingsHeader onBack={handleBack} title={t('settings.title')} />
+      <SettingsHeader onBack={handleBack} title={t("settings.title")} />
 
-      <ScrollView 
-        style={styles.content} 
+      <ScrollView
+        style={styles.content}
         contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={Platform.OS !== 'web'}
-        bounces={Platform.OS === 'ios'}
-        alwaysBounceVertical={Platform.OS === 'ios'}
+        showsVerticalScrollIndicator={Platform.OS !== "web"}
+        bounces={Platform.OS === "ios"}
+        alwaysBounceVertical={Platform.OS === "ios"}
       >
         {/* Account Section */}
-        <AccountSection 
-          userName={userName}
-          email={email}
-          onRefresh={refresh}
-        />
+        <AccountSection userName={userName} email={email} onRefresh={refresh} />
 
         {/* Preferences Section */}
         <PreferencesSection onNavigateToThemes={navigateToThemes} />
@@ -58,7 +55,7 @@ export default function SettingsScreen() {
 
         {/* Logout Button */}
         <Button
-          label={isLoggingOut ? t('home.logging_out') : t('home.logout')}
+          label={isLoggingOut ? t("home.logging_out") : t("home.logout")}
           onPress={onLogout}
           disabled={isLoggingOut}
           isLoading={isLoggingOut}
@@ -67,7 +64,7 @@ export default function SettingsScreen() {
           containerStyle={styles.logoutButton}
         />
       </ScrollView>
-      
+
       {/* Custom Alert */}
       <CustomAlert
         visible={alert.visible}
@@ -87,4 +84,4 @@ export default function SettingsScreen() {
       />
     </SafeAreaView>
   );
-} 
+}

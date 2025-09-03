@@ -22,6 +22,7 @@ module.exports = function format(results) {
             'import/no-named-as-default': '🏷️',
             'import/no-duplicates': '🔄',
             'import/no-cycle': '🔄',
+            'import/no-unresolved': '🔍',
 
             // React
             'react-hooks/exhaustive-deps': '🎣',
@@ -33,6 +34,9 @@ module.exports = function format(results) {
             'no-console': '📺',
             'prefer-const': '🔒',
             'no-var': '🚫',
+            
+            // Node.js rules
+            'node/no-missing-require': '📁',
 
             // Fallback
             default: '⚙️',

@@ -20,8 +20,8 @@ export const OpenAILogo: React.FC<OpenAILogoProps> = ({
     : themeMode === "dark";
 
   const source = isDarkTheme
-    ? require("../../assets/OpenAI/PNGs/OpenAI-white-monoblossom.png")
-    : require("../../assets/OpenAI/PNGs/OpenAI-black-monoblossom.png");
+    ? require("../../../../assets/OpenAI/PNGs/OpenAI-white-monoblossom.png")
+    : require("../../../../assets/OpenAI/PNGs/OpenAI-black-monoblossom.png");
 
   return (
     <Image
