@@ -17,26 +17,31 @@ export class RetryService {
     try {
       // Respect abort before starting
       if (signal?.aborted) {
-        const error = new Error('The operation was aborted');
-        (error as any).name = 'AbortError';
+        const error = new Error("The operation was aborted");
+        (error as { name: string }).name = "AbortError";
         throw error;
       }
       return await operation();
     } catch (error) {
       // Do not retry on Abort/Timeout
-      const name = (error as any)?.name;
-      if (name === 'AbortError' || name === 'TimeoutError') {
+      const name = (error as { name?: string })?.name;
+      if (name === "AbortError" || name === "TimeoutError") {
         throw error;
       }
       if (retryCount < this.config.maxRetries) {
-        const delay = this.config.exponentialBackoff 
+        const delay = this.config.exponentialBackoff
           ? this.config.retryDelay * Math.pow(2, retryCount)
           : this.config.retryDelay;
-        
+
         await this.delay(delay, signal);
-        return this.retryOperation(operation, operationName, retryCount + 1, signal);
+        return this.retryOperation(
+          operation,
+          operationName,
+          retryCount + 1,
+          signal
+        );
       }
-      
+
       throw error;
     }
   }
@@ -44,8 +49,8 @@ export class RetryService {
   private delay(ms: number, signal?: AbortSignal): Promise<void> {
     return new Promise((resolve, reject) => {
       if (signal?.aborted) {
-        const error = new Error('The operation was aborted');
-        (error as any).name = 'AbortError';
+        const error = new Error("The operation was aborted");
+        (error as { name: string }).name = "AbortError";
         reject(error);
         return;
       }
@@ -55,12 +60,12 @@ export class RetryService {
       if (signal) {
         const onAbort = () => {
           clearTimeout(id);
-          const error = new Error('The operation was aborted');
-          (error as any).name = 'AbortError';
+          const error = new Error("The operation was aborted");
+          (error as { name: string }).name = "AbortError";
           reject(error);
         };
-        signal.addEventListener('abort', onAbort, { once: true });
+        signal.addEventListener("abort", onAbort, { once: true });
       }
     });
   }
-} 
+}

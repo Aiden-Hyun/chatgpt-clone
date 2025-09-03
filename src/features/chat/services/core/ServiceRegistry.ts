@@ -1,6 +1,8 @@
 // src/features/chat/services/core/ServiceRegistry.ts
 import type { IChatRoomService } from "@/entities/chatRoom";
+import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
+
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IAnimationService } from "../interfaces/IAnimationService";
 import { IAuthService } from "../interfaces/IAuthService";
@@ -8,8 +10,6 @@ import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { INavigationService } from "../interfaces/INavigationService";
 import { IRegenerationService } from "../interfaces/IRegenerationService";
-
-import type { ChatMessage } from "@/entities/message";
 import { ITypingStateService } from "../interfaces/ITypingStateService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
@@ -44,7 +44,7 @@ export interface ServiceConfig {
   };
   regenerationService: {
     new (
-      messageStateManager: any, // Using any to avoid circular dependency
+      messageStateManager: unknown, // Using unknown to avoid circular dependency
       aiApiService: IAIApiService,
       messageService: IMessageService,
       animationService: IAnimationService,
@@ -132,7 +132,7 @@ export class ServiceRegistry {
   }
 
   static createRegenerationService(
-    messageStateManager: any, // Using any to avoid circular dependency
+    messageStateManager: unknown, // Using unknown to avoid circular dependency
     aiApiService: IAIApiService,
     messageService: IMessageService,
     animationService: IAnimationService,

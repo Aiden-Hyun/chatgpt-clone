@@ -1,11 +1,12 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
+import { StyleSheet } from "react-native";
+
+import { AppTheme } from "../../../theme/theme.types";
 
 export const createUserMessageStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
+      flexDirection: "row",
+      justifyContent: "flex-end",
       marginVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.lg,
     },
@@ -13,15 +14,15 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       marginVertical: theme.spacing.xxs,
     },
     contentContainer: {
-      alignItems: 'flex-end',
+      alignItems: "flex-end",
     },
     bubble: {
       backgroundColor: theme.colors.message.user,
       borderRadius: theme.borders.radius.lg,
       padding: theme.spacing.md,
-      maxWidth: '80vw',
+      maxWidth: "80vw",
       minWidth: 40,
-      alignSelf: 'flex-end',
+      alignSelf: "flex-end",
       ...theme.shadows.light,
     },
     bubbleCompact: {
@@ -33,14 +34,14 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       fontFamily: theme.typography.fontFamily.primary,
       color: theme.colors.message.userText,
       lineHeight: 22,
-      flexWrap: 'wrap',
+      flexWrap: "wrap",
     },
     bubbleEdit: {
       backgroundColor: theme.colors.message.user,
       borderRadius: theme.borders.radius.lg,
       padding: theme.spacing.md,
-      width: '80%',
-      alignSelf: 'flex-end',
+      width: "80%",
+      alignSelf: "flex-end",
       ...theme.shadows.light,
     },
     textInput: {
@@ -49,13 +50,13 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       fontSize: theme.typography.fontSizes.md,
       lineHeight: 22,
       paddingVertical: 4,
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       borderWidth: 0,
-      outlineStyle: 'none' as any,
+      outlineStyle: "none",
     },
     actionRow: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
+      flexDirection: "row",
+      justifyContent: "flex-end",
       gap: theme.spacing.sm,
       marginTop: theme.spacing.sm,
     },
@@ -64,10 +65,10 @@ export const createUserMessageStyles = (theme: AppTheme) => {
       paddingHorizontal: 0,
       borderWidth: theme.borders.widths.medium,
       borderRadius: theme.borders.radius.sm,
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
     },
     buttonRow: {
-      flexDirection: 'row',
+      flexDirection: "row",
       marginTop: 0,
       gap: 0,
     },

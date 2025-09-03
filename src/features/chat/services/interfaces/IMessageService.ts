@@ -1,5 +1,6 @@
 // src/features/chat/services/interfaces/IMessageService.ts
 import type { ChatMessage } from "@/entities/message";
+import type { Session } from "@/entities/session";
 
 export interface IMessageService {
   /**
@@ -9,7 +10,7 @@ export interface IMessageService {
     roomId: number;
     userMessage: ChatMessage;
     assistantMessage: ChatMessage;
-    session: any; // Session type from Supabase
+    session: Session; // Session type from Supabase
   }): Promise<void>;
 
   /**
@@ -19,7 +20,7 @@ export interface IMessageService {
     roomId: number;
     newContent: string;
     originalContent: string;
-    session: any; // Session type from Supabase
+    session: Session; // Session type from Supabase
   }): Promise<void>;
 
   /**
@@ -30,7 +31,7 @@ export interface IMessageService {
     roomId: number;
     messageId: string;
     newContent: string;
-    session: any;
+    session: Session;
   }): Promise<boolean>;
 
   /**
@@ -40,7 +41,7 @@ export interface IMessageService {
   updateAssistantMessageByDbId?(args: {
     dbId: number;
     newContent: string;
-    session: any;
+    session: Session;
   }): Promise<boolean>;
 
   /**
@@ -50,7 +51,7 @@ export interface IMessageService {
   updateUserMessageByDbId?(args: {
     dbId: number;
     newContent: string;
-    session: any;
+    session: Session;
   }): Promise<boolean>;
 
   /**

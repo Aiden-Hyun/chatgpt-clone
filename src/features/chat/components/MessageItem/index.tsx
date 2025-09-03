@@ -1,7 +1,10 @@
-import type { ChatMessage } from "@/entities/message";
 import React from "react";
+
+import type { ChatMessage } from "@/entities/message";
+
 import { ErrorMessage } from "../ErrorMessage";
 import { LoadingMessage } from "../LoadingMessage";
+
 import { AssistantMessage } from "./AssistantMessage";
 import { SystemMessage } from "./SystemMessage";
 import { UserMessage } from "./UserMessage";

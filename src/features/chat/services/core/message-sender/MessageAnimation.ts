@@ -1,4 +1,5 @@
 import type { ChatMessage } from "@/entities/message";
+
 import { IAnimationService } from "../../interfaces/IAnimationService";
 import { IMessageStateService } from "../../interfaces/IMessageStateService";
 import { ITypingStateService } from "../../interfaces/ITypingStateService";

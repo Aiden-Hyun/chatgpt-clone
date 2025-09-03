@@ -1,6 +1,7 @@
+import { useCallback, useState } from "react";
+
 import type { ChatMessage } from "@/entities/message";
 import { useMessageLoader } from "@/entities/message";
-import { useCallback, useState } from "react";
 
 // Legacy interfaces - will be phased out in favor of state machine
 interface LoadingStates {

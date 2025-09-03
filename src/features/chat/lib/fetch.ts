@@ -1,5 +1,5 @@
 // src/features/chat/lib/fetch.ts
-import { NETWORK } from '@/shared/lib/constants';
+import { NETWORK } from "@/shared/lib/constants";
 /**
  * Fetch JSON from a URL with abort + timeout and proper error handling
  * - Respects an external AbortSignal if provided
@@ -9,7 +9,7 @@ import { NETWORK } from '@/shared/lib/constants';
 export async function fetchJson<T>(
   url: string,
   options: RequestInit = {},
-  timeoutMs = NETWORK.REQUEST_TIMEOUT_MS,
+  timeoutMs = NETWORK.REQUEST_TIMEOUT_MS
 ): Promise<T> {
   const controller = new AbortController();
   let timedOut = false;
@@ -20,7 +20,9 @@ export async function fetchJson<T>(
     if (externalSignal.aborted) {
       controller.abort();
     } else {
-      externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
+      externalSignal.addEventListener("abort", () => controller.abort(), {
+        once: true,
+      });
     }
   }
 
@@ -34,7 +36,7 @@ export async function fetchJson<T>(
       ...options,
       signal: controller.signal,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
     });
@@ -54,18 +56,23 @@ export async function fetchJson<T>(
       return JSON.parse(text) as T;
     } catch {
       if (__DEV__) {
-        console.error('Failed to parse JSON response:', text);
+        console.error("Failed to parse JSON response:", text);
       } else {
-        console.error('Failed to parse JSON response');
+        console.error("Failed to parse JSON response");
       }
-      throw new Error('Failed to parse JSON response.');
+      throw new Error("Failed to parse JSON response.");
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Normalize abort/timeout errors
-    const isAbort = err && (err.name === 'AbortError' || err.code === 'ABORT_ERR');
+    const isAbort =
+      err && (err.name === "AbortError" || err.code === "ABORT_ERR");
     if (isAbort || timedOut) {
-      const error = new Error(timedOut ? 'Request timed out' : 'The operation was aborted');
-      (error as any).name = timedOut ? 'TimeoutError' : 'AbortError';
+      const error = new Error(
+        timedOut ? "Request timed out" : "The operation was aborted"
+      );
+      (error as { name: string }).name = timedOut
+        ? "TimeoutError"
+        : "AbortError";
       throw error;
     }
     throw err;

@@ -1,14 +1,17 @@
-import { useToast } from "@/features/alert";
-import { useAppTheme } from "@/features/theme";
-import type { DropdownItem } from "@/shared/components/ui";
-import { Dropdown } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+
+
+import { useToast } from "@/features/alert";
+import { AppTheme, useAppTheme } from "@/features/theme";
+import type { DropdownItem } from "@/shared/components/ui";
+import { Dropdown } from "@/shared/components/ui";
+
 import { useLanguageContext } from "./LanguageContext";
 
 interface LanguageSelectorProps {
-  style?: any;
+  style?: React.ComponentProps<typeof View>["style"];
 }
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
@@ -133,7 +136,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   );
 };
 
-const createLanguageSelectorStyles = (theme: any) => ({
+const createLanguageSelectorStyles = (theme: AppTheme) => ({
   container: {
     alignItems: "flex-end",
   },

@@ -1,7 +1,9 @@
-import type { ChatMessage } from "@/entities/message";
 import React from "react";
 import { View } from "react-native";
+
+import type { ChatMessage } from "@/entities/message";
 import { createChatStyles } from "~/app/chat/chat.styles";
+
 import { useAppTheme } from "../../../theme/theme";
 import { useChat } from "../../hooks";
 import MessageList from "../MessageList";

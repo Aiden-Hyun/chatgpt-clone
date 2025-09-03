@@ -1,21 +1,22 @@
-import { Platform, StyleSheet } from 'react-native';
-import { AppTheme } from '../../../theme/theme.types';
+import { Platform, StyleSheet } from "react-native";
+
+import { AppTheme } from "../../../theme/theme.types";
 
 const monoFont = Platform.select({
-  ios: 'Menlo',
-  android: 'monospace',
+  ios: "Menlo",
+  android: "monospace",
   web: "'Cascadia Mono', 'Cascadia Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  default: 'monospace',
+  default: "monospace",
 });
-const codeFontNative = 'CascadiaMono';
+const codeFontNative = "CascadiaMono";
 
 export const createCodeStylerStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       borderRadius: 0,
-      overflow: 'hidden',
-      fontFamily: Platform.OS === 'web' ? (monoFont as any) : (codeFontNative as any),
+      overflow: "hidden",
+      fontFamily: Platform.OS === "web" ? monoFont : codeFontNative,
     },
   });
 };

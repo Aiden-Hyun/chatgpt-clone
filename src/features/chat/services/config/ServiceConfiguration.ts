@@ -1,4 +1,6 @@
 // src/features/chat/services/config/ServiceConfiguration.ts
+import { SupabaseChatRoomService } from "@/entities/chatRoom";
+
 import { ServiceRegistry } from "../core/ServiceRegistry";
 import {
   ChatAPIService,
@@ -11,7 +13,6 @@ import {
   TypingStateService,
 } from "../implementations";
 
-import { SupabaseChatRoomService } from "@/entities/chatRoom";
 
 export function configureServices(): void {
   ServiceRegistry.register({

@@ -1,14 +1,18 @@
-import { AnthropicLogo, OpenAILogo } from "@/shared/components/brand";
-import type { DropdownItem } from "@/shared/components/ui";
-import { Button, Dropdown } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import React, { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+
+
+import { AnthropicLogo, OpenAILogo } from "@/shared/components/brand";
+import type { DropdownItem } from "@/shared/components/ui";
+import { Button, Dropdown } from "@/shared/components/ui";
+
 import { useLanguageContext } from "../../../language";
 import { useAppTheme } from "../../../theme/theme";
 import { AVAILABLE_MODELS, DEFAULT_MODEL, getModelInfo } from "../../constants";
 import { ModelCapabilityIcons } from "../ModelCapabilityIcons";
+
 import { createChatHeaderStyles } from "./ChatHeader.styles";
 
 interface ChatHeaderProps {
@@ -66,7 +70,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   const toggleDrawer = () => {
-    (navigation as any).toggleDrawer();
+    (navigation as { toggleDrawer?: () => void }).toggleDrawer?.();
   };
 
   return (

@@ -1,11 +1,14 @@
-import type { ChatMessage } from "@/entities/message";
 import React from "react";
 import { View } from "react-native";
+
+import type { ChatMessage } from "@/entities/message";
+
 import { copy as copyToClipboard } from "../../../../shared/lib/clipboard";
 import { useToast } from "../../../alert";
 import { useAppTheme } from "../../../theme/theme";
 import { AssistantMessageBar } from "../AssistantMessageBar";
 import { MarkdownRenderer } from "../MarkdownRenderer";
+
 import { createAssistantMessageStyles } from "./AssistantMessage.styles";
 
 interface AssistantMessageProps {

@@ -1,5 +1,6 @@
 // src/features/chat/services/implementations/MessageAnimationService.ts
 import type { ChatMessage } from "@/entities/message";
+
 import {
   TYPING_ANIMATION_CHUNK_SIZE,
   TYPING_ANIMATION_MIN_TICK_MS,

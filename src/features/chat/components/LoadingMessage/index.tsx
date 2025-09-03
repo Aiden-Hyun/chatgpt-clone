@@ -1,15 +1,18 @@
-import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme";
 import React, { useEffect, useState } from "react";
 import { Animated, View } from "react-native";
+
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+
 import {
   LOADING_ANIMATION_START_DELAY_MS,
   LOADING_DOT_INTERVAL_MS,
 } from "../../constants";
+
 import { createLoadingMessageStyles } from "./LoadingMessage.styles";
 
 interface LoadingMessageProps {
-  style?: any;
+  style?: React.ComponentProps<typeof View>["style"];
 }
 
 export const LoadingMessage: React.FC<LoadingMessageProps> = ({ style }) => {

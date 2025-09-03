@@ -1,6 +1,3 @@
-import type { ChatMessage } from "@/entities/message";
-import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -11,6 +8,12 @@ import {
   Text,
   View,
 } from "react-native";
+
+
+import type { ChatMessage } from "@/entities/message";
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+
 import {
   AUTOSCROLL_THRESHOLD_PX,
   CURSOR_BLINK_DURATION_MS,
@@ -258,7 +261,8 @@ export const MessageList: React.FC<MessageListProps> = ({
     }
     for (let i = 0; i < messages.length; i++) {
       const explicitId =
-        (messages[i] as any).id ?? (messages[i] as any)._loadingId;
+        (messages[i] as ChatMessage & { _loadingId?: string }).id ??
+        (messages[i] as ChatMessage & { _loadingId?: string })._loadingId;
       if (explicitId) {
         ids[i] = explicitId;
       } else if (!ids[i]) {
@@ -271,10 +275,16 @@ export const MessageList: React.FC<MessageListProps> = ({
   const messagesWithIds = useMemo(
     () =>
       messages.map((m, i) => {
-        const existingId = (m as any).id as string | undefined;
-        const loadingId = (m as any)._loadingId as string | undefined;
+        const existingId = (m as ChatMessage & { _loadingId?: string }).id as
+          | string
+          | undefined;
+        const loadingId = (m as ChatMessage & { _loadingId?: string })
+          ._loadingId as string | undefined;
         const resolvedId = existingId ?? loadingId ?? stableIdsRef.current[i];
-        return { ...(m as any), id: resolvedId } as any;
+        return {
+          ...(m as ChatMessage & { _loadingId?: string }),
+          id: resolvedId,
+        } as ChatMessage;
       }) as ChatMessage[],
     [messages]
   );
@@ -289,7 +299,7 @@ export const MessageList: React.FC<MessageListProps> = ({
               role: "assistant" as const,
               content: "",
               id: (placeholderIdRef.current ||= generateMessageId()),
-            } as any,
+            } as ChatMessage,
           ]
         : messagesWithIds,
     [messagesWithIds, isNewMessageLoading]
@@ -387,7 +397,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   return (
     <FlashList
       data={messagesWithLoading}
-      keyExtractor={(item: any) => item.id}
+      keyExtractor={(item: ChatMessage) => item.id}
       renderItem={renderMessage}
       contentContainerStyle={styles.container}
       ref={flatListRef}

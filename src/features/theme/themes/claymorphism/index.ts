@@ -1,18 +1,20 @@
 // Claymorphism theme - Index file
 // Exports both light and dark variants along with theme metadata
 
-import { BaseTheme } from '../../theme.types';
-import { spacing } from '../tokens';
-import { darkColors, darkShadows } from './dark';
-import { lightColors, lightShadows } from './light';
+import { BaseTheme } from "../../theme.types";
+import { spacing } from "../tokens";
+
+import { darkColors, darkShadows } from "./dark";
+import { lightColors, lightShadows } from "./light";
 
 // Theme metadata
 export const claymorphismThemeMetadata = {
-  id: 'claymorphism',
-  name: 'Claymorphism',
-  description: 'Soft, puffy 3D elements with vibrant colors and rounded corners',
-  version: '1.0.0',
-  author: 'ChatGPT Clone Team',
+  id: "claymorphism",
+  name: "Claymorphism",
+  description:
+    "Soft, puffy 3D elements with vibrant colors and rounded corners",
+  version: "1.0.0",
+  author: "ChatGPT Clone Team",
   // Preview image would be imported here if available
   // preview: require('./preview.png'),
 };
@@ -31,13 +33,13 @@ const claymorphismTypography = {
     xxl: 26,
   },
   fontWeights: {
-    regular: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
+    regular: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
   },
   fontFamily: {
-    primary: 'System', // Uses San Francisco on iOS and Roboto on Android
+    primary: "System", // Uses San Francisco on iOS and Roboto on Android
   },
   letterSpacing: {
     tight: 0,
@@ -49,16 +51,16 @@ const claymorphismTypography = {
 // Claymorphism border values (extra rounded for the clay effect)
 const claymorphismBorders = {
   colors: {
-    light: '#E5E7EB',      // Light gray
-    medium: '#D1D5DB',     // Medium light gray
-    dark: '#9CA3AF',       // Medium gray
+    light: "#E5E7EB", // Light gray
+    medium: "#D1D5DB", // Medium light gray
+    dark: "#9CA3AF", // Medium gray
   },
   radius: {
-    xs: 8,    // Significantly more rounded
-    sm: 12,   // Significantly more rounded
-    md: 16,   // Significantly more rounded
-    lg: 24,   // Significantly more rounded
-    xl: 32,   // Significantly more rounded
+    xs: 8, // Significantly more rounded
+    sm: 12, // Significantly more rounded
+    md: 16, // Significantly more rounded
+    lg: 24, // Significantly more rounded
+    xl: 32, // Significantly more rounded
     round: 9999, // For circular elements (avatars, etc.)
   },
   widths: {
@@ -69,25 +71,25 @@ const claymorphismBorders = {
     heavy: 3,
   },
   styles: {
-    solid: 'solid',
-    dashed: 'dashed',
-    dotted: 'dotted',
+    solid: "solid",
+    dashed: "dashed",
+    dotted: "dotted",
   },
 };
 
 // Dark mode borders for claymorphism
 const claymorphismDarkBorders = {
   colors: {
-    light: '#374151',      // Medium gray
-    medium: '#4B5563',     // Medium light gray
-    dark: '#6B7280',       // Light gray
+    light: "#374151", // Medium gray
+    medium: "#4B5563", // Medium light gray
+    dark: "#6B7280", // Light gray
   },
   radius: {
-    xs: 8,    // Significantly more rounded
-    sm: 12,   // Significantly more rounded
-    md: 16,   // Significantly more rounded
-    lg: 24,   // Significantly more rounded
-    xl: 32,   // Significantly more rounded
+    xs: 8, // Significantly more rounded
+    sm: 12, // Significantly more rounded
+    md: 16, // Significantly more rounded
+    lg: 24, // Significantly more rounded
+    xl: 32, // Significantly more rounded
     round: 9999, // For circular elements (avatars, etc.)
   },
   widths: {
@@ -98,9 +100,9 @@ const claymorphismDarkBorders = {
     heavy: 3,
   },
   styles: {
-    solid: 'solid',
-    dashed: 'dashed',
-    dotted: 'dotted',
+    solid: "solid",
+    dashed: "dashed",
+    dotted: "dotted",
   },
 };
 
@@ -176,35 +178,35 @@ const claymorphismLayout = {
 // Claymorphism shadow values (more dramatic for 3D effect)
 const claymorphismShadows = {
   light: {
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
   medium: {
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
   heavy: {
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 8,
   },
   button: {
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 3,
   },
   card: {
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 10,
@@ -220,9 +222,9 @@ const claymorphismAnimations = {
     slow: 600,
   },
   easings: {
-    easeIn: 'ease-in',
-    easeOut: 'ease-out',
-    easeInOut: 'ease-in-out',
+    easeIn: "ease-in",
+    easeOut: "ease-out",
+    easeInOut: "ease-in-out",
   },
 };
 
@@ -257,9 +259,9 @@ const claymorphismTransforms = {
     active: 1.08,
   },
   rotate: {
-    loading: '360deg',
-    chevron: '180deg',
-    arrow: '90deg',
+    loading: "360deg",
+    chevron: "180deg",
+    arrow: "90deg",
   },
   translate: {
     pressed: { x: 0, y: 2 },
@@ -275,10 +277,10 @@ const claymorphismTransitions = {
     slow: 600,
   },
   easings: {
-    easeIn: 'ease-in',
-    easeOut: 'ease-out',
-    easeInOut: 'ease-in-out',
-    linear: 'linear',
+    easeIn: "ease-in",
+    easeOut: "ease-out",
+    easeInOut: "ease-in-out",
+    linear: "linear",
   },
 };
 

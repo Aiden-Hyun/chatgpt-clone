@@ -1,15 +1,18 @@
 // src/features/chat/components/ErrorMessage/index.tsx
-import type { ChatMessage } from "@/entities/message";
-import { Button, Text } from "@/shared/components/ui";
 import React from "react";
 import { View } from "react-native";
+
+import type { ChatMessage } from "@/entities/message";
+import { Button, Text } from "@/shared/components/ui";
+
 import { useAppTheme } from "../../../theme/theme";
+
 import { createErrorMessageStyles } from "./ErrorMessage.styles";
 
 interface ErrorMessageProps {
   message: ChatMessage;
   onRetry: () => void;
-  style?: any;
+  style?: React.ComponentProps<typeof View>["style"];
 }
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({

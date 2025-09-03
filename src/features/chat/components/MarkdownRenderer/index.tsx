@@ -1,16 +1,21 @@
-import { Ionicons } from '@expo/vector-icons';
+
+import { Ionicons } from "@expo/vector-icons";
 import * as FileSystem from "expo-file-system";
 import { Image as ExpoImage } from "expo-image";
-import React from "react";
+import React, { ReactNode } from "react";
 import {
   ActivityIndicator,
   Platform,
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
-import MarkdownDisplay, { MarkdownIt } from "react-native-markdown-display";
+import MarkdownDisplay, {
+  ASTNode,
+  MarkdownIt,
+} from "react-native-markdown-display";
+
 import { useResponsive } from "../../../../shared/hooks/useResponsive";
 import { useToast } from "../../../alert";
 import { useAppTheme } from "../../../theme/theme";
@@ -19,6 +24,7 @@ import {
   SHORT_CODE_SNIPPET_THRESHOLD,
 } from "../../constants";
 import { CodeBlock } from "../CodeBlock";
+
 import { createMarkdownRendererStyles } from "./MarkdownRenderer.styles";
 
 interface MarkdownRendererProps {
@@ -68,7 +74,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           return;
         }
 
-        let MediaLibrary: any;
+        let MediaLibrary: typeof import("expo-media-library");
         try {
           MediaLibrary = await import("expo-media-library");
         } catch {
@@ -179,7 +185,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     //     parent?.type === 'link' ||
     //     parent?.type === 'link_open' || // safety for token variations
     //     parent?.type === 'a';
-  
+
     //   return (
     //     <Text
     //       key={node.key}
@@ -190,9 +196,13 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     //   );
     // },
 
-
     // Custom table renderer with horizontal scroll on mobile
-    table: (node: any, children: any, parent: any, _mdStyles: any) => {
+    table: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       if (isMobile) {
         return (
           <ScrollView
@@ -208,21 +218,41 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom table header renderer
-    thead: (node: any, children: any, parent: any, _mdStyles: any) => {
+    thead: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       return <View style={styles.thead}>{children}</View>;
     },
 
     // Custom table body renderer
-    tbody: (node: any, children: any, parent: any, _mdStyles: any) => {
+    tbody: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       return <View style={styles.tbody}>{children}</View>;
     },
 
     // Custom table row renderer - this is crucial for proper column separation
-    tr: (node: any, children: any, parent: any, _mdStyles: any) => {
+    tr: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       return <View style={styles.tr}>{children}</View>;
     },
 
-    th: (node: any, children: any, parent: any, _mdStyles: any) => {
+    th: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       return (
         <View style={styles.th}>
           <ScrollView
@@ -238,7 +268,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom table data cell renderer
-    td: (node: any, children: any, parent: any, _mdStyles: any) => {
+    td: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       return (
         <View style={styles.td}>
           <ScrollView
@@ -254,7 +289,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom code block renderer using our CodeBlock component
-    code_block: (node: any, children: any, parent: any, _mdStyles: any) => {
+    code_block: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       const { content } = node;
       const language = node.sourceInfo || "text";
 
@@ -269,7 +309,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom fence renderer (```code``` blocks)
-    fence: (node: any, children: any, parent: any, _mdStyles: any) => {
+    fence: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       const { content } = node;
       const language = node.sourceInfo || "text";
 
@@ -284,7 +329,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom inline code renderer - simple styled text
-    code_inline: (node: any, children: any, parent: any, _mdStyles: any) => {
+    code_inline: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       return (
         <Text key={node.key} style={styles.code_inline}>
           {node.content}
@@ -293,7 +343,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     },
 
     // Custom image renderer to avoid key spread warnings from default implementation
-    image: (node: any, children: any, parent: any, _mdStyles: any) => {
+    image: (
+      node: ASTNode,
+      children: ReactNode[],
+      parent: ASTNode[],
+      _mdStyles: Record<string, unknown>
+    ) => {
       const src =
         node?.attributes?.src || node?.attributes?.href || node?.content || "";
       const alt = node?.attributes?.alt || node?.content || "image";

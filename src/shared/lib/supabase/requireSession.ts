@@ -1,5 +1,6 @@
 // src/shared/lib/supabase/requireSession.ts
 import type { Session } from "@/entities/session";
+
 import { getSession } from "./getSession";
 
 export class UnauthenticatedError extends Error {

@@ -1,5 +1,7 @@
-import type { ChatMessage } from "@/entities/message";
 import { useCallback } from "react";
+
+import type { ChatMessage } from "@/entities/message";
+
 import { sendMessageHandler } from "../../services/sendMessage";
 import { logger } from "../../utils/logger";
 import { generateMessageId } from "../../utils/messageIdGenerator";

@@ -1,18 +1,19 @@
-import { useMemo } from 'react';
-import { useChatRooms } from '../../features/chat/hooks';
-import { useBackButtonHandler, useInputFocus } from './index';
+import { useMemo } from "react";
+
+import { useChatRooms } from "../../features/chat/hooks";
+
+import { useBackButtonHandler, useInputFocus } from "./index";
 
 /**
  * 🎯 COMPOSITE HOOK: Batches all ChatScreen hook initializations
- * 
+ *
  * This hook prevents the hook initialization cascade by bundling all
  * ChatScreen-related hooks into a single, memoized initialization.
- * 
+ *
  * Before: 4-5 individual hook calls → 4-5 renders
  * After: 1 composite hook call → 1 render
  */
 export function useChatScreen() {
-
   // Initialize all hooks together
   const inputFocus = useInputFocus();
   const backButton = useBackButtonHandler({ enabled: true });
@@ -24,10 +25,10 @@ export function useChatScreen() {
       // Input focus state
       inputRef: inputFocus.inputRef,
       maintainFocus: inputFocus.maintainFocus,
-      
+
       // Back button state
       disableBackButton: backButton.disableBackButton,
-      
+
       // Chat rooms state
       startNewChat: chatRooms.startNewChat,
     };

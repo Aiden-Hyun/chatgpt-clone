@@ -1,5 +1,6 @@
 // src/features/chat/components/ErrorMessage/ErrorMessage.styles.ts
 import { StyleSheet } from 'react-native';
+
 import { AppTheme } from '../../../theme/theme.types';
 
 export const createErrorMessageStyles = (theme: AppTheme) => {

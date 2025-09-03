@@ -1,59 +1,63 @@
 // src/features/chat/services/core/LoggingService.ts
 export interface LogEntry {
   timestamp: string;
-  level: 'debug' | 'info' | 'warn' | 'error';
+  level: "debug" | "info" | "warn" | "error";
   message: string;
   service: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface ILoggingService {
-  debug(message: string, data?: any): void;
-  info(message: string, data?: any): void;
-  warn(message: string, data?: any): void;
-  error(message: string, data?: any): void;
+  debug(message: string, data?: unknown): void;
+  info(message: string, data?: unknown): void;
+  warn(message: string, data?: unknown): void;
+  error(message: string, data?: unknown): void;
 }
 
 export class LoggingService implements ILoggingService {
   constructor(private serviceName: string) {}
 
-  debug(message: string, data?: any): void {
-    this.log('debug', message, data);
+  debug(message: string, data?: unknown): void {
+    this.log("debug", message, data);
   }
 
-  info(message: string, data?: any): void {
-    this.log('info', message, data);
+  info(message: string, data?: unknown): void {
+    this.log("info", message, data);
   }
 
-  warn(message: string, data?: any): void {
-    this.log('warn', message, data);
+  warn(message: string, data?: unknown): void {
+    this.log("warn", message, data);
   }
 
-  error(message: string, data?: any): void {
-    this.log('error', message, data);
+  error(message: string, data?: unknown): void {
+    this.log("error", message, data);
   }
 
-  private log(level: 'debug' | 'info' | 'warn' | 'error', message: string, data?: any): void {
+  private log(
+    level: "debug" | "info" | "warn" | "error",
+    message: string,
+    data?: unknown
+  ): void {
     const timestamp = new Date().toISOString();
     const logEntry: LogEntry = {
       timestamp,
       level,
       message,
       service: this.serviceName,
-      ...data
+      ...data,
     };
 
     switch (level) {
-      case 'debug':
+      case "debug":
         console.debug(`[${timestamp}] DEBUG: ${message}`, data);
         break;
-      case 'info':
+      case "info":
         console.info(`[${timestamp}] INFO: ${message}`, data);
         break;
-      case 'warn':
+      case "warn":
         console.warn(`[${timestamp}] WARN: ${message}`, data);
         break;
-      case 'error':
+      case "error":
         console.error(`[${timestamp}] ERROR: ${message}`, data);
         break;
     }
@@ -61,4 +65,4 @@ export class LoggingService implements ILoggingService {
     // In production, you might want to send this to a logging service
     // this.loggingService.log(logEntry);
   }
-} 
+}

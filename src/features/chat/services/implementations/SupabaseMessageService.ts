@@ -1,6 +1,7 @@
 // src/features/chat/services/implementations/SupabaseMessageService.ts
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
+
 import { supabase } from "../../../../shared/lib/supabase";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 import { IMessageService } from "../interfaces/IMessageService";
@@ -15,7 +16,13 @@ export class SupabaseMessageService implements IMessageService {
     // Consolidated from legacy/insertMessages.ts
     try {
       // Build assistant row (avoid optional columns for maximum compatibility)
-      const assistantRow: any = {
+      const assistantRow: {
+        room_id: number;
+        user_id: string;
+        role: string;
+        content: string;
+        client_id: string | null;
+      } = {
         room_id: args.roomId,
         user_id: args.session.user.id,
         role: "assistant",
@@ -68,10 +75,14 @@ export class SupabaseMessageService implements IMessageService {
 
       const messageId = messages[0].id;
       const currentClientId: string | null =
-        (messages[0] as any).client_id ?? null;
+        (messages[0] as { client_id?: string }).client_id ?? null;
 
       // Update the message (ensure assistant rows get a client_id if missing)
-      const updatePayload: any = {
+      const updatePayload: {
+        content: string;
+        updated_at: string;
+        client_id?: string;
+      } = {
         content: args.newContent,
         updated_at: new Date().toISOString(),
       };
@@ -156,7 +167,11 @@ export class SupabaseMessageService implements IMessageService {
         );
       }
 
-      const updatePayload: any = {
+      const updatePayload: {
+        content: string;
+        updated_at: string;
+        client_id?: string;
+      } = {
         content: args.newContent,
         updated_at: new Date().toISOString(),
       };
@@ -261,7 +276,14 @@ export class SupabaseMessageService implements IMessageService {
     }
 
     // Map DB rows to ChatMessage with a stable identifier
-    const mapped: ChatMessage[] = (data as any[]).map((row) => {
+    const mapped: ChatMessage[] = (
+      data as {
+        id: number;
+        role: string;
+        content: string;
+        client_id?: string;
+      }[]
+    ).map((row) => {
       const id: string | undefined =
         typeof row.id === "number" || typeof row.id === "string"
           ? `db:${row.id}`

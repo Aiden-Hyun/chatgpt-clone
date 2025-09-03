@@ -1,9 +1,13 @@
-import { Button } from "@/shared/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { View } from "react-native";
+
+
+import { Button } from "@/shared/components/ui/Button";
+
 import { useToast } from "../../../alert";
 import { useAppTheme } from "../../../theme/theme";
+
 import { createAssistantMessageBarStyles } from "./AssistantMessageBar.styles";
 
 interface AssistantMessageBarProps {
@@ -30,7 +34,7 @@ export const AssistantMessageBar: React.FC<AssistantMessageBarProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createAssistantMessageBarStyles(theme);
-  const { showSuccess } = useToast();
+  const { showSuccess: _showSuccess } = useToast();
   const handleRegeneratePress = () => {
     onRegenerate?.();
   };

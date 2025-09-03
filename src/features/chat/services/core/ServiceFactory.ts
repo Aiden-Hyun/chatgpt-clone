@@ -1,9 +1,11 @@
 // src/features/chat/services/core/ServiceFactory.ts
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
+
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IRegenerationService } from "../interfaces/IRegenerationService";
+
 import { OpenAIResponseProcessor } from "./AIResponseProcessor";
 import { MessageOrchestrator } from "./message-sender";
 import { ServiceRegistry } from "./ServiceRegistry";
@@ -98,10 +100,10 @@ export class ServiceFactory {
   }
 
   static createRegenerationService(
-    messageStateManager: any, // Using any to avoid circular dependency
+    messageStateManager: unknown, // Using unknown to avoid circular dependency
     aiApiService: IAIApiService,
     messageService: IMessageService,
-    animationService: any,
+    animationService: unknown,
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     session: Session,
     selectedModel: string,

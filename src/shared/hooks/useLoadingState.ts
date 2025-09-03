@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react';
-import { useAppTheme } from '../../features/theme/theme';
+import { useCallback, useState } from "react";
+
+import { useAppTheme } from "../../features/theme/theme";
 
 interface UseLoadingStateOptions {
   initialLoading?: boolean;
@@ -11,7 +12,7 @@ interface UseLoadingStateOptions {
  */
 export const useLoadingState = (options: UseLoadingStateOptions = {}) => {
   const { initialLoading = false } = options;
-  
+
   const [loading, setLoading] = useState(initialLoading);
   const theme = useAppTheme();
 
@@ -24,20 +25,23 @@ export const useLoadingState = (options: UseLoadingStateOptions = {}) => {
   }, []);
 
   const toggleLoading = useCallback(() => {
-    setLoading(prev => !prev);
+    setLoading((prev) => !prev);
   }, []);
 
   // Helper function to get loading styles
-  const getLoadingStyles = useCallback(() => ({
-    container: {
-      flex: 1,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-      backgroundColor: theme.colors.background.primary,
-      padding: theme.spacing.xxl,
-    },
-    spinnerColor: theme.colors.primary,
-  }), [theme.colors.background.primary, theme.colors.primary, theme.spacing.xxl]);
+  const getLoadingStyles = useCallback(
+    () => ({
+      container: {
+        flex: 1,
+        justifyContent: "center" as const,
+        alignItems: "center" as const,
+        backgroundColor: theme.colors.background.primary,
+        padding: theme.spacing.xxl,
+      },
+      spinnerColor: theme.colors.primary,
+    }),
+    [theme.colors.background.primary, theme.colors.primary, theme.spacing.xxl]
+  );
 
   return {
     loading,
@@ -47,4 +51,4 @@ export const useLoadingState = (options: UseLoadingStateOptions = {}) => {
     toggleLoading,
     getLoadingStyles,
   };
-}; 
+};

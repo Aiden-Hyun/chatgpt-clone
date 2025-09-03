@@ -1,4 +1,5 @@
 import { Platform, StyleSheet } from 'react-native';
+
 import { AppTheme } from '../../../theme/theme.types';
 
 export const createMarkdownRendererStyles = (theme: AppTheme, isMobile: boolean = false) => {

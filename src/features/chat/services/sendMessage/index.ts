@@ -1,5 +1,6 @@
 // src/features/chat/services/sendMessage/index.ts
 import type { ChatMessage } from "@/entities/message";
+
 import { getModelInfo } from "../../constants/models";
 import { logger } from "../../utils/logger";
 import { SendMessageRequest } from "../core/message-sender";

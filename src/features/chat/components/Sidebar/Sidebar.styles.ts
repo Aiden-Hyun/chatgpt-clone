@@ -1,5 +1,6 @@
-import { AppTheme } from "@/features/theme"; // ← Use absolute path with @ alias
 import { StyleSheet } from "react-native";
+
+import { AppTheme } from "@/features/theme"; // ← Use absolute path with @ alias
 
 export const createSidebarStyles = (theme: AppTheme) => {
   return StyleSheet.create({

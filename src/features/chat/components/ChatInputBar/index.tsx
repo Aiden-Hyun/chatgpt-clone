@@ -1,5 +1,3 @@
-import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { RefObject, useMemo, useState } from "react";
 import {
@@ -9,7 +7,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+
 import { getModelInfo } from "../../constants/models";
+
 import { createChatInputStyles } from "./ChatInputBar.styles";
 
 interface ChatInputBarProps {

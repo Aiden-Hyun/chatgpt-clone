@@ -1,5 +1,6 @@
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
+
 import { ROOM_NAME_MAX_LENGTH } from "../../../constants";
 import { IChatRoomService } from "../../interfaces/IChatRoomService";
 import { IMessageService } from "../../interfaces/IMessageService";

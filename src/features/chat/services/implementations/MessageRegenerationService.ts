@@ -1,9 +1,9 @@
 // src/features/chat/services/implementations/MessageRegenerationService.ts
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
+
 // Import removed: import { logger } from '../../utils/logger';
 import { supabase } from "../../../../shared/lib/supabase";
-
 import { OpenAIResponseProcessor } from "../core/AIResponseProcessor";
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IAnimationService } from "../interfaces/IAnimationService";
@@ -101,7 +101,7 @@ export class MessageRegenerationService implements IRegenerationService {
         model: this.selectedModel,
         clientMessageId: targetMessageId,
         skipPersistence: true,
-      } as any;
+      } as AIApiRequest;
 
       // Determine which token to use
       let accessToken = this.session.access_token;
@@ -162,26 +162,44 @@ export class MessageRegenerationService implements IRegenerationService {
             const dbId = Number(dbIdStr);
             if (
               !Number.isNaN(dbId) &&
-              (this.messageService as any).updateAssistantMessageByDbId
+              (
+                this.messageService as {
+                  updateAssistantMessageByDbId?: unknown;
+                }
+              ).updateAssistantMessageByDbId
             ) {
-              await (this.messageService as any).updateAssistantMessageByDbId({
+              await (
+                this.messageService as {
+                  updateAssistantMessageByDbId: (
+                    params: unknown
+                  ) => Promise<unknown>;
+                }
+              ).updateAssistantMessageByDbId({
                 dbId,
                 newContent,
                 session: this.session,
               });
             }
           } else if (
-            (this.messageService as any).updateAssistantMessageByClientId &&
+            (
+              this.messageService as {
+                updateAssistantMessageByClientId?: unknown;
+              }
+            ).updateAssistantMessageByClientId &&
             this.roomId
           ) {
-            await (this.messageService as any).updateAssistantMessageByClientId(
-              {
-                roomId: this.roomId,
-                messageId: targetMessageId,
-                newContent,
-                session: this.session,
+            await (
+              this.messageService as {
+                updateAssistantMessageByClientId: (
+                  params: unknown
+                ) => Promise<unknown>;
               }
-            );
+            ).updateAssistantMessageByClientId({
+              roomId: this.roomId,
+              messageId: targetMessageId,
+              newContent,
+              session: this.session,
+            });
           }
 
           // Also persist edited user message if it came from DB and content changed
@@ -195,11 +213,18 @@ export class MessageRegenerationService implements IRegenerationService {
               userContent &&
               userContent.trim().length > 0 &&
               userContent !== userMsg.content &&
-              (this.messageService as any).updateUserMessageByDbId
+              (this.messageService as { updateUserMessageByDbId?: unknown })
+                .updateUserMessageByDbId
             ) {
               const userDbId = Number(userMsg.id.slice(3));
               if (!Number.isNaN(userDbId)) {
-                await (this.messageService as any).updateUserMessageByDbId({
+                await (
+                  this.messageService as {
+                    updateUserMessageByDbId: (
+                      params: unknown
+                    ) => Promise<unknown>;
+                  }
+                ).updateUserMessageByDbId({
                   dbId: userDbId,
                   newContent: userContent,
                   session: this.session,

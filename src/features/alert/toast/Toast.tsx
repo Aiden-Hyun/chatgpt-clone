@@ -1,31 +1,27 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { useAppTheme } from '../../theme/theme';
-import { DEFAULT_TOAST_DURATION_MS } from '../constants';
+import React, { useEffect, useRef } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+import { AppTheme, useAppTheme } from "../../theme/theme";
+import { DEFAULT_TOAST_DURATION_MS } from "../constants";
 
 interface ToastProps {
   visible: boolean;
   message: string;
-  type?: 'success' | 'error' | 'warning' | 'info';
+  type?: "success" | "error" | "warning" | "info";
   duration?: number;
   onHide?: () => void;
   onPress?: () => void;
-  position?: 'bottom' | 'top';
+  position?: "bottom" | "top";
 }
 
 export const Toast: React.FC<ToastProps> = ({
   visible,
   message,
-  type = 'info',
+  type = "info",
   duration = DEFAULT_TOAST_DURATION_MS,
   onHide,
   onPress,
-  position = 'bottom',
+  position = "bottom",
 }) => {
   const theme = useAppTheme();
   const styles = createStyles(theme, type, position);
@@ -57,27 +53,22 @@ export const Toast: React.FC<ToastProps> = ({
 
   const getIcon = () => {
     switch (type) {
-      case 'success':
-        return '✅';
-      case 'error':
-        return '❌';
-      case 'warning':
-        return '⚠️';
-      case 'info':
+      case "success":
+        return "✅";
+      case "error":
+        return "❌";
+      case "warning":
+        return "⚠️";
+      case "info":
       default:
-        return 'ℹ️';
+        return "ℹ️";
     }
   };
 
   if (!visible) return null;
 
   return (
-    <View
-      style={[
-        styles.container,
-        { pointerEvents: 'box-none' },
-      ]}
-    >
+    <View style={[styles.container, { pointerEvents: "box-none" }]}>
       <TouchableOpacity
         style={styles.toast}
         onPress={onPress}
@@ -93,46 +84,52 @@ export const Toast: React.FC<ToastProps> = ({
   );
 };
 
-const createStyles = (theme: any, type: string, position: 'bottom' | 'top') => StyleSheet.create({
-  container: {
-    position: 'absolute',
-    ...(position === 'bottom' ? { bottom: 24 } : { top: 24 }),
-    left: 20,
-    right: 20,
-    zIndex: 9999,
-  },
-  toast: {
-    backgroundColor: type === 'success' 
-      ? theme.colors.status.success.primary 
-      : type === 'error' 
-      ? theme.colors.status.error.primary 
-      : type === 'warning' 
-      ? theme.colors.status.warning.primary 
-      : theme.colors.primary,
-    borderRadius: theme.borders.radius.lg,
-    padding: theme.spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    ...theme.shadows.medium,
-  },
-  icon: {
-            fontSize: theme.typography.fontSizes.lg,
-    marginRight: theme.spacing.sm,
-  },
-  message: {
-    flex: 1,
-    color: theme.colors.text.inverted,
-            fontSize: theme.typography.fontSizes.md,
-          fontWeight: theme.typography.fontWeights.medium as '500',
-          fontFamily: theme.typography.fontFamily.primary,
-  },
-  closeButton: {
-    padding: theme.spacing.xs,
-    marginLeft: theme.spacing.sm,
-  },
-  closeText: {
-    color: theme.colors.text.inverted,
-            fontSize: theme.typography.fontSizes.sm,
-          fontWeight: theme.typography.fontWeights.bold as '700',
-  },
-}); 
+const createStyles = (
+  theme: AppTheme,
+  type: string,
+  position: "bottom" | "top"
+) =>
+  StyleSheet.create({
+    container: {
+      position: "absolute",
+      ...(position === "bottom" ? { bottom: 24 } : { top: 24 }),
+      left: 20,
+      right: 20,
+      zIndex: 9999,
+    },
+    toast: {
+      backgroundColor:
+        type === "success"
+          ? theme.colors.status.success.primary
+          : type === "error"
+          ? theme.colors.status.error.primary
+          : type === "warning"
+          ? theme.colors.status.warning.primary
+          : theme.colors.primary,
+      borderRadius: theme.borders.radius.lg,
+      padding: theme.spacing.md,
+      flexDirection: "row",
+      alignItems: "center",
+      ...theme.shadows.medium,
+    },
+    icon: {
+      fontSize: theme.typography.fontSizes.lg,
+      marginRight: theme.spacing.sm,
+    },
+    message: {
+      flex: 1,
+      color: theme.colors.text.inverted,
+      fontSize: theme.typography.fontSizes.md,
+      fontWeight: theme.typography.fontWeights.medium as "500",
+      fontFamily: theme.typography.fontFamily.primary,
+    },
+    closeButton: {
+      padding: theme.spacing.xs,
+      marginLeft: theme.spacing.sm,
+    },
+    closeText: {
+      color: theme.colors.text.inverted,
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: theme.typography.fontWeights.bold as "700",
+    },
+  });

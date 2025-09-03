@@ -1,5 +1,6 @@
 // src/lib/supabase/index.ts
 import { createClient } from '@supabase/supabase-js';
+
 import { appConfig } from '../config';
 
 // Create and export the Supabase client with our new secure config

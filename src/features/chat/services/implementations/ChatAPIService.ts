@@ -1,6 +1,7 @@
 // src/features/chat/services/implementations/ChatAPIService.ts
 import type { AIApiRequest, AIApiResponse } from "@/entities/message";
 import { appConfig } from "@/shared/lib/config";
+
 import { getModelInfo } from "../../constants/models";
 import { fetchJson } from "../../lib/fetch";
 import { IAIApiService } from "../interfaces/IAIApiService";
@@ -70,7 +71,7 @@ export class ChatAPIService implements IAIApiService {
     const url = isSearchMode
       ? `${appConfig.edgeFunctionBaseUrl}/react-search`
       : `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
-    const response = await fetchJson<any>(url, {
+    const response = await fetchJson<AIApiResponse>(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -87,7 +88,7 @@ export class ChatAPIService implements IAIApiService {
     if (isSearchMode) {
       const searchResponse = response as {
         final_answer_md: string;
-        citations: any[];
+        citations: unknown[];
         time_warning?: string;
       };
       return {
