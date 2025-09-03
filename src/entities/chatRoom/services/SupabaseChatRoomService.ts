@@ -1,6 +1,7 @@
 // src/features/chat/services/implementations/SupabaseChatRoomService.ts
-import { supabase } from '../../../../shared/lib/supabase';
-import { IChatRoomService } from '../interfaces/IChatRoomService';
+import { supabase } from "@/shared/lib/supabase";
+
+import type { IChatRoomService } from "../model/types";
 
 export class SupabaseChatRoomService implements IChatRoomService {
   async createRoom(userId: string, model: string): Promise<number | null> {
@@ -11,39 +12,43 @@ export class SupabaseChatRoomService implements IChatRoomService {
 
     // Use upsert to gracefully handle rare race conditions creating the same name simultaneously
     const { data, error } = await supabase
-      .from('chatrooms')
+      .from("chatrooms")
       .upsert(
         { name: defaultName, user_id: userId, model },
-        { onConflict: 'user_id,name' }
+        { onConflict: "user_id,name" }
       )
-      .select('id')
+      .select("id")
       .single();
 
     if (error || !data) {
-      console.error('Failed to create chatroom:', error);
+      console.error("Failed to create chatroom:", error);
       return null;
     }
 
     return data.id;
   }
 
-  async updateRoom(roomId: number, updates: {
-    name?: string;
-    model?: string;
-    updatedAt?: string;
-  }): Promise<void> {
+  async updateRoom(
+    roomId: number,
+    updates: {
+      name?: string;
+      model?: string;
+      updatedAt?: string;
+    }
+  ): Promise<void> {
     const updateData: any = {};
-    
+
     // Only update name if it's provided and not empty
     if (updates.name !== undefined && updates.name.trim()) {
       // Make the name unique by adding a timestamp to avoid constraint violations
-      const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
       const uniqueName = `${updates.name.slice(0, 80)} - ${timestamp}`;
       updateData.name = uniqueName;
     }
-    
+
     if (updates.model !== undefined) updateData.model = updates.model;
-    if (updates.updatedAt !== undefined) updateData.updated_at = updates.updatedAt;
+    if (updates.updatedAt !== undefined)
+      updateData.updated_at = updates.updatedAt;
 
     // Only perform update if there are actual changes
     if (Object.keys(updateData).length === 0) {
@@ -51,15 +56,15 @@ export class SupabaseChatRoomService implements IChatRoomService {
     }
 
     const { error } = await supabase
-      .from('chatrooms')
+      .from("chatrooms")
       .update(updateData)
-      .eq('id', roomId);
+      .eq("id", roomId);
 
     if (error) {
-      console.error('Failed to update room:', error);
+      console.error("Failed to update room:", error);
       // Don't throw error for room updates - they're not critical
       // Just log the error and continue
-      console.warn('Room update failed, but continuing with message flow');
+      console.warn("Room update failed, but continuing with message flow");
     }
   }
 
@@ -71,13 +76,13 @@ export class SupabaseChatRoomService implements IChatRoomService {
     updatedAt: string;
   } | null> {
     const { data, error } = await supabase
-      .from('chatrooms')
-      .select('id, name, model, created_at, updated_at')
-      .eq('id', roomId)
+      .from("chatrooms")
+      .select("id, name, model, created_at, updated_at")
+      .eq("id", roomId)
       .single();
 
     if (error || !data) {
-      console.error('Failed to get room:', error);
+      console.error("Failed to get room:", error);
       return null;
     }
 
@@ -91,16 +96,20 @@ export class SupabaseChatRoomService implements IChatRoomService {
   }
 
   async deleteRoom(roomId: number): Promise<void> {
-    if (__DEV__) { console.log('[ROOMS] service.deleteRoom:start', { roomId }); }
+    if (__DEV__) {
+      console.log("[ROOMS] service.deleteRoom:start", { roomId });
+    }
     const { error } = await supabase
-      .from('chatrooms')
+      .from("chatrooms")
       .delete()
-      .eq('id', roomId);
+      .eq("id", roomId);
 
     if (error) {
-      console.error('Failed to delete room:', error);
+      console.error("Failed to delete room:", error);
       throw error;
     }
-    if (__DEV__) { console.log('[ROOMS] service.deleteRoom:done', { roomId }); }
+    if (__DEV__) {
+      console.log("[ROOMS] service.deleteRoom:done", { roomId });
+    }
   }
-} 
+}

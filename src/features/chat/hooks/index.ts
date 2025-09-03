@@ -1,10 +1,8 @@
 // Export all chat-related hooks from the chat subdirectory
-export * from './chat';
+export * from "./chat";
 
 // Export message-related hooks from the message subdirectory
-export * from './message';
+export * from "./message";
 
-// Export remaining hooks that weren't moved to subdirectories
-export * from './useChatRooms';
-
-
+// Export chat room hook from entity
+export { useChatRooms } from "@/entities/chatRoom";

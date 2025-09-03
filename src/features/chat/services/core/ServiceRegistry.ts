@@ -1,9 +1,9 @@
 // src/features/chat/services/core/ServiceRegistry.ts
+import type { IChatRoomService } from "@/entities/chatRoom";
 import type { Session } from "@/entities/session";
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IAnimationService } from "../interfaces/IAnimationService";
 import { IAuthService } from "../interfaces/IAuthService";
-import { IChatRoomService } from "../interfaces/IChatRoomService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { INavigationService } from "../interfaces/INavigationService";

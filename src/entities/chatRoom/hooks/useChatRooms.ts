@@ -3,21 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "@/entities/session";
 
+import { chatDebugLog } from "../../../features/chat/constants";
 import mobileStorage from "../../../shared/lib/mobileStorage"; // Add this import
 import { supabase } from "../../../shared/lib/supabase";
-import { chatDebugLog } from "../constants";
 
-export interface ChatRoom {
-  id: number;
-  name: string;
-}
-export interface ChatRoomWithLastMsg {
-  id: number;
-  name: string;
-  last_message?: string;
-  last_activity?: string;
-  updated_at?: string;
-}
+import type { ChatRoomWithLastMsg } from "../model/types";
 
 export const useChatRooms = () => {
   const { session } = useAuth();
