@@ -1,116 +1,129 @@
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "@/entities/session";
 
 import { chatDebugLog } from "../../../features/chat/constants";
-import mobileStorage from "../../../shared/lib/mobileStorage"; // Add this import
+import { useLoadingState } from "../../../shared/hooks/useLoadingState";
+import mobileStorage from "../../../shared/lib/mobileStorage";
 import { supabase } from "../../../shared/lib/supabase";
 import type {
   ChatRoomRow,
   ChatRoomWithLastMsg,
   MessageRow,
-  SupabaseChannel,
 } from "../model/types";
 
 export const useChatRooms = () => {
   const { session } = useAuth();
   const [rooms, setRooms] = useState<ChatRoomWithLastMsg[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { loading, error, executeWithLoading } = useLoadingState({
+    initialLoading: true,
+  });
 
   const fetchRooms = useCallback(async () => {
     if (!session) {
-      // router.replace('/login');
       return;
     }
 
-    // First, get all chat rooms for the user
+    await executeWithLoading(
+      async () => {
+        // First, get all chat rooms for the user
+        const { data: allRoomRows, error: roomsError } = await supabase
+          .from("chatrooms")
+          .select("id, updated_at")
+          .eq("user_id", session.user.id);
 
-    const { data: allRoomRows, error: roomsError } = await supabase
-      .from("chatrooms")
-      .select("id, updated_at")
-      .eq("user_id", session.user.id);
+        if (roomsError || !allRoomRows) {
+          throw new Error(
+            `Failed to fetch chat rooms: ${
+              roomsError?.message || "Unknown error"
+            }`
+          );
+        }
 
-    if (roomsError || !allRoomRows) {
-      console.warn("[ROOMS] fetchRooms:rooms error", roomsError);
-      setLoading(false);
-      return;
-    }
+        const allRoomIds = allRoomRows.map((r) => r.id);
 
-    const allRoomIds = allRoomRows.map((r) => r.id);
+        if (allRoomIds.length === 0) {
+          setRooms([]);
+          return [];
+        }
 
-    if (allRoomIds.length === 0) {
-      setRooms([]);
-      setLoading(false);
-      return;
-    }
+        // Get rooms that have messages
+        const { data: roomsWithMessages } = await supabase
+          .from("messages")
+          .select("room_id")
+          .in("room_id", allRoomIds);
 
-    // Get rooms that have messages
+        if (!roomsWithMessages || roomsWithMessages.length === 0) {
+          setRooms([]);
+          return [];
+        }
 
-    const { data: roomsWithMessages } = await supabase
-      .from("messages")
-      .select("room_id")
-      .in("room_id", allRoomIds);
+        // Get unique room IDs that have messages
+        const roomIdsWithMessages = [
+          ...new Set(roomsWithMessages.map((m) => m.room_id)),
+        ];
 
-    if (!roomsWithMessages || roomsWithMessages.length === 0) {
-      setRooms([]);
-      setLoading(false);
-      return;
-    }
+        // Fetch latest user messages for rooms that have messages
+        const { data: messageRows } = await supabase
+          .from("messages")
+          .select("room_id, content, created_at")
+          .in("room_id", roomIdsWithMessages)
+          .eq("role", "user")
+          .order("created_at", { ascending: false });
 
-    // Get unique room IDs that have messages
-    const roomIdsWithMessages = [
-      ...new Set(roomsWithMessages.map((m) => m.room_id)),
-    ];
-
-    // Fetch latest user messages for rooms that have messages
-
-    const { data: messageRows } = await supabase
-      .from("messages")
-      .select("room_id, content, created_at")
-      .in("room_id", roomIdsWithMessages)
-      .eq("role", "user")
-      .order("created_at", { ascending: false });
-
-    // Build map of first (latest) message per room
-    const latestByRoom = new Map<
-      number,
-      { content?: string; created_at?: string }
-    >();
-    messageRows?.forEach((msg) => {
-      if (!latestByRoom.has(msg.room_id)) {
-        latestByRoom.set(msg.room_id, {
-          content: msg.content as string,
-          created_at: msg.created_at as string,
+        // Build map of first (latest) message per room
+        const latestByRoom = new Map<
+          number,
+          { content?: string; created_at?: string }
+        >();
+        messageRows?.forEach((msg) => {
+          if (!latestByRoom.has(msg.room_id)) {
+            latestByRoom.set(msg.room_id, {
+              content: msg.content as string,
+              created_at: msg.created_at as string,
+            });
+          }
         });
+
+        const mapped: ChatRoomWithLastMsg[] = roomIdsWithMessages
+          .map((roomId) => ({
+            id: roomId,
+            name: latestByRoom.get(roomId)?.content || "New Chat",
+            last_message: latestByRoom.get(roomId)?.content,
+            last_activity: latestByRoom.get(roomId)?.created_at,
+            updated_at: (
+              allRoomRows.find((r) => r.id === roomId) as ChatRoomRow
+            )?.updated_at as string | undefined,
+          }))
+          .sort((a, b) => {
+            const at = a.last_activity
+              ? new Date(a.last_activity).getTime()
+              : 0;
+            const bt = b.last_activity
+              ? new Date(b.last_activity).getTime()
+              : 0;
+            return bt - at;
+          });
+
+        setRooms(mapped);
+        return mapped;
+      },
+      {
+        onError: (error) => {
+          console.error("[ROOMS] fetchRooms error:", error);
+        },
       }
-    });
-
-    const mapped: ChatRoomWithLastMsg[] = roomIdsWithMessages
-      .map((roomId) => ({
-        id: roomId,
-        name: latestByRoom.get(roomId)?.content || "New Chat",
-        last_message: latestByRoom.get(roomId)?.content,
-        last_activity: latestByRoom.get(roomId)?.created_at,
-        updated_at: (allRoomRows.find((r) => r.id === roomId) as ChatRoomRow)
-          ?.updated_at as string | undefined,
-      }))
-      .sort((a, b) => {
-        const at = a.last_activity ? new Date(a.last_activity).getTime() : 0;
-        const bt = b.last_activity ? new Date(b.last_activity).getTime() : 0;
-        return bt - at;
-      });
-
-    setRooms(mapped);
-    setLoading(false);
-  }, [session]);
+    );
+  }, [session, executeWithLoading]);
 
   useEffect(() => {
     fetchRooms();
     // Local event fallback removed to avoid adding empty rooms; rely on Realtime message inserts
     const off = () => {};
     // Realtime: listen for message inserts to reflect new rooms instantly
-    let channel: SupabaseChannel;
+    let channel: RealtimeChannel;
     (async () => {
       if (!session) return;
       channel = supabase
@@ -212,6 +225,7 @@ export const useChatRooms = () => {
   return {
     rooms,
     loading,
+    error,
     fetchRooms,
     deleteRoom,
     startNewChat,

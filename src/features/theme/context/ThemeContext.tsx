@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useColorScheme } from "react-native";
 
+import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import { mobileStorage, STORAGE_KEYS } from "../../../shared/lib/storage";
 import { errorHandler } from "../../../shared/services/error";
 
@@ -45,8 +46,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // State for theme style (which theme set to use)
   const [themeStyle, setThemeStyleState] = useState<ThemeStyle>("default");
 
-  // State for loading state
-  const [isLoading, setIsLoading] = useState(true);
+  // Enhanced loading state management
+  const {
+    loading: isLoading,
+    error: loadingError,
+    executeWithLoading,
+  } = useLoadingState({ initialLoading: true });
 
   // Get system color scheme
   const systemColorScheme = useColorScheme();
@@ -55,44 +60,44 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log("🎨 [ThemeContext] Loading theme preferences from storage...");
     const loadThemePreferences = async () => {
-      setIsLoading(true);
-      try {
-        // Load theme mode
-        const savedThemeMode = await mobileStorage.getItem(
-          STORAGE_KEYS.THEME_MODE
-        );
-        if (
-          savedThemeMode &&
-          ["light", "dark", "system"].includes(savedThemeMode)
-        ) {
-          console.log("☀️ [ThemeContext] Loaded theme mode:", savedThemeMode);
-          setThemeModeState(savedThemeMode as ThemeMode);
-        }
+      await executeWithLoading(
+        async () => {
+          // Load theme mode
+          const savedThemeMode = await mobileStorage.getItem(
+            STORAGE_KEYS.THEME_MODE
+          );
+          if (
+            savedThemeMode &&
+            ["light", "dark", "system"].includes(savedThemeMode)
+          ) {
+            console.log("☀️ [ThemeContext] Loaded theme mode:", savedThemeMode);
+            setThemeModeState(savedThemeMode as ThemeMode);
+          }
 
-        // Load theme style
-        const savedThemeStyle = await mobileStorage.getItem(
-          STORAGE_KEYS.THEME_STYLE
-        );
-        if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
-          console.log("✨ [ThemeContext] Loaded theme style:", savedThemeStyle);
-          setThemeStyleState(savedThemeStyle);
+          // Load theme style
+          const savedThemeStyle = await mobileStorage.getItem(
+            STORAGE_KEYS.THEME_STYLE
+          );
+          if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
+            console.log(
+              "✨ [ThemeContext] Loaded theme style:",
+              savedThemeStyle
+            );
+            setThemeStyleState(savedThemeStyle);
+          }
+        },
+        {
+          onError: (error) => {
+            console.error("Failed to load theme preferences:", error);
+          },
         }
-      } catch (error) {
-        // Use unified error handling system
-        await errorHandler.handle(error, {
-          operation: 'loadThemePreferences',
-          service: 'theme',
-          component: 'ThemeContext',
-          metadata: { phase: 'initial_load' }
-        });
-      } finally {
-        console.log("✅ [ThemeContext] Theme preferences loading complete");
-        setIsLoading(false);
-      }
+      );
+
+      console.log("✅ [ThemeContext] Theme preferences loading complete");
     };
 
     loadThemePreferences();
-  }, []);
+  }, [executeWithLoading]);
 
   // Set theme mode with persistence
   const setThemeMode = useCallback(async (mode: ThemeMode) => {
@@ -102,10 +107,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       // Use unified error handling system
       await errorHandler.handle(error, {
-        operation: 'setThemeMode',
-        service: 'theme',
-        component: 'ThemeContext',
-        metadata: { mode }
+        operation: "setThemeMode",
+        service: "theme",
+        component: "ThemeContext",
+        metadata: { mode },
       });
     }
   }, []);
@@ -124,10 +129,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       // Use unified error handling system
       await errorHandler.handle(error, {
-        operation: 'setThemeStyle',
-        service: 'theme',
-        component: 'ThemeContext',
-        metadata: { style }
+        operation: "setThemeStyle",
+        service: "theme",
+        component: "ThemeContext",
+        metadata: { style },
       });
     }
   }, []);

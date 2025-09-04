@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../../../entities/session";
+import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import { supabase } from "../../../shared/lib/supabase";
 import type { UserInfo } from "../model/types";
 
@@ -13,54 +14,60 @@ export const useUserInfo = (): UserInfo => {
   const [userName, setUserName] = useState<string>("");
   const [email, setEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { loading, error, executeWithLoading } = useLoadingState({
+    initialLoading: true,
+  });
 
   const getUserInfo = async () => {
-    try {
-      if (session?.user) {
-        // Extract user ID
-        setUserId(session.user.id);
+    await executeWithLoading(
+      async () => {
+        if (session?.user) {
+          // Extract user ID
+          setUserId(session.user.id);
 
-        // Extract email
-        setEmail(session.user.email || null);
+          // Extract email
+          setEmail(session.user.email || null);
 
-        // Try to get display name from profiles table first
-        const { data: profileData, error: profileError } = await supabase
-          .from("profiles")
-          .select("display_name")
-          .eq("id", session.user.id)
-          .maybeSingle();
+          // Try to get display name from profiles table first
+          const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .select("display_name")
+            .eq("id", session.user.id)
+            .maybeSingle();
 
-        if (profileError) {
-          // Profile might not exist yet, that's okay
+          if (profileError) {
+            // Profile might not exist yet, that's okay
+            console.warn("Profile fetch error (non-critical):", profileError);
+          }
+
+          // Use profile display_name if available, otherwise fall back to metadata
+          const name =
+            profileData?.display_name ||
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.name ||
+            session.user.email?.split("@")[0] ||
+            "User";
+          setUserName(name);
+        } else {
+          // No session, reset user info
+          setUserName("");
+          setEmail(null);
+          setUserId(null);
         }
-
-        // Use profile display_name if available, otherwise fall back to metadata
-        const name =
-          profileData?.display_name ||
-          session.user.user_metadata?.full_name ||
-          session.user.user_metadata?.name ||
-          session.user.email?.split("@")[0] ||
-          "User";
-        setUserName(name);
-      } else {
-        // No session, reset user info
-        setUserName("");
-        setEmail(null);
-        setUserId(null);
+      },
+      {
+        onError: (error) => {
+          console.error("Error fetching user info:", error);
+          // On error, set default values
+          setUserName("User");
+          setEmail(null);
+          setUserId(null);
+        },
       }
-    } catch (_error) {
-      // On error, set default values
-      setUserName("User");
-      setEmail(null);
-      setUserId(null);
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   const refresh = async () => {
-    setLoading(true);
     await getUserInfo();
   };
 
@@ -73,6 +80,7 @@ export const useUserInfo = (): UserInfo => {
     email,
     userId,
     loading,
+    error,
     refresh,
   };
 };

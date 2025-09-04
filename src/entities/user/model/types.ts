@@ -5,5 +5,6 @@ export interface UserInfo {
   email: string | null;
   userId: string | null;
   loading: boolean;
+  error: string | null;
   refresh: () => Promise<void>;
 }

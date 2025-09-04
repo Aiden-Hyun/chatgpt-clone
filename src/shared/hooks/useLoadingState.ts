@@ -1,54 +1,76 @@
 import { useCallback, useState } from "react";
 
-import { useAppTheme } from "../../features/theme/theme";
+import { errorHandler } from "../services/error";
 
 interface UseLoadingStateOptions {
   initialLoading?: boolean;
 }
 
 /**
- * Hook for managing loading states with consistent UI
- * Provides loading state management and utility functions
+ * Simple hook for managing loading states with consistent error handling
+ * Provides basic loading state management and utility functions
  */
 export const useLoadingState = (options: UseLoadingStateOptions = {}) => {
   const { initialLoading = false } = options;
 
   const [loading, setLoading] = useState(initialLoading);
-  const theme = useAppTheme();
+  const [error, setError] = useState<string | null>(null);
 
   const startLoading = useCallback(() => {
     setLoading(true);
+    setError(null);
   }, []);
 
   const stopLoading = useCallback(() => {
     setLoading(false);
   }, []);
 
-  const toggleLoading = useCallback(() => {
-    setLoading((prev) => !prev);
+  const setErrorState = useCallback((errorMessage: string | null) => {
+    setError(errorMessage);
+    setLoading(false);
   }, []);
 
-  // Helper function to get loading styles
-  const getLoadingStyles = useCallback(
-    () => ({
-      container: {
-        flex: 1,
-        justifyContent: "center" as const,
-        alignItems: "center" as const,
-        backgroundColor: theme.colors.background.primary,
-        padding: theme.spacing.xxl,
-      },
-      spinnerColor: theme.colors.primary,
-    }),
-    [theme.colors.background.primary, theme.colors.primary, theme.spacing.xxl]
+  // Simple async wrapper with error handling
+  const executeWithLoading = useCallback(
+    async <T>(
+      operation: () => Promise<T>,
+      options?: {
+        onSuccess?: (result: T) => void;
+        onError?: (error: Error) => void;
+      }
+    ): Promise<T | null> => {
+      try {
+        startLoading();
+        const result = await operation();
+        stopLoading();
+        options?.onSuccess?.(result);
+        return result;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "An error occurred";
+
+        // Use unified error handling system
+        await errorHandler.handle(error, {
+          operation: "executeWithLoading",
+          service: "loading",
+          component: "useLoadingState",
+        });
+
+        setErrorState(errorMessage);
+        options?.onError?.(error as Error);
+        return null;
+      }
+    },
+    [startLoading, stopLoading, setErrorState]
   );
 
   return {
     loading,
+    error,
     setLoading,
     startLoading,
     stopLoading,
-    toggleLoading,
-    getLoadingStyles,
+    setError: setErrorState,
+    executeWithLoading,
   };
 };

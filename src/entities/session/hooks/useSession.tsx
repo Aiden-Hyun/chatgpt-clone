@@ -8,8 +8,8 @@ import React, {
   useState,
 } from "react";
 
+import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import { supabase } from "../../../shared/lib/supabase";
-import { errorHandler } from "../../../shared/services/error";
 import { AUTH_EVENTS } from "../model/constants";
 import type { AuthContextType, Session } from "../model/types";
 
@@ -21,37 +21,39 @@ type Props = {
 
 export function AuthProvider({ children }: Props) {
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    loading: isLoading,
+    error: loadingError,
+    executeWithLoading,
+  } = useLoadingState({ initialLoading: true });
 
   useEffect(() => {
     console.log("🔑 [AuthContext] Starting auth initialization");
     let mounted = true;
 
     const initializeAuth = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        console.log("📋 [AuthContext] Initial session result:", {
-          hasSession: !!data.session,
-        });
+      await executeWithLoading(
+        async () => {
+          const { data } = await supabase.auth.getSession();
+          console.log("📋 [AuthContext] Initial session result:", {
+            hasSession: !!data.session,
+          });
 
-        if (mounted) {
-          setSession(data.session);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        // Use unified error handling system
-        await errorHandler.handle(error, {
-          operation: "initializeAuth",
-          service: "auth",
-          component: "AuthProvider",
-          metadata: { phase: "initial_session_load" },
-        });
+          if (mounted) {
+            setSession(data.session);
+          }
 
-        if (mounted) {
-          setSession(null);
-          setIsLoading(false);
+          return data.session;
+        },
+        {
+          onError: (error) => {
+            console.error("Auth initialization error:", error);
+            if (mounted) {
+              setSession(null);
+            }
+          },
         }
-      }
+      );
     };
 
     initializeAuth();
@@ -67,10 +69,8 @@ export function AuthProvider({ children }: Props) {
         // Handle logout events more explicitly
         if (event === AUTH_EVENTS.SIGNED_OUT) {
           setSession(null);
-          setIsLoading(false);
         } else {
           setSession(session);
-          setIsLoading(false);
         }
       }
     });
