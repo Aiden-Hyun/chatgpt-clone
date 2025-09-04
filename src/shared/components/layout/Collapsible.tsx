@@ -1,12 +1,15 @@
-import { Ionicons } from '@expo/vector-icons';
-import { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { PropsWithChildren, useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
-import { useAppTheme } from '@/features/theme';
+import { useAppTheme } from "@/features/theme";
 
-import { Text } from '../ui/Text';
+import { Text } from "../ui/Text";
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
+export function Collapsible({
+  children,
+  title,
+}: PropsWithChildren & { title: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useAppTheme();
 
@@ -15,14 +18,17 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
       <TouchableOpacity
         style={styles.heading}
         onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
+        activeOpacity={0.8}
+      >
         <Ionicons
           name={isOpen ? "chevron-down-outline" : "chevron-up-outline"}
           size={18}
           color={theme.colors.text.tertiary}
         />
 
-        <Text variant="body" weight="semibold">{title}</Text>
+        <Text variant="body" weight="semibold">
+          {title}
+        </Text>
       </TouchableOpacity>
       {isOpen && <View style={styles.content}>{children}</View>}
     </View>
@@ -31,8 +37,8 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
 
 const styles = StyleSheet.create({
   heading: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   content: {

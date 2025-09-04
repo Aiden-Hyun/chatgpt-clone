@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import type { AuthResponse } from '@supabase/supabase-js';
 
+import { useAuthOperation } from '../../../shared/hooks/useAuthOperation';
 import { supabase } from '../../../shared/lib/supabase';
 
+interface SignInParams {
+  email: string;
+  password: string;
+}
+
 export const useEmailSignin = () => {
-  const [isLoading, setIsLoading] = useState(false);
-
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
+  const { execute, isLoading } = useAuthOperation<SignInParams, AuthResponse['data']>({
+    operation: async ({ email, password }) => {
       if (__DEV__) console.log('Starting signin process for:', email);
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -23,48 +25,25 @@ export const useEmailSignin = () => {
       }
 
       if (error) {
-        // Check if this is a network error
-        const isNetworkError = error.message?.toLowerCase().includes('network') ||
-                              error.message?.toLowerCase().includes('fetch') ||
-                              error.message?.toLowerCase().includes('connection') ||
-                              error.message?.toLowerCase().includes('timeout') ||
-                              !navigator.onLine; // Browser offline detection
-
-        return { 
-          success: false, 
-          data: null, 
-          error: error.message,
-          isNetworkError 
-        };
+        throw error;
       }
 
-      if (data.user) {
-        if (__DEV__) {
-          console.log('Signin successful for user:', data.user.id);
-        }
-        return { success: true, data, error: null };
-      } else {
-        return { success: false, data: null, error: 'No user data returned' };
+      if (!data.user) {
+        throw new Error('No user data returned');
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unexpected error';
-      
-      // Check if this is a network error in the catch block
-      const isNetworkError = errorMessage.toLowerCase().includes('network') ||
-                            errorMessage.toLowerCase().includes('fetch') ||
-                            errorMessage.toLowerCase().includes('connection') ||
-                            errorMessage.toLowerCase().includes('timeout') ||
-                            !navigator.onLine;
 
-      return { 
-        success: false, 
-        data: null, 
-        error: errorMessage,
-        isNetworkError 
-      };
-    } finally {
-      setIsLoading(false);
+      return data;
+    },
+    enableNetworkErrorDetection: true,
+    onSuccess: (data) => {
+      if (__DEV__) {
+        console.log('Signin successful for user:', data.user?.id);
+      }
     }
+  });
+
+  const signIn = async (email: string, password: string) => {
+    return execute({ email, password });
   };
 
   return {

@@ -1,6 +1,6 @@
-import { AppTheme } from '@/features/theme';
+import { AppTheme } from "@/features/theme";
 
-import { CardPadding, CardVariant } from './Card.types';
+import { CardPadding, CardVariant } from "./Card.types";
 
 /**
  * Creates card styles based on the current theme
@@ -10,7 +10,7 @@ export const createCardStyles = (theme: AppTheme) => {
   const baseCard = {
     backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borders.radius.lg,
-    overflow: 'hidden' as const,
+    overflow: "hidden" as const,
   };
 
   // Padding variations
@@ -32,23 +32,23 @@ export const createCardStyles = (theme: AppTheme) => {
   // Create styles for each variant
   const getVariantStyle = (variant: CardVariant) => {
     switch (variant) {
-      case 'default':
+      case "default":
         return {
           ...theme.shadows.light,
           borderWidth: theme.borders.widths.none,
         };
-      case 'elevated':
+      case "elevated":
         return {
           ...theme.shadows.medium,
           borderWidth: theme.borders.widths.none,
         };
-      case 'outlined':
+      case "outlined":
         return {
           borderWidth: theme.borders.widths.thin,
           borderColor: theme.borders.colors.light,
           // No shadows for outlined cards
         };
-      case 'flat':
+      case "flat":
         return {
           // No shadows or borders for flat cards
           borderWidth: theme.borders.widths.none,
@@ -66,18 +66,18 @@ export const createCardStyles = (theme: AppTheme) => {
   return {
     // Base styles
     card: baseCard,
-    
+
     // Helper functions to get specific styles
     getVariantStyle,
     getPaddingStyle,
-    
+
     // Additional styles
     fullWidth: {
-      width: '100%',
+      width: "100%",
     },
     header: {
       borderBottomWidth: theme.borders.widths.thin,
-              borderBottomColor: theme.borders.colors.light,
+      borderBottomColor: theme.borders.colors.light,
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
     },
@@ -86,7 +86,7 @@ export const createCardStyles = (theme: AppTheme) => {
     },
     footer: {
       borderTopWidth: theme.borders.widths.thin,
-              borderTopColor: theme.borders.colors.light,
+      borderTopColor: theme.borders.colors.light,
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.sm,
     },

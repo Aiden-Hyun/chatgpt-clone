@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-import { AppTheme } from '@/features/theme';
+import { AppTheme } from "@/features/theme";
 
 /**
  * Creates dropdown styles based on the current theme
@@ -15,8 +15,8 @@ export const createDropdownStyles = (theme: AppTheme) => {
       borderWidth: 1,
       borderColor: theme.borders.colors.light,
       backgroundColor: theme.colors.background.primary,
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
       gap: theme.spacing.md,
     },
     triggerText: {
@@ -24,7 +24,7 @@ export const createDropdownStyles = (theme: AppTheme) => {
       fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fontFamily.primary,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
     },
     chevron: {
       fontSize: theme.typography.fontSizes.sm,
@@ -33,15 +33,15 @@ export const createDropdownStyles = (theme: AppTheme) => {
     },
     backdrop: {
       flex: 1,
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
     },
     menu: {
-      position: 'absolute' as const,
+      position: "absolute" as const,
       backgroundColor: theme.colors.background.primary,
       borderRadius: theme.borders.radius.md,
       padding: theme.spacing.sm,
       ...theme.shadows.medium,
-      overflow: 'hidden',
+      overflow: "hidden",
       zIndex: theme.zIndex.dropdown,
       //borderWidth: theme.borders.widths.thin,
       //borderColor: theme.borders.colors.light,
@@ -50,25 +50,25 @@ export const createDropdownStyles = (theme: AppTheme) => {
       // maxHeight is controlled by the maxHeight prop passed to FlatList
     },
     item: {
-        paddingVertical: theme.spacing.md,
-        paddingHorizontal: theme.spacing.lg,
-        borderRadius: theme.borders.radius.sm,
-        marginVertical: 2,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      borderRadius: theme.borders.radius.sm,
+      marginVertical: 2,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     itemText: {
       fontSize: theme.typography.fontSizes.md,
       color: theme.colors.text.primary,
       fontFamily: theme.typography.fontFamily.primary,
-      fontWeight: theme.typography.fontWeights.medium as '500',
+      fontWeight: theme.typography.fontWeights.medium as "500",
     },
     itemSelected: {
-      backgroundColor: theme.colors.primary + '08',
+      backgroundColor: theme.colors.primary + "08",
     },
     itemTextSelected: {
-      fontWeight: theme.typography.fontWeights.semibold as '600',
+      fontWeight: theme.typography.fontWeights.semibold as "600",
       color: theme.colors.primary,
     },
     itemDisabled: {

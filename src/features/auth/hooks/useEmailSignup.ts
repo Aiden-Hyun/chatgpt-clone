@@ -1,13 +1,16 @@
-import { useState } from 'react';
+import type { AuthResponse } from '@supabase/supabase-js';
 
+import { useAuthOperation } from '../../../shared/hooks/useAuthOperation';
 import { supabase } from '../../../shared/lib/supabase';
 
-export const useEmailSignup = () => {
-  const [isLoading, setIsLoading] = useState(false);
+interface SignUpParams {
+  email: string;
+  password: string;
+}
 
-  const signUp = async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
+export const useEmailSignup = () => {
+  const { execute, isLoading } = useAuthOperation<SignUpParams, AuthResponse['data']>({
+    operation: async ({ email, password }) => {
       console.log('Starting signup process for:', email);
 
       const { data, error } = await supabase.auth.signUp({
@@ -17,22 +20,22 @@ export const useEmailSignup = () => {
 
       if (error) {
         console.error('Signup error:', error);
-        return { success: false, data: null, error: error.message };
+        throw error;
       }
 
-      if (data.user) {
-        return { success: true, data, error: null };
+      if (!data.user) {
+        throw new Error('No user data returned');
       }
       
-      return { success: false, data: null, error: 'No user data returned' };
-
-    } catch (error) {
+      return data;
+    },
+    onError: (error) => {
       console.error('Unexpected signup error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      return { success: false, data: null, error: errorMessage };
-    } finally {
-      setIsLoading(false);
     }
+  });
+
+  const signUp = async (email: string, password: string) => {
+    return execute({ email, password });
   };
 
   return {

@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Platform } from 'react-native';
 
+import { useAuthOperationVoid } from '../../../shared/hooks/useAuthOperation';
 import { supabase } from '../../../shared/lib/supabase';
 
 /**
@@ -9,12 +10,8 @@ import { supabase } from '../../../shared/lib/supabase';
  * Centralizes logout logic and provides loading state
  */
 export const useLogout = () => {
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const logout = useCallback(async () => {
-    try {
-      setIsLoggingOut(true);
-      
+  const { execute, isLoading } = useAuthOperationVoid<void>({
+    operation: async () => {
       // On web, clear localStorage first to prevent race conditions
       if (Platform.OS === 'web') {
         try {
@@ -38,20 +35,24 @@ export const useLogout = () => {
       
       // Sign out from Supabase
       await supabase.auth.signOut();
-      
-      // Navigate to login screen
+    },
+    onSuccess: () => {
+      // Navigate to login screen on success
       router.replace('/auth');
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('Error during logout:', error);
       // Even if there's an error, try to navigate to login
       router.replace('/auth');
-    } finally {
-      setIsLoggingOut(false);
     }
-  }, []);
+  });
+
+  const logout = useCallback(async () => {
+    await execute();
+  }, [execute]);
 
   return {
     logout,
-    isLoggingOut,
+    isLoggingOut: isLoading,
   };
 }; 

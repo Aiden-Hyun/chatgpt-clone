@@ -1,6 +1,6 @@
-import { AppTheme } from '@/features/theme';
+import { AppTheme } from "@/features/theme";
 
-import { ButtonSize, ButtonStatus, ButtonVariant } from './Button.types';
+import { ButtonSize, ButtonStatus, ButtonVariant } from "./Button.types";
 
 /**
  * Creates button styles based on the current theme
@@ -8,9 +8,9 @@ import { ButtonSize, ButtonStatus, ButtonVariant } from './Button.types';
 export const createButtonStyles = (theme: AppTheme) => {
   // Base styles for all buttons
   const baseButton = {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
     borderRadius: theme.borders.radius.md,
   };
 
@@ -84,34 +84,34 @@ export const createButtonStyles = (theme: AppTheme) => {
   // Create styles for each variant
   const getVariantStyle = (variant: ButtonVariant, status: ButtonStatus) => {
     const colors = statusColors[status];
-    
+
     switch (variant) {
-      case 'primary':
+      case "primary":
         return {
           backgroundColor: colors.background,
           borderWidth: theme.borders.widths.none,
           ...theme.shadows.medium,
         };
-      case 'secondary':
+      case "secondary":
         return {
           backgroundColor: theme.colors.background.secondary,
           borderWidth: theme.borders.widths.thin,
           borderColor: colors.border,
         };
-      case 'outline':
+      case "outline":
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           borderWidth: theme.borders.widths.thin,
           borderColor: colors.border,
         };
-      case 'ghost':
+      case "ghost":
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           borderWidth: theme.borders.widths.none,
         };
-      case 'link':
+      case "link":
         return {
-          backgroundColor: 'transparent',
+          backgroundColor: "transparent",
           borderWidth: theme.borders.widths.none,
           paddingVertical: theme.spacing.xs,
           paddingHorizontal: 0,
@@ -123,26 +123,30 @@ export const createButtonStyles = (theme: AppTheme) => {
   };
 
   // Create text styles for each variant
-  const getTextStyle = (variant: ButtonVariant, status: ButtonStatus, size: ButtonSize) => {
+  const getTextStyle = (
+    variant: ButtonVariant,
+    status: ButtonStatus,
+    size: ButtonSize
+  ) => {
     const colors = statusColors[status];
     const fontSize = fontSizes[size];
-    
+
     const baseTextStyle = {
       fontSize,
-      fontWeight: theme.typography.fontWeights.semibold as '600',
-      textAlign: 'center' as const,
+      fontWeight: theme.typography.fontWeights.semibold as "600",
+      textAlign: "center" as const,
     };
-    
+
     switch (variant) {
-      case 'primary':
+      case "primary":
         return {
           ...baseTextStyle,
           color: colors.text,
         };
-      case 'secondary':
-      case 'outline':
-      case 'ghost':
-      case 'link':
+      case "secondary":
+      case "outline":
+      case "ghost":
+      case "link":
         return {
           ...baseTextStyle,
           color: colors.background,
@@ -155,20 +159,20 @@ export const createButtonStyles = (theme: AppTheme) => {
   return {
     // Base styles
     button: baseButton,
-    
+
     // Size variations
     sizes,
-    
+
     // Font sizes
     fontSizes,
-    
+
     // Helper functions to get specific styles
     getVariantStyle,
     getTextStyle,
-    
+
     // Additional styles
     fullWidth: {
-      width: '100%',
+      width: "100%",
     },
     disabled: {
       opacity: 0.6,
