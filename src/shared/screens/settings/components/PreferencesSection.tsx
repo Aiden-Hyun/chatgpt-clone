@@ -7,7 +7,7 @@ import { LanguageSelector, useLanguageContext } from "@/features/language";
 import { useAppTheme, useThemeMode, useThemeStyle } from "@/features/theme";
 import { Card, ListItem, Text } from "@/shared/components/ui";
 
-import { createSettingsStyles } from "../settings.styles";
+import { createSettingsStyles } from "../SettingsScreen.styles";
 
 interface PreferencesSectionProps {
   onNavigateToThemes: () => void;

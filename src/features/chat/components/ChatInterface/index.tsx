@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 
 import type { ChatMessage } from "@/entities/message";
-import { createChatStyles } from "~/app/chat/chat.styles";
+import { createChatStyles } from "@/features/chat";
 
 import { useAppTheme } from "../../../theme/theme";
 import { useChat } from "../../hooks";

@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { useAppTheme } from "@/features/theme";
 import { Button, Text } from "@/shared/components/ui";
 
-import { createSettingsStyles } from "../settings.styles";
+import { createSettingsStyles } from "../SettingsScreen.styles";
 
 interface SettingsHeaderProps {
   onBack: () => void;

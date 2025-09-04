@@ -8,7 +8,7 @@ import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Button, Card, Input, ListItem, Text } from "@/shared/components/ui";
 
-import { createSettingsStyles } from "../settings.styles";
+import { createSettingsStyles } from "../SettingsScreen.styles";
 
 interface AccountSectionProps {
   userName: string | null;
