@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, {
   createContext,
   useCallback,
@@ -9,12 +8,11 @@ import React, {
 } from "react";
 import { useColorScheme } from "react-native";
 
+import { mobileStorage, STORAGE_KEYS } from "../../../shared/lib/storage";
+import { errorHandler } from "../../../shared/services/error";
+
 import { AppTheme, ThemeMode, ThemeStyle } from "../theme.types";
 import { themeRegistry } from "../themeRegistry";
-
-// Storage keys for persisting theme preferences
-const THEME_MODE_STORAGE_KEY = "@theme_mode";
-const THEME_STYLE_STORAGE_KEY = "@theme_style";
 
 // Context type definition with enhanced theme switching capabilities
 interface ThemeContextType {
@@ -60,8 +58,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       try {
         // Load theme mode
-        const savedThemeMode = await AsyncStorage.getItem(
-          THEME_MODE_STORAGE_KEY
+        const savedThemeMode = await mobileStorage.getItem(
+          STORAGE_KEYS.THEME_MODE
         );
         if (
           savedThemeMode &&
@@ -72,15 +70,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Load theme style
-        const savedThemeStyle = await AsyncStorage.getItem(
-          THEME_STYLE_STORAGE_KEY
+        const savedThemeStyle = await mobileStorage.getItem(
+          STORAGE_KEYS.THEME_STYLE
         );
         if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
           console.log("✨ [ThemeContext] Loaded theme style:", savedThemeStyle);
           setThemeStyleState(savedThemeStyle);
         }
       } catch (error) {
-        console.error("Failed to load theme preferences:", error);
+        // Use unified error handling system
+        await errorHandler.handle(error, {
+          operation: 'loadThemePreferences',
+          service: 'theme',
+          component: 'ThemeContext',
+          metadata: { phase: 'initial_load' }
+        });
       } finally {
         console.log("✅ [ThemeContext] Theme preferences loading complete");
         setIsLoading(false);
@@ -93,10 +97,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Set theme mode with persistence
   const setThemeMode = useCallback(async (mode: ThemeMode) => {
     try {
-      await AsyncStorage.setItem(THEME_MODE_STORAGE_KEY, mode);
+      await mobileStorage.setItem(STORAGE_KEYS.THEME_MODE, mode);
       setThemeModeState(mode);
     } catch (error) {
-      console.error("Failed to save theme mode:", error);
+      // Use unified error handling system
+      await errorHandler.handle(error, {
+        operation: 'setThemeMode',
+        service: 'theme',
+        component: 'ThemeContext',
+        metadata: { mode }
+      });
     }
   }, []);
 
@@ -109,10 +119,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      await AsyncStorage.setItem(THEME_STYLE_STORAGE_KEY, style);
+      await mobileStorage.setItem(STORAGE_KEYS.THEME_STYLE, style);
       setThemeStyleState(style);
     } catch (error) {
-      console.error("Failed to save theme style:", error);
+      // Use unified error handling system
+      await errorHandler.handle(error, {
+        operation: 'setThemeStyle',
+        service: 'theme',
+        component: 'ThemeContext',
+        metadata: { style }
+      });
     }
   }, []);
 
