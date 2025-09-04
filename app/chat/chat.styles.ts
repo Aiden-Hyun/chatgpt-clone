@@ -1,5 +1,6 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../src/features/theme/theme.types';
+import { StyleSheet } from "react-native";
+
+import { AppTheme } from "@/features/theme";
 
 export const createChatStyles = (theme: AppTheme) => {
   return StyleSheet.create({

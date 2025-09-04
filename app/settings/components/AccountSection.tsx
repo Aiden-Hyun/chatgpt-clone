@@ -1,11 +1,13 @@
-import { Button, Card, Input, ListItem, Text } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { View } from "react-native";
-import { useCustomAlert } from "../../../src/features/alert";
-import { useUpdateProfile } from "../../../src/features/auth";
-import { useLanguageContext } from "../../../src/features/language";
-import { useAppTheme } from "../../../src/features/theme/theme";
+
+import { useCustomAlert } from "@/features/alert";
+import { useUpdateProfile } from "@/features/auth";
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+import { Button, Card, Input, ListItem, Text } from "@/shared/components/ui";
+
 import { createSettingsStyles } from "../settings.styles";
 
 interface AccountSectionProps {
@@ -45,7 +47,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
     }
 
     try {
-      const result = await updateProfile({ display_name: editedName.trim() });
+      await updateProfile({ display_name: editedName.trim() });
 
       // Small delay to ensure database update is complete
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -55,7 +57,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
 
       setIsEditingName(false);
       showSuccessAlert(t("common.success"), t("settings.name_updated"));
-    } catch (error) {
+    } catch {
       showErrorAlert(t("common.error"), t("settings.name_update_failed"));
     }
   };

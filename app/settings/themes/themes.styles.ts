@@ -1,5 +1,6 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../../src/features/theme/theme.types';
+import { StyleSheet } from "react-native";
+
+import { AppTheme } from "@/features/theme";
 
 export const createThemeSettingsStyles = (theme: AppTheme) => {
   return StyleSheet.create({
@@ -8,9 +9,9 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       backgroundColor: theme.colors.background.primary,
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
       borderBottomWidth: 1,
@@ -38,29 +39,29 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     sectionTitle: {
       marginBottom: theme.spacing.md,
     },
-    
+
     // Current Theme Section
     currentThemeCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       //padding: theme.spacing.lg,
-      justifyContent: 'flex-start',
+      justifyContent: "flex-start",
     },
     currentThemePreview: {
       width: 200,
       height: 100,
       //marginRight: theme.spacing.md,
       //marginLeft: theme.spacing.md,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       flexShrink: 0, // Prevent preview from shrinking
     },
     // Current theme color palette styles
     currentColorPalette: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      width: "100%",
       gap: theme.spacing.sm,
     },
     currentColorSwatch: {
@@ -71,7 +72,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       borderColor: theme.borders.colors.light,
     },
     previewContent: {
-      alignItems: 'center',
+      alignItems: "center",
       gap: theme.spacing.xs,
     },
     previewButton: {
@@ -89,7 +90,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     currentThemeInfo: {
       flex: 1,
       minWidth: 0, // Allow text to wrap
-      width: '100%',
+      width: "100%",
     },
     currentThemeName: {
       marginBottom: theme.spacing.md,
@@ -99,10 +100,10 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       flex: 1,
       flexShrink: 1,
       minWidth: 0, // Allow text to wrap
-      width: '50%',
+      width: "50%",
     },
     currentModeBadge: {
-      alignSelf: 'flex-start',
+      alignSelf: "flex-start",
       backgroundColor: theme.colors.primary,
       paddingHorizontal: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
@@ -112,16 +113,16 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     currentModeText: {
       color: theme.colors.text.inverted,
     },
-    
+
     // Theme Selection Section
     themeGrid: {
-      flexDirection: 'column',
+      flexDirection: "column",
       gap: theme.spacing.md,
     },
     themeCard: {
-      width: '100%',
-      flexDirection: 'row',
-      alignItems: 'center',
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
       padding: theme.spacing.lg,
       borderRadius: theme.borders.radius.lg,
       borderWidth: theme.borders.widths.thin,
@@ -137,16 +138,16 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     themePreview: {
       marginRight: theme.spacing.md,
       height: 60,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       width: 120, // Fixed width for color palette
     },
     // Color palette styles
     colorPalette: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '100%',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
       paddingHorizontal: theme.spacing.sm,
     },
     colorSwatch: {
@@ -157,7 +158,7 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
       borderColor: theme.borders.colors.light,
     },
     previewElements: {
-      alignItems: 'center',
+      alignItems: "center",
       gap: theme.spacing.xs,
     },
     previewCard: {
@@ -167,17 +168,17 @@ export const createThemeSettingsStyles = (theme: AppTheme) => {
     },
     themeName: {
       flex: 1,
-      textAlign: 'left',
+      textAlign: "left",
     },
     selectedIndicator: {
-      position: 'absolute',
+      position: "absolute",
       top: theme.spacing.sm,
       right: theme.spacing.sm,
     },
-    
+
     // Appearance Mode Section
     modeSelector: {
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.sm,
     },
     modeButton: {

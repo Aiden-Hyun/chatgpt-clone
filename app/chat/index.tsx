@@ -2,8 +2,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useRef } from "react";
 
 import { useAuth } from "@/entities/session";
-import { DEFAULT_MODEL } from "@/features/chat/constants";
-import { ServiceFactory } from "@/features/chat/services/core";
+import { DEFAULT_MODEL, ServiceFactory } from "@/features/chat";
 import { LoadingWrapper } from "@/shared/components/layout/LoadingWrapper";
 
 export default function NewChatScreen() {

@@ -1,19 +1,20 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../src/features/theme/theme.types';
+import { StyleSheet } from "react-native";
+
+import { AppTheme } from "@/features/theme";
 
 export const createForgotPasswordStyles = (theme: AppTheme) => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       padding: theme.spacing.lg,
     },
     title: {
       marginBottom: theme.spacing.lg,
     },
     description: {
-      textAlign: 'center',
+      textAlign: "center",
       marginBottom: theme.spacing.lg,
       paddingHorizontal: theme.spacing.lg,
       lineHeight: 20,

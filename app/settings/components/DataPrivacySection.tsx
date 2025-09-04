@@ -1,9 +1,11 @@
-import { Card, ListItem, Text } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { View } from "react-native";
-import { useLanguageContext } from "../../../src/features/language";
-import { useAppTheme } from "../../../src/features/theme/theme";
+
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+import { Card, ListItem, Text } from "@/shared/components/ui";
+
 import { createSettingsStyles } from "../settings.styles";
 
 export const DataPrivacySection: React.FC = () => {

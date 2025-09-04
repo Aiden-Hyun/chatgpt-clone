@@ -1,14 +1,12 @@
-import { Card, ListItem, Text } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Switch, View } from "react-native";
-import { useToast } from "../../../src/features/alert";
-import {
-  LanguageSelector,
-  useLanguageContext,
-} from "../../../src/features/language";
-import { useThemeMode, useThemeStyle } from "../../../src/features/theme";
-import { useAppTheme } from "../../../src/features/theme/theme";
+
+import { useToast } from "@/features/alert";
+import { LanguageSelector, useLanguageContext } from "@/features/language";
+import { useAppTheme, useThemeMode, useThemeStyle } from "@/features/theme";
+import { Card, ListItem, Text } from "@/shared/components/ui";
+
 import { createSettingsStyles } from "../settings.styles";
 
 interface PreferencesSectionProps {

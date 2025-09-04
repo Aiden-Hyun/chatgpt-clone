@@ -1,18 +1,17 @@
-import { Button, Card, Text } from "@/shared/components/ui";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { SafeAreaView, ScrollView, TouchableOpacity, View } from "react-native";
 
 import {
+  ThemeMode,
+  ThemeWithMetadata,
   useAppTheme,
   useThemeMode,
   useThemeStyle,
-} from "../../../src/features/theme";
-import {
-  ThemeMode,
-  ThemeWithMetadata,
-} from "../../../src/features/theme/theme.types";
+} from "@/features/theme";
+import { Button, Card, Text } from "@/shared/components/ui";
+
 import { createThemeSettingsStyles } from "./themes.styles";
 
 export default function ThemeSettingsScreen() {
@@ -25,7 +24,7 @@ export default function ThemeSettingsScreen() {
     try {
       // Go back to settings page directly
       router.replace("/settings");
-    } catch (error) {
+    } catch {
       // Fallback to settings page if anything goes wrong
       router.replace("/settings");
     }
@@ -269,7 +268,7 @@ export default function ThemeSettingsScreen() {
                   ]}
                   leftIcon={
                     <Ionicons
-                      name={`${mode.icon}-outline` as any}
+                      name={mode.icon as keyof typeof Ionicons.glyphMap}
                       size={20}
                       color={
                         isSelected

@@ -1,10 +1,3 @@
-import { useToast } from "@/features/alert";
-import { useEmailSignup } from "@/features/auth";
-import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme/theme";
-import { FormWrapper } from "@/shared/components/layout/FormWrapper";
-import { Button, Input, Text } from "@/shared/components/ui";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -16,6 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { useToast } from "@/features/alert";
+import { useEmailSignup } from "@/features/auth";
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+import { FormWrapper } from "@/shared/components/layout/FormWrapper";
+import { Button, Input, Text } from "@/shared/components/ui";
 
 export default function SignupScreen() {
   const { t } = useLanguageContext();
@@ -69,20 +69,29 @@ export default function SignupScreen() {
       await signUp(email.trim(), password);
       showSuccess(t("auth.account_created"));
       router.replace("/auth");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Signup error:", error);
 
       // Handle specific error cases
-      if (error?.message?.includes("email")) {
-        setErrors((prev) => ({
-          ...prev,
-          email: t("auth.email_already_exists"),
-        }));
-      } else if (error?.message?.includes("password")) {
-        setErrors((prev) => ({
-          ...prev,
-          password: t("auth.password_too_weak"),
-        }));
+      if (
+        error &&
+        typeof error === "object" &&
+        "message" in error &&
+        typeof error.message === "string"
+      ) {
+        if (error.message.includes("email")) {
+          setErrors((prev) => ({
+            ...prev,
+            email: t("auth.email_already_exists"),
+          }));
+        } else if (error.message.includes("password")) {
+          setErrors((prev) => ({
+            ...prev,
+            password: t("auth.password_too_weak"),
+          }));
+        } else {
+          showError(t("auth.signup_failed"));
+        }
       } else {
         showError(t("auth.signup_failed"));
       }
@@ -91,7 +100,8 @@ export default function SignupScreen() {
 
   const handleGoBack = () => {
     try {
-      const canGoBack = (router as any).canGoBack?.() ?? false;
+      const canGoBack =
+        (router as { canGoBack?: () => boolean }).canGoBack?.() ?? false;
       if (canGoBack) {
         router.back();
       } else {

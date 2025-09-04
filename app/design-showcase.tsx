@@ -1,8 +1,3 @@
-import { LanguageSelector, useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme/theme";
-import type { DropdownItem } from "@/shared/components/ui";
-import { Button, Dropdown, Input, Text } from "@/shared/components/ui";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -15,6 +10,11 @@ import {
   View,
 } from "react-native";
 
+import { LanguageSelector, useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+import type { DropdownItem } from "@/shared/components/ui";
+import { Button, Dropdown, Input, Text } from "@/shared/components/ui";
+
 export default function DesignShowcaseScreen() {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
@@ -22,23 +22,18 @@ export default function DesignShowcaseScreen() {
   // State for interactive elements
   const [inputValue, setInputValue] = useState("");
   const [switchValue, setSwitchValue] = useState(false);
-  const [activeSearchButtons, setActiveSearchButtons] = useState<Set<string>>(
-    new Set()
-  );
 
   // State for dropdown examples
   const [dropdownValue, setDropdownValue] = useState<string>("");
   const [dropdownWithIconsValue, setDropdownWithIconsValue] =
     useState<string>("");
-  const [dropdownWithDescValue, setDropdownWithDescValue] =
-    useState<string>("");
   const [searchableDropdownValue, setSearchableDropdownValue] =
     useState<string>("");
-  const [variantDropdownValue, setVariantDropdownValue] = useState<string>("");
 
   const handleBack = () => {
     try {
-      const canGoBack = (router as any).canGoBack?.() ?? false;
+      const canGoBack =
+        (router as { canGoBack?: () => boolean }).canGoBack?.() ?? false;
       if (canGoBack) {
         router.back();
       } else {
@@ -47,18 +42,6 @@ export default function DesignShowcaseScreen() {
     } catch {
       router.replace("/chat");
     }
-  };
-
-  const toggleSearchButton = (buttonId: string) => {
-    setActiveSearchButtons((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(buttonId)) {
-        newSet.delete(buttonId);
-      } else {
-        newSet.add(buttonId);
-      }
-      return newSet;
-    });
   };
 
   const styles = {
@@ -411,7 +394,7 @@ export default function DesignShowcaseScreen() {
           <Text style={styles.sectionTitle}>Switches</Text>
 
           <View style={styles.card}>
-            <View style={styles.row as any}>
+            <View style={styles.row}>
               <Text style={styles.label}>Toggle Switch</Text>
               <Switch
                 value={switchValue}

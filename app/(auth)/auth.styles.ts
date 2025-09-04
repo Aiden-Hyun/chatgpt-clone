@@ -1,13 +1,13 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../src/features/theme/theme.types';
+import { StyleSheet } from "react-native";
+
+import { AppTheme } from "@/features/theme";
 
 export const createAuthStyles = (theme: AppTheme) => {
-  
   return StyleSheet.create({
     loadingContainer: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       backgroundColor: theme.colors.background.primary,
     },
     loadingText: {
@@ -16,20 +16,20 @@ export const createAuthStyles = (theme: AppTheme) => {
     },
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       paddingHorizontal: theme.spacing.xl,
       paddingVertical: theme.spacing.xxl,
     },
     title: {
       fontSize: theme.typography.fontSizes.xxl,
-      fontWeight: theme.typography.fontWeights.bold as '700',
+      fontWeight: theme.typography.fontWeights.bold as "700",
       marginBottom: theme.spacing.xxl,
-      textAlign: 'center',
+      textAlign: "center",
       color: theme.colors.text.primary,
     },
     googleButton: {
-      width: '100%',
+      width: "100%",
       backgroundColor: theme.colors.primary,
       paddingVertical: theme.spacing.lg,
       paddingHorizontal: theme.spacing.xl,
@@ -40,13 +40,13 @@ export const createAuthStyles = (theme: AppTheme) => {
     googleButtonText: {
       color: theme.colors.text.inverted,
       fontSize: theme.typography.fontSizes.lg,
-      fontWeight: theme.typography.fontWeights.semibold as '600',
-      textAlign: 'center',
+      fontWeight: theme.typography.fontWeights.semibold as "600",
+      textAlign: "center",
     },
     divider: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '100%',
+      flexDirection: "row",
+      alignItems: "center",
+      width: "100%",
       marginVertical: theme.spacing.lg,
     },
     dividerText: {
@@ -55,7 +55,7 @@ export const createAuthStyles = (theme: AppTheme) => {
       marginHorizontal: theme.spacing.md,
     },
     button: {
-      width: '100%',
+      width: "100%",
       backgroundColor: theme.colors.primary,
       paddingVertical: theme.spacing.lg,
       paddingHorizontal: theme.spacing.xl,
@@ -66,8 +66,8 @@ export const createAuthStyles = (theme: AppTheme) => {
     buttonText: {
       color: theme.colors.text.inverted,
       fontSize: theme.typography.fontSizes.lg,
-      fontWeight: theme.typography.fontWeights.semibold as '600',
-      textAlign: 'center',
+      fontWeight: theme.typography.fontWeights.semibold as "600",
+      textAlign: "center",
     },
     buttonDisabled: {
       opacity: 0.6,
@@ -79,7 +79,7 @@ export const createAuthStyles = (theme: AppTheme) => {
     linkText: {
       color: theme.colors.primary,
       fontSize: theme.typography.fontSizes.md,
-      textAlign: 'center',
+      textAlign: "center",
     },
     errorText: {
       color: theme.colors.status.error.primary,
@@ -98,10 +98,9 @@ export const createAuthStyles = (theme: AppTheme) => {
     retryButtonText: {
       color: theme.colors.text.inverted,
       fontSize: theme.typography.fontSizes.md,
-      fontWeight: theme.typography.fontWeights.medium as '500',
-      textAlign: 'center',
+      fontWeight: theme.typography.fontWeights.medium as "500",
+      textAlign: "center",
     },
   });
 };
 export default createAuthStyles;
-

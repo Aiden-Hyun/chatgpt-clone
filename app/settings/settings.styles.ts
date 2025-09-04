@@ -1,18 +1,18 @@
-import { StyleSheet } from 'react-native';
-import { AppTheme } from '../../src/features/theme/theme.types';
+import { StyleSheet } from "react-native";
+
+import { AppTheme } from "@/features/theme";
 // import { getButtonSize } from '../../src/shared/utils/layout';
 
 export const createSettingsStyles = (theme: AppTheme) => {
-  
   return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background.primary,
     },
     header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
       borderBottomWidth: 1,
@@ -25,8 +25,8 @@ export const createSettingsStyles = (theme: AppTheme) => {
       // Use consistent button size for all platforms
       minWidth: theme.layout.buttonSizes.action,
       minHeight: theme.layout.buttonSizes.action,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
     },
     headerTitle: {
       marginBottom: 0, // Remove margin since Text component handles spacing
@@ -40,7 +40,7 @@ export const createSettingsStyles = (theme: AppTheme) => {
     },
     contentContainer: {
       paddingBottom: theme.spacing.xxl,
-      minHeight: '100%',
+      minHeight: "100%",
     },
     section: {
       marginTop: theme.spacing.xl,
@@ -52,11 +52,11 @@ export const createSettingsStyles = (theme: AppTheme) => {
       // Card component handles its own styling
     },
     editContainer: {
-      flexDirection: 'column',
+      flexDirection: "column",
       gap: theme.spacing.md,
     },
     editButtons: {
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.sm,
     },
     saveButton: {

@@ -7,13 +7,13 @@ import { AppState } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LoadingScreen } from "@/shared/components/feedback/LoadingScreen";
+
 import { AuthProvider, useAuth } from "../src/entities/session";
 import { ToastContainer, ToastProvider } from "../src/features/alert";
 import { Sidebar } from "../src/features/chat/components/Sidebar";
 import { configureServices } from "../src/features/chat/services/config/ServiceConfiguration";
 import { LanguageProvider } from "../src/features/language";
 import { ThemeProvider, useThemeContext } from "../src/features/theme";
-import { useAppTheme } from "../src/features/theme/theme";
 import { navigationTracker } from "../src/shared/lib/navigationTracker";
 import { resetDebugGlobals } from "../src/shared/lib/resetDebugGlobals";
 
@@ -42,7 +42,6 @@ function AppContent() {
 
 function ProtectedRoutes() {
   const { session, isLoading } = useAuth();
-  const theme = useAppTheme();
 
   const router = useRouter();
   const pathname = usePathname();

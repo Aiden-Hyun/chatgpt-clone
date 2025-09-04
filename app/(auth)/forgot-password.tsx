@@ -1,10 +1,3 @@
-import { useToast } from "@/features/alert";
-import { usePasswordReset } from "@/features/auth/hooks";
-import { useLanguageContext } from "@/features/language";
-import { useAppTheme } from "@/features/theme/theme";
-import { FormWrapper } from "@/shared/components/layout/FormWrapper";
-import { Button, Input, Text } from "@/shared/components/ui";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -16,6 +9,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { useToast } from "@/features/alert";
+import { usePasswordReset } from "@/features/auth";
+import { useLanguageContext } from "@/features/language";
+import { useAppTheme } from "@/features/theme";
+import { FormWrapper } from "@/shared/components/layout/FormWrapper";
+import { Button, Input, Text } from "@/shared/components/ui";
 
 export default function ForgotPasswordScreen() {
   const { t } = useLanguageContext();
@@ -48,7 +48,7 @@ export default function ForgotPasswordScreen() {
       await resetPassword(email.trim());
       showSuccess(t("auth.password_reset_sent"));
       router.replace("/auth");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Reset password error:", error);
       showError(t("auth.reset_password_failed"));
     }
@@ -56,7 +56,8 @@ export default function ForgotPasswordScreen() {
 
   const handleGoBack = () => {
     try {
-      const canGoBack = (router as any).canGoBack?.() ?? false;
+      const canGoBack =
+        (router as { canGoBack?: () => boolean }).canGoBack?.() ?? false;
       if (canGoBack) {
         router.back();
       } else {

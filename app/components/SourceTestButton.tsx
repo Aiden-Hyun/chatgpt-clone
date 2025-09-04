@@ -1,11 +1,11 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
+import { router } from "expo-router";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export function SourceTestButton() {
   const handlePress = () => {
-    console.log('🧪 Navigating to source test page');
-    router.push('/source-test');
+    console.log("🧪 Navigating to source test page");
+    router.push("/source-test");
   };
 
   return (
@@ -17,18 +17,18 @@ export function SourceTestButton() {
 
 const styles = StyleSheet.create({
   button: {
-    position: 'absolute',
+    position: "absolute",
     top: 60,
     right: 20,
-    backgroundColor: '#FF6B35',
+    backgroundColor: "#FF6B35",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     zIndex: 1000,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
