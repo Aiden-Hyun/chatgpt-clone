@@ -1,8 +1,8 @@
-import type { AuthResponse } from '@supabase/supabase-js';
+import type { AuthResponse } from "@supabase/supabase-js";
 
-import { supabase } from '../../../shared/lib/supabase';
+import { supabase } from "../../../shared/lib/supabase";
 
-import { useAuthOperation } from './useAuthOperation';
+import { useAuthOperation } from "./useAuthOperation";
 
 interface SignUpParams {
   email: string;
@@ -10,9 +10,13 @@ interface SignUpParams {
 }
 
 export const useEmailSignup = () => {
-  const { execute, isLoading } = useAuthOperation<SignUpParams, AuthResponse['data']>({
+  const { execute, isLoading } = useAuthOperation<
+    SignUpParams,
+    AuthResponse["data"]
+  >({
+    operationName: "emailSignUp",
     operation: async ({ email, password }) => {
-      console.log('Starting signup process for:', email);
+      console.log("Starting signup process for:", email);
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -20,19 +24,19 @@ export const useEmailSignup = () => {
       });
 
       if (error) {
-        console.error('Signup error:', error);
+        console.error("Signup error:", error);
         throw error;
       }
 
       if (!data.user) {
-        throw new Error('No user data returned');
+        throw new Error("No user data returned");
       }
-      
+
       return data;
     },
     onError: (error) => {
-      console.error('Unexpected signup error:', error);
-    }
+      console.error("Unexpected signup error:", error);
+    },
   });
 
   const signUp = async (email: string, password: string) => {
@@ -43,4 +47,4 @@ export const useEmailSignup = () => {
     signUp,
     isLoading,
   };
-}; 
+};

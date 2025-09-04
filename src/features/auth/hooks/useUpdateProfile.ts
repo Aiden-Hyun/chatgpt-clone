@@ -2,8 +2,8 @@ import { useCallback } from "react";
 
 import { useAuth } from "@/entities/session";
 
-import { useAuthOperationVoid } from "./useAuthOperation";
 import { supabase } from "../../../shared/lib/supabase";
+import { useAuthOperationVoid } from "./useAuthOperation";
 
 interface UpdateProfileData {
   display_name?: string;
@@ -17,6 +17,7 @@ interface UpdateProfileData {
 export const useUpdateProfile = () => {
   const { session } = useAuth();
   const { execute, isLoading } = useAuthOperationVoid<UpdateProfileData>({
+    operationName: "updateProfile",
     operation: async (data: UpdateProfileData) => {
       if (!session?.user) {
         throw new Error("No active session");
@@ -63,7 +64,7 @@ export const useUpdateProfile = () => {
       if (authError) {
         throw authError;
       }
-    }
+    },
   });
 
   const updateProfile = useCallback(

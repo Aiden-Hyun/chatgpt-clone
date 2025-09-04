@@ -29,6 +29,12 @@ export {
   StorageRecoveryStrategy,
 } from "./ErrorRecovery";
 
+// Import classes for singleton creation
+import { ErrorHandler, ErrorHandlerConfig } from "./ErrorHandler";
+import { ErrorMessageMapper } from "./ErrorMessageMapper";
+import { ErrorLogger } from "./ErrorLogger";
+import { ErrorRecoveryManager } from "./ErrorRecovery";
+
 // Convenience exports
 export { ErrorHandler as default } from "./ErrorHandler";
 

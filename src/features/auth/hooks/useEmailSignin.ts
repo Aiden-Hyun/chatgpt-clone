@@ -14,6 +14,7 @@ export const useEmailSignin = () => {
     SignInParams,
     AuthResponse["data"]
   >({
+    operationName: "emailSignIn",
     operation: async ({ email, password }) => {
       if (__DEV__) console.log("Starting signin process for:", email);
 

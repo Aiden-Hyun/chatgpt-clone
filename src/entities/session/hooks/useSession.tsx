@@ -9,6 +9,7 @@ import React, {
 } from "react";
 
 import { supabase } from "../../../shared/lib/supabase";
+import { errorHandler } from "../../../shared/services/error";
 import { AUTH_EVENTS } from "../model/constants";
 import type { AuthContextType, Session } from "../model/types";
 
@@ -38,7 +39,14 @@ export function AuthProvider({ children }: Props) {
           setIsLoading(false);
         }
       } catch (error) {
-        console.error("Error getting initial session:", error);
+        // Use unified error handling system
+        await errorHandler.handle(error, {
+          operation: "initializeAuth",
+          service: "auth",
+          component: "AuthProvider",
+          metadata: { phase: "initial_session_load" },
+        });
+
         if (mounted) {
           setSession(null);
           setIsLoading(false);

@@ -1,6 +1,7 @@
 // src/shared/lib/supabase/requireSession.ts
 import type { Session } from "@/entities/session";
 
+import { errorHandler } from "../../services/error";
 import { getSession } from "./getSession";
 
 export class UnauthenticatedError extends Error {
@@ -19,12 +20,25 @@ export type OnUnauthenticated = () => void | Promise<void>;
 export async function requireSession(
   onUnauthenticated?: OnUnauthenticated
 ): Promise<Session> {
-  const session = await getSession();
-  if (!session) {
-    if (onUnauthenticated) {
-      await onUnauthenticated();
+  try {
+    const session = await getSession();
+    if (!session) {
+      if (onUnauthenticated) {
+        await onUnauthenticated();
+      }
+      throw new UnauthenticatedError();
     }
-    throw new UnauthenticatedError();
+    return session;
+  } catch (error) {
+    // Use unified error handling system
+    await errorHandler.handle(error, {
+      operation: "requireSession",
+      service: "auth",
+      component: "requireSession",
+      metadata: { hasUnauthenticatedHandler: !!onUnauthenticated },
+    });
+
+    // Re-throw the original error to maintain existing behavior
+    throw error;
   }
-  return session;
 }
