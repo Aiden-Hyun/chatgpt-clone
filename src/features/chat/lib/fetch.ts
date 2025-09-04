@@ -1,5 +1,6 @@
 // src/features/chat/lib/fetch.ts
 import { NETWORK } from "@/shared/lib/constants";
+import { errorHandler } from "../../../shared/services/error";
 /**
  * Fetch JSON from a URL with abort + timeout and proper error handling
  * - Respects an external AbortSignal if provided
@@ -63,6 +64,19 @@ export async function fetchJson<T>(
       throw new Error("Failed to parse JSON response.");
     }
   } catch (err: unknown) {
+    // Use unified error handling system
+    await errorHandler.handle(err, {
+      operation: 'fetchJson',
+      service: 'network',
+      component: 'fetch',
+      metadata: { 
+        url, 
+        timeoutMs, 
+        timedOut,
+        hasExternalSignal: !!externalSignal
+      }
+    });
+
     // Normalize abort/timeout errors
     const isAbort =
       err && (err.name === "AbortError" || err.code === "ABORT_ERR");

@@ -1,4 +1,5 @@
 import { generateMessageId } from "../../../utils/messageIdGenerator";
+import { errorHandler } from "../../../../../shared/services/error";
 import { IMessageStateService } from "../../interfaces/IMessageStateService";
 import { ITypingStateService } from "../../interfaces/ITypingStateService";
 import { LoggingService } from "../LoggingService";
@@ -20,95 +21,67 @@ export class MessageErrorHandler {
     this.loggingService = new LoggingService("MessageErrorHandler");
   }
 
-  handleError(context: ErrorContext): void {
+  async handleError(context: ErrorContext): Promise<void> {
     const { requestId, assistantMessageId, duration, error } = context;
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
 
-    console.log(
-      "🚨 [MessageErrorHandler] Handling error for request:",
+    // Use unified error handling system
+    const processedError = await errorHandler.handle(error, {
+      operation: 'sendMessage',
+      service: 'chat',
+      component: 'MessageErrorHandler',
       requestId,
-      {
-        errorMessage,
-        duration,
+      metadata: {
         assistantMessageId,
+        duration,
+        phase: 'message_send'
       }
-    );
-
-    this.loggingService.error(`Message send failed for request ${requestId}`, {
-      error: errorMessage,
-      duration,
-      stack: error instanceof Error ? error.stack : undefined,
     });
 
     // Update the existing assistant bubble instead of adding a new error message
     if (assistantMessageId) {
-      console.log(
-        "📝 [MessageErrorHandler] Marking specific message as error:",
-        assistantMessageId
-      );
       this.messageStateService.markMessageErrorById(
         assistantMessageId,
-        this.getErrorMessage(error)
+        processedError.userMessage
       );
     } else {
       // Fallback: mark the last assistant loading bubble as error if id not available
-      console.log(
-        "📝 [MessageErrorHandler] Marking last assistant loading message as error (fallback)"
-      );
       this.messageStateService.markLastAssistantLoadingAsError(
-        this.getErrorMessage(error)
+        processedError.userMessage
       );
     }
 
     // Clear typing state when error occurs
-    console.log("⌨️ [MessageErrorHandler] Clearing typing state due to error");
     this.typingStateService.setTyping(false);
-
-    console.log("✅ [MessageErrorHandler] Error handling completed");
   }
 
-  handleAIResponseError(
+  async handleAIResponseError(
     requestId: string,
     assistantMessageId: string,
     error: string
-  ): void {
-    console.log(
-      "🤖 [MessageErrorHandler] Handling AI response error for request:",
-      requestId,
-      {
-        assistantMessageId,
-        error,
-      }
-    );
+  ): Promise<void> {
+    // Create an Error object from the string for unified handling
+    const errorObj = new Error(error);
 
-    this.loggingService.error(`AI response error for request ${requestId}`, {
-      error,
+    // Use unified error handling system
+    const processedError = await errorHandler.handle(errorObj, {
+      operation: 'aiResponse',
+      service: 'chat',
+      component: 'MessageErrorHandler',
+      requestId,
+      metadata: {
+        assistantMessageId,
+        phase: 'ai_response',
+        errorType: 'ai_response_error'
+      }
     });
 
     this.messageStateService.markMessageErrorById(
       assistantMessageId || generateMessageId(),
-      error // Don't add prefix since error already includes it
+      processedError.userMessage
     );
 
     // Clear typing state when AI response error occurs
-    console.log(
-      "⌨️ [MessageErrorHandler] Clearing typing state due to AI response error"
-    );
     this.typingStateService.setTyping(false);
-
-    console.log(
-      "✅ [MessageErrorHandler] AI response error handling completed"
-    );
   }
 
-  private getErrorMessage(error: Error | unknown): string {
-    if (
-      error instanceof Error &&
-      (error as { name?: string }).name === "TimeoutError"
-    ) {
-      return "⚠️ Request timed out. Please try again.";
-    }
-    return "⚠️ Error contacting AI.";
-  }
 }

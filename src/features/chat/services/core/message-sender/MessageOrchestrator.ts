@@ -170,7 +170,7 @@ export class MessageOrchestrator {
       if (!this.responseProcessor.validateResponse(apiResponse)) {
         console.error("❌ [MessageOrchestrator] AI response validation failed");
         const error = "Invalid AI response";
-        this.errorHandler.handleAIResponseError(
+        await this.errorHandler.handleAIResponseError(
           requestId,
           assistantMsg!.id || "",
           "⚠️ No valid response received from AI."
@@ -182,7 +182,7 @@ export class MessageOrchestrator {
       if (!fullContent) {
         console.error("❌ [MessageOrchestrator] No content in AI response");
         const error = "No content in AI response";
-        this.errorHandler.handleAIResponseError(
+        await this.errorHandler.handleAIResponseError(
           requestId,
           assistantMsg!.id || "",
           "⚠️ No content received from AI."
@@ -272,7 +272,8 @@ export class MessageOrchestrator {
       const duration = Date.now() - startTime;
       console.error("❌ [MessageOrchestrator] Message send failed:", error);
 
-      this.errorHandler.handleError({
+      // Use unified error handling system
+      await this.errorHandler.handleError({
         requestId,
         assistantMessageId: assistantMessageIdForError,
         duration,

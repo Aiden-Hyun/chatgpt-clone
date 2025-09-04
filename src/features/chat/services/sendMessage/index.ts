@@ -1,6 +1,7 @@
 // src/features/chat/services/sendMessage/index.ts
 import type { ChatMessage } from "@/entities/message";
 
+import { errorHandler } from "../../../../shared/services/error";
 import { getModelInfo } from "../../constants/models";
 import { logger } from "../../utils/logger";
 import { SendMessageRequest } from "../core/message-sender";
@@ -49,9 +50,11 @@ export const sendMessageHandler = async (
     const modelInfo = getModelInfo(model);
     if (!modelInfo?.capabilities.search) {
       const error = `Search is not supported for model: ${model}`;
-      logger.error("Search validation failed", {
-        error: new Error(error),
-        model,
+      await errorHandler.handle(new Error(error), {
+        operation: 'validateSearchMode',
+        service: 'chat',
+        component: 'sendMessageHandler',
+        metadata: { model, isSearchMode }
       });
       throw new Error(error);
     }
@@ -94,7 +97,18 @@ export const sendMessageHandler = async (
   const result = await messageSender.sendMessage(request);
 
   if (!result.success && result.error) {
-    logger.error("Message sending failed", { error: new Error(result.error) });
+    await errorHandler.handle(new Error(result.error), {
+      operation: 'sendMessage',
+      service: 'chat',
+      component: 'sendMessageHandler',
+      metadata: { 
+        numericRoomId, 
+        model, 
+        regenerateIndex,
+        isSearchMode,
+        messageId
+      }
+    });
     throw new Error(result.error);
   }
 };
