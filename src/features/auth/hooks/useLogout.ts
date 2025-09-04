@@ -2,8 +2,9 @@ import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Platform } from 'react-native';
 
-import { useAuthOperationVoid } from '../../../shared/hooks/useAuthOperation';
 import { supabase } from '../../../shared/lib/supabase';
+
+import { useAuthOperationVoid } from './useAuthOperation';
 
 /**
  * Hook for handling user logout functionality

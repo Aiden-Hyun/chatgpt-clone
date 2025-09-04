@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { useAuth } from "@/entities/session";
 
-import { useAuthOperationVoid } from "../../../shared/hooks/useAuthOperation";
+import { useAuthOperationVoid } from "./useAuthOperation";
 import { supabase } from "../../../shared/lib/supabase";
 
 interface UpdateProfileData {

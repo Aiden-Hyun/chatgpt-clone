@@ -1,5 +1,6 @@
-import { useAuthOperationVoid } from '../../../shared/hooks/useAuthOperation';
 import { supabase } from '../../../shared/lib/supabase';
+
+import { useAuthOperationVoid } from './useAuthOperation';
 
 interface PasswordResetParams {
   email: string;

@@ -1,7 +1,8 @@
 import type { AuthResponse } from '@supabase/supabase-js';
 
-import { useAuthOperation } from '../../../shared/hooks/useAuthOperation';
 import { supabase } from '../../../shared/lib/supabase';
+
+import { useAuthOperation } from './useAuthOperation';
 
 interface SignUpParams {
   email: string;
