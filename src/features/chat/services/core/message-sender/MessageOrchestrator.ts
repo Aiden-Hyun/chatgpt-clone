@@ -1,3 +1,4 @@
+import { errorHandler } from "../../../../../shared/services/error";
 import {
   DEFAULT_RETRY_DELAY_MS,
   MESSAGE_SEND_MAX_RETRIES,
@@ -8,7 +9,6 @@ import { LoggingService } from "../LoggingService";
 import { RetryService } from "../RetryService";
 
 import { MessageAnimation } from "./MessageAnimation";
-import { MessageErrorHandler } from "./MessageErrorHandler";
 import { MessagePersistence } from "./MessagePersistence";
 import { MessageValidator, SendMessageRequest } from "./MessageValidator";
 
@@ -25,7 +25,6 @@ export class MessageOrchestrator {
   private readonly validator: MessageValidator;
   private readonly persistence: MessagePersistence;
   private readonly animation: MessageAnimation;
-  private readonly errorHandler: MessageErrorHandler;
 
   constructor(
     private aiApiService: IAIApiService,
@@ -47,10 +46,6 @@ export class MessageOrchestrator {
     this.persistence = new MessagePersistence(chatRoomService, messageService);
     this.animation = new MessageAnimation(
       animationService,
-      messageStateService,
-      typingStateService
-    );
-    this.errorHandler = new MessageErrorHandler(
       messageStateService,
       typingStateService
     );
@@ -170,11 +165,23 @@ export class MessageOrchestrator {
       if (!this.responseProcessor.validateResponse(apiResponse)) {
         console.error("❌ [MessageOrchestrator] AI response validation failed");
         const error = "Invalid AI response";
-        await this.errorHandler.handleAIResponseError(
-          requestId,
-          assistantMsg!.id || "",
-          "⚠️ No valid response received from AI."
+
+        // Use unified error handling system
+        await errorHandler.handle(
+          new Error("No valid response received from AI"),
+          {
+            operation: "aiResponseValidation",
+            service: "chat",
+            component: "MessageOrchestrator",
+            requestId,
+            metadata: {
+              assistantMessageId: assistantMsg!.id || "",
+              phase: "ai_response_validation",
+              errorType: "validation_failed",
+            },
+          }
         );
+
         return { success: false, error, duration: Date.now() - startTime };
       }
 
@@ -182,11 +189,20 @@ export class MessageOrchestrator {
       if (!fullContent) {
         console.error("❌ [MessageOrchestrator] No content in AI response");
         const error = "No content in AI response";
-        await this.errorHandler.handleAIResponseError(
+
+        // Use unified error handling system
+        await errorHandler.handle(new Error("No content received from AI"), {
+          operation: "aiResponseContent",
+          service: "chat",
+          component: "MessageOrchestrator",
           requestId,
-          assistantMsg!.id || "",
-          "⚠️ No content received from AI."
-        );
+          metadata: {
+            assistantMessageId: assistantMsg!.id || "",
+            phase: "ai_response_content",
+            errorType: "empty_response",
+          },
+        });
+
         return { success: false, error, duration: Date.now() - startTime };
       }
 
@@ -273,16 +289,21 @@ export class MessageOrchestrator {
       console.error("❌ [MessageOrchestrator] Message send failed:", error);
 
       // Use unified error handling system
-      await this.errorHandler.handleError({
+      const processedError = await errorHandler.handle(error, {
+        operation: "sendMessage",
+        service: "chat",
+        component: "MessageOrchestrator",
         requestId,
-        assistantMessageId: assistantMessageIdForError,
-        duration,
-        error,
+        metadata: {
+          assistantMessageId: assistantMessageIdForError,
+          duration,
+          phase: "message_send",
+        },
       });
 
       return {
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error",
+        error: processedError.userMessage,
         duration,
       };
     } finally {
