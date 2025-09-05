@@ -4,7 +4,6 @@ import type { Session } from "@/entities/session";
 import { getLogger } from "../../../../../shared/services/logger";
 import { getModelInfo } from "../../../constants/models";
 import { generateMessageId } from "../../../utils/messageIdGenerator";
-import { LoggingService } from "../LoggingService";
 
 export interface SendMessageRequest {
   userContent: string;
@@ -26,12 +25,8 @@ export interface ValidationResult {
 }
 
 export class MessageValidator {
-  private readonly loggingService: LoggingService;
   private logger = getLogger("MessageValidator");
 
-  constructor() {
-    this.loggingService = new LoggingService("MessageValidator");
-  }
 
   validateRequest(
     request: SendMessageRequest,
@@ -47,11 +42,11 @@ export class MessageValidator {
       const modelInfo = getModelInfo(model);
       if (!modelInfo?.capabilities.search) {
         const error = `Search is not supported for model: ${model}`;
-        this.logger.error("Search validation failed", { error });
-        this.loggingService.error(
-          `Search validation failed for request ${requestId}`,
-          { error, model }
-        );
+        this.logger.error("Search validation failed", { 
+          requestId,
+          error, 
+          model 
+        });
         return { isValid: false, error };
       }
       this.logger.debug("Search mode validation passed for model", { model });
@@ -60,11 +55,10 @@ export class MessageValidator {
     // Validate user content
     if (!userContent || userContent.trim().length === 0) {
       const error = "User content cannot be empty";
-      this.logger.error("User content validation failed", { error });
-      this.loggingService.error(
-        `User content validation failed for request ${requestId}`,
-        { error }
-      );
+      this.logger.error("User content validation failed", { 
+        requestId,
+        error 
+      });
       return { isValid: false, error };
     }
     this.logger.debug("User content validation passed", {

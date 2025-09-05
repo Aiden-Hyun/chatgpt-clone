@@ -46,6 +46,15 @@ export const sendMessageHandler = async (
     isSearchMode = false,
   } = args;
 
+  logger.info("Message send initiated", {
+    messageId,
+    roomId: numericRoomId,
+    model,
+    isSearchMode,
+    isRegeneration: regenerateIndex !== undefined,
+    messageLength: userContent.length,
+  });
+
   // Validate search mode is supported for this model
   if (isSearchMode) {
     const modelInfo = getModelInfo(model);
@@ -66,9 +75,14 @@ export const sendMessageHandler = async (
   const session = await authService.getSession();
 
   if (!session) {
-    logger.warn("🔒 No active session. Aborting sendMessageHandler");
+    logger.warn("No active session, aborting message send", { messageId });
     return;
   }
+
+  logger.debug("Session validated for message send", {
+    messageId,
+    userId: session.user.id,
+  });
 
   // Create the MessageSenderService with all dependencies injected
   const messageSender = ServiceFactory.createMessageSender(
@@ -94,6 +108,10 @@ export const sendMessageHandler = async (
   const result = await messageSender.sendMessage(request);
 
   if (!result.success && result.error) {
+    logger.error("Message send failed", {
+      messageId,
+      error: result.error,
+    });
     await errorHandler.handle(new Error(result.error), {
       operation: "sendMessage",
       service: "chat",
@@ -108,4 +126,9 @@ export const sendMessageHandler = async (
     });
     throw new Error(result.error);
   }
+
+  logger.info("Message send completed successfully", {
+    messageId,
+    roomId: numericRoomId,
+  });
 };

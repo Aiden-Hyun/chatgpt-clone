@@ -141,6 +141,12 @@ export const useChatRooms = () => {
           async (payload) => {
             try {
               const roomId = (payload.new as MessageRow).room_id as number;
+              const messageId = (payload.new as MessageRow).id;
+              logger.info("Real-time message delivery confirmed", {
+                roomId,
+                messageId,
+                event: "INSERT",
+              });
               chatDebugLog("[ROOMS-RT] insert for room", { roomId });
               // Fetch room metadata
               const { data: roomRow } = await supabase

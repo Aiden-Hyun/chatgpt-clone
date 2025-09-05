@@ -67,10 +67,23 @@ export function AuthProvider({ children }: Props) {
         event,
         hasSession: !!session,
       });
+
       if (mounted) {
         // Handle logout events more explicitly
         if (event === AUTH_EVENTS.SIGNED_OUT) {
+          logger.info("User session expired or signed out");
           setSession(null);
+        } else if (event === AUTH_EVENTS.TOKEN_REFRESHED) {
+          logger.info("Token refreshed successfully", {
+            expiresAt: session?.expires_at,
+          });
+          setSession(session);
+        } else if (event === AUTH_EVENTS.SIGNED_IN) {
+          logger.info("User signed in", {
+            userId: session?.user?.id,
+            expiresAt: session?.expires_at,
+          });
+          setSession(session);
         } else {
           setSession(session);
         }

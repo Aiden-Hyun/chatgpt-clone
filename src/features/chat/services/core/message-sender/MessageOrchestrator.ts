@@ -1,11 +1,11 @@
 import { errorHandler } from "../../../../../shared/services/error";
+import { getLogger } from "../../../../../shared/services/logger";
 import {
   DEFAULT_RETRY_DELAY_MS,
   MESSAGE_SEND_MAX_RETRIES,
 } from "../../../constants";
 import { IAIApiService } from "../../interfaces/IAIApiService";
 import { IAIResponseProcessor } from "../AIResponseProcessor";
-import { LoggingService } from "../LoggingService";
 import { RetryService } from "../RetryService";
 
 import { MessageAnimation } from "./MessageAnimation";
@@ -20,7 +20,7 @@ export interface SendMessageResult {
 
 export class MessageOrchestrator {
   private readonly retryService: RetryService;
-  private readonly loggingService: LoggingService;
+  private readonly logger = getLogger("MessageOrchestrator");
   private readonly validator: MessageValidator;
   private readonly persistence: MessagePersistence;
   private readonly animation: MessageAnimation;
@@ -39,7 +39,6 @@ export class MessageOrchestrator {
       retryDelay: DEFAULT_RETRY_DELAY_MS,
       exponentialBackoff: true,
     });
-    this.loggingService = new LoggingService("MessageOrchestrator");
 
     this.validator = new MessageValidator();
     this.persistence = new MessagePersistence(chatRoomService, messageService);
@@ -56,9 +55,11 @@ export class MessageOrchestrator {
 
     try {
       // Step 1: Validate request and create message objects
+      this.logger.info("Validating message request", { requestId });
       const validation = this.validator.validateRequest(request, requestId);
       if (!validation.isValid) {
-        this.loggingService.error("Validation failed", {
+        this.logger.error("Message validation failed", {
+          requestId,
           error: validation.error,
         });
         return {
@@ -66,6 +67,7 @@ export class MessageOrchestrator {
           error: validation.error,
         };
       }
+      this.logger.info("Message validation passed", { requestId });
 
       const { userMsg, assistantMsg } = validation;
       assistantMessageIdForError = assistantMsg?.id ?? null;
@@ -80,7 +82,7 @@ export class MessageOrchestrator {
       });
 
       // Step 3: Ensure room exists
-      const { roomId, isNewRoom } = await this.persistence.createRoomIfNeeded(
+      const { roomId } = await this.persistence.createRoomIfNeeded(
         request.numericRoomId,
         request.session,
         request.model,
@@ -102,6 +104,11 @@ export class MessageOrchestrator {
       };
 
       // Step 5: Get response from AI API with retry
+      this.logger.info("Starting network request to AI API", {
+        requestId,
+        roomId,
+        model: request.model,
+      });
       const apiResponse = await this.retryService.retryOperation(
         () =>
           this.aiApiService.sendMessage(
@@ -111,9 +118,13 @@ export class MessageOrchestrator {
           ),
         "AI API call"
       );
+      this.logger.info("Network request to AI API completed", {
+        requestId,
+        hasResponse: !!apiResponse,
+      });
 
       if (!this.responseProcessor.validateResponse(apiResponse)) {
-        this.loggingService.error("AI response validation failed");
+        this.logger.error("AI response validation failed");
         const error = "Invalid AI response";
 
         // Use unified error handling system
@@ -137,7 +148,7 @@ export class MessageOrchestrator {
 
       const fullContent = this.responseProcessor.extractContent(apiResponse);
       if (!fullContent) {
-        this.loggingService.error("No content in AI response");
+        this.logger.error("No content in AI response");
         const error = "No content in AI response";
 
         // Use unified error handling system
@@ -178,19 +189,16 @@ export class MessageOrchestrator {
             requestId,
           });
         } catch (error) {
-          this.loggingService.error("Step 7: Database operations failed", {
-            error,
+          this.logger.error("Database operations failed", {
+            requestId,
+            error: error.message,
           });
-          this.loggingService.error(
-            `Error in post-animation operations for request ${requestId}`,
-            { error }
-          );
         }
       })();
 
       return { success: true, roomId };
     } catch (error) {
-      this.loggingService.error("Message send failed", { error });
+      this.logger.error("Message send failed", { error: error.message });
 
       // Use unified error handling system
       const processedError = await errorHandler.handle(error, {

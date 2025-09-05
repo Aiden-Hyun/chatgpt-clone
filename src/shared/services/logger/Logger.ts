@@ -5,7 +5,7 @@ import { LogLevel, LogLevelString } from "./LogLevel";
  * Provides consistent logging with proper levels and formatting
  */
 export class Logger {
-  private static instance: Logger;
+  private static instances: Map<string, Logger> = new Map();
   private static headerPrinted = false;
   private static lineCounter = 0;
   private isDevelopment = __DEV__;
@@ -19,13 +19,16 @@ export class Logger {
   }
 
   /**
-   * Get singleton instance of the logger
+   * Get logger instance for a specific context
    */
   static getInstance(context?: string): Logger {
-    if (!Logger.instance) {
-      Logger.instance = new Logger(context);
+    const contextKey = context || "default";
+
+    if (!Logger.instances.has(contextKey)) {
+      Logger.instances.set(contextKey, new Logger(context));
     }
-    return Logger.instance;
+
+    return Logger.instances.get(contextKey)!;
   }
 
   /**
@@ -124,11 +127,13 @@ export class Logger {
   }
 
   /**
-   * Get colored level string for better visual distinction
+   * Get colored level string for better visual distinction with proper padding
    */
-  private getColoredLevel(level: LogLevelString): string {
+  private getColoredLevel(level: LogLevelString, width: number): string {
+    const levelText = `[${level.toUpperCase()}]`;
+
     if (!this.isDevelopment) {
-      return `[${level.toUpperCase()}]`;
+      return levelText.padEnd(width);
     }
 
     const colors = {
@@ -141,7 +146,9 @@ export class Logger {
     const reset = "\x1b[0m";
     const color = colors[level] || "";
 
-    return `${color}[${level.toUpperCase()}]${reset}`;
+    // Pad the text first, then apply colors
+    const paddedText = levelText.padEnd(width);
+    return `${color}${paddedText}${reset}`;
   }
 
   /**
@@ -211,7 +218,7 @@ export class Logger {
       const LINE_WIDTH = 4;
       const MESSAGE_WIDTH = 50;
       const LEVEL_WIDTH = 7;
-      const CONTEXT_WIDTH = 20;
+      const CONTEXT_WIDTH = 25;
       const FILE_WIDTH = 35;
       const TIME_WIDTH = 15;
 
@@ -284,7 +291,7 @@ export class Logger {
     const LINE_WIDTH = 4; // Line number (e.g., "  1", " 42")
     const MESSAGE_WIDTH = 50; // Message content (truncated if too long)
     const LEVEL_WIDTH = 7; // [DEBUG], [INFO ], [WARN ], [ERROR]
-    const CONTEXT_WIDTH = 20; // Context name
+    const CONTEXT_WIDTH = 25; // Context name
     const FILE_WIDTH = 35; // File path and line
     const TIME_WIDTH = 15; // H:MM:SS.mmm AM/PM
 
@@ -310,7 +317,7 @@ export class Logger {
       truncatedMessage.padEnd(MESSAGE_WIDTH),
       "\x1b[37m"
     ); // White
-    const levelCol = this.getColoredLevel(level).padEnd(LEVEL_WIDTH);
+    const levelCol = this.getColoredLevel(level, LEVEL_WIDTH);
     const contextCol = this.getColoredText(
       contextStr.padEnd(CONTEXT_WIDTH),
       "\x1b[35m"
@@ -369,6 +376,7 @@ export class Logger {
       );
       // Use console directly to avoid circular dependency
       console.info(formattedMessage, data || "");
+      console.log(""); // Add newline after each log entry
     }
   }
 
@@ -390,6 +398,7 @@ export class Logger {
       );
       // Use console directly to avoid circular dependency
       console.warn(formattedMessage, data || "");
+      console.log(""); // Add newline after each log entry
     }
   }
 
@@ -411,6 +420,7 @@ export class Logger {
       );
       // Use console directly to avoid circular dependency
       console.error(formattedMessage, data || "");
+      console.log(""); // Add newline after each log entry
     }
   }
 

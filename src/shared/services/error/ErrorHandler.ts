@@ -59,7 +59,13 @@ export class ErrorHandler {
 
     // Log the error if logging is enabled
     if (this.config.enableLogging) {
-      this.logger.error(
+      // Use a logger with the actual source context, not ErrorHandler
+      const sourceLogger = getLogger(
+        processedError.context.component ||
+          processedError.context.service ||
+          "Unknown"
+      );
+      sourceLogger.error(
         "ErrorHandler.ts",
         62,
         `Error handled: ${processedError.code} - ${processedError.message}`,
@@ -313,8 +319,11 @@ export class ErrorHandler {
     // - Fallback to alternative services
 
     if (__DEV__) {
-      // Use centralized logger with structured data
-      this.logger.debug(
+      // Use a logger with the actual source context, not ErrorHandler
+      const sourceLogger = getLogger(
+        error.context.component || error.context.service || "Unknown"
+      );
+      sourceLogger.debug(
         "ErrorHandler.ts",
         313,
         `🔄 Attempting recovery for error: ${error.code} - ${error.message}`,

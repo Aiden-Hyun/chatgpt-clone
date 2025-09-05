@@ -18,7 +18,7 @@ export const useEmailSignup = () => {
   >({
     operationName: "emailSignUp",
     operation: async ({ email, password }) => {
-      logger.debug("Starting signup process", { email });
+      logger.info("User signup attempt", { email });
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -26,18 +26,29 @@ export const useEmailSignup = () => {
       });
 
       if (error) {
-        logger.error("Signup error", { error });
+        logger.error("Signup failed", {
+          email,
+          error: error.message,
+          errorCode: error.status,
+        });
         throw error;
       }
 
       if (!data.user) {
+        logger.error("Signup failed: No user data returned", { email });
         throw new Error("No user data returned");
       }
+
+      logger.info("Signup successful", {
+        userId: data.user.id,
+        email: data.user.email,
+        needsEmailConfirmation: !data.session,
+      });
 
       return data;
     },
     onError: (error) => {
-      logger.error("Unexpected signup error", { error });
+      logger.error("Signup operation failed", { error: error.message });
     },
   });
 

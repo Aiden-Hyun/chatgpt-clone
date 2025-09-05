@@ -1,4 +1,5 @@
 import { supabase } from "../../../shared/lib/supabase";
+import { getLogger } from "../../../shared/services/logger";
 
 import { useAuthOperationVoid } from "./useAuthOperation";
 
@@ -7,21 +8,30 @@ interface PasswordResetParams {
 }
 
 export const usePasswordReset = () => {
+  const logger = getLogger("usePasswordReset");
   const { execute, isLoading } = useAuthOperationVoid<PasswordResetParams>({
     operationName: "passwordReset",
     operation: async ({ email }) => {
+      logger.info("Password reset request initiated", { email });
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         // This should be your app's URL to handle the password reset
         // redirectTo: 'yourapp://auth/reset-password',
       });
 
       if (error) {
-        console.error("Password reset error:", error);
+        logger.error("Password reset failed", {
+          email,
+          error: error.message,
+          errorCode: error.status,
+        });
         throw error;
       }
+
+      logger.info("Password reset email sent successfully", { email });
     },
     onError: (error) => {
-      console.error("Unexpected password reset error:", error);
+      logger.error("Password reset operation failed", { error: error.message });
     },
   });
 

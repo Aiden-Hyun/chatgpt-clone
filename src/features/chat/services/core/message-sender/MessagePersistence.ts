@@ -5,7 +5,6 @@ import type { Session } from "@/entities/session";
 import { getLogger } from "../../../../../shared/services/logger";
 import { ROOM_NAME_MAX_LENGTH } from "../../../constants";
 import { IMessageService } from "../../interfaces/IMessageService";
-import { LoggingService } from "../LoggingService";
 import { RetryService } from "../RetryService";
 
 export interface PersistenceRequest {
@@ -21,7 +20,6 @@ export interface PersistenceRequest {
 
 export class MessagePersistence {
   private readonly retryService: RetryService;
-  private readonly loggingService: LoggingService;
 
   private logger = getLogger("MessagePersistence");
 
@@ -34,7 +32,6 @@ export class MessagePersistence {
       retryDelay: 1000,
       exponentialBackoff: true,
     });
-    this.loggingService = new LoggingService("MessagePersistence");
   }
 
   async persistMessages(request: PersistenceRequest): Promise<void> {
@@ -48,6 +45,14 @@ export class MessagePersistence {
       session,
       requestId,
     } = request;
+
+    this.logger.info("Starting message persistence", {
+      requestId,
+      roomId,
+      userMessageId: userMsg.id,
+      assistantMessageId: assistantMsg.id,
+      isRegeneration: regenerateIndex !== undefined,
+    });
 
     try {
       // Handle database operations
@@ -91,19 +96,19 @@ export class MessagePersistence {
       } catch (error) {
         // Room update is not critical - log but don't fail the entire operation
         this.logger.warn("Room update failed but continuing", { error });
-        this.loggingService.warn(
-          `Room update failed for request ${requestId}, but continuing`,
-          { error }
-        );
       }
 
-      this.loggingService.info(
-        `Persistence completed for request ${requestId}`
-      );
+      this.logger.info("Message persistence completed successfully", {
+        requestId,
+        roomId,
+        userMessageId: userMsg.id,
+        assistantMessageId: assistantMsg.id,
+      });
     } catch (error) {
-      this.logger.error("Persistence failed", { error });
-      this.loggingService.error(`Persistence failed for request ${requestId}`, {
-        error,
+      this.logger.error("Message persistence failed", {
+        requestId,
+        roomId,
+        error: error.message,
       });
       throw error;
     }
@@ -113,7 +118,7 @@ export class MessagePersistence {
     numericRoomId: number | null,
     session: Session,
     model: string,
-    requestId: string
+    _requestId: string
   ): Promise<{ roomId: number; isNewRoom: boolean }> {
     let roomId = numericRoomId;
     let isNewRoom = false;

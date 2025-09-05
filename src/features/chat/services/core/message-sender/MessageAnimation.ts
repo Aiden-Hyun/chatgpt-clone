@@ -4,7 +4,6 @@ import { getLogger } from "../../../../../shared/services/logger";
 import { IAnimationService } from "../../interfaces/IAnimationService";
 import { IMessageStateService } from "../../interfaces/IMessageStateService";
 import { ITypingStateService } from "../../interfaces/ITypingStateService";
-import { LoggingService } from "../LoggingService";
 
 export interface AnimationRequest {
   fullContent: string;
@@ -14,16 +13,13 @@ export interface AnimationRequest {
 }
 
 export class MessageAnimation {
-  private readonly loggingService: LoggingService;
-  private logger = getLogger("MessageAnimation");
+  private readonly logger = getLogger("MessageAnimation");
 
   constructor(
     private animationService: IAnimationService,
     private messageStateService: IMessageStateService,
     private typingStateService: ITypingStateService
-  ) {
-    this.loggingService = new LoggingService("MessageAnimation");
-  }
+  ) {}
 
   updateUIState(request: {
     regenerateIndex?: number;
@@ -32,8 +28,7 @@ export class MessageAnimation {
     messageId?: string;
     requestId: string;
   }): void {
-    const { regenerateIndex, userMsg, assistantMsg, messageId, requestId } =
-      request;
+    const { regenerateIndex, userMsg, assistantMsg, messageId } = request;
 
     this.messageStateService.updateMessageState({
       regenerateIndex,
@@ -61,12 +56,6 @@ export class MessageAnimation {
       contentLength: fullContent.length,
       regenerateIndex,
       messageId,
-    });
-
-    this.loggingService.debug(`Starting animation for request ${requestId}`, {
-      messageId,
-      regenerateIndex,
-      contentLength: fullContent.length,
     });
 
     // Set full content and transition to animating state
