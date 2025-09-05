@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/entities/session";
 
 import { chatDebugLog } from "../../../features/chat/constants";
-import { getLogger } from "../../../shared/services/logger";
 import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import mobileStorage from "../../../shared/lib/mobileStorage";
 import { supabase } from "../../../shared/lib/supabase";
+import { getLogger } from "../../../shared/services/logger";
 import type {
   ChatRoomRow,
   ChatRoomWithLastMsg,
@@ -216,7 +216,6 @@ export const useChatRooms = () => {
     // Clear search mode from storage to ensure new chat starts fresh
     try {
       await mobileStorage.removeItem("chat_search_mode");
-      logger.debug("[ROOMS] Cleared search mode for new chat");
     } catch (error) {
       logger.warn("[ROOMS] Failed to clear search mode:", error);
     }

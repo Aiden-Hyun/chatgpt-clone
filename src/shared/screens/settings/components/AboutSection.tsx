@@ -17,12 +17,10 @@ export const AboutSection: React.FC = () => {
 
   const handleTermsOfService = () => {
     // TODO: Implement terms of service navigation
-    logger.debug("Terms of service functionality not implemented yet");
   };
 
   const handleSupport = () => {
     // TODO: Implement support navigation
-    logger.debug("Support functionality not implemented yet");
   };
 
   return (

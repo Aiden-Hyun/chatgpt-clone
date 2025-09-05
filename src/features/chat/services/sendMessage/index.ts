@@ -1,9 +1,9 @@
 // src/features/chat/services/sendMessage/index.ts
 import type { ChatMessage } from "@/entities/message";
 
+import { getLogger } from "@/shared/services/logger";
 import { errorHandler } from "../../../../shared/services/error";
 import { getModelInfo } from "../../constants/models";
-import { logger } from "../../utils/logger";
 import { SendMessageRequest } from "../core/message-sender";
 import { ServiceFactory } from "../core/ServiceFactory";
 import { ServiceRegistry } from "../core/ServiceRegistry";
@@ -31,6 +31,7 @@ export type SendMessageArgs = {
 export const sendMessageHandler = async (
   args: SendMessageArgs
 ): Promise<void> => {
+  const logger = getLogger("sendMessageHandler");
   const {
     userContent,
     numericRoomId,
@@ -51,10 +52,10 @@ export const sendMessageHandler = async (
     if (!modelInfo?.capabilities.search) {
       const error = `Search is not supported for model: ${model}`;
       await errorHandler.handle(new Error(error), {
-        operation: 'validateSearchMode',
-        service: 'chat',
-        component: 'sendMessageHandler',
-        metadata: { model, isSearchMode }
+        operation: "validateSearchMode",
+        service: "chat",
+        component: "sendMessageHandler",
+        metadata: { model, isSearchMode },
       });
       throw new Error(error);
     }
@@ -63,10 +64,6 @@ export const sendMessageHandler = async (
   // Use injected auth service via ServiceRegistry
   const authService = ServiceRegistry.createAuthService();
   const session = await authService.getSession();
-  logger.debug("🔄 SEND-MESSAGE: Session fetched", {
-    hasSession: !!session,
-    userId: session?.user?.id,
-  });
 
   if (!session) {
     logger.warn("🔒 No active session. Aborting sendMessageHandler");
@@ -98,16 +95,16 @@ export const sendMessageHandler = async (
 
   if (!result.success && result.error) {
     await errorHandler.handle(new Error(result.error), {
-      operation: 'sendMessage',
-      service: 'chat',
-      component: 'sendMessageHandler',
-      metadata: { 
-        numericRoomId, 
-        model, 
+      operation: "sendMessage",
+      service: "chat",
+      component: "sendMessageHandler",
+      metadata: {
+        numericRoomId,
+        model,
         regenerateIndex,
         isSearchMode,
-        messageId
-      }
+        messageId,
+      },
     });
     throw new Error(result.error);
   }

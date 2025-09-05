@@ -42,7 +42,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 // Theme provider component
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const logger = getLogger("ThemeContext");
-  
+
   // State for theme mode (light, dark, system)
   const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
 
@@ -61,7 +61,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Load saved theme preferences from storage
   useEffect(() => {
-    logger.debug("🎨 [ThemeContext] Loading theme preferences from storage...");
     const loadThemePreferences = async () => {
       await executeWithLoading(
         async () => {
@@ -73,7 +72,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             savedThemeMode &&
             ["light", "dark", "system"].includes(savedThemeMode)
           ) {
-            logger.debug("☀️ [ThemeContext] Loaded theme mode:", savedThemeMode);
             setThemeModeState(savedThemeMode as ThemeMode);
           }
 
@@ -82,10 +80,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             STORAGE_KEYS.THEME_STYLE
           );
           if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
-            logger.debug(
-              "✨ [ThemeContext] Loaded theme style:",
-              savedThemeStyle
-            );
             setThemeStyleState(savedThemeStyle);
           }
         },
@@ -95,8 +89,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           },
         }
       );
-
-      logger.debug("✅ [ThemeContext] Theme preferences loading complete");
     };
 
     loadThemePreferences();

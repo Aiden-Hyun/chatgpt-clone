@@ -18,7 +18,6 @@ export const ModelStore = {
   },
 
   set(key: RoomKey, next: RoomModelState): void {
-    if (__DEV__) logger.debug("set", { key, next });
     store.set(key, next);
     const subs = listeners.get(key);
     if (subs)
@@ -30,12 +29,10 @@ export const ModelStore = {
   },
 
   subscribe(key: RoomKey, cb: () => void): () => void {
-    if (__DEV__) logger.debug("subscribe add", { key });
     const set = listeners.get(key) ?? new Set<() => void>();
     set.add(cb);
     listeners.set(key, set);
     return () => {
-      if (__DEV__) logger.debug("subscribe remove", { key });
       const s = listeners.get(key);
       if (!s) return;
       s.delete(cb);
@@ -43,7 +40,6 @@ export const ModelStore = {
   },
 
   attachPendingToRoom(newRoomId: number): void {
-    if (__DEV__) logger.debug("attachPendingToRoom", { newRoomId });
     const pending = store.get("new");
     if (pending) store.set(newRoomId, pending);
     store.delete("new");

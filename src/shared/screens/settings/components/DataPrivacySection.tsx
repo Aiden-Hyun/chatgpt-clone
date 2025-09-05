@@ -17,17 +17,14 @@ export const DataPrivacySection: React.FC = () => {
 
   const handleExportData = () => {
     // TODO: Implement data export functionality
-    logger.debug("Export data functionality not implemented yet");
   };
 
   const handleClearConversations = () => {
     // TODO: Implement clear conversations functionality
-    logger.debug("Clear conversations functionality not implemented yet");
   };
 
   const handlePrivacyPolicy = () => {
     // TODO: Implement privacy policy navigation
-    logger.debug("Privacy policy functionality not implemented yet");
   };
 
   return (

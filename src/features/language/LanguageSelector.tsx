@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-
 import { useToast } from "@/features/alert";
 import { AppTheme, useAppTheme } from "@/features/theme";
 import type { DropdownItem } from "@/shared/components/ui";
@@ -34,12 +33,9 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 
   const handleLanguageChange = (item: DropdownItem) => {
     const newLanguage = item.value as string;
-    logger.debug("🌍 Language button pressed:", newLanguage);
-    logger.debug("🌍 Current language before:", currentLanguage);
 
     // Set the new language
     setLanguage(newLanguage);
-    logger.debug("🌍 Language set to:", newLanguage);
 
     // Show toast in the new language
     const languageNames = {
@@ -56,21 +52,14 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         ? "toast.language_changed_es"
         : "toast.language_changed_ko";
 
-    logger.debug("🌍 Translation key:", translationKey);
-
     // Replace the placeholder with the actual language name
     const message = t(translationKey).replace(
       "{language}",
       languageNames[newLanguage as keyof typeof languageNames]
     );
 
-    logger.debug("🌍 Toast message:", message);
-    logger.debug("🌍 About to show toast...");
-
     // Show success toast
     showSuccess(message, 3000);
-
-    logger.debug("🌍 Toast showSuccess called");
   };
 
   const styles = createLanguageSelectorStyles(theme);

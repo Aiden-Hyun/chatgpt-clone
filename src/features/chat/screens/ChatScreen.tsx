@@ -135,26 +135,6 @@ const ChatScreenPure = React.memo(
       modelEqual &&
       themeEqual;
 
-    if (__DEV__ && !equal) {
-      logger.debug("Re-render triggered because", {
-        primitiveEqual,
-        functionsEqual,
-        stateEqual,
-        modelEqual,
-        themeEqual,
-        prev: {
-          roomId: prev.roomId,
-          selectedModel: prev.selectedModel,
-          theme: prev.theme,
-        },
-        next: {
-          roomId: next.roomId,
-          selectedModel: next.selectedModel,
-          theme: next.theme,
-        },
-      });
-    }
-
     return equal;
   }
 );
@@ -177,16 +157,6 @@ const ChatScreen = () => {
   const renderCount = React.useRef(0);
   renderCount.current += 1;
 
-  if (__DEV__) {
-    logger.debug("Parent render", {
-      renderCount: renderCount.current,
-      roomId,
-      isTemporaryRoom,
-      numericRoomId,
-      timestamp: new Date().toISOString(),
-    });
-  }
-
   // 🎯 CONTEXT CONSUMPTION: All context/hook consumption happens here
   const chatScreenState = useChatScreen();
   const { logout } = useLogout();
@@ -199,16 +169,6 @@ const ChatScreen = () => {
 
   // 🎯 MEMOIZED PROPS: Only recreate when actual values change
   const chatScreenProps = React.useMemo(() => {
-    if (__DEV__) {
-      logger.debug("Recreating chatScreenProps because dependencies changed", {
-        roomId,
-        isTemporaryRoom,
-        numericRoomId,
-        selectedModel,
-        themeChanged: !!theme,
-      });
-    }
-
     return {
       roomId,
       isTemporaryRoom,
@@ -241,11 +201,9 @@ const ChatScreen = () => {
         }}
         onBack={() => {
           try {
-            logger.debug("back navigation");
           } catch {}
         }}
         onNewChat={() => {
-          logger.debug("onNewChat called from ChatHeader");
           chatScreenState.startNewChat();
         }}
         onChatSelect={(rid: string) => {

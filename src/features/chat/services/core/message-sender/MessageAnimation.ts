@@ -35,18 +35,6 @@ export class MessageAnimation {
     const { regenerateIndex, userMsg, assistantMsg, messageId, requestId } =
       request;
 
-    this.logger.debug("Updating UI state for request", {
-      requestId,
-      regenerateIndex,
-      userMessageId: userMsg.id,
-      assistantMessageId: assistantMsg.id,
-    });
-
-    this.loggingService.debug(`Updating UI state for request ${requestId}`, {
-      regenerateIndex,
-      messageId,
-    });
-
     this.messageStateService.updateMessageState({
       regenerateIndex,
       userMsg,
@@ -87,13 +75,9 @@ export class MessageAnimation {
       regenerateIndex,
       messageId,
     });
-
-    this.logger.debug("Animation started successfully");
   }
 
   clearTypingState(): void {
-    this.logger.debug("Clearing typing indicator");
     this.typingStateService.setTyping(false);
-    this.logger.debug("Typing indicator cleared");
   }
 }

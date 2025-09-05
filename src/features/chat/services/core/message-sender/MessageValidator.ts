@@ -92,12 +92,6 @@ export class MessageValidator {
       userContentLength: userContent.length,
     });
 
-    this.loggingService.debug(`Validation passed for request ${requestId}`, {
-      userMessageId: userMsg.id,
-      assistantMessageId: assistantMsg.id,
-      contentLength: userContent.length,
-    });
-
     return {
       isValid: true,
       userMsg,

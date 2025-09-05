@@ -9,7 +9,6 @@ import {
   View,
 } from "react-native";
 
-
 import type { ChatMessage } from "@/entities/message";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
@@ -43,14 +42,6 @@ export const MessageList: React.FC<MessageListProps> = ({
   onLike,
   onDislike,
 }) => {
-  // Add render counting for performance monitoring
-  const renderCount = useRef(0);
-  renderCount.current += 1;
-
-  // Log render count every 5 renders (disabled for performance)
-  // if (renderCount.current % 5 === 0) {
-  //   console.log(`[RENDER-COUNT] MessageList: ${renderCount.current} renders`);
-  // }
   const flatListRef = useRef<FlashListRef<ChatMessage>>(null);
   const theme = useAppTheme();
   const { t } = useLanguageContext();
@@ -352,8 +343,6 @@ export const MessageList: React.FC<MessageListProps> = ({
       index === messagesWithLoading.length - 1 ||
       (index < messagesWithLoading.length - 1 &&
         messagesWithLoading[index + 1].role !== item.role);
-
-    // Debug logging removed for performance
 
     const handleRegenerate = () => {
       // Find the correct index in the original messages array

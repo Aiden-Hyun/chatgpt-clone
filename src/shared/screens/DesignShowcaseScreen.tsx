@@ -306,17 +306,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Primary"
-                onPress={() => logger.debug("Primary button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.primaryButton]}
               />
               <Button
                 label="Success"
-                onPress={() => logger.debug("Success button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error"
-                onPress={() => logger.debug("Error button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.errorButton]}
               />
             </View>
@@ -325,17 +325,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Secondary"
-                onPress={() => logger.debug("Secondary button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.secondaryButton]}
               />
               <Button
                 label="Outline"
-                onPress={() => logger.debug("Outline button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.outlineButton]}
               />
               <Button
                 label="Ghost"
-                onPress={() => logger.debug("Ghost button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.ghostButton]}
               />
             </View>
@@ -344,17 +344,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Small"
-                onPress={() => logger.debug("Small button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.smallButton]}
               />
               <Button
                 label="Medium"
-                onPress={() => logger.debug("Medium button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.mediumButton]}
               />
               <Button
                 label="Large"
-                onPress={() => logger.debug("Large button pressed")}
+                onPress={() => {}}
                 containerStyle={[styles.button, styles.largeButton]}
               />
             </View>

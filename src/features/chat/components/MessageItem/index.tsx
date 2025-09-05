@@ -79,8 +79,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 
   // Render assistant message
   if (message.role === "assistant") {
-    // Debug logging removed for performance
-
     return (
       <AssistantMessage
         message={message}

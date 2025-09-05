@@ -5,8 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-
-import { getLogger } from "@/shared/services/logger";
 import {
   Animated,
   Dimensions,
@@ -22,6 +20,7 @@ import {
 } from "react-native";
 
 import { useAppTheme } from "@/features/theme";
+import { getLogger } from "@/shared/services/logger";
 
 import { createDropdownStyles } from "./Dropdown.styles";
 
@@ -181,14 +180,6 @@ export const Dropdown: React.FC<DropdownProps> = ({
     // measureInWindow handles parents with overflow/transform better across platforms
     // (same positioning idea as the Medium article’s measure usage). :contentReference[oaicite:1]{index=1}
     triggerRef.current.measureInWindow((x, y, width, height) => {
-      logger.debug("📏 [Dropdown] measureInWindow raw values:", {
-        x,
-        y,
-        width,
-        height,
-      });
-      logger.debug("📏 [Dropdown] Screen scale:", SCALE);
-      logger.debug("📏 [Dropdown] Platform:", Platform.OS);
       setTriggerRect({ x, y, width, height });
     });
   }, []);
@@ -257,94 +248,6 @@ export const Dropdown: React.FC<DropdownProps> = ({
     const top = wantTop
       ? Math.max(8, topCalcAbove)
       : Math.min(SCREEN.height - 8, topCalcBelow);
-
-    // Debug logs for positioning
-    logger.debug("🔍 [Dropdown] Positioning Debug:");
-    logger.debug("  Screen info:", {
-      width: SCREEN.width,
-      height: SCREEN.height,
-      scale: SCALE,
-      pixelRatio: Dimensions.get("window").scale,
-      platform: Platform.OS,
-    });
-    logger.debug("  Trigger rect:", triggerRect);
-    logger.debug("  Menu width:", width);
-    logger.debug("  Placement:", placement);
-    logger.debug("  Want top:", wantTop);
-    logger.debug("  LEFT calculation:");
-    logger.debug("    Raw trigger x:", triggerRect.x, "(physical pixels)");
-    logger.debug(
-      "    Raw trigger width:",
-      triggerRect.width,
-      "(physical pixels)"
-    );
-    logger.debug("    Scale factor:", SCALE);
-    logger.debug(
-      "    Center calc:",
-      leftCalc,
-      "=",
-      triggerRect.x,
-      "+ (",
-      triggerRect.width,
-      "-",
-      width,
-      ") / 2"
-    );
-    logger.debug(
-      "    Min with right edge:",
-      leftMin,
-      "= Math.min(",
-      leftCalc,
-      ",",
-      SCREEN.width - width - 8,
-      ")"
-    );
-    logger.debug("    Final left:", left, "= Math.max(8,", leftMin, ")");
-    logger.debug("  TOP calculation:");
-    logger.debug("    Raw trigger y:", triggerRect.y, "(physical pixels)");
-    logger.debug(
-      "    Raw trigger height:",
-      triggerRect.height,
-      "(physical pixels)"
-    );
-    logger.debug("    Converted y:", triggerY, "(logical pixels)");
-    logger.debug("    Converted height:", triggerHeight, "(logical pixels)");
-    if (wantTop) {
-      logger.debug(
-        "    Above calc:",
-        topCalcAbove,
-        "=",
-        triggerY,
-        "-",
-        maxHeight,
-        "+ 6"
-      );
-      logger.debug("    Final top:", top, "= Math.max(8,", topCalcAbove, ")");
-    } else {
-      logger.debug(
-        "    Below calc:",
-        topCalcBelow,
-        "=",
-        triggerY,
-        "+",
-        triggerHeight,
-        "+ 6"
-      );
-      logger.debug(
-        "    Final top:",
-        top,
-        "= Math.min(",
-        SCREEN.height - 8,
-        ",",
-        topCalcBelow,
-        ")"
-      );
-    }
-    logger.debug("  Final positions:", {
-      menuLeft: left,
-      menuTop: top,
-      menuWidth: width,
-    });
 
     return { menuLeft: left, menuTop: top, menuWidth: width };
   }, [triggerRect, dropdownWidth, placement, maxHeight]);

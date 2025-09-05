@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
+import { getLogger } from "@/shared/services/logger";
 import { sendMessageHandler } from "../../../features/chat/services/sendMessage";
-import { logger } from "../../../features/chat/utils/logger";
 import { generateMessageId } from "../../../features/chat/utils/messageIdGenerator";
 import type { ChatMessage } from "../model/types";
 
@@ -32,6 +32,7 @@ export const useMessageActions = ({
   selectedModel,
   isSearchMode = false,
 }: UseMessageActionsProps) => {
+  const logger = getLogger("useMessageActions");
   // selectedModel is provided by parent; no hook call here
 
   const sendMessage = useCallback(
@@ -40,11 +41,6 @@ export const useMessageActions = ({
 
       // ✅ STATE MACHINE: Simplified message sending using the service layer
       const messageId = generateMessageId();
-      logger.info("Starting new message send", {
-        messageId,
-        contentLength: userContent.length,
-        model: selectedModel,
-      });
 
       try {
         await sendMessageHandler({
@@ -58,7 +54,6 @@ export const useMessageActions = ({
           messageId,
           isSearchMode,
         });
-        logger.debug("Message handler completed", { messageId });
       } catch (error) {
         logger.error("Failed to send message", {
           messageId,
