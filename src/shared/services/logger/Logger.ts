@@ -298,10 +298,10 @@ export class Logger {
         ? message.substring(0, MESSAGE_WIDTH - 3) + "..."
         : message;
 
-    // Truncate file path if too long
+    // Truncate file path if too long (keep filename visible)
     const truncatedFilePath =
       fileStr.length > FILE_WIDTH
-        ? fileStr.substring(0, FILE_WIDTH - 3) + "..."
+        ? "..." + fileStr.substring(fileStr.length - FILE_WIDTH + 3)
         : fileStr;
 
     // Format each column with padding and color coding
