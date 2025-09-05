@@ -16,11 +16,16 @@ import { LanguageProvider } from "../src/features/language";
 import { ThemeProvider, useThemeContext } from "../src/features/theme";
 import { navigationTracker } from "../src/shared/lib/navigationTracker";
 import { resetDebugGlobals } from "../src/shared/lib/resetDebugGlobals";
+import { getLogger } from "../src/shared/services/logger";
 
 // Initialize services
 configureServices();
 
+// Initialize console interceptor for centralized logging
+// ConsoleInterceptor.intercept(); // Temporarily disabled to fix circular dependency
+
 function AppContent() {
+  const logger = getLogger("AppContent");
   const [fontsLoaded] = useFonts({
     CascadiaMono: require("../assets/fonts/Cascadia/CascadiaMono.ttf"),
     CascadiaMonoBold: require("../assets/fonts/Cascadia/CascadiaMono-Bold.otf"),
@@ -28,25 +33,26 @@ function AppContent() {
 
   const { isLoading: themeLoading } = useThemeContext();
 
-  console.log("📊 [AppContent] Loading states:", { fontsLoaded, themeLoading });
+  logger.debug("Loading states", { fontsLoaded, themeLoading });
 
   // Wait for both fonts and theme to be ready
   if (!fontsLoaded || themeLoading) {
-    console.log("⏳ [AppContent] Showing loading screen");
+    logger.debug("Showing loading screen");
     return <LoadingScreen />;
   }
 
-  console.log("🚀 [AppContent] Both fonts and theme ready, rendering app");
+  logger.debug("Both fonts and theme ready, rendering app");
   return <ProtectedRoutes />;
 }
 
 function ProtectedRoutes() {
+  const logger = getLogger("ProtectedRoutes");
   const { session, isLoading } = useAuth();
 
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log("🔐 [ProtectedRoutes] Auth state:", {
+  logger.debug("Auth state", {
     hasSession: !!session,
     isLoading,
     pathname,
@@ -94,14 +100,14 @@ function ProtectedRoutes() {
 
   useEffect(() => {
     if (!isLoading && !session && !isAuthRoute) {
-      console.log("🔄 [ProtectedRoutes] Redirecting to auth - no session");
+      logger.debug("Redirecting to auth - no session");
       // Only redirect to auth if user is not on an auth route
       router.replace("/auth");
     }
-  }, [isLoading, session, pathname, isAuthRoute, router]);
+  }, [isLoading, session, pathname, isAuthRoute, router, logger]);
 
   if (isLoading) {
-    console.log("⏳ [ProtectedRoutes] Showing loading screen");
+    logger.debug("Showing loading screen");
     return <LoadingScreen />;
   }
 

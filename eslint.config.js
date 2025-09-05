@@ -94,6 +94,22 @@ export default [
 
       // Optional: disallow CommonJS in your TS files (force ESM)
       // 'import/no-commonjs': 'error',
+
+      // ##################################################################
+      // LOGGING RULES - BAN DIRECT CONSOLE USAGE
+      // ##################################################################
+      'no-console': ['error', { 
+        allow: ['warn', 'error'] // Only allow console.warn and console.error
+      }],
+
+    },
+  },
+
+  // Exception for logger files - allow console usage
+  {
+    files: ['src/shared/services/logger/**/*.{ts,tsx}'],
+    rules: {
+      'no-console': 'off', // Allow console in logger files
     },
   },
 ];

@@ -56,21 +56,17 @@ export class MessageOrchestrator {
     const requestId = this.generateRequestId();
     let assistantMessageIdForError: string | null = null;
 
-    console.log(
-      "🎯 [MessageOrchestrator] Starting message send orchestration for request:",
+    this.loggingService.info("Starting message send orchestration", {
       requestId,
-      {
-        model: request.model,
-        isSearchMode: request.isSearchMode,
-        messageCount: request.messages.length,
-      }
-    );
+      model: request.model,
+      isSearchMode: request.isSearchMode,
+      messageCount: request.messages.length,
+    });
 
     try {
-      console.log(
-        "🔍 [MessageOrchestrator] Starting message send with isSearchMode:",
-        request.isSearchMode
-      );
+      this.loggingService.debug("Starting message send with search mode", {
+        isSearchMode: request.isSearchMode,
+      });
       this.loggingService.info(`Starting message send request ${requestId}`, {
         requestId,
         messageId: request.messageId,
@@ -81,26 +77,25 @@ export class MessageOrchestrator {
       });
 
       // Step 1: Validate request and create message objects
-      console.log("🔍 [MessageOrchestrator] Step 1: Validating request...");
+      this.loggingService.debug("Step 1: Validating request");
       const validation = this.validator.validateRequest(request, requestId);
       if (!validation.isValid) {
-        console.error(
-          "❌ [MessageOrchestrator] Validation failed:",
-          validation.error
-        );
+        this.loggingService.error("Validation failed", {
+          error: validation.error,
+        });
         return {
           success: false,
           error: validation.error,
           duration: Date.now() - startTime,
         };
       }
-      console.log("✅ [MessageOrchestrator] Step 1: Validation passed");
+      this.loggingService.debug("Step 1: Validation passed");
 
       const { userMsg, assistantMsg } = validation;
       assistantMessageIdForError = assistantMsg?.id ?? null;
 
       // Step 2: Update UI state
-      console.log("🎭 [MessageOrchestrator] Step 2: Updating UI state...");
+      this.loggingService.debug("Step 2: Updating UI state");
       this.animation.updateUIState({
         regenerateIndex: request.regenerateIndex,
         userMsg: userMsg!,
@@ -108,31 +103,29 @@ export class MessageOrchestrator {
         messageId: request.messageId,
         requestId,
       });
-      console.log("✅ [MessageOrchestrator] Step 2: UI state updated");
+      this.loggingService.debug("Step 2: UI state updated");
 
       // Step 3: Ensure room exists
-      console.log("🏗️ [MessageOrchestrator] Step 3: Ensuring room exists...");
+      this.loggingService.debug("Step 3: Ensuring room exists");
       const { roomId, isNewRoom } = await this.persistence.createRoomIfNeeded(
         request.numericRoomId,
         request.session,
         request.model,
         requestId
       );
-      console.log("✅ [MessageOrchestrator] Step 3: Room ready:", {
+      this.loggingService.debug("Step 3: Room ready", {
         roomId,
         isNewRoom,
       });
 
       // Step 4: Prepare messages for AI API
-      console.log(
-        "🤖 [MessageOrchestrator] Step 4: Preparing AI API request..."
-      );
+      this.loggingService.debug("Step 4: Preparing AI API request");
       const messagesWithSearch =
         request.regenerateIndex !== undefined
           ? request.messages
           : [...request.messages, userMsg!];
 
-      console.log("🔍 [MessageOrchestrator] Preparing AI request:", {
+      this.loggingService.debug("Preparing AI request", {
         messageCount: messagesWithSearch.length,
       });
 
@@ -150,7 +143,7 @@ export class MessageOrchestrator {
       });
 
       // Step 5: Get response from AI API with retry
-      console.log("🚀 [MessageOrchestrator] Step 5: Sending AI API request...");
+      this.loggingService.debug("Step 5: Sending AI API request");
       const apiResponse = await this.retryService.retryOperation(
         () =>
           this.aiApiService.sendMessage(
@@ -160,10 +153,10 @@ export class MessageOrchestrator {
           ),
         "AI API call"
       );
-      console.log("✅ [MessageOrchestrator] Step 5: AI API response received");
+      this.loggingService.debug("Step 5: AI API response received");
 
       if (!this.responseProcessor.validateResponse(apiResponse)) {
-        console.error("❌ [MessageOrchestrator] AI response validation failed");
+        this.loggingService.error("AI response validation failed");
         const error = "Invalid AI response";
 
         // Use unified error handling system
@@ -187,7 +180,7 @@ export class MessageOrchestrator {
 
       const fullContent = this.responseProcessor.extractContent(apiResponse);
       if (!fullContent) {
-        console.error("❌ [MessageOrchestrator] No content in AI response");
+        this.loggingService.error("No content in AI response");
         const error = "No content in AI response";
 
         // Use unified error handling system
@@ -206,10 +199,9 @@ export class MessageOrchestrator {
         return { success: false, error, duration: Date.now() - startTime };
       }
 
-      console.log(
-        "✅ [MessageOrchestrator] AI response content extracted, length:",
-        fullContent.length
-      );
+      this.loggingService.debug("AI response content extracted", {
+        contentLength: fullContent.length,
+      });
       this.loggingService.info(
         `AI response received for request ${requestId}`,
         {
@@ -219,21 +211,17 @@ export class MessageOrchestrator {
       );
 
       // Step 6: Animate the response
-      console.log(
-        "🎬 [MessageOrchestrator] Step 6: Starting response animation..."
-      );
+      this.loggingService.debug("Step 6: Starting response animation");
       this.animation.animateResponse({
         fullContent,
         regenerateIndex: request.regenerateIndex,
         messageId: assistantMsg!.id,
         requestId,
       });
-      console.log("✅ [MessageOrchestrator] Step 6: Animation started");
+      this.loggingService.debug("Step 6: Animation started");
 
       // Step 7: Handle database operations asynchronously
-      console.log(
-        "💾 [MessageOrchestrator] Step 7: Starting async database operations..."
-      );
+      this.loggingService.debug("Step 7: Starting async database operations");
       (async () => {
         try {
           this.loggingService.debug(
@@ -254,14 +242,11 @@ export class MessageOrchestrator {
           this.loggingService.info(
             `Post-animation operations completed for request ${requestId}`
           );
-          console.log(
-            "✅ [MessageOrchestrator] Step 7: Database operations completed"
-          );
+          this.loggingService.debug("Step 7: Database operations completed");
         } catch (error) {
-          console.error(
-            "❌ [MessageOrchestrator] Step 7: Database operations failed:",
-            error
-          );
+          this.loggingService.error("Step 7: Database operations failed", {
+            error,
+          });
           this.loggingService.error(
             `Error in post-animation operations for request ${requestId}`,
             { error }
@@ -270,10 +255,11 @@ export class MessageOrchestrator {
       })();
 
       const duration = Date.now() - startTime;
-      console.log(
-        "🎉 [MessageOrchestrator] Message send completed successfully:",
-        { duration, roomId, isNewRoom }
-      );
+      this.loggingService.info("Message send completed successfully", {
+        duration,
+        roomId,
+        isNewRoom,
+      });
       this.loggingService.info(
         `Message send completed successfully for request ${requestId}`,
         {
@@ -286,7 +272,7 @@ export class MessageOrchestrator {
       return { success: true, roomId, duration };
     } catch (error) {
       const duration = Date.now() - startTime;
-      console.error("❌ [MessageOrchestrator] Message send failed:", error);
+      this.loggingService.error("Message send failed", { error });
 
       // Use unified error handling system
       const processedError = await errorHandler.handle(error, {
@@ -308,9 +294,7 @@ export class MessageOrchestrator {
       };
     } finally {
       // Always clear typing state when operation completes or fails
-      console.log(
-        "⌨️ [MessageOrchestrator] Final cleanup: clearing typing state"
-      );
+      this.loggingService.debug("Final cleanup: clearing typing state");
       this.animation.clearTypingState();
     }
   }

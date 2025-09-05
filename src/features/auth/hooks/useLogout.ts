@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { Platform } from "react-native";
 
 import { supabase } from "../../../shared/lib/supabase";
+import { getLogger } from "../../../shared/services/logger";
 
 import { useAuthOperationVoid } from "./useAuthOperation";
 
@@ -11,6 +12,7 @@ import { useAuthOperationVoid } from "./useAuthOperation";
  * Centralizes logout logic and provides loading state
  */
 export const useLogout = () => {
+  const logger = getLogger("useLogout");
   const { execute, isLoading } = useAuthOperationVoid<void>({
     operationName: "logout",
     operation: async () => {
@@ -27,14 +29,9 @@ export const useLogout = () => {
           }
           keysToRemove.forEach((key) => localStorage.removeItem(key));
 
-          if (__DEV__) {
-            console.log(
-              "🧹 [LOGOUT] Cleared Supabase localStorage items:",
-              keysToRemove
-            );
-          }
+          logger.debug("Cleared Supabase localStorage items", { keysToRemove });
         } catch (error) {
-          console.warn("Failed to clear localStorage:", error);
+          logger.warn("Failed to clear localStorage", { error });
         }
       }
 
@@ -46,7 +43,7 @@ export const useLogout = () => {
       router.replace("/auth");
     },
     onError: (error) => {
-      console.error("Error during logout:", error);
+      logger.error("Error during logout", { error });
       // Even if there's an error, try to navigate to login
       router.replace("/auth");
     },

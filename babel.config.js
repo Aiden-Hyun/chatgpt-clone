@@ -13,6 +13,7 @@ module.exports = function(api) {
           extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
         },
       ],
+      ['./babel-plugins/inject-fileline.js', { devOnly: true }],
       'react-native-reanimated/plugin',
     ],
   };

@@ -10,6 +10,7 @@ import React, {
 
 import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import { supabase } from "../../../shared/lib/supabase";
+import { getLogger } from "../../../shared/services/logger";
 import { AUTH_EVENTS } from "../model/constants";
 import type { AuthContextType, Session } from "../model/types";
 
@@ -20,22 +21,23 @@ type Props = {
 };
 
 export function AuthProvider({ children }: Props) {
+  const logger = getLogger("AuthProvider");
   const [session, setSession] = useState<Session | null>(null);
   const {
     loading: isLoading,
-    error: loadingError,
+    error: _loadingError,
     executeWithLoading,
   } = useLoadingState({ initialLoading: true });
 
   useEffect(() => {
-    console.log("🔑 [AuthContext] Starting auth initialization");
+    logger.debug("Starting auth initialization");
     let mounted = true;
 
     const initializeAuth = async () => {
       await executeWithLoading(
         async () => {
           const { data } = await supabase.auth.getSession();
-          console.log("📋 [AuthContext] Initial session result:", {
+          logger.debug("Initial session result", {
             hasSession: !!data.session,
           });
 
@@ -47,7 +49,7 @@ export function AuthProvider({ children }: Props) {
         },
         {
           onError: (error) => {
-            console.error("Auth initialization error:", error);
+            logger.error("Auth initialization error", { error });
             if (mounted) {
               setSession(null);
             }
@@ -61,7 +63,7 @@ export function AuthProvider({ children }: Props) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("🔄 [AuthContext] Auth state change:", {
+      logger.debug("Auth state change", {
         event,
         hasSession: !!session,
       });

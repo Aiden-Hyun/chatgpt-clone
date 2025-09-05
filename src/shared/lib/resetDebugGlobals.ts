@@ -1,3 +1,4 @@
+import { getLogger } from "../services/logger";
 import type { DebugGlobals } from "../types/global";
 
 /**
@@ -6,6 +7,8 @@ import type { DebugGlobals } from "../types/global";
  */
 export const resetDebugGlobals = () => {
   if (__DEV__) {
+    const logger = getLogger("DebugGlobals");
+
     // Reset all known global debug variables
     const globalKeys = [
       "navRenderCount",
@@ -23,6 +26,6 @@ export const resetDebugGlobals = () => {
       }
     });
 
-    console.log("🧹 [DEBUG] Reset global debug variables");
+    logger.debug("Reset global debug variables", { globalKeys });
   }
 };

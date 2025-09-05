@@ -44,6 +44,23 @@ module.exports = function format(results) {
         return map[ruleId] || map.default;
     }
 
+    /* ---------- helper: get console logging hint ------------------------ */
+    function getConsoleHint(message) {
+        if (message.includes('console.log')) {
+            return '💡 Use: const logger = getLogger("Context"); logger.debug("message", data);';
+        }
+        if (message.includes('console.info')) {
+            return '💡 Use: const logger = getLogger("Context"); logger.info("message", data);';
+        }
+        if (message.includes('console.warn')) {
+            return '💡 Use: const logger = getLogger("Context"); logger.warn("message", data);';
+        }
+        if (message.includes('console.error')) {
+            return '💡 Use: const logger = getLogger("Context"); logger.error("message", data);';
+        }
+        return '';
+    }
+
     /* ---------- helper: coerce ruleId so it's never null ---------------- */
     const safeRule = (id) => (id ? id : 'unknown');
 
@@ -94,13 +111,16 @@ module.exports = function format(results) {
             ruleCounts[ruleId] = (ruleCounts[ruleId] || 0) + 1;
             if (msg.severity === 2) totalErrors++; else totalWarnings++;
 
+            const consoleHint = ruleId === 'no-console' ? getConsoleHint(msg.message) : '';
+            const messageWithHint = consoleHint ? `${msg.message}\n    ${consoleHint}` : msg.message;
+            
             lines.push(
                 `${sevEmoji}[${padR(sevTxt, maxSev)}] ` +
                 `${ruleEm}[${padR(ruleId, maxRule)}] ` +
                 `🧭${padR(rel, maxPath)}:` +
                 `${padL(msg.line, maxLine)}:` +
                 `${padL(msg.column, maxCol)} – ` +
-                `📩${msg.message}`
+                `📩${messageWithHint}`
             );
         }
     }
@@ -138,6 +158,22 @@ module.exports = function format(results) {
         topRules.forEach(([rule, count]) => {
             summary.push(`  ${getRuleEmoji(rule)} ${padR(rule, maxRule)} : ${count}×`);
         });
+        summary.push('');
+    }
+
+    // Special section for console logging violations
+    const consoleViolations = ruleCounts['no-console'] || 0;
+    if (consoleViolations > 0) {
+        summary.push('📺 CONSOLE LOGGING VIOLATIONS:');
+        summary.push('─'.repeat(40));
+        summary.push(`  Found ${consoleViolations} console statement(s) that need migration`);
+        summary.push('  💡 Use the centralized logging system instead:');
+        summary.push('     import { getLogger } from "@/shared/services/logger";');
+        summary.push('     const logger = getLogger("ComponentName");');
+        summary.push('     logger.debug("message", data); // instead of console.log');
+        summary.push('     logger.info("message", data);  // instead of console.info');
+        summary.push('     logger.warn("message", data);  // instead of console.warn');
+        summary.push('     logger.error("message", data); // instead of console.error');
         summary.push('');
     }
 
