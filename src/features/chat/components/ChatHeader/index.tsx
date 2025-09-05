@@ -6,6 +6,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { AnthropicLogo, OpenAILogo } from "@/shared/components/brand";
 import type { DropdownItem } from "@/shared/components/ui";
 import { Button, Dropdown } from "@/shared/components/ui";
+import { getLogger } from "@/shared/services/logger";
 
 import { useLanguageContext } from "../../../language";
 import { useAppTheme } from "../../../theme/theme";
@@ -35,6 +36,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   showModelSelection = true,
 }) => {
   const navigation = useNavigation();
+  const logger = getLogger("ChatHeader");
 
   const theme = useAppTheme();
   const { t } = useLanguageContext();
@@ -238,7 +240,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
               />
             }
             onPress={() => {
-              console.log("🔍 [ChatHeader] More options button pressed");
+              logger.debug("More options button pressed");
               open();
             }}
             containerStyle={styles.menuButton}

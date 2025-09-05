@@ -1,7 +1,10 @@
 // src/features/chat/services/implementations/SupabaseChatRoomService.ts
 import { supabase } from "@/shared/lib/supabase";
+import { getLogger } from "@/shared/services/logger";
 
 import type { IChatRoomService } from "../model/types";
+
+const logger = getLogger("SupabaseChatRoomService");
 
 export class SupabaseChatRoomService implements IChatRoomService {
   async createRoom(userId: string, model: string): Promise<number | null> {
@@ -21,7 +24,7 @@ export class SupabaseChatRoomService implements IChatRoomService {
       .single();
 
     if (error || !data) {
-      console.error("Failed to create chatroom:", error);
+      logger.error("Failed to create chatroom", { error });
       return null;
     }
 
@@ -61,10 +64,10 @@ export class SupabaseChatRoomService implements IChatRoomService {
       .eq("id", roomId);
 
     if (error) {
-      console.error("Failed to update room:", error);
+      logger.error("Failed to update room", { error });
       // Don't throw error for room updates - they're not critical
       // Just log the error and continue
-      console.warn("Room update failed, but continuing with message flow");
+      logger.warn("Room update failed, but continuing with message flow");
     }
   }
 
@@ -82,7 +85,7 @@ export class SupabaseChatRoomService implements IChatRoomService {
       .single();
 
     if (error || !data) {
-      console.error("Failed to get room:", error);
+      logger.error("Failed to get room", { error });
       return null;
     }
 
@@ -97,7 +100,7 @@ export class SupabaseChatRoomService implements IChatRoomService {
 
   async deleteRoom(roomId: number): Promise<void> {
     if (__DEV__) {
-      console.log("[ROOMS] service.deleteRoom:start", { roomId });
+      logger.debug("service.deleteRoom:start", { roomId });
     }
     const { error } = await supabase
       .from("chatrooms")
@@ -105,11 +108,11 @@ export class SupabaseChatRoomService implements IChatRoomService {
       .eq("id", roomId);
 
     if (error) {
-      console.error("Failed to delete room:", error);
+      logger.error("Failed to delete room", { error });
       throw error;
     }
     if (__DEV__) {
-      console.log("[ROOMS] service.deleteRoom:done", { roomId });
+      logger.debug("service.deleteRoom:done", { roomId });
     }
   }
 }

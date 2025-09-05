@@ -16,11 +16,13 @@ import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { FormWrapper } from "@/shared/components/layout/FormWrapper";
 import { Button, Input, Text } from "@/shared/components/ui";
+import { getLogger } from "@/shared/services/logger";
 
 export const SignupScreen = () => {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   const { signUp, isLoading } = useEmailSignup();
+  const logger = getLogger("SignupScreen");
   const { showSuccess, showError } = useToast();
 
   const [email, setEmail] = useState("");
@@ -70,7 +72,7 @@ export const SignupScreen = () => {
       showSuccess(t("auth.account_created"));
       router.replace("/auth");
     } catch (error: unknown) {
-      console.error("Signup error:", error);
+      logger.error("Signup error", { error });
 
       // Handle specific error cases
       if (
@@ -196,8 +198,8 @@ export const SignupScreen = () => {
                 returnKeyType="next"
                 onSubmitEditing={handleEmailSubmit}
                 blurOnSubmit={false}
-                onFocus={() => console.log("Email input focused on signup")}
-                onBlur={() => console.log("Email input blurred on signup")}
+                onFocus={() => logger.debug("Email input focused on signup")}
+                onBlur={() => logger.debug("Email input blurred on signup")}
                 status={errors.email ? "error" : "default"}
                 errorText={errors.email}
               />

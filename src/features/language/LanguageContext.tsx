@@ -1,5 +1,7 @@
 import React, { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
+import { getLogger } from '@/shared/services/logger';
+
 // Define the translation function type
 type TranslationFunction = (key: string) => string;
 
@@ -614,6 +616,7 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
+  const logger = getLogger('LanguageContext');
   const [currentLanguage, setCurrentLanguage] = useState('en');
 
   // Memoize translation function to prevent recreation
@@ -625,7 +628,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   // Memoize setLanguage function to prevent recreation
   const setLanguage = useCallback((language: string) => {
     if (translations[language]) {
-      console.log('🌍 [LanguageContext] Setting language to:', language);
+      logger.debug('🌍 [LanguageContext] Setting language to:', language);
       setCurrentLanguage(language);
     }
   }, []); // Stable function - no dependencies needed

@@ -1,12 +1,15 @@
 // src/features/chat/services/implementations/SupabaseMessageService.ts
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
+import { getLogger } from "@/shared/services/logger";
 
 import { supabase } from "../../../../shared/lib/supabase";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 import { IMessageService } from "../interfaces/IMessageService";
 
 export class SupabaseMessageService implements IMessageService {
+  private logger = getLogger("SupabaseMessageService");
+
   async insertMessages(args: {
     roomId: number;
     userMessage: ChatMessage;
@@ -43,10 +46,10 @@ export class SupabaseMessageService implements IMessageService {
       ]);
 
       if (error) {
-        console.error("❌ Failed to insert messages:", error);
+        this.logger.error("Failed to insert messages", { error });
       }
     } catch (e) {
-      console.error("❌ Unexpected error inserting messages:", e);
+      this.logger.error("Unexpected error inserting messages", { error: e });
     }
   }
 
@@ -69,7 +72,9 @@ export class SupabaseMessageService implements IMessageService {
         .limit(1);
 
       if (findError || !messages || messages.length === 0) {
-        console.error("❌ Failed to find message to update:", findError);
+        this.logger.error("Failed to find message to update", {
+          error: findError,
+        });
         return;
       }
 
@@ -96,11 +101,11 @@ export class SupabaseMessageService implements IMessageService {
         .eq("id", messageId);
 
       if (updateError) {
-        console.error("❌ Failed to update message:", updateError);
+        this.logger.error("Failed to update message", { error: updateError });
         throw updateError;
       }
     } catch (error) {
-      console.error("❌ Error updating assistant message:", error);
+      this.logger.error("Error updating assistant message", { error });
       throw error;
     }
   }
@@ -138,12 +143,16 @@ export class SupabaseMessageService implements IMessageService {
         .eq("id", messageId);
 
       if (updateError) {
-        console.error("❌ Failed to update message by client_id:", updateError);
+        this.logger.error("Failed to update message by client_id", {
+          error: updateError,
+        });
         return false;
       }
       return true;
     } catch (error) {
-      console.error("❌ Error updating assistant message by client_id:", error);
+      this.logger.error("Error updating assistant message by client_id", {
+        error,
+      });
       return false;
     }
   }
@@ -161,9 +170,9 @@ export class SupabaseMessageService implements IMessageService {
         .eq("id", args.dbId)
         .single();
       if (fetchError) {
-        console.error(
-          "❌ Failed to fetch existing message before db-id update:",
-          fetchError
+        this.logger.error(
+          "Failed to fetch existing message before db-id update",
+          { error: fetchError }
         );
       }
 
@@ -184,12 +193,14 @@ export class SupabaseMessageService implements IMessageService {
         .update(updatePayload)
         .eq("id", args.dbId);
       if (updateError) {
-        console.error("❌ Failed to update message by db id:", updateError);
+        this.logger.error("Failed to update message by db id", {
+          error: updateError,
+        });
         return false;
       }
       return true;
     } catch (error) {
-      console.error("❌ Error updating assistant message by db id:", error);
+      this.logger.error("Error updating assistant message by db id", { error });
       return false;
     }
   }
@@ -210,15 +221,14 @@ export class SupabaseMessageService implements IMessageService {
         .eq("role", "user")
         .eq("user_id", args.session.user.id);
       if (updateError) {
-        console.error(
-          "❌ Failed to update user message by db id:",
-          updateError
-        );
+        this.logger.error("Failed to update user message by db id", {
+          error: updateError,
+        });
         return false;
       }
       return true;
     } catch (error) {
-      console.error("❌ Error updating user message by db id:", error);
+      this.logger.error("Error updating user message by db id", { error });
       return false;
     }
   }
@@ -227,18 +237,16 @@ export class SupabaseMessageService implements IMessageService {
     // Consolidated from legacy/loadMessages.ts
     if (!roomId) {
       if (__DEV__) {
-        console.log(
-          "⚠️ [DB-SERVICE] No roomId provided, returning empty array"
-        );
+        this.logger.debug("No roomId provided, returning empty array");
       }
       return [];
     }
 
     if (__DEV__) {
-      console.log(`📊 [DB-SERVICE] Executing SQL query for room ${roomId}`, {
+      this.logger.debug("Executing SQL query for room", {
+        roomId,
         query:
           "SELECT id, role, content, client_id FROM messages WHERE room_id = ? ORDER BY id ASC",
-        roomId,
         timestamp: new Date().toISOString(),
       });
     }
@@ -250,29 +258,25 @@ export class SupabaseMessageService implements IMessageService {
       .order("id", { ascending: true });
 
     if (error) {
-      console.error(
-        `❌ [DB-SERVICE] Database error for room ${roomId}:`,
-        error
-      );
+      this.logger.error("Database error for room", { roomId, error });
       return [];
     }
 
     if (!data) {
-      console.warn(`⚠️ [DB-SERVICE] No data returned for room ${roomId}`);
+      this.logger.warn("No data returned for room", { roomId });
       return [];
     }
 
     if (__DEV__) {
-      console.log(
-        `✅ [DB-SERVICE] Successfully loaded ${data.length} messages for room ${roomId}`,
-        {
-          messages: data.map((msg, index) => ({
-            index,
-            role: msg.role,
-            contentPreview: msg.content?.substring(0, 50) + "...",
-          })),
-        }
-      );
+      this.logger.debug("Successfully loaded messages for room", {
+        roomId,
+        messageCount: data.length,
+        messages: data.map((msg, index) => ({
+          index,
+          role: msg.role,
+          contentPreview: msg.content?.substring(0, 50) + "...",
+        })),
+      });
     }
 
     // Map DB rows to ChatMessage with a stable identifier
@@ -304,7 +308,7 @@ export class SupabaseMessageService implements IMessageService {
       .eq("room_id", roomId);
 
     if (error) {
-      console.error("Failed to delete messages:", error);
+      this.logger.error("Failed to delete messages", { error });
       throw error;
     }
   }

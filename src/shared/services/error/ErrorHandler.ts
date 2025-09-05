@@ -5,6 +5,7 @@
 import { ErrorCode, ErrorContext, ProcessedError, ERROR_CLASSIFICATIONS } from "./ErrorTypes";
 import { ErrorMessageMapper } from "./ErrorMessageMapper";
 import { ErrorLogger } from "./ErrorLogger";
+import { getLogger } from "../logger";
 
 export interface ErrorHandlerConfig {
   enableRecovery?: boolean;
@@ -17,6 +18,7 @@ export class ErrorHandler {
   private messageMapper: ErrorMessageMapper;
   private logger: ErrorLogger;
   private config: ErrorHandlerConfig;
+  private centralizedLogger = getLogger("ErrorHandler");
 
   constructor(config: ErrorHandlerConfig = {}) {
     this.config = {
@@ -242,7 +244,7 @@ export class ErrorHandler {
     // - Fallback to alternative services
     
     if (__DEV__) {
-      console.log("🔄 Attempting recovery for error:", error.code);
+      this.centralizedLogger.debug("🔄 Attempting recovery for error:", error.code);
     }
   }
 

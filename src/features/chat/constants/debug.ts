@@ -1,22 +1,26 @@
+import { getLogger } from "@/shared/services/logger";
+
 // Debug configuration for chat feature
 // Set to false to disable all chat debug logging in development
 export const DEBUG_CHAT = false;
 
+const logger = getLogger("ChatDebug");
+
 // Helper function for conditional debug logging
 export const chatDebugLog = (message: string, data?: unknown) => {
   if (__DEV__ && DEBUG_CHAT) {
-    console.log(message, data);
+    logger.debug(message, data);
   }
 };
 
 export const chatDebugWarn = (message: string, data?: unknown) => {
   if (__DEV__ && DEBUG_CHAT) {
-    console.warn(message, data);
+    logger.warn(message, data);
   }
 };
 
 export const chatDebugError = (message: string, data?: unknown) => {
   if (__DEV__ && DEBUG_CHAT) {
-    console.error(message, data);
+    logger.error(message, data);
   }
 };

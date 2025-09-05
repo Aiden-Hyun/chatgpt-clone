@@ -1,3 +1,5 @@
+import { getLogger } from "@/shared/services/logger";
+
 interface LogContext {
   messageId?: string;
   roomId?: number;
@@ -17,6 +19,7 @@ interface LogContext {
 class ConcurrentMessageLogger {
   private static instance: ConcurrentMessageLogger;
   private static isDev = typeof __DEV__ !== "undefined" && __DEV__;
+  private logger = getLogger("ConcurrentMessageLogger");
 
   static getInstance(): ConcurrentMessageLogger {
     if (!ConcurrentMessageLogger.instance) {
@@ -74,11 +77,11 @@ class ConcurrentMessageLogger {
     });
 
     if (level === "warn") {
-      console.warn(`2️⃣ [CONCURRENT-MSG] ${message}`, payload);
+      this.logger.warn(message, payload);
       return;
     }
     if (level === "error") {
-      console.error(`2️⃣ [CONCURRENT-MSG] ${message}`, {
+      this.logger.error(message, {
         ...payload,
         stack: context.error?.stack,
       });
@@ -86,9 +89,9 @@ class ConcurrentMessageLogger {
     }
     if (ConcurrentMessageLogger.isDev) {
       if (level === "debug") {
-        console.debug(`2️⃣ [CONCURRENT-MSG] ${message}`, payload);
+        this.logger.debug(message, payload);
       } else {
-        console.log(`2️⃣ [CONCURRENT-MSG] ${message}`, payload);
+        this.logger.info(message, payload);
       }
     }
   }
@@ -114,7 +117,7 @@ class ConcurrentMessageLogger {
       duration,
       level: "PERFORMANCE",
     });
-    console.log(
+    this.logger.info(
       `2️⃣ [CONCURRENT-MSG-PERF] ${operation} took ${duration}ms`,
       payload
     );

@@ -5,27 +5,29 @@ import { View } from "react-native";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Card, ListItem, Text } from "@/shared/components/ui";
+import { getLogger } from "@/shared/services/logger";
 
 import { createSettingsStyles } from "../SettingsScreen.styles";
 
 export const DataPrivacySection: React.FC = () => {
+  const logger = getLogger("DataPrivacySection");
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   const styles = createSettingsStyles(theme);
 
   const handleExportData = () => {
     // TODO: Implement data export functionality
-    console.log("Export data functionality not implemented yet");
+    logger.debug("Export data functionality not implemented yet");
   };
 
   const handleClearConversations = () => {
     // TODO: Implement clear conversations functionality
-    console.log("Clear conversations functionality not implemented yet");
+    logger.debug("Clear conversations functionality not implemented yet");
   };
 
   const handlePrivacyPolicy = () => {
     // TODO: Implement privacy policy navigation
-    console.log("Privacy policy functionality not implemented yet");
+    logger.debug("Privacy policy functionality not implemented yet");
   };
 
   return (

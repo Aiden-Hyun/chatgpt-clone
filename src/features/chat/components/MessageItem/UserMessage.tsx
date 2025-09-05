@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
-
 import type { ChatMessage } from "@/entities/message";
 import { Button } from "@/shared/components/ui/Button";
+import { getLogger } from "@/shared/services/logger";
 
 import { copy as copyToClipboard } from "../../../../shared/lib/clipboard";
 import { useToast } from "../../../alert";
@@ -25,6 +25,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createUserMessageStyles(theme);
+  const logger = getLogger("UserMessage");
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(message.content);
   const { showSuccess, showError } = useToast();
@@ -46,7 +47,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                 variant="primary"
                 size="sm"
                 onPress={() => {
-                  console.log("[EDIT] send", draft);
+                  logger.debug("send edit", { draft });
                   onSendEdited?.(draft);
                   setIsEditing(false);
                 }}
@@ -93,7 +94,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                       showError("Failed to copy");
                     } catch {}
                   }
-                  console.log("[USER-MSG] copy");
+                  logger.debug("copy message");
                 }}
                 containerStyle={styles.iconButton}
               />
@@ -108,7 +109,7 @@ export const UserMessage: React.FC<UserMessageProps> = ({
                   />
                 }
                 onPress={() => {
-                  console.log("[USER-MSG] edit");
+                  logger.debug("edit message");
                   setIsEditing(true);
                   setDraft(message.content);
                 }}

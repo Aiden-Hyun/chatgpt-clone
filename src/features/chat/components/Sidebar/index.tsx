@@ -10,6 +10,7 @@ import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Button, ListItem, Text } from "@/shared/components";
+import { getLogger } from "@/shared/services/logger";
 
 import mobileStorage from "../../../../shared/lib/mobileStorage";
 import { navigationTracker } from "../../../../shared/lib/navigationTracker";
@@ -35,6 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { rooms, deleteRoom, fetchRooms } = useChatRooms();
   const pathname = usePathname(); // ← Add this line
   const styles = createSidebarStyles(theme);
+  const logger = getLogger("Sidebar");
 
   // Local state for room drafts loaded from storage
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -63,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [rooms]);
 
   const handleChatSelect = (roomId: string) => {
-    console.log("🎯 [DRAWER] Chat selected", { roomId });
+    logger.debug("Chat selected", { roomId });
     if (onChatSelect) {
       onChatSelect(roomId);
     } else {
@@ -72,29 +74,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleNewChat = async () => {
-    console.log("🔍 [DRAWER] New chat button pressed");
-    console.log("🔍 [DRAWER] onNewChat prop:", !!onNewChat);
+    logger.debug("New chat button pressed");
+    logger.debug("onNewChat prop", { hasOnNewChat: !!onNewChat });
 
     // Always clear search mode from storage to ensure new chat starts fresh
     try {
-      console.log("🔍 [DRAWER] Clearing search mode from storage...");
+      logger.debug("Clearing search mode from storage...");
       const beforeClear = await mobileStorage.getItem("chat_search_mode");
-      console.log("🔍 [DRAWER] Search mode before clear:", beforeClear);
+      logger.debug("Search mode before clear", { beforeClear });
 
       await mobileStorage.removeItem("chat_search_mode");
-      console.log("🔍 [DRAWER] Cleared search mode for new chat");
+      logger.debug("Cleared search mode for new chat");
 
       const afterClear = await mobileStorage.getItem("chat_search_mode");
-      console.log("🔍 [DRAWER] Search mode after clear:", afterClear);
+      logger.debug("Search mode after clear", { afterClear });
     } catch (error) {
-      console.warn("[DRAWER] Failed to clear search mode:", error);
+      logger.warn("Failed to clear search mode", { error });
     }
 
     if (onNewChat) {
-      console.log("🔍 [DRAWER] Calling onNewChat prop");
+      logger.debug("Calling onNewChat prop");
       onNewChat();
     } else {
-      console.log("🔍 [DRAWER] No onNewChat prop, navigating to /chat");
+      logger.debug("No onNewChat prop, navigating to /chat");
       router.push("/chat");
     }
   };
@@ -112,13 +114,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleDelete = async (roomId: number) => {
-    console.log("[DRAWER] delete icon pressed", { roomId });
+    logger.debug("delete icon pressed", { roomId });
     try {
       await deleteRoom(roomId);
       showSuccess(t("chat.room_deleted"), 2500);
       fetchRooms?.();
     } catch (e) {
-      console.log("[DRAWER] delete failed", e);
+      logger.error("delete failed", { error: e });
     }
   };
 

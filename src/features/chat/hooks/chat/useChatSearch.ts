@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { ChatMessage } from "@/entities/message";
+import { getLogger } from "@/shared/services/logger";
 
 import mobileStorage from "../../../../shared/lib/mobileStorage";
 import { getModelInfo } from "../../constants/models";
@@ -10,12 +11,14 @@ export const useChatSearch = (
   selectedModel: string,
   setMessages?: React.Dispatch<React.SetStateAction<ChatMessage[]>>
 ) => {
+  const logger = getLogger("useChatSearch");
+
   // Search mode state - persist across room changes
   const [isSearchMode, setIsSearchMode] = useState(false);
 
   // Log only on mount
   useEffect(() => {
-    console.log("🔍 [useChatSearch] Hook mounted with model:", selectedModel);
+    logger.debug("Hook mounted with model", { selectedModel });
   }, []);
 
   // Load search mode from storage on mount
@@ -59,7 +62,7 @@ export const useChatSearch = (
 
   // Log when state changes (not every render)
   useEffect(() => {
-    console.log("🔍 [useChatSearch] State changed:", {
+    logger.debug("State changed", {
       isSearchMode,
       selectedModel,
     });

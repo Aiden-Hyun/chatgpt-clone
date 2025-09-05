@@ -1,4 +1,6 @@
 // src/features/chat/services/core/LoggingService.ts
+import { getLogger } from "@/shared/services/logger";
+
 export interface LogEntry {
   timestamp: string;
   level: "debug" | "info" | "warn" | "error";
@@ -15,6 +17,8 @@ export interface ILoggingService {
 }
 
 export class LoggingService implements ILoggingService {
+  private logger = getLogger("LoggingService");
+
   constructor(private serviceName: string) {}
 
   debug(message: string, data?: unknown): void {
@@ -49,16 +53,16 @@ export class LoggingService implements ILoggingService {
 
     switch (level) {
       case "debug":
-        console.debug(`[${timestamp}] DEBUG: ${message}`, data);
+        this.logger.debug(message, data);
         break;
       case "info":
-        console.info(`[${timestamp}] INFO: ${message}`, data);
+        this.logger.info(message, data);
         break;
       case "warn":
-        console.warn(`[${timestamp}] WARN: ${message}`, data);
+        this.logger.warn(message, data);
         break;
       case "error":
-        console.error(`[${timestamp}] ERROR: ${message}`, data);
+        this.logger.error(message, data);
         break;
     }
 

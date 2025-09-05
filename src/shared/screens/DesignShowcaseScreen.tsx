@@ -14,8 +14,10 @@ import { LanguageSelector, useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import type { DropdownItem } from "@/shared/components/ui";
 import { Button, Dropdown, Input, Text } from "@/shared/components/ui";
+import { getLogger } from "@/shared/services/logger";
 
 export const DesignShowcaseScreen = () => {
+  const logger = getLogger("DesignShowcaseScreen");
   const { t } = useLanguageContext();
   const theme = useAppTheme();
 
@@ -304,17 +306,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Primary"
-                onPress={() => console.log("Primary button pressed")}
+                onPress={() => logger.debug("Primary button pressed")}
                 containerStyle={[styles.button, styles.primaryButton]}
               />
               <Button
                 label="Success"
-                onPress={() => console.log("Success button pressed")}
+                onPress={() => logger.debug("Success button pressed")}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error"
-                onPress={() => console.log("Error button pressed")}
+                onPress={() => logger.debug("Error button pressed")}
                 containerStyle={[styles.button, styles.errorButton]}
               />
             </View>
@@ -323,17 +325,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Secondary"
-                onPress={() => console.log("Secondary button pressed")}
+                onPress={() => logger.debug("Secondary button pressed")}
                 containerStyle={[styles.button, styles.secondaryButton]}
               />
               <Button
                 label="Outline"
-                onPress={() => console.log("Outline button pressed")}
+                onPress={() => logger.debug("Outline button pressed")}
                 containerStyle={[styles.button, styles.outlineButton]}
               />
               <Button
                 label="Ghost"
-                onPress={() => console.log("Ghost button pressed")}
+                onPress={() => logger.debug("Ghost button pressed")}
                 containerStyle={[styles.button, styles.ghostButton]}
               />
             </View>
@@ -342,17 +344,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Small"
-                onPress={() => console.log("Small button pressed")}
+                onPress={() => logger.debug("Small button pressed")}
                 containerStyle={[styles.button, styles.smallButton]}
               />
               <Button
                 label="Medium"
-                onPress={() => console.log("Medium button pressed")}
+                onPress={() => logger.debug("Medium button pressed")}
                 containerStyle={[styles.button, styles.mediumButton]}
               />
               <Button
                 label="Large"
-                onPress={() => console.log("Large button pressed")}
+                onPress={() => logger.debug("Large button pressed")}
                 containerStyle={[styles.button, styles.largeButton]}
               />
             </View>
@@ -433,17 +435,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Success"
-                onPress={() => console.log("Success toast")}
+                onPress={() => logger.debug("Success toast")}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error"
-                onPress={() => console.log("Error toast")}
+                onPress={() => logger.debug("Error toast")}
                 containerStyle={[styles.button, styles.errorButton]}
               />
               <Button
                 label="Info"
-                onPress={() => console.log("Info toast")}
+                onPress={() => logger.debug("Info toast")}
                 containerStyle={[styles.button, styles.infoButton]}
               />
             </View>
@@ -459,17 +461,17 @@ export const DesignShowcaseScreen = () => {
             <View style={styles.row}>
               <Button
                 label="Success Alert"
-                onPress={() => console.log("Success alert")}
+                onPress={() => logger.debug("Success alert")}
                 containerStyle={[styles.button, styles.successButton]}
               />
               <Button
                 label="Error Alert"
-                onPress={() => console.log("Error alert")}
+                onPress={() => logger.debug("Error alert")}
                 containerStyle={[styles.button, styles.errorButton]}
               />
               <Button
                 label="Confirm Alert"
-                onPress={() => console.log("Confirm alert")}
+                onPress={() => logger.debug("Confirm alert")}
                 containerStyle={[styles.button, styles.infoButton]}
               />
             </View>

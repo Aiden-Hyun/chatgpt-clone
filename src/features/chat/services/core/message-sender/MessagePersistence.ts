@@ -2,6 +2,7 @@ import { IChatRoomService } from "@/entities/chatRoom";
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
 
+import { getLogger } from "../../../../../shared/services/logger";
 import { ROOM_NAME_MAX_LENGTH } from "../../../constants";
 import { IMessageService } from "../../interfaces/IMessageService";
 import { LoggingService } from "../LoggingService";
@@ -21,6 +22,8 @@ export interface PersistenceRequest {
 export class MessagePersistence {
   private readonly retryService: RetryService;
   private readonly loggingService: LoggingService;
+
+  private logger = getLogger("MessagePersistence");
 
   constructor(
     private chatRoomService: IChatRoomService,
@@ -46,15 +49,12 @@ export class MessagePersistence {
       requestId,
     } = request;
 
-    console.log(
-      "💾 [MessagePersistence] Starting message persistence for request:",
+    this.logger.debug("Starting message persistence for request", {
       requestId,
-      {
-        roomId,
-        regenerateIndex,
-        contentLength: fullContent.length,
-      }
-    );
+      roomId,
+      regenerateIndex,
+      contentLength: fullContent.length,
+    });
 
     try {
       this.loggingService.debug(
@@ -67,10 +67,9 @@ export class MessagePersistence {
 
       // Handle database operations
       if (regenerateIndex !== undefined) {
-        console.log(
-          "🔄 [MessagePersistence] Processing regeneration for index:",
-          regenerateIndex
-        );
+        this.logger.debug("Processing regeneration for index", {
+          regenerateIndex,
+        });
         if (originalAssistantContent) {
           this.loggingService.debug(
             `Updating regenerated message for request ${requestId}`,
@@ -86,16 +85,11 @@ export class MessagePersistence {
               }),
             "message update"
           );
-          console.log(
-            "✅ [MessagePersistence] Successfully updated regenerated message"
-          );
+          this.logger.debug("Successfully updated regenerated message");
         }
       } else {
         // Insert messages on the client for both new and existing rooms
-        console.log(
-          "📝 [MessagePersistence] Inserting new messages for room:",
-          roomId
-        );
+        this.logger.debug("Inserting new messages for room", { roomId });
         this.loggingService.debug(
           `Inserting messages for request ${requestId}`
         );
@@ -113,16 +107,11 @@ export class MessagePersistence {
             }),
           "message insertion"
         );
-        console.log(
-          "✅ [MessagePersistence] Successfully inserted new messages"
-        );
+        this.logger.debug("Successfully inserted new messages");
       }
 
       // Update room metadata (non-critical operation)
-      console.log(
-        "🏠 [MessagePersistence] Updating room metadata for room:",
-        roomId
-      );
+      this.logger.debug("Updating room metadata for room", { roomId });
       this.loggingService.debug(
         `Updating room metadata for request ${requestId}`,
         { roomId }
@@ -132,15 +121,10 @@ export class MessagePersistence {
           name: userMsg.content.slice(0, ROOM_NAME_MAX_LENGTH),
           updatedAt: new Date().toISOString(),
         });
-        console.log(
-          "✅ [MessagePersistence] Successfully updated room metadata"
-        );
+        this.logger.debug("Successfully updated room metadata");
       } catch (error) {
         // Room update is not critical - log but don't fail the entire operation
-        console.warn(
-          "⚠️ [MessagePersistence] Room update failed but continuing:",
-          error
-        );
+        this.logger.warn("Room update failed but continuing", { error });
         this.loggingService.warn(
           `Room update failed for request ${requestId}, but continuing`,
           { error }
@@ -150,11 +134,9 @@ export class MessagePersistence {
       this.loggingService.info(
         `Persistence completed for request ${requestId}`
       );
-      console.log(
-        "🎉 [MessagePersistence] All persistence operations completed successfully"
-      );
+      this.logger.debug("All persistence operations completed successfully");
     } catch (error) {
-      console.error("❌ [MessagePersistence] Persistence failed:", error);
+      this.logger.error("Persistence failed", { error });
       this.loggingService.error(`Persistence failed for request ${requestId}`, {
         error,
       });
@@ -171,16 +153,13 @@ export class MessagePersistence {
     let roomId = numericRoomId;
     let isNewRoom = false;
 
-    console.log(
-      "🏗️ [MessagePersistence] Checking if room creation is needed:",
-      { numericRoomId, model }
-    );
+    this.logger.debug("Checking if room creation is needed", {
+      numericRoomId,
+      model,
+    });
 
     if (!roomId) {
-      console.log(
-        "🏗️ [MessagePersistence] Creating new room for model:",
-        model
-      );
+      this.logger.debug("Creating new room for model", { model });
       this.loggingService.info(
         `Creating new room up front for request ${requestId}`,
         { model }
@@ -190,21 +169,18 @@ export class MessagePersistence {
         "room creation"
       );
       if (!newRoomId) {
-        console.error("❌ [MessagePersistence] Failed to create chat room");
+        this.logger.error("Failed to create chat room");
         throw new Error("Failed to create chat room");
       }
       roomId = newRoomId;
       isNewRoom = true;
-      console.log(
-        "✅ [MessagePersistence] Successfully created new room:",
-        roomId
-      );
+      this.logger.debug("Successfully created new room", { roomId });
       this.loggingService.info(
         `Room created successfully for request ${requestId}`,
         { roomId }
       );
     } else {
-      console.log("✅ [MessagePersistence] Using existing room:", roomId);
+      this.logger.debug("Using existing room", { roomId });
     }
 
     return { roomId, isNewRoom };

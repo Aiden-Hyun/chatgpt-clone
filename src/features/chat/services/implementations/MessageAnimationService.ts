@@ -1,5 +1,6 @@
 // src/features/chat/services/implementations/MessageAnimationService.ts
 import type { ChatMessage } from "@/entities/message";
+import { getLogger } from "@/shared/services/logger";
 
 import {
   TYPING_ANIMATION_CHUNK_SIZE,
@@ -11,6 +12,7 @@ import { MessageStateManager } from "../MessageStateManager";
 
 export class MessageAnimationService implements IAnimationService {
   private messageStateManager: MessageStateManager;
+  private logger = getLogger("MessageAnimationService");
   private runningJobs: Map<
     string,
     {
@@ -25,7 +27,7 @@ export class MessageAnimationService implements IAnimationService {
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    console.log("[Service] MessageAnimationService initialized");
+    this.logger.debug("MessageAnimationService initialized");
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 

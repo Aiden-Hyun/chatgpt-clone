@@ -13,9 +13,10 @@ import {
 import { AppTheme, useAppTheme } from "@/features/theme";
 import { useChatScreen } from "@/shared/hooks";
 import { navigationTracker } from "@/shared/lib/navigationTracker";
+import { getLogger } from "@/shared/services/logger";
 
 import { createChatStyles } from "./ChatScreen.styles";
-
+const logger = getLogger("ChatScreen");
 // �� CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
 interface ChatScreenProps {
   roomId?: string;
@@ -66,18 +67,6 @@ const ChatScreenPure = React.memo(
       if (!(global as { pureRenderCount?: number }).pureRenderCount)
         (global as { pureRenderCount?: number }).pureRenderCount = 0;
       (global as { pureRenderCount?: number }).pureRenderCount!++;
-
-      console.log(
-        `🎯 [PURE-COUNT] Pure Component Render #${
-          (global as { pureRenderCount?: number }).pureRenderCount
-        }`,
-        {
-          roomId,
-          isTemporaryRoom,
-          numericRoomId,
-          note: "This component should only re-render when props actually change",
-        }
-      );
     }
 
     return (
@@ -147,7 +136,7 @@ const ChatScreenPure = React.memo(
       themeEqual;
 
     if (__DEV__ && !equal) {
-      console.log("🔍 [PURE-COMPARE] Re-render triggered because:", {
+      logger.debug("Re-render triggered because", {
         primitiveEqual,
         functionsEqual,
         stateEqual,
@@ -189,7 +178,8 @@ const ChatScreen = () => {
   renderCount.current += 1;
 
   if (__DEV__) {
-    console.log("🏠 [CHAT-SCREEN] Parent render #" + renderCount.current, {
+    logger.debug("Parent render", {
+      renderCount: renderCount.current,
       roomId,
       isTemporaryRoom,
       numericRoomId,
@@ -210,16 +200,13 @@ const ChatScreen = () => {
   // 🎯 MEMOIZED PROPS: Only recreate when actual values change
   const chatScreenProps = React.useMemo(() => {
     if (__DEV__) {
-      console.log(
-        "🔍 [CHAT-SCREEN] Recreating chatScreenProps because dependencies changed:",
-        {
-          roomId,
-          isTemporaryRoom,
-          numericRoomId,
-          selectedModel,
-          themeChanged: !!theme,
-        }
-      );
+      logger.debug("Recreating chatScreenProps because dependencies changed", {
+        roomId,
+        isTemporaryRoom,
+        numericRoomId,
+        selectedModel,
+        themeChanged: !!theme,
+      });
     }
 
     return {
@@ -254,11 +241,11 @@ const ChatScreen = () => {
         }}
         onBack={() => {
           try {
-            console.log("[NAV] back");
+            logger.debug("back navigation");
           } catch {}
         }}
         onNewChat={() => {
-          console.log("🔍 [CHAT-SCREEN] onNewChat called from ChatHeader");
+          logger.debug("onNewChat called from ChatHeader");
           chatScreenState.startNewChat();
         }}
         onChatSelect={(rid: string) => {

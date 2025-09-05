@@ -7,6 +7,7 @@ import { useToast } from "@/features/alert";
 import { AppTheme, useAppTheme } from "@/features/theme";
 import type { DropdownItem } from "@/shared/components/ui";
 import { Dropdown } from "@/shared/components/ui";
+import { getLogger } from "@/shared/services/logger";
 
 import { useLanguageContext } from "./LanguageContext";
 
@@ -17,6 +18,7 @@ interface LanguageSelectorProps {
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   style,
 }) => {
+  const logger = getLogger("LanguageSelector");
   const { currentLanguage, setLanguage, t } = useLanguageContext();
   const { showSuccess } = useToast();
   const theme = useAppTheme();
@@ -32,12 +34,12 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 
   const handleLanguageChange = (item: DropdownItem) => {
     const newLanguage = item.value as string;
-    console.log("🌍 Language button pressed:", newLanguage);
-    console.log("🌍 Current language before:", currentLanguage);
+    logger.debug("🌍 Language button pressed:", newLanguage);
+    logger.debug("🌍 Current language before:", currentLanguage);
 
     // Set the new language
     setLanguage(newLanguage);
-    console.log("🌍 Language set to:", newLanguage);
+    logger.debug("🌍 Language set to:", newLanguage);
 
     // Show toast in the new language
     const languageNames = {
@@ -54,7 +56,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         ? "toast.language_changed_es"
         : "toast.language_changed_ko";
 
-    console.log("🌍 Translation key:", translationKey);
+    logger.debug("🌍 Translation key:", translationKey);
 
     // Replace the placeholder with the actual language name
     const message = t(translationKey).replace(
@@ -62,13 +64,13 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       languageNames[newLanguage as keyof typeof languageNames]
     );
 
-    console.log("🌍 Toast message:", message);
-    console.log("🌍 About to show toast...");
+    logger.debug("🌍 Toast message:", message);
+    logger.debug("🌍 About to show toast...");
 
     // Show success toast
     showSuccess(message, 3000);
 
-    console.log("🌍 Toast showSuccess called");
+    logger.debug("🌍 Toast showSuccess called");
   };
 
   const styles = createLanguageSelectorStyles(theme);

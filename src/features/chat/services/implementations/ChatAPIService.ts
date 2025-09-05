@@ -1,12 +1,15 @@
 // src/features/chat/services/implementations/ChatAPIService.ts
 import type { AIApiRequest, AIApiResponse } from "@/entities/message";
 import { appConfig } from "@/shared/lib/config";
+import { getLogger } from "@/shared/services/logger";
 
 import { getModelInfo } from "../../constants/models";
 import { fetchJson } from "../../lib/fetch";
 import { IAIApiService } from "../interfaces/IAIApiService";
 
 export class ChatAPIService implements IAIApiService {
+  private logger = getLogger("ChatAPIService");
+
   async sendMessage(
     request: AIApiRequest,
     accessToken: string,
@@ -48,25 +51,15 @@ export class ChatAPIService implements IAIApiService {
           skipPersistence: request.skipPersistence,
         };
 
-    console.log(
-      `[ChatAPIService] Making API call for ${
-        isSearchMode ? "search" : "chat"
-      } mode`
+    this.logger.debug(
+      `Making API call for ${isSearchMode ? "search" : "chat"} mode`
     );
-    console.log(
-      `[ChatAPIService] Request payload:`,
-      isSearchMode
-        ? {
-            question: payload.question,
-            model: payload.model,
-            modelConfig: payload.modelConfig,
-          }
-        : {
-            model: request.model,
-            messageCount: request.messages.length,
-            modelConfig: payload.modelConfig,
-          }
-    );
+    this.logger.debug("Request payload", {
+      isSearchMode,
+      model: request.model,
+      messageCount: request.messages.length,
+      modelConfig: payload.modelConfig,
+    });
 
     const url = isSearchMode
       ? `${appConfig.edgeFunctionBaseUrl}/react-search`
@@ -78,10 +71,8 @@ export class ChatAPIService implements IAIApiService {
       },
       body: JSON.stringify(payload),
     });
-    console.log(
-      `[ChatAPIService] Received API response for ${
-        isSearchMode ? "search" : "chat"
-      } mode`
+    this.logger.debug(
+      `Received API response for ${isSearchMode ? "search" : "chat"} mode`
     );
 
     // Transform search response to match AIApiResponse format

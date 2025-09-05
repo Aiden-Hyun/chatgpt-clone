@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from "react";
 
 import type { ChatMessage } from "@/entities/message";
 import { useMessageActions, useRegenerationService } from "@/entities/message";
+import { getLogger } from "@/shared/services/logger";
 
 interface UseChatActionsProps {
   numericRoomId: number | null;
@@ -26,9 +27,11 @@ export const useChatActions = ({
   selectedModel,
   isSearchMode,
 }: UseChatActionsProps) => {
+  const logger = getLogger("useChatActions");
+
   // Log only when dependencies change, not on every render
   useEffect(() => {
-    console.log("🔍 [useChatActions] Dependencies changed:", {
+    logger.debug("Dependencies changed", {
       roomId: numericRoomId,
       searchMode: isSearchMode,
       model: selectedModel,
@@ -73,7 +76,7 @@ export const useChatActions = ({
       if (!userContent.trim()) return;
       const currentRoomKey = numericRoomId ? numericRoomId.toString() : "new";
       if (__DEV__) {
-        console.log(`Sending message from room ${currentRoomKey}`);
+        logger.debug("Sending message from room", { roomKey: currentRoomKey });
       }
 
       clearInput();
@@ -81,7 +84,7 @@ export const useChatActions = ({
       try {
         await sendMessageToBackend(userContent);
       } catch (error) {
-        console.error("Failed to send message:", error);
+        logger.error("Failed to send message", { error });
         handleInputChange(userContent);
       }
     },
@@ -92,13 +95,13 @@ export const useChatActions = ({
   const regenerateMessage = useCallback(
     async (index: number, overrideUserContent?: string) => {
       if (index === undefined || index === null) {
-        console.error("Invalid regeneration index");
+        logger.error("Invalid regeneration index");
         return;
       }
       try {
         await regenerateMessageInBackend(index, overrideUserContent);
       } catch (error) {
-        console.error("🔄 REGEN-HOOK: Error regenerating message:", error);
+        logger.error("Error regenerating message", { error });
       }
     },
     [regenerateMessageInBackend]

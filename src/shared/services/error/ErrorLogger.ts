@@ -3,6 +3,7 @@
  */
 
 import { ProcessedError } from "./ErrorTypes";
+import { getLogger } from "../logger";
 
 export interface LogEntry {
   timestamp: string;
@@ -25,6 +26,7 @@ export interface LogEntry {
 export class ErrorLogger {
   private static instance: ErrorLogger;
   private isDev = typeof __DEV__ !== "undefined" && __DEV__;
+  private logger = getLogger("ErrorLogger");
 
   static getInstance(): ErrorLogger {
     if (!ErrorLogger.instance) {
@@ -83,16 +85,16 @@ export class ErrorLogger {
 
     switch (severity) {
       case "critical":
-        console.error(logMessage, logData);
+        this.logger.error(logMessage, logData);
         break;
       case "high":
-        console.error(logMessage, logData);
+        this.logger.error(logMessage, logData);
         break;
       case "medium":
-        console.warn(logMessage, logData);
+        this.logger.warn(logMessage, logData);
         break;
       case "low":
-        console.info(logMessage, logData);
+        this.logger.info(logMessage, logData);
         break;
     }
   }
@@ -152,7 +154,7 @@ export class ErrorLogger {
       }
     } catch (loggingError) {
       // Fallback to console if external logging fails
-      console.error("Failed to send error to logging service:", loggingError);
+      this.logger.error("Failed to send error to logging service:", loggingError);
       this.logToConsole(logEntry);
     }
   }
@@ -172,7 +174,7 @@ export class ErrorLogger {
     */
     
     // For now, just log to console
-    console.error("CRITICAL ERROR:", logEntry);
+    this.logger.error("CRITICAL ERROR:", logEntry);
   }
 
   /**
@@ -183,7 +185,7 @@ export class ErrorLogger {
     // You might want to implement a batching mechanism here
     
     // For now, just log to console
-    console.warn("BATCHED ERROR:", logEntry);
+    this.logger.warn("BATCHED ERROR:", logEntry);
   }
 
   /**

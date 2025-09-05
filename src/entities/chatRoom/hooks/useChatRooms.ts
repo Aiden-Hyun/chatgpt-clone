@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/entities/session";
 
 import { chatDebugLog } from "../../../features/chat/constants";
+import { getLogger } from "../../../shared/services/logger";
 import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import mobileStorage from "../../../shared/lib/mobileStorage";
 import { supabase } from "../../../shared/lib/supabase";
@@ -15,6 +16,7 @@ import type {
 } from "../model/types";
 
 export const useChatRooms = () => {
+  const logger = getLogger("useChatRooms");
   const { session } = useAuth();
   const [rooms, setRooms] = useState<ChatRoomWithLastMsg[]>([]);
   const { loading, error, executeWithLoading } = useLoadingState({
@@ -112,7 +114,7 @@ export const useChatRooms = () => {
       },
       {
         onError: (error) => {
-          console.error("[ROOMS] fetchRooms error:", error);
+          logger.error("[ROOMS] fetchRooms error:", error);
         },
       }
     );
@@ -190,19 +192,19 @@ export const useChatRooms = () => {
           .from("messages")
           .delete()
           .eq("room_id", roomId);
-        if (msgErr) console.warn("[ROOMS] deleteRoom:messages error", msgErr);
+        if (msgErr) logger.warn("[ROOMS] deleteRoom:messages error", msgErr);
         const { error: roomErr } = await supabase
           .from("chatrooms")
           .delete()
           .eq("id", roomId)
           .eq("user_id", session.user.id);
         if (roomErr) {
-          console.warn("[ROOMS] deleteRoom:chatrooms error", roomErr);
+          logger.warn("[ROOMS] deleteRoom:chatrooms error", roomErr);
           return;
         }
         setRooms((prev) => prev.filter((room) => room.id !== roomId));
       } catch {
-        console.warn("[ROOMS] deleteRoom:exception");
+        logger.warn("[ROOMS] deleteRoom:exception");
         return;
       }
     },
@@ -214,9 +216,9 @@ export const useChatRooms = () => {
     // Clear search mode from storage to ensure new chat starts fresh
     try {
       await mobileStorage.removeItem("chat_search_mode");
-      console.log("[ROOMS] Cleared search mode for new chat");
+      logger.debug("[ROOMS] Cleared search mode for new chat");
     } catch (error) {
-      console.warn("[ROOMS] Failed to clear search mode:", error);
+      logger.warn("[ROOMS] Failed to clear search mode:", error);
     }
 
     router.push("/chat");

@@ -11,6 +11,7 @@ import { useColorScheme } from "react-native";
 import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import { mobileStorage, STORAGE_KEYS } from "../../../shared/lib/storage";
 import { errorHandler } from "../../../shared/services/error";
+import { getLogger } from "../../../shared/services/logger";
 
 import { AppTheme, ThemeMode, ThemeStyle } from "../theme.types";
 import { themeRegistry } from "../themeRegistry";
@@ -40,6 +41,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 // Theme provider component
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const logger = getLogger("ThemeContext");
+  
   // State for theme mode (light, dark, system)
   const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
 
@@ -58,7 +61,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Load saved theme preferences from storage
   useEffect(() => {
-    console.log("🎨 [ThemeContext] Loading theme preferences from storage...");
+    logger.debug("🎨 [ThemeContext] Loading theme preferences from storage...");
     const loadThemePreferences = async () => {
       await executeWithLoading(
         async () => {
@@ -70,7 +73,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             savedThemeMode &&
             ["light", "dark", "system"].includes(savedThemeMode)
           ) {
-            console.log("☀️ [ThemeContext] Loaded theme mode:", savedThemeMode);
+            logger.debug("☀️ [ThemeContext] Loaded theme mode:", savedThemeMode);
             setThemeModeState(savedThemeMode as ThemeMode);
           }
 
@@ -79,7 +82,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             STORAGE_KEYS.THEME_STYLE
           );
           if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
-            console.log(
+            logger.debug(
               "✨ [ThemeContext] Loaded theme style:",
               savedThemeStyle
             );
@@ -88,12 +91,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         },
         {
           onError: (error) => {
-            console.error("Failed to load theme preferences:", error);
+            logger.error("Failed to load theme preferences:", error);
           },
         }
       );
 
-      console.log("✅ [ThemeContext] Theme preferences loading complete");
+      logger.debug("✅ [ThemeContext] Theme preferences loading complete");
     };
 
     loadThemePreferences();
@@ -119,7 +122,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setThemeStyle = useCallback(async (style: ThemeStyle) => {
     // Validate that the theme exists
     if (!themeRegistry.hasTheme(style)) {
-      console.error(`Theme style "${style}" not found. Using default.`);
+      logger.error(`Theme style "${style}" not found. Using default.`);
       style = themeRegistry.getDefaultTheme().id;
     }
 

@@ -1,5 +1,6 @@
 // src/features/chat/services/implementations/MessageStateService.ts
 import type { ChatMessage } from "@/entities/message";
+import { getLogger } from "@/shared/services/logger";
 
 import { generateMessageId } from "../../utils/messageIdGenerator";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
@@ -7,11 +8,12 @@ import { MessageStateManager } from "../MessageStateManager";
 
 export class MessageStateService implements IMessageStateService {
   private messageStateManager: MessageStateManager;
+  private logger = getLogger("MessageStateService");
 
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    console.log("[Service] MessageStateService initialized");
+    this.logger.debug("MessageStateService initialized");
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 

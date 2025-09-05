@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+
+import { getLogger } from "@/shared/services/logger";
 import {
   Animated,
   Dimensions,
@@ -96,6 +98,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const theme = useAppTheme();
   const styles = createDropdownStyles(theme);
+  const logger = getLogger("Dropdown");
   const triggerRef = useRef<View>(null);
   const [open, setOpen] = useState(false);
   const [triggerRect, setTriggerRect] = useState<LayoutRectangle | null>(null);
@@ -178,14 +181,14 @@ export const Dropdown: React.FC<DropdownProps> = ({
     // measureInWindow handles parents with overflow/transform better across platforms
     // (same positioning idea as the Medium article’s measure usage). :contentReference[oaicite:1]{index=1}
     triggerRef.current.measureInWindow((x, y, width, height) => {
-      console.log("📏 [Dropdown] measureInWindow raw values:", {
+      logger.debug("📏 [Dropdown] measureInWindow raw values:", {
         x,
         y,
         width,
         height,
       });
-      console.log("📏 [Dropdown] Screen scale:", SCALE);
-      console.log("📏 [Dropdown] Platform:", Platform.OS);
+      logger.debug("📏 [Dropdown] Screen scale:", SCALE);
+      logger.debug("📏 [Dropdown] Platform:", Platform.OS);
       setTriggerRect({ x, y, width, height });
     });
   }, []);
@@ -255,28 +258,28 @@ export const Dropdown: React.FC<DropdownProps> = ({
       ? Math.max(8, topCalcAbove)
       : Math.min(SCREEN.height - 8, topCalcBelow);
 
-    // Console logs for debugging
-    console.log("🔍 [Dropdown] Positioning Debug:");
-    console.log("  Screen info:", {
+    // Debug logs for positioning
+    logger.debug("🔍 [Dropdown] Positioning Debug:");
+    logger.debug("  Screen info:", {
       width: SCREEN.width,
       height: SCREEN.height,
       scale: SCALE,
       pixelRatio: Dimensions.get("window").scale,
       platform: Platform.OS,
     });
-    console.log("  Trigger rect:", triggerRect);
-    console.log("  Menu width:", width);
-    console.log("  Placement:", placement);
-    console.log("  Want top:", wantTop);
-    console.log("  LEFT calculation:");
-    console.log("    Raw trigger x:", triggerRect.x, "(physical pixels)");
-    console.log(
+    logger.debug("  Trigger rect:", triggerRect);
+    logger.debug("  Menu width:", width);
+    logger.debug("  Placement:", placement);
+    logger.debug("  Want top:", wantTop);
+    logger.debug("  LEFT calculation:");
+    logger.debug("    Raw trigger x:", triggerRect.x, "(physical pixels)");
+    logger.debug(
       "    Raw trigger width:",
       triggerRect.width,
       "(physical pixels)"
     );
-    console.log("    Scale factor:", SCALE);
-    console.log(
+    logger.debug("    Scale factor:", SCALE);
+    logger.debug(
       "    Center calc:",
       leftCalc,
       "=",
@@ -287,7 +290,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
       width,
       ") / 2"
     );
-    console.log(
+    logger.debug(
       "    Min with right edge:",
       leftMin,
       "= Math.min(",
@@ -296,18 +299,18 @@ export const Dropdown: React.FC<DropdownProps> = ({
       SCREEN.width - width - 8,
       ")"
     );
-    console.log("    Final left:", left, "= Math.max(8,", leftMin, ")");
-    console.log("  TOP calculation:");
-    console.log("    Raw trigger y:", triggerRect.y, "(physical pixels)");
-    console.log(
+    logger.debug("    Final left:", left, "= Math.max(8,", leftMin, ")");
+    logger.debug("  TOP calculation:");
+    logger.debug("    Raw trigger y:", triggerRect.y, "(physical pixels)");
+    logger.debug(
       "    Raw trigger height:",
       triggerRect.height,
       "(physical pixels)"
     );
-    console.log("    Converted y:", triggerY, "(logical pixels)");
-    console.log("    Converted height:", triggerHeight, "(logical pixels)");
+    logger.debug("    Converted y:", triggerY, "(logical pixels)");
+    logger.debug("    Converted height:", triggerHeight, "(logical pixels)");
     if (wantTop) {
-      console.log(
+      logger.debug(
         "    Above calc:",
         topCalcAbove,
         "=",
@@ -316,9 +319,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
         maxHeight,
         "+ 6"
       );
-      console.log("    Final top:", top, "= Math.max(8,", topCalcAbove, ")");
+      logger.debug("    Final top:", top, "= Math.max(8,", topCalcAbove, ")");
     } else {
-      console.log(
+      logger.debug(
         "    Below calc:",
         topCalcBelow,
         "=",
@@ -327,7 +330,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         triggerHeight,
         "+ 6"
       );
-      console.log(
+      logger.debug(
         "    Final top:",
         top,
         "= Math.min(",
@@ -337,7 +340,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         ")"
       );
     }
-    console.log("  Final positions:", {
+    logger.debug("  Final positions:", {
       menuLeft: left,
       menuTop: top,
       menuWidth: width,

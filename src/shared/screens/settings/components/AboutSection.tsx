@@ -5,22 +5,24 @@ import { View } from "react-native";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Card, ListItem, Text } from "@/shared/components/ui";
+import { getLogger } from "@/shared/services/logger";
 
 import { createSettingsStyles } from "../SettingsScreen.styles";
 
 export const AboutSection: React.FC = () => {
+  const logger = getLogger("AboutSection");
   const { t } = useLanguageContext();
   const theme = useAppTheme();
   const styles = createSettingsStyles(theme);
 
   const handleTermsOfService = () => {
     // TODO: Implement terms of service navigation
-    console.log("Terms of service functionality not implemented yet");
+    logger.debug("Terms of service functionality not implemented yet");
   };
 
   const handleSupport = () => {
     // TODO: Implement support navigation
-    console.log("Support functionality not implemented yet");
+    logger.debug("Support functionality not implemented yet");
   };
 
   return (
