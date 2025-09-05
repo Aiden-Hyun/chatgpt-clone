@@ -124,7 +124,11 @@ export class MessageOrchestrator {
       });
 
       if (!this.responseProcessor.validateResponse(apiResponse)) {
-        this.logger.error("AI response validation failed");
+        this.logger.error(
+          "MessageOrchestrator.ts",
+          127,
+          "AI response validation failed"
+        );
         const error = "Invalid AI response";
 
         // Use unified error handling system
@@ -148,7 +152,11 @@ export class MessageOrchestrator {
 
       const fullContent = this.responseProcessor.extractContent(apiResponse);
       if (!fullContent) {
-        this.logger.error("No content in AI response");
+        this.logger.error(
+          "MessageOrchestrator.ts",
+          151,
+          "No content in AI response"
+        );
         const error = "No content in AI response";
 
         // Use unified error handling system

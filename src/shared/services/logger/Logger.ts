@@ -375,7 +375,7 @@ export class Logger {
         lineNumber
       );
       // Use console directly to avoid circular dependency
-      console.info(formattedMessage, data || "");
+      console.log(formattedMessage, data || "");
       console.log(""); // Add newline after each log entry
     }
   }
@@ -397,7 +397,7 @@ export class Logger {
         lineNumber
       );
       // Use console directly to avoid circular dependency
-      console.warn(formattedMessage, data || "");
+      console.log(formattedMessage, data || "");
       console.log(""); // Add newline after each log entry
     }
   }
@@ -419,7 +419,7 @@ export class Logger {
         lineNumber
       );
       // Use console directly to avoid circular dependency
-      console.error(formattedMessage, data || "");
+      console.log(formattedMessage, data || "");
       console.log(""); // Add newline after each log entry
     }
   }

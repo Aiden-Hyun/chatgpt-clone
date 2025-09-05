@@ -34,22 +34,22 @@ export class ConsoleInterceptor {
     // Override console methods
     console.log = (...args: any[]) => {
       const message = args.join(" ");
-      logger.debug(message);
+      logger.debug("ConsoleInterceptor.ts", 37, message);
     };
 
     console.info = (...args: any[]) => {
       const message = args.join(" ");
-      logger.info(message);
+      logger.info("ConsoleInterceptor.ts", 42, message);
     };
 
     console.warn = (...args: any[]) => {
       const message = args.join(" ");
-      logger.warn(message);
+      logger.warn("ConsoleInterceptor.ts", 47, message);
     };
 
     console.error = (...args: any[]) => {
       const message = args.join(" ");
-      logger.error(message);
+      logger.error("ConsoleInterceptor.ts", 52, message);
     };
 
     this.isIntercepted = true;

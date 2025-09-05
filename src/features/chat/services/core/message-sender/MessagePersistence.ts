@@ -129,7 +129,11 @@ export class MessagePersistence {
         "room creation"
       );
       if (!newRoomId) {
-        this.logger.error("Failed to create chat room");
+        this.logger.error(
+          "MessagePersistence.ts",
+          132,
+          "Failed to create chat room"
+        );
         throw new Error("Failed to create chat room");
       }
       roomId = newRoomId;

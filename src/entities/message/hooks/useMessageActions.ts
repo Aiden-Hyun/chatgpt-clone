@@ -55,7 +55,7 @@ export const useMessageActions = ({
           isSearchMode,
         });
       } catch (error) {
-        logger.error("Failed to send message", {
+        logger.error("useMessageActions.ts", 58, "Failed to send message", {
           messageId,
           error: error as Error,
         });

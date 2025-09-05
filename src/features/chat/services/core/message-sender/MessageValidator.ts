@@ -27,7 +27,6 @@ export interface ValidationResult {
 export class MessageValidator {
   private logger = getLogger("MessageValidator");
 
-
   validateRequest(
     request: SendMessageRequest,
     requestId: string
@@ -42,10 +41,10 @@ export class MessageValidator {
       const modelInfo = getModelInfo(model);
       if (!modelInfo?.capabilities.search) {
         const error = `Search is not supported for model: ${model}`;
-        this.logger.error("Search validation failed", { 
+        this.logger.error("Search validation failed", {
           requestId,
-          error, 
-          model 
+          error,
+          model,
         });
         return { isValid: false, error };
       }
@@ -55,9 +54,9 @@ export class MessageValidator {
     // Validate user content
     if (!userContent || userContent.trim().length === 0) {
       const error = "User content cannot be empty";
-      this.logger.error("User content validation failed", { 
+      this.logger.error("User content validation failed", {
         requestId,
-        error 
+        error,
       });
       return { isValid: false, error };
     }
