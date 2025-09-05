@@ -2,10 +2,15 @@
  * Main error handler service for the unified error handling system
  */
 
-import { ErrorCode, ErrorContext, ProcessedError, ERROR_CLASSIFICATIONS } from "./ErrorTypes";
-import { ErrorMessageMapper } from "./ErrorMessageMapper";
-import { ErrorLogger } from "./ErrorLogger";
 import { getLogger } from "../logger";
+
+import { ErrorMessageMapper } from "./ErrorMessageMapper";
+import {
+  ERROR_CLASSIFICATIONS,
+  ErrorCode,
+  ErrorContext,
+  ProcessedError,
+} from "./ErrorTypes";
 
 export interface ErrorHandlerConfig {
   enableRecovery?: boolean;
@@ -16,9 +21,8 @@ export interface ErrorHandlerConfig {
 export class ErrorHandler {
   private static instance: ErrorHandler;
   private messageMapper: ErrorMessageMapper;
-  private logger: ErrorLogger;
   private config: ErrorHandlerConfig;
-  private centralizedLogger = getLogger("ErrorHandler");
+  private logger = getLogger("ErrorHandler");
 
   constructor(config: ErrorHandlerConfig = {}) {
     this.config = {
@@ -28,7 +32,6 @@ export class ErrorHandler {
       ...config,
     };
     this.messageMapper = new ErrorMessageMapper();
-    this.logger = ErrorLogger.getInstance();
   }
 
   static getInstance(config?: ErrorHandlerConfig): ErrorHandler {
@@ -56,7 +59,19 @@ export class ErrorHandler {
 
     // Log the error if logging is enabled
     if (this.config.enableLogging) {
-      await this.logger.log(processedError);
+      this.logger.error(
+        "ErrorHandler.ts",
+        62,
+        `Error handled: ${processedError.code} - ${processedError.message}`,
+        {
+          errorCode: processedError.code,
+          errorMessage: processedError.message,
+          userMessage: processedError.userMessage,
+          operation: processedError.context.operation,
+          service: processedError.context.service,
+          component: processedError.context.component,
+        }
+      );
     }
 
     // Attempt recovery if enabled and error is retryable
@@ -103,7 +118,7 @@ export class ErrorHandler {
       if ("message" in error && typeof error.message === "string") {
         return this.classifyErrorFromMessage(error.message);
       }
-      
+
       // Handle HTTP errors
       if ("status" in error && typeof error.status === "number") {
         return this.classifyHttpError(error.status);
@@ -124,50 +139,92 @@ export class ErrorHandler {
     if (lowerMessage.includes("timeout") || lowerName.includes("timeout")) {
       return ErrorCode.NETWORK_TIMEOUT;
     }
-    if (lowerMessage.includes("network") || lowerMessage.includes("connection")) {
+    if (
+      lowerMessage.includes("network") ||
+      lowerMessage.includes("connection")
+    ) {
       return ErrorCode.NETWORK_CONNECTION;
     }
-    if (lowerMessage.includes("offline") || lowerMessage.includes("no internet")) {
+    if (
+      lowerMessage.includes("offline") ||
+      lowerMessage.includes("no internet")
+    ) {
       return ErrorCode.NETWORK_OFFLINE;
     }
-    if (lowerMessage.includes("fetch") || lowerMessage.includes("request failed")) {
+    if (
+      lowerMessage.includes("fetch") ||
+      lowerMessage.includes("request failed")
+    ) {
       return ErrorCode.NETWORK_REQUEST_FAILED;
     }
 
     // Authentication errors
-    if (lowerMessage.includes("invalid credentials") || lowerMessage.includes("invalid email or password")) {
+    if (
+      lowerMessage.includes("invalid credentials") ||
+      lowerMessage.includes("invalid email or password")
+    ) {
       return ErrorCode.AUTH_INVALID_CREDENTIALS;
     }
-    if (lowerMessage.includes("session expired") || lowerMessage.includes("token expired")) {
+    if (
+      lowerMessage.includes("session expired") ||
+      lowerMessage.includes("token expired")
+    ) {
       return ErrorCode.AUTH_SESSION_EXPIRED;
     }
-    if (lowerMessage.includes("unauthorized") || lowerMessage.includes("access denied")) {
+    if (
+      lowerMessage.includes("unauthorized") ||
+      lowerMessage.includes("access denied")
+    ) {
       return ErrorCode.AUTH_UNAUTHORIZED;
     }
-    if (lowerMessage.includes("user not found") || lowerMessage.includes("email not found")) {
+    if (
+      lowerMessage.includes("user not found") ||
+      lowerMessage.includes("email not found")
+    ) {
       return ErrorCode.AUTH_USER_NOT_FOUND;
     }
-    if (lowerMessage.includes("email not confirmed") || lowerMessage.includes("confirm your email")) {
+    if (
+      lowerMessage.includes("email not confirmed") ||
+      lowerMessage.includes("confirm your email")
+    ) {
       return ErrorCode.AUTH_EMAIL_NOT_CONFIRMED;
     }
-    if (lowerMessage.includes("weak password") || lowerMessage.includes("password too weak")) {
+    if (
+      lowerMessage.includes("weak password") ||
+      lowerMessage.includes("password too weak")
+    ) {
       return ErrorCode.AUTH_WEAK_PASSWORD;
     }
-    if (lowerMessage.includes("email already exists") || lowerMessage.includes("already registered")) {
+    if (
+      lowerMessage.includes("email already exists") ||
+      lowerMessage.includes("already registered")
+    ) {
       return ErrorCode.AUTH_EMAIL_ALREADY_EXISTS;
     }
 
     // API errors
-    if (lowerMessage.includes("rate limit") || lowerMessage.includes("too many requests")) {
+    if (
+      lowerMessage.includes("rate limit") ||
+      lowerMessage.includes("too many requests")
+    ) {
       return ErrorCode.API_RATE_LIMIT;
     }
-    if (lowerMessage.includes("server error") || lowerMessage.includes("internal server error")) {
+    if (
+      lowerMessage.includes("server error") ||
+      lowerMessage.includes("internal server error")
+    ) {
       return ErrorCode.API_SERVER_ERROR;
     }
-    if (lowerMessage.includes("validation") || lowerMessage.includes("invalid data")) {
+    if (
+      lowerMessage.includes("validation") ||
+      lowerMessage.includes("invalid data")
+    ) {
       return ErrorCode.API_VALIDATION_ERROR;
     }
-    if (lowerMessage.includes("forbidden") || lowerMessage.includes("permission denied")) {
+    if (
+      lowerMessage.includes("forbidden") ||
+      lowerMessage.includes("permission denied")
+    ) {
       return ErrorCode.API_FORBIDDEN;
     }
     if (lowerMessage.includes("not found") || lowerMessage.includes("404")) {
@@ -181,15 +238,24 @@ export class ErrorHandler {
     if (lowerMessage.includes("quota exceeded")) {
       return ErrorCode.STORAGE_QUOTA_EXCEEDED;
     }
-    if (lowerMessage.includes("permission denied") && lowerMessage.includes("storage")) {
+    if (
+      lowerMessage.includes("permission denied") &&
+      lowerMessage.includes("storage")
+    ) {
       return ErrorCode.STORAGE_PERMISSION_DENIED;
     }
 
     // Business logic errors
-    if (lowerMessage.includes("validation failed") || lowerMessage.includes("invalid input")) {
+    if (
+      lowerMessage.includes("validation failed") ||
+      lowerMessage.includes("invalid input")
+    ) {
       return ErrorCode.VALIDATION_FAILED;
     }
-    if (lowerMessage.includes("not supported") || lowerMessage.includes("unsupported")) {
+    if (
+      lowerMessage.includes("not supported") ||
+      lowerMessage.includes("unsupported")
+    ) {
       return ErrorCode.OPERATION_NOT_SUPPORTED;
     }
     if (lowerMessage.includes("insufficient permissions")) {
@@ -198,7 +264,10 @@ export class ErrorHandler {
     if (lowerMessage.includes("resource not found")) {
       return ErrorCode.RESOURCE_NOT_FOUND;
     }
-    if (lowerMessage.includes("cancelled") || lowerMessage.includes("aborted")) {
+    if (
+      lowerMessage.includes("cancelled") ||
+      lowerMessage.includes("aborted")
+    ) {
       return ErrorCode.OPERATION_CANCELLED;
     }
 
@@ -242,16 +311,33 @@ export class ErrorHandler {
     // - Refresh authentication tokens
     // - Clear caches
     // - Fallback to alternative services
-    
+
     if (__DEV__) {
-      this.centralizedLogger.debug("🔄 Attempting recovery for error:", error.code);
+      // Use centralized logger with structured data
+      this.logger.debug(
+        "ErrorHandler.ts",
+        313,
+        `🔄 Attempting recovery for error: ${error.code} - ${error.message}`,
+        {
+          operation: "error_recovery",
+          errorCode: error.code,
+          errorMessage: error.message,
+          originalOperation: error.context.operation,
+          service: error.context.service,
+          component: error.context.component,
+        }
+      );
     }
   }
 
   /**
    * Create a standardized error result object
    */
-  createErrorResult(error: ProcessedError): { success: false; error: string; code: ErrorCode } {
+  createErrorResult(error: ProcessedError): {
+    success: false;
+    error: string;
+    code: ErrorCode;
+  } {
     return {
       success: false,
       error: error.userMessage,
@@ -273,7 +359,7 @@ export class ErrorHandler {
   /**
    * Handle an error and return a standardized result
    */
-  async handleWithResult<T>(
+  async handleWithResult(
     error: unknown,
     context: Partial<ErrorContext> = {}
   ): Promise<{ success: false; error: string; code: ErrorCode }> {

@@ -2,8 +2,8 @@
  * Error recovery strategies for the unified error handling system
  */
 
-import { ProcessedError, ErrorCode } from "./ErrorTypes";
-import { ErrorLogger } from "./ErrorLogger";
+import { getLogger } from "../logger";
+import { ErrorCode, ProcessedError } from "./ErrorTypes";
 
 export interface RecoveryStrategy {
   canRecover(error: ProcessedError): boolean;
@@ -18,7 +18,7 @@ export interface RecoveryResult {
 }
 
 export class NetworkRecoveryStrategy implements RecoveryStrategy {
-  private logger = ErrorLogger.getInstance();
+  private logger = getLogger("NetworkRecovery");
 
   canRecover(error: ProcessedError): boolean {
     return [
@@ -34,33 +34,27 @@ export class NetworkRecoveryStrategy implements RecoveryStrategy {
     try {
       // Check if device is online
       if (typeof navigator !== "undefined" && !navigator.onLine) {
-        await this.logger.logSimple(
-          "Device is offline, cannot recover network error",
-          "medium",
-          { operation: "network_recovery" }
-        );
+        this.logger.warn("Device is offline, cannot recover network error", {
+          operation: "network_recovery",
+        });
         return false;
       }
 
       // For network errors, we can attempt a simple connectivity test
       const isConnected = await this.testConnectivity();
-      
+
       if (isConnected) {
-        await this.logger.logSimple(
-          "Network connectivity restored",
-          "low",
-          { operation: "network_recovery" }
-        );
+        this.logger.info("Network connectivity restored", {
+          operation: "network_recovery",
+        });
         return true;
       }
 
       return false;
     } catch (recoveryError) {
-      await this.logger.logSimple(
-        `Network recovery failed: ${recoveryError}`,
-        "medium",
-        { operation: "network_recovery" }
-      );
+      this.logger.error(`Network recovery failed: ${recoveryError}`, {
+        operation: "network_recovery",
+      });
       return false;
     }
   }
@@ -85,7 +79,7 @@ export class NetworkRecoveryStrategy implements RecoveryStrategy {
 }
 
 export class AuthRecoveryStrategy implements RecoveryStrategy {
-  private logger = ErrorLogger.getInstance();
+  private logger = getLogger("AuthRecovery");
 
   canRecover(error: ProcessedError): boolean {
     return error.code === ErrorCode.AUTH_SESSION_EXPIRED;
@@ -95,26 +89,22 @@ export class AuthRecoveryStrategy implements RecoveryStrategy {
     try {
       // For session expired errors, we could attempt to refresh the token
       // This would depend on your authentication implementation
-      
+
       // For now, we'll just log that recovery was attempted
-      await this.logger.logSimple(
-        "Session expired, user needs to re-authenticate",
-        "medium",
-        { operation: "auth_recovery" }
-      );
-      
+      this.logger.warn("Session expired, user needs to re-authenticate", {
+        operation: "auth_recovery",
+      });
+
       // In a real implementation, you might:
       // 1. Try to refresh the access token
       // 2. Redirect to login page
       // 3. Show a re-authentication modal
-      
+
       return false; // Session recovery typically requires user action
     } catch (recoveryError) {
-      await this.logger.logSimple(
-        `Auth recovery failed: ${recoveryError}`,
-        "medium",
-        { operation: "auth_recovery" }
-      );
+      this.logger.error(`Auth recovery failed: ${recoveryError}`, {
+        operation: "auth_recovery",
+      });
       return false;
     }
   }
@@ -125,7 +115,7 @@ export class AuthRecoveryStrategy implements RecoveryStrategy {
 }
 
 export class RateLimitRecoveryStrategy implements RecoveryStrategy {
-  private logger = ErrorLogger.getInstance();
+  private logger = getLogger("RateLimitRecovery");
 
   canRecover(error: ProcessedError): boolean {
     return error.code === ErrorCode.API_RATE_LIMIT;
@@ -135,23 +125,19 @@ export class RateLimitRecoveryStrategy implements RecoveryStrategy {
     try {
       // For rate limit errors, we can wait and retry
       const waitTime = this.calculateWaitTime(error);
-      
-      await this.logger.logSimple(
-        `Rate limit hit, waiting ${waitTime}ms before retry`,
-        "low",
-        { operation: "rate_limit_recovery" }
-      );
+
+      this.logger.info(`Rate limit hit, waiting ${waitTime}ms before retry`, {
+        operation: "rate_limit_recovery",
+      });
 
       // Wait for the calculated time
       await this.delay(waitTime);
-      
+
       return true; // Ready to retry
     } catch (recoveryError) {
-      await this.logger.logSimple(
-        `Rate limit recovery failed: ${recoveryError}`,
-        "medium",
-        { operation: "rate_limit_recovery" }
-      );
+      this.logger.error(`Rate limit recovery failed: ${recoveryError}`, {
+        operation: "rate_limit_recovery",
+      });
       return false;
     }
   }
@@ -167,18 +153,17 @@ export class RateLimitRecoveryStrategy implements RecoveryStrategy {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
 export class StorageRecoveryStrategy implements RecoveryStrategy {
-  private logger = ErrorLogger.getInstance();
+  private logger = getLogger("StorageRecovery");
 
   canRecover(error: ProcessedError): boolean {
-    return [
-      ErrorCode.STORAGE_ERROR,
-      ErrorCode.STORAGE_QUOTA_EXCEEDED,
-    ].includes(error.code);
+    return [ErrorCode.STORAGE_ERROR, ErrorCode.STORAGE_QUOTA_EXCEEDED].includes(
+      error.code
+    );
   }
 
   async recover(error: ProcessedError): Promise<boolean> {
@@ -186,36 +171,30 @@ export class StorageRecoveryStrategy implements RecoveryStrategy {
       if (error.code === ErrorCode.STORAGE_QUOTA_EXCEEDED) {
         // For quota exceeded, we could try to clear some cache
         await this.clearCache();
-        
-        await this.logger.logSimple(
-          "Storage quota exceeded, cleared cache",
-          "medium",
-          { operation: "storage_recovery" }
-        );
-        
+
+        this.logger.warn("Storage quota exceeded, cleared cache", {
+          operation: "storage_recovery",
+        });
+
         return true;
       }
 
       if (error.code === ErrorCode.STORAGE_ERROR) {
         // For general storage errors, we could try to reinitialize storage
         await this.reinitializeStorage();
-        
-        await this.logger.logSimple(
-          "Storage error, reinitialized storage",
-          "medium",
-          { operation: "storage_recovery" }
-        );
-        
+
+        this.logger.info("Storage error, reinitialized storage", {
+          operation: "storage_recovery",
+        });
+
         return true;
       }
 
       return false;
     } catch (recoveryError) {
-      await this.logger.logSimple(
-        `Storage recovery failed: ${recoveryError}`,
-        "medium",
-        { operation: "storage_recovery" }
-      );
+      this.logger.error(`Storage recovery failed: ${recoveryError}`, {
+        operation: "storage_recovery",
+      });
       return false;
     }
   }
@@ -239,7 +218,7 @@ export class StorageRecoveryStrategy implements RecoveryStrategy {
           keysToRemove.push(key);
         }
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
     }
   }
 
@@ -251,7 +230,7 @@ export class StorageRecoveryStrategy implements RecoveryStrategy {
 
 export class ErrorRecoveryManager {
   private strategies: RecoveryStrategy[] = [];
-  private logger = ErrorLogger.getInstance();
+  private logger = getLogger("ErrorRecoveryManager");
 
   constructor() {
     this.strategies = [
@@ -266,8 +245,8 @@ export class ErrorRecoveryManager {
    * Attempt to recover from an error
    */
   async attemptRecovery(error: ProcessedError): Promise<RecoveryResult> {
-    const strategy = this.strategies.find(s => s.canRecover(error));
-    
+    const strategy = this.strategies.find((s) => s.canRecover(error));
+
     if (!strategy) {
       return {
         success: false,
@@ -277,7 +256,7 @@ export class ErrorRecoveryManager {
 
     try {
       const recovered = await strategy.recover(error);
-      
+
       if (recovered) {
         return {
           success: true,
@@ -290,12 +269,10 @@ export class ErrorRecoveryManager {
         };
       }
     } catch (recoveryError) {
-      await this.logger.logSimple(
-        `Recovery attempt failed: ${recoveryError}`,
-        "medium",
-        { operation: "error_recovery" }
-      );
-      
+      this.logger.error(`Recovery attempt failed: ${recoveryError}`, {
+        operation: "error_recovery",
+      });
+
       return {
         success: false,
         message: "Recovery attempt failed. Please try again later.",
