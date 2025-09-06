@@ -79,15 +79,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     // Always clear search mode from storage to ensure new chat starts fresh
     try {
-      logger.debug("Clearing search mode from storage...");
       const beforeClear = await mobileStorage.getItem("chat_search_mode");
-      logger.debug("Search mode before clear", { beforeClear });
-
       await mobileStorage.removeItem("chat_search_mode");
-      logger.debug("Cleared search mode for new chat");
-
-      const afterClear = await mobileStorage.getItem("chat_search_mode");
-      logger.debug("Search mode after clear", { afterClear });
+      logger.debug(
+        `Cleared search mode for new chat (was: ${beforeClear || "null"})`
+      );
     } catch (error) {
       logger.warn("Failed to clear search mode", { error });
     }

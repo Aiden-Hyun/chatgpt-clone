@@ -12,12 +12,11 @@ export const NewChatScreen = () => {
 
   const hasAttemptedCreation = useRef(false);
 
-  logger.debug("Component rendered", {
-    hasSession: !!session,
-    isLoading,
-    hasAttemptedCreation: hasAttemptedCreation.current,
-    timestamp: new Date().toISOString(),
-  });
+  logger.debug(
+    `Component rendered (session: ${
+      !!session ? "yes" : "no"
+    }, loading: ${isLoading})`
+  );
 
   // Handle room creation when screen is focused
   useFocusEffect(
@@ -45,31 +44,23 @@ export const NewChatScreen = () => {
             return;
           }
 
-          logger.debug("Creating new chat room for user", {
-            userId: session.user.id,
-          });
+          logger.debug(`Creating new chat room for user ${session.user.id}`);
           hasAttemptedCreation.current = true;
 
           // Create a real room up front and navigate directly to it
           const chatRoomService = ServiceFactory.createChatRoomService();
-          logger.debug("About to create room with model", {
-            model: DEFAULT_MODEL,
-          });
           const newRoomId = await chatRoomService.createRoom(
             session.user.id,
             DEFAULT_MODEL
           );
-          logger.debug("Room created with ID", { newRoomId });
 
           if (!newRoomId) {
             throw new Error("Failed to create new chat room");
           }
 
-          logger.debug("Successfully created room", { newRoomId });
-          logger.debug("Navigating to room", {
-            newRoomId,
-            timestamp: new Date().toISOString(),
-          });
+          logger.debug(
+            `Successfully created room ${newRoomId} and navigating to it`
+          );
           router.replace(`/chat/${newRoomId}`);
         } catch (error) {
           logger.error("Error in createNewChat", { error });

@@ -1,4 +1,4 @@
-import { LogLevelString } from "../LogLevel";
+import { LogLevelString } from "./LogLevel";
 
 const isDevelopment = __DEV__;
 
@@ -22,8 +22,6 @@ const ANSI_COLORS = {
   lime: "\x1b[38;2;50;205;50m", // RGB Lime Green
   teal: "\x1b[38;2;0;128;128m", // RGB Teal
   indigo: "\x1b[38;2;75;0;130m", // RGB Indigo
-  magenta: "\x1b[35m", // Magenta
-  blue: "\x1b[34m", // Blue
   // Additional rich colors
   coral: "\x1b[38;2;255;127;80m", // RGB Coral
   gold: "\x1b[38;2;255;215;0m", // RGB Gold
@@ -70,44 +68,60 @@ const hashString = (str: string): number => {
   return Math.abs(hash);
 };
 
+// Maintain stable, collision-avoiding assignments within a single runtime
+const contextToColor = new Map<string, keyof typeof ANSI_COLORS>();
+const assignedColors = new Set<keyof typeof ANSI_COLORS>();
+
 /**
  * Get a consistent color for a context string
  */
 export const getContextColor = (context: string): keyof typeof ANSI_COLORS => {
   if (!context) return "white";
 
-  // Rich color palette with good variety and readability
+  // Return existing assignment to keep stability across logs during this run
+  const existing = contextToColor.get(context);
+  if (existing) return existing;
+
+  // Curated high-contrast palette to avoid similar hues (cyan removed)
   const colors: (keyof typeof ANSI_COLORS)[] = [
-    "cyan", // Bright cyan
-    "green", // Bright green
-    "red", // Bright red
-    "purple", // Bright magenta
-    "orange", // RGB Orange
-    "pink", // RGB Pink
-    "lime", // RGB Lime Green
-    "teal", // RGB Teal
-    "indigo", // RGB Indigo
-    "magenta", // Magenta
-    "blue", // Blue
-    "coral", // RGB Coral
-    "gold", // RGB Gold
-    "turquoise", // RGB Turquoise
-    "violet", // RGB Violet
-    "salmon", // RGB Salmon
-    "skyblue", // RGB Sky Blue
-    "forest", // RGB Forest Green
-    "chocolate", // RGB Chocolate
-    "crimson", // RGB Crimson
-    "navy", // RGB Navy
-    "olive", // RGB Olive
-    "maroon", // RGB Maroon
+    "red",
+    "green",
+    "blue",
+    "magenta",
+    "orange",
+    "gold",
+    "teal",
+    "indigo",
+    "violet",
+    "chocolate",
+    "coral",
+    "forest",
+    "navy",
+    "olive",
+    "maroon",
   ];
 
-  const hash = hashString(context);
-  const colorIndex = hash % colors.length;
-  const selectedColor = colors[colorIndex];
+  // Base index derived from hash for determinism
+  const baseIndex = hashString(context) % colors.length;
 
-  return selectedColor;
+  // Linear probe to find an unused color so we don't reuse until exhausted
+  let selected: keyof typeof ANSI_COLORS | undefined;
+  for (let offset = 0; offset < colors.length; offset++) {
+    const candidate = colors[(baseIndex + offset) % colors.length];
+    if (!assignedColors.has(candidate)) {
+      selected = candidate;
+      break;
+    }
+  }
+
+  // If all colors are used, fall back to the hashed color deterministically
+  if (!selected) {
+    selected = colors[baseIndex];
+  }
+
+  contextToColor.set(context, selected);
+  assignedColors.add(selected);
+  return selected;
 };
 
 /**
