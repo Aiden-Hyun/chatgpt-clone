@@ -71,7 +71,7 @@ export const sendMessageHandler = async (
   }
 
   // Use injected auth service via ServiceRegistry
-  logger.debug("Getting user session");
+  logger.debug("Getting user session for message send");
   const authService = ServiceRegistry.createAuthService();
   const session = await authService.getSession();
 
@@ -90,7 +90,11 @@ export const sendMessageHandler = async (
   });
 
   // Create the MessageSenderService with all dependencies injected
-  logger.debug("Creating message sender service");
+  logger.debug(
+    `Creating message sender service for room ${
+      numericRoomId || "new"
+    } with model ${model}`
+  );
   const messageSender = ServiceFactory.createMessageSender(
     setMessages,
     setIsTyping,
@@ -98,13 +102,13 @@ export const sendMessageHandler = async (
   );
 
   // Prepare the request
-  logger.debug("Preparing message request", {
-    messageId,
-    roomId: numericRoomId,
-    model,
-    isRegeneration: regenerateIndex !== undefined,
-    isSearchMode,
-  });
+  logger.debug(
+    `Preparing message request for room ${
+      numericRoomId || "new"
+    } with model ${model} (regeneration: ${
+      regenerateIndex !== undefined ? "yes" : "no"
+    }, search: ${isSearchMode ? "on" : "off"})`
+  );
 
   const request: SendMessageRequest = {
     userContent,
@@ -119,11 +123,11 @@ export const sendMessageHandler = async (
   };
 
   // Send the message using the SOLID architecture
-  logger.info("Sending message to AI service", {
-    messageId,
-    roomId: numericRoomId,
-    model,
-  });
+  logger.info(
+    `Sending message to AI service for room ${
+      numericRoomId || "new"
+    } with model ${model}`
+  );
 
   const result = await messageSender.sendMessage(request);
 
@@ -148,9 +152,9 @@ export const sendMessageHandler = async (
     throw new Error(result.error);
   }
 
-  logger.info("Message send completed successfully", {
-    messageId,
-    roomId: numericRoomId,
-    model,
-  });
+  logger.info(
+    `Message send completed successfully for room ${
+      numericRoomId || "new"
+    } with model ${model}`
+  );
 };

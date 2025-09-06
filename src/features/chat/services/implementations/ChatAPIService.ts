@@ -52,20 +52,16 @@ export class ChatAPIService implements IAIApiService {
         };
 
     this.logger.info(
-      `Making API call for ${isSearchMode ? "search" : "chat"} mode`,
-      {
-        isSearchMode,
-        model: request.model,
-        messageCount: request.messages.length,
-        roomId: request.roomId,
-      }
+      `Making API call for ${
+        isSearchMode ? "search" : "chat"
+      } mode with model ${request.model} (${
+        request.messages.length
+      } messages, room ${request.roomId})`
     );
 
-    this.logger.debug("Request payload details", {
-      modelConfig: payload.modelConfig,
-      clientMessageId: request.clientMessageId,
-      skipPersistence: request.skipPersistence,
-    });
+    this.logger.debug(
+      `Request payload details: clientMessageId ${request.clientMessageId}, skipPersistence ${request.skipPersistence}`
+    );
 
     const url = isSearchMode
       ? `${appConfig.edgeFunctionBaseUrl}/react-search`
@@ -78,12 +74,11 @@ export class ChatAPIService implements IAIApiService {
       body: JSON.stringify(payload),
     });
     this.logger.info(
-      `Received API response for ${isSearchMode ? "search" : "chat"} mode`,
-      {
-        isSearchMode,
-        model: request.model,
-        hasResponse: !!response,
-      }
+      `Received API response for ${
+        isSearchMode ? "search" : "chat"
+      } mode with model ${request.model} (response: ${
+        !!response ? "received" : "none"
+      })`
     );
 
     // Transform search response to match AIApiResponse format

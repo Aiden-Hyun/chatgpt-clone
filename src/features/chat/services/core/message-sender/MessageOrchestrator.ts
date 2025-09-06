@@ -74,9 +74,9 @@ export class MessageOrchestrator {
 
       // Step 2: Update UI state
       this.logger.debug(
-        "MessageOrchestrator.ts",
-        76,
-        "Updating UI state for message",
+        `Updating UI state for message ${request.messageId} (regeneration: ${
+          request.regenerateIndex !== undefined ? "yes" : "no"
+        })`,
         {
           requestId,
           messageId: request.messageId,
@@ -94,9 +94,9 @@ export class MessageOrchestrator {
 
       // Step 3: Ensure room exists
       this.logger.debug(
-        "MessageOrchestrator.ts",
-        85,
-        "Ensuring chat room exists",
+        `Ensuring chat room exists for room ${
+          request.numericRoomId || "new"
+        } with model ${request.model}`,
         {
           requestId,
           roomId: request.numericRoomId,
@@ -113,9 +113,11 @@ export class MessageOrchestrator {
 
       // Step 4: Prepare messages for AI API
       this.logger.debug(
-        "MessageOrchestrator.ts",
-        105,
-        "Preparing API request",
+        `Preparing API request for room ${roomId} with ${
+          request.messages.length
+        } messages (regeneration: ${
+          request.regenerateIndex !== undefined ? "yes" : "no"
+        })`,
         {
           requestId,
           roomId,
@@ -138,11 +140,9 @@ export class MessageOrchestrator {
       };
 
       // Step 5: Get response from AI API with retry
-      this.logger.info("Starting network request to AI API", {
-        requestId,
-        roomId,
-        model: request.model,
-      });
+      this.logger.info(
+        `Starting network request to AI API for room ${roomId} with model ${request.model}`
+      );
       const apiResponse = await this.retryService.retryOperation(
         () =>
           this.aiApiService.sendMessage(
@@ -152,17 +152,14 @@ export class MessageOrchestrator {
           ),
         "AI API call"
       );
-      this.logger.info("Network request to AI API completed", {
-        requestId,
-        hasResponse: !!apiResponse,
-      });
+      this.logger.info(
+        `Network request to AI API completed (response: ${
+          !!apiResponse ? "received" : "none"
+        })`
+      );
 
       if (!this.responseProcessor.validateResponse(apiResponse)) {
-        this.logger.error(
-          "MessageOrchestrator.ts",
-          127,
-          "AI response validation failed"
-        );
+        this.logger.error("AI response validation failed");
         const error = "Invalid AI response";
 
         // Use unified error handling system
@@ -186,11 +183,7 @@ export class MessageOrchestrator {
 
       const fullContent = this.responseProcessor.extractContent(apiResponse);
       if (!fullContent) {
-        this.logger.error(
-          "MessageOrchestrator.ts",
-          151,
-          "No content in AI response"
-        );
+        this.logger.error("No content in AI response");
         const error = "No content in AI response";
 
         // Use unified error handling system

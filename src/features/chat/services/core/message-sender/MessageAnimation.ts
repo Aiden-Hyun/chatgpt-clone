@@ -39,36 +39,25 @@ export class MessageAnimation {
 
     // Only set typing for new messages, not for regeneration
     if (regenerateIndex === undefined) {
-      this.logger.debug(
-        "MessageAnimation.ts",
-        42,
-        "Setting typing indicator ON for new message"
-      );
+      this.logger.debug("Setting typing indicator ON for new message");
       this.typingStateService.setTyping(true);
     } else {
-      this.logger.debug(
-        "MessageAnimation.ts",
-        45,
-        "Skipping typing indicator for regeneration"
-      );
+      this.logger.debug("Skipping typing indicator for regeneration");
     }
 
-    this.logger.debug(
-      "MessageAnimation.ts",
-      48,
-      "UI state updated successfully"
-    );
+    this.logger.debug("UI state updated successfully");
   }
 
   animateResponse(request: AnimationRequest): void {
     const { fullContent, regenerateIndex, messageId, requestId } = request;
 
-    this.logger.debug("Starting response animation for request", {
-      requestId,
-      contentLength: fullContent.length,
-      regenerateIndex,
-      messageId,
-    });
+    this.logger.debug(
+      `Starting response animation for request ${requestId} (${
+        fullContent.length
+      } chars, message ${messageId}, regeneration: ${
+        regenerateIndex !== undefined ? "yes" : "no"
+      })`
+    );
 
     // Set full content and transition to animating state
     this.animationService.setMessageFullContentAndAnimate({

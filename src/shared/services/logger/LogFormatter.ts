@@ -18,7 +18,7 @@ const TIME_WIDTH = 15;
  * Truncate message if too long (now with more generous width)
  */
 const truncateMessage = (message: string): string => {
-  const MAX_MESSAGE_WIDTH = 120; // Increased from 100 to 120 for even wider messages
+  const MAX_MESSAGE_WIDTH = 150; // Increased from 100 to 120 for even wider messages
   if (message.length > MAX_MESSAGE_WIDTH) {
     return message.substring(0, MAX_MESSAGE_WIDTH - 3) + "...";
   }

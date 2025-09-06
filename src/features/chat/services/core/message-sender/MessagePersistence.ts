@@ -46,13 +46,13 @@ export class MessagePersistence {
       requestId,
     } = request;
 
-    this.logger.info("Starting message persistence", {
-      requestId,
-      roomId,
-      userMessageId: userMsg.id,
-      assistantMessageId: assistantMsg.id,
-      isRegeneration: regenerateIndex !== undefined,
-    });
+    this.logger.info(
+      `Starting message persistence for room ${roomId} (user: ${
+        userMsg.id
+      }, assistant: ${assistantMsg.id}, regeneration: ${
+        regenerateIndex !== undefined ? "yes" : "no"
+      })`
+    );
 
     try {
       // Handle database operations
@@ -98,12 +98,9 @@ export class MessagePersistence {
         this.logger.warn("Room update failed but continuing", { error });
       }
 
-      this.logger.info("Message persistence completed successfully", {
-        requestId,
-        roomId,
-        userMessageId: userMsg.id,
-        assistantMessageId: assistantMsg.id,
-      });
+      this.logger.info(
+        `Message persistence completed successfully for room ${roomId} (user: ${userMsg.id}, assistant: ${assistantMsg.id})`
+      );
     } catch (error) {
       this.logger.error("Message persistence failed", {
         requestId,
@@ -129,11 +126,7 @@ export class MessagePersistence {
         "room creation"
       );
       if (!newRoomId) {
-        this.logger.error(
-          "MessagePersistence.ts",
-          132,
-          "Failed to create chat room"
-        );
+        this.logger.error("Failed to create chat room");
         throw new Error("Failed to create chat room");
       }
       roomId = newRoomId;
