@@ -31,12 +31,13 @@ export const useChatActions = ({
 
   // Log only when dependencies change, not on every render
   useEffect(() => {
-    logger.debug("Dependencies changed", {
-      roomId: numericRoomId,
-      searchMode: isSearchMode,
-      model: selectedModel,
-      messagesCount: messages.length,
-    });
+    logger.debug(
+      `Chat actions dependencies updated: room ${
+        numericRoomId || "new"
+      }, model ${selectedModel}, search mode ${isSearchMode ? "on" : "off"}, ${
+        messages.length
+      } messages`
+    );
   }, [numericRoomId, isSearchMode, selectedModel, messages.length]);
 
   // ✅ STATE MACHINE: Message actions using state machine
@@ -76,7 +77,7 @@ export const useChatActions = ({
       if (!userContent.trim()) return;
       const currentRoomKey = numericRoomId ? numericRoomId.toString() : "new";
       if (__DEV__) {
-        logger.debug("Sending message from room", { roomKey: currentRoomKey });
+        logger.debug(`Sending message from room ${currentRoomKey}`);
       }
 
       clearInput();
@@ -84,7 +85,11 @@ export const useChatActions = ({
       try {
         await sendMessageToBackend(userContent);
       } catch (error) {
-        logger.error("Failed to send message", { error });
+        logger.error(
+          `Failed to send message from room ${currentRoomKey}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
         handleInputChange(userContent);
       }
     },
@@ -95,13 +100,17 @@ export const useChatActions = ({
   const regenerateMessage = useCallback(
     async (index: number, overrideUserContent?: string) => {
       if (index === undefined || index === null) {
-        logger.error("Invalid regeneration index");
+        logger.error(`Invalid regeneration index: ${index}`);
         return;
       }
       try {
         await regenerateMessageInBackend(index, overrideUserContent);
       } catch (error) {
-        logger.error("Error regenerating message", { error });
+        logger.error(
+          `Error regenerating message at index ${index}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
       }
     },
     [regenerateMessageInBackend]

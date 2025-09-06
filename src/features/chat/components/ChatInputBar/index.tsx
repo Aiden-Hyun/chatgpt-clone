@@ -10,6 +10,7 @@ import {
 
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
+import { getLogger } from "@/shared/services/logger";
 
 import { getModelInfo } from "../../constants/models";
 
@@ -52,6 +53,7 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({
   const [inputHeight, setInputHeight] = useState(36);
   const { t } = useLanguageContext();
   const theme = useAppTheme();
+  const logger = getLogger("ChatInputBar");
 
   // Check if the current model supports search
   const modelInfo = getModelInfo(selectedModel || "gpt-3.5-turbo");
@@ -149,7 +151,14 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({
         {onSearchToggle && supportsSearch && (
           <View style={styles.searchButtonContainer}>
             <TouchableOpacity
-              onPress={onSearchToggle}
+              onPress={() => {
+                logger.info("Search toggle pressed", {
+                  currentSearchMode: isSearchMode,
+                  newSearchMode: !isSearchMode,
+                  selectedModel,
+                });
+                onSearchToggle();
+              }}
               style={[
                 styles.searchButton,
                 isSearchMode && styles.searchButtonActive,
@@ -174,6 +183,12 @@ const ChatInputBar: React.FC<ChatInputBarProps> = ({
           <TouchableOpacity
             onPress={() => {
               if (hasText && !sending) {
+                logger.info("Send button pressed", {
+                  inputLength: input.length,
+                  isSearchMode,
+                  selectedModel,
+                  supportsSearch,
+                });
                 onSend();
               }
             }}

@@ -33,7 +33,11 @@ function AppContent() {
 
   const { isLoading: themeLoading } = useThemeContext();
 
-  logger.debug("Loading states", { fontsLoaded, themeLoading });
+  logger.debug(
+    `Loading states: fonts ${fontsLoaded ? "loaded" : "loading"}, theme ${
+      themeLoading ? "loading" : "ready"
+    }`
+  );
 
   // Wait for both fonts and theme to be ready
   if (!fontsLoaded || themeLoading) {
@@ -52,11 +56,11 @@ function ProtectedRoutes() {
   const router = useRouter();
   const pathname = usePathname();
 
-  logger.debug("Auth state", {
-    hasSession: !!session,
-    isLoading,
-    pathname,
-  });
+  logger.debug(
+    `Auth state: ${
+      !!session ? "authenticated" : "not authenticated"
+    } (loading: ${isLoading}, path: ${pathname})`
+  );
 
   // Define auth routes that don't require authentication
   const authRoutes = ["/auth", "/signup", "/forgot-password"];
@@ -100,7 +104,9 @@ function ProtectedRoutes() {
 
   useEffect(() => {
     if (!isLoading && !session && !isAuthRoute) {
-      logger.debug("Redirecting to auth - no session");
+      logger.debug(
+        `Redirecting to auth - no session (current path: ${pathname})`
+      );
       // Only redirect to auth if user is not on an auth route
       router.replace("/auth");
     }

@@ -66,8 +66,6 @@ export class ErrorHandler {
           "Unknown"
       );
       sourceLogger.error(
-        "ErrorHandler.ts",
-        62,
         `Error handled: ${processedError.code} - ${processedError.message}`,
         {
           errorCode: processedError.code,
@@ -324,8 +322,6 @@ export class ErrorHandler {
         error.context.component || error.context.service || "Unknown"
       );
       sourceLogger.debug(
-        "ErrorHandler.ts",
-        313,
         `🔄 Attempting recovery for error: ${error.code} - ${error.message}`,
         {
           operation: "error_recovery",

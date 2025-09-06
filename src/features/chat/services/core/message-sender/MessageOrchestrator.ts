@@ -73,6 +73,17 @@ export class MessageOrchestrator {
       assistantMessageIdForError = assistantMsg?.id ?? null;
 
       // Step 2: Update UI state
+      this.logger.debug(
+        "MessageOrchestrator.ts",
+        76,
+        "Updating UI state for message",
+        {
+          requestId,
+          messageId: request.messageId,
+          isRegeneration: request.regenerateIndex !== undefined,
+        }
+      );
+
       this.animation.updateUIState({
         regenerateIndex: request.regenerateIndex,
         userMsg: userMsg!,
@@ -82,6 +93,17 @@ export class MessageOrchestrator {
       });
 
       // Step 3: Ensure room exists
+      this.logger.debug(
+        "MessageOrchestrator.ts",
+        85,
+        "Ensuring chat room exists",
+        {
+          requestId,
+          roomId: request.numericRoomId,
+          model: request.model,
+        }
+      );
+
       const { roomId } = await this.persistence.createRoomIfNeeded(
         request.numericRoomId,
         request.session,
@@ -90,6 +112,18 @@ export class MessageOrchestrator {
       );
 
       // Step 4: Prepare messages for AI API
+      this.logger.debug(
+        "MessageOrchestrator.ts",
+        105,
+        "Preparing API request",
+        {
+          requestId,
+          roomId,
+          messageCount: request.messages.length,
+          isRegeneration: request.regenerateIndex !== undefined,
+        }
+      );
+
       const messagesWithSearch =
         request.regenerateIndex !== undefined
           ? request.messages

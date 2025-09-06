@@ -114,7 +114,7 @@ export const useChatRooms = () => {
       },
       {
         onError: (error) => {
-          logger.error("[ROOMS] fetchRooms error:", error);
+          logger.error("fetchRooms error:", error);
         },
       }
     );
@@ -146,6 +146,7 @@ export const useChatRooms = () => {
                 roomId,
                 messageId,
                 event: "INSERT",
+                userId: session.user.id,
               });
               chatDebugLog("[ROOMS-RT] insert for room", { roomId });
               // Fetch room metadata
@@ -193,24 +194,35 @@ export const useChatRooms = () => {
     async (roomId: number) => {
       if (!session) return;
 
+      logger.info("Starting room deletion", {
+        roomId,
+        userId: session.user.id,
+      });
+
       try {
         const { error: msgErr } = await supabase
           .from("messages")
           .delete()
           .eq("room_id", roomId);
-        if (msgErr) logger.warn("[ROOMS] deleteRoom:messages error", msgErr);
+        if (msgErr) logger.warn("deleteRoom:messages error", msgErr);
         const { error: roomErr } = await supabase
           .from("chatrooms")
           .delete()
           .eq("id", roomId)
           .eq("user_id", session.user.id);
         if (roomErr) {
-          logger.warn("[ROOMS] deleteRoom:chatrooms error", roomErr);
+          logger.warn("deleteRoom:chatrooms error", roomErr);
           return;
         }
+
+        logger.info("Room deleted successfully", {
+          roomId,
+          userId: session.user.id,
+        });
+
         setRooms((prev) => prev.filter((room) => room.id !== roomId));
       } catch {
-        logger.warn("[ROOMS] deleteRoom:exception");
+        logger.warn("deleteRoom:exception");
         return;
       }
     },
@@ -223,7 +235,7 @@ export const useChatRooms = () => {
     try {
       await mobileStorage.removeItem("chat_search_mode");
     } catch (error) {
-      logger.warn("[ROOMS] Failed to clear search mode:", error);
+      logger.warn("Failed to clear search mode:", error);
     }
 
     router.push("/chat");

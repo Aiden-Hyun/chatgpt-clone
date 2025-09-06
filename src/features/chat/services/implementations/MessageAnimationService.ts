@@ -27,7 +27,7 @@ export class MessageAnimationService implements IAnimationService {
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    this.logger.debug("MessageAnimationService initialized");
+    // Remove meaningless initialization log
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 

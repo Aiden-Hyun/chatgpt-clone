@@ -24,11 +24,13 @@ import {
 } from "@/shared/components";
 import { useLoadingState } from "@/shared/hooks";
 import { supabase } from "@/shared/lib/supabase";
+import { getLogger } from "@/shared/services/logger";
 
 import { createAuthStyles } from "./AuthScreen.styles";
 
 export const AuthScreen = () => {
   const { session } = useAuth();
+  const logger = getLogger("AuthScreen");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,19 +58,31 @@ export const AuthScreen = () => {
 
   // Session check logic
   const checkSession = useCallback(async () => {
+    logger.debug("Checking session status", {
+      hasSession: !!session,
+      userId: session?.user?.id,
+    });
+
     try {
       if (session) {
+        logger.info("User already authenticated, redirecting to home", {
+          userId: session.user.id,
+          email: session.user.email,
+        });
         showSuccess(t("auth.login_successful") || "Login successful!");
         router.replace("/");
       } else {
+        logger.debug("No active session, showing auth form");
         stopLoading();
       }
     } catch (error) {
-      console.error(error);
+      logger.error("Session check failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
       showError(t("auth.network_error"));
       stopLoading();
     }
-  }, [session, showSuccess, showError, t, stopLoading]);
+  }, [session, showSuccess, showError, t, stopLoading, logger]);
 
   useEffect(() => {
     checkSession();
@@ -87,6 +101,13 @@ export const AuthScreen = () => {
   };
 
   const validateForm = () => {
+    logger.debug("Validating form", {
+      hasEmail: !!email.trim(),
+      hasPassword: !!password.trim(),
+      emailLength: email.length,
+      passwordLength: password.length,
+    });
+
     const newErrors: { email?: string; password?: string } = {};
 
     if (!email.trim()) {
@@ -101,11 +122,24 @@ export const AuthScreen = () => {
       newErrors.password = "Password must be at least 6 characters";
     }
 
+    const isValid = Object.keys(newErrors).length === 0;
+    // Only log validation failures, not every validation attempt
+    if (!isValid) {
+      logger.debug("Form validation failed", {
+        errorCount: Object.keys(newErrors).length,
+        errors: Object.keys(newErrors),
+      });
+    }
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return isValid;
   };
 
   const handleGoogleLogin = async () => {
+    logger.info("Starting Google OAuth login", {
+      redirectUri: Constants.linkingUri,
+    });
+
     try {
       startSigningInWithGoogle();
       await supabase.auth.signInWithOAuth({
@@ -117,16 +151,27 @@ export const AuthScreen = () => {
           },
         },
       });
-    } catch {
+
+      logger.info("Google OAuth login initiated successfully");
+    } catch (error) {
+      logger.error("Google OAuth login failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
       showError(t("auth.google_login_failed"));
       stopSigningInWithGoogle();
     }
   };
 
   const handleEmailSignin = async () => {
+    logger.info("Starting email sign-in", {
+      email: email,
+      hasPassword: !!password,
+    });
+
     Keyboard.dismiss();
 
     if (!validateForm()) {
+      logger.warn("Form validation failed, aborting sign-in");
       return;
     }
 
@@ -134,9 +179,19 @@ export const AuthScreen = () => {
       const result = await signIn(email, password);
 
       if (result.success) {
+        logger.info("Email sign-in successful", {
+          email: email,
+          userId: result.data?.user?.id,
+        });
         showSuccess(t("auth.login_successful") || "Login successful!");
         router.replace("/");
       } else {
+        logger.warn("Email sign-in failed", {
+          email: email,
+          error: result.error,
+          isNetworkError: result.isNetworkError,
+          errorCode: result.errorCode,
+        });
         // Show appropriate localized message based on error type
         if (result.isNetworkError) {
           showError(t("auth.network_error"));
@@ -152,6 +207,13 @@ export const AuthScreen = () => {
           (error.message.toLowerCase().includes("network") ||
             error.message.toLowerCase().includes("fetch") ||
             error.message.toLowerCase().includes("connection")));
+
+      logger.error("Email sign-in threw unexpected error", {
+        email: email,
+        error: error instanceof Error ? error.message : "Unknown error",
+        isNetworkError,
+        isOnline: navigator.onLine,
+      });
 
       if (isNetworkError) {
         showError(t("auth.network_error"));

@@ -13,7 +13,7 @@ export class MessageStateService implements IMessageStateService {
   constructor(
     private setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
   ) {
-    this.logger.debug("MessageStateService initialized");
+    // Remove meaningless initialization log
     this.messageStateManager = new MessageStateManager(setMessages);
   }
 

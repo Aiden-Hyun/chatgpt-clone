@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 
 import type { ChatMessage } from "@/entities/message";
 import { useMessageLoader } from "@/entities/message";
+import { getLogger } from "@/shared/services/logger";
 
 // Legacy interfaces - will be phased out in favor of state machine
 interface LoadingStates {
@@ -15,6 +16,8 @@ interface ChatState {
 }
 
 export const useChatState = (roomId: number | null) => {
+  const logger = getLogger("useChatState");
+
   const [state, setState] = useState<ChatState>({
     messages: [],
     loadingStates: {
@@ -22,6 +25,8 @@ export const useChatState = (roomId: number | null) => {
     },
     loading: true,
   });
+
+  // Remove meaningless initialization log
 
   // State getters
   const { messages, loadingStates, loading } = state;
@@ -112,6 +117,12 @@ export const useChatState = (roomId: number | null) => {
 
   const startRegenerating = useCallback(
     (index: number) => {
+      logger.info("Starting message regeneration", {
+        roomId,
+        messageIndex: index,
+        currentRegeneratingCount: regeneratingIndices.size,
+      });
+
       updateState({
         loadingStates: (prev) => ({
           ...prev,
@@ -122,11 +133,17 @@ export const useChatState = (roomId: number | null) => {
         }),
       });
     },
-    [updateState]
+    [updateState, logger, roomId, regeneratingIndices.size]
   );
 
   const stopRegenerating = useCallback(
     (index: number) => {
+      logger.info("Stopping message regeneration", {
+        roomId,
+        messageIndex: index,
+        wasRegenerating: regeneratingIndices.has(index),
+      });
+
       updateState({
         loadingStates: (prev) => {
           const newRegenerating = new Set(prev.regenerating || []);
@@ -135,7 +152,7 @@ export const useChatState = (roomId: number | null) => {
         },
       });
     },
-    [updateState]
+    [updateState, logger, roomId, regeneratingIndices]
   );
 
   const isRegenerating = useCallback(

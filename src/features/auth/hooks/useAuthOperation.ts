@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { errorHandler } from "../../../shared/services/error";
+import { getLogger } from "../../../shared/services/logger";
 
 /**
  * Generic hook factory for authentication operations
@@ -32,12 +33,25 @@ export const useAuthOperation = <TParams, TResult>(
   config: AuthOperationConfig<TParams, TResult>
 ) => {
   const [isLoading, setIsLoading] = useState(false);
+  const logger = getLogger("useAuthOperation");
 
   const execute = useCallback(
     async (params: TParams): Promise<AuthOperationResult<TResult>> => {
+      const operationName = config.operationName || "authOperation";
+      logger.info(`Starting ${operationName}`, {
+        operationName,
+        hasParams: !!params,
+      });
+
       try {
         setIsLoading(true);
         const result = await config.operation(params);
+
+        logger.info(`${operationName} completed successfully`, {
+          operationName,
+          hasResult: !!result,
+        });
+
         config.onSuccess?.(result);
         return { success: true, data: result, error: null };
       } catch (error) {
@@ -50,6 +64,15 @@ export const useAuthOperation = <TParams, TResult>(
             params:
               typeof params === "object" ? { ...params } : { value: params },
           },
+        });
+
+        logger.error(`${operationName} failed`, {
+          operationName,
+          errorCode: processedError.code,
+          userMessage: processedError.userMessage,
+          isNetworkError:
+            processedError.code.includes("NETWORK") ||
+            processedError.code.includes("TIMEOUT"),
         });
 
         // Call the original error callback if provided
@@ -66,6 +89,10 @@ export const useAuthOperation = <TParams, TResult>(
         };
       } finally {
         setIsLoading(false);
+        logger.debug(`${operationName} operation finished`, {
+          operationName,
+          isLoading: false,
+        });
       }
     },
     [config]

@@ -51,14 +51,20 @@ export class ChatAPIService implements IAIApiService {
           skipPersistence: request.skipPersistence,
         };
 
-    this.logger.debug(
-      `Making API call for ${isSearchMode ? "search" : "chat"} mode`
+    this.logger.info(
+      `Making API call for ${isSearchMode ? "search" : "chat"} mode`,
+      {
+        isSearchMode,
+        model: request.model,
+        messageCount: request.messages.length,
+        roomId: request.roomId,
+      }
     );
-    this.logger.debug("Request payload", {
-      isSearchMode,
-      model: request.model,
-      messageCount: request.messages.length,
+
+    this.logger.debug("Request payload details", {
       modelConfig: payload.modelConfig,
+      clientMessageId: request.clientMessageId,
+      skipPersistence: request.skipPersistence,
     });
 
     const url = isSearchMode
@@ -71,8 +77,13 @@ export class ChatAPIService implements IAIApiService {
       },
       body: JSON.stringify(payload),
     });
-    this.logger.debug(
-      `Received API response for ${isSearchMode ? "search" : "chat"} mode`
+    this.logger.info(
+      `Received API response for ${isSearchMode ? "search" : "chat"} mode`,
+      {
+        isSearchMode,
+        model: request.model,
+        hasResponse: !!response,
+      }
     );
 
     // Transform search response to match AIApiResponse format

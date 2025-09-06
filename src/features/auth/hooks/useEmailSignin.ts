@@ -18,7 +18,7 @@ export const useEmailSignin = () => {
   >({
     operationName: "emailSignIn",
     operation: async ({ email, password }) => {
-      logger.info("User login attempt", { email });
+      logger.info(`User login attempt for ${email}`);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -26,33 +26,28 @@ export const useEmailSignin = () => {
       });
 
       if (error) {
-        logger.error("Login failed", {
-          email,
-          error: error.message,
-          errorCode: error.status,
-        });
+        logger.error(
+          `Login failed for ${email}: ${error.message} (code: ${error.status})`
+        );
         throw error;
       }
 
       if (!data.user) {
-        logger.error("Login failed: No user data returned", { email });
+        logger.error(`Login failed for ${email}: No user data returned`);
         throw new Error("No user data returned");
       }
 
-      logger.info("Login successful", {
-        userId: data.user.id,
-        email: data.user.email,
-        sessionExpiresAt: data.session?.expires_at,
-      });
+      logger.info(
+        `Login successful for ${data.user.email} (user ID: ${data.user.id})`
+      );
 
       return data;
     },
     enableNetworkErrorDetection: true,
     onSuccess: (data) => {
-      logger.info("User session established", {
-        userId: data.user?.id,
-        email: data.user?.email,
-      });
+      logger.info(
+        `User session established for ${data.user?.email} (ID: ${data.user?.id})`
+      );
     },
   });
 

@@ -27,7 +27,7 @@ module.exports = function ({ types: t }) {
           const filePathArg = t.stringLiteral(filename);
           const lineArg = line !== null ? t.numericLiteral(line) : t.nullLiteral();
           
-          // Insert the new arguments at the beginning
+          // Prepend the new arguments at the beginning
           path.node.arguments = [filePathArg, lineArg, ...args];
         }
       },

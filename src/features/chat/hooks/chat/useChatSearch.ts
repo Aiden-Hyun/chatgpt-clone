@@ -18,7 +18,7 @@ export const useChatSearch = (
 
   // Log only on mount
   useEffect(() => {
-    logger.debug("Hook mounted with model", { selectedModel });
+    logger.debug(`Chat search hook initialized with model ${selectedModel}`);
   }, []);
 
   // Load search mode from storage on mount
@@ -62,10 +62,11 @@ export const useChatSearch = (
 
   // Log when state changes (not every render)
   useEffect(() => {
-    logger.debug("State changed", {
-      isSearchMode,
-      selectedModel,
-    });
+    logger.debug(
+      `Search mode changed to ${
+        isSearchMode ? "enabled" : "disabled"
+      } for model ${selectedModel}`
+    );
   }, [isSearchMode, selectedModel]);
 
   const handleSearchToggle = useCallback(() => {

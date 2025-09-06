@@ -1,7 +1,7 @@
 // src/features/chat/services/sendMessage/index.ts
 import type { ChatMessage } from "@/entities/message";
-
 import { getLogger } from "@/shared/services/logger";
+
 import { errorHandler } from "../../../../shared/services/error";
 import { getModelInfo } from "../../constants/models";
 import { SendMessageRequest } from "../core/message-sender";
@@ -71,20 +71,26 @@ export const sendMessageHandler = async (
   }
 
   // Use injected auth service via ServiceRegistry
+  logger.debug("Getting user session");
   const authService = ServiceRegistry.createAuthService();
   const session = await authService.getSession();
 
   if (!session) {
-    logger.warn("No active session, aborting message send", { messageId });
+    logger.warn("No active session, aborting message send", {
+      messageId,
+      roomId: numericRoomId,
+    });
     return;
   }
 
-  logger.debug("Session validated for message send", {
+  logger.info("Session validated for message send", {
     messageId,
     userId: session.user.id,
+    roomId: numericRoomId,
   });
 
   // Create the MessageSenderService with all dependencies injected
+  logger.debug("Creating message sender service");
   const messageSender = ServiceFactory.createMessageSender(
     setMessages,
     setIsTyping,
@@ -92,6 +98,14 @@ export const sendMessageHandler = async (
   );
 
   // Prepare the request
+  logger.debug("Preparing message request", {
+    messageId,
+    roomId: numericRoomId,
+    model,
+    isRegeneration: regenerateIndex !== undefined,
+    isSearchMode,
+  });
+
   const request: SendMessageRequest = {
     userContent,
     numericRoomId,
@@ -105,11 +119,18 @@ export const sendMessageHandler = async (
   };
 
   // Send the message using the SOLID architecture
+  logger.info("Sending message to AI service", {
+    messageId,
+    roomId: numericRoomId,
+    model,
+  });
+
   const result = await messageSender.sendMessage(request);
 
   if (!result.success && result.error) {
     logger.error("Message send failed", {
       messageId,
+      roomId: numericRoomId,
       error: result.error,
     });
     await errorHandler.handle(new Error(result.error), {
@@ -130,5 +151,6 @@ export const sendMessageHandler = async (
   logger.info("Message send completed successfully", {
     messageId,
     roomId: numericRoomId,
+    model,
   });
 };

@@ -34,12 +34,23 @@ export function AuthProvider({ children }: Props) {
     let mounted = true;
 
     const initializeAuth = async () => {
+      logger.info("Initializing authentication system");
+
       await executeWithLoading(
         async () => {
           const { data } = await supabase.auth.getSession();
-          logger.debug("Initial session result", {
-            hasSession: !!data.session,
-          });
+
+          if (data.session) {
+            logger.info(
+              `Found existing session for user ${
+                data.session.user.id
+              } (expires: ${new Date(
+                data.session.expires_at * 1000
+              ).toLocaleString()})`
+            );
+          } else {
+            logger.info("No existing session found");
+          }
 
           if (mounted) {
             setSession(data.session);
@@ -49,7 +60,9 @@ export function AuthProvider({ children }: Props) {
         },
         {
           onError: (error) => {
-            logger.error("Auth initialization error", { error });
+            logger.error("Auth initialization failed", {
+              error: error instanceof Error ? error.message : "Unknown error",
+            });
             if (mounted) {
               setSession(null);
             }
@@ -63,28 +76,27 @@ export function AuthProvider({ children }: Props) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      logger.debug("Auth state change", {
-        event,
-        hasSession: !!session,
-      });
+      // Remove verbose auth state change log - only log meaningful events
 
       if (mounted) {
         // Handle logout events more explicitly
         if (event === AUTH_EVENTS.SIGNED_OUT) {
-          logger.info("User session expired or signed out");
+          logger.info("User signed out");
           setSession(null);
         } else if (event === AUTH_EVENTS.TOKEN_REFRESHED) {
-          logger.info("Token refreshed successfully", {
-            expiresAt: session?.expires_at,
-          });
+          logger.info(`Session token refreshed for user ${session?.user?.id}`);
           setSession(session);
         } else if (event === AUTH_EVENTS.SIGNED_IN) {
-          logger.info("User signed in", {
-            userId: session?.user?.id,
-            expiresAt: session?.expires_at,
-          });
+          logger.info(
+            `User signed in successfully: ${session?.user?.email} (ID: ${session?.user?.id})`
+          );
           setSession(session);
         } else {
+          logger.debug(
+            `Auth state changed: ${event} (session: ${
+              !!session ? "active" : "none"
+            })`
+          );
           setSession(session);
         }
       }

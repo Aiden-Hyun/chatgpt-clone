@@ -8,7 +8,7 @@ export class TypingStateService implements ITypingStateService {
   constructor(
     private setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
   ) {
-    this.logger.debug("TypingStateService initialized");
+    // Remove meaningless initialization log
   }
 
   setTyping(isTyping: boolean): void {
