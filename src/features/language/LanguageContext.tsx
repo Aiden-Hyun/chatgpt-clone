@@ -9,6 +9,7 @@ import React, {
 } from "react";
 
 import { useReadProfile, useUpdateProfile } from "@/entities/user";
+import { mobileStorage } from "@/shared/lib/storage";
 import { getLogger } from "@/shared/services/logger";
 
 // Define the translation function type
@@ -659,12 +660,23 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
 
   const [currentLanguage, setCurrentLanguage] = useState("en");
 
-  // Load language preference from database
+  // Load language preference from local storage only
   useEffect(() => {
-    if (profile?.language && translations[profile.language]) {
-      setCurrentLanguage(profile.language);
-    }
-  }, [profile?.language]);
+    const loadLanguageFromStorage = async () => {
+      try {
+        // Try to load from local storage first (fast and immediate)
+        const savedLanguage = await mobileStorage.getItem("language");
+        
+        if (savedLanguage && translations[savedLanguage]) {
+          setCurrentLanguage(savedLanguage);
+        }
+      } catch (error) {
+        logger.warn("Failed to load language from storage:", error);
+      }
+    };
+
+    loadLanguageFromStorage();
+  }, []);
 
   // Memoize translation function to prevent recreation
   const t: TranslationFunction = useCallback(
@@ -683,7 +695,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
         // Update local state immediately
         setCurrentLanguage(language);
 
-        // Save to database if profile exists
+        // Save to local storage first (fast and immediate)
+        try {
+          await mobileStorage.setItem("language", language);
+        } catch (error) {
+          logger.warn("Failed to save language to local storage:", error);
+        }
+
+        // Save to database in background (only when user makes changes)
         if (profile?.id) {
           try {
             logger.debug("Saving language to database:", { language });

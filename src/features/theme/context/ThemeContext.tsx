@@ -61,46 +61,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Get system color scheme
   const systemColorScheme = useColorScheme();
 
-  // Load saved theme preferences from database and local storage
+  // Load saved theme preferences from local storage only
   useEffect(() => {
     const loadThemePreferences = async () => {
       await executeWithLoading(
         async () => {
-          // First, try to load from database (profile)
-          if (profile) {
-            // Load theme mode from database
-            if (
-              profile.theme_mode &&
-              ["light", "dark", "system"].includes(profile.theme_mode)
-            ) {
-              setThemeModeState(profile.theme_mode as ThemeMode);
-            }
+          // Always load from local storage first (fast and immediate)
+          const savedThemeMode = await mobileStorage.getItem(
+            STORAGE_KEYS.THEME_MODE
+          );
+          if (
+            savedThemeMode &&
+            ["light", "dark", "system"].includes(savedThemeMode)
+          ) {
+            setThemeModeState(savedThemeMode as ThemeMode);
+          }
 
-            // Load theme style from database
-            if (
-              profile.theme_style &&
-              themeRegistry.hasTheme(profile.theme_style)
-            ) {
-              setThemeStyleState(profile.theme_style);
-            }
-          } else {
-            // Fallback to local storage if no profile
-            const savedThemeMode = await mobileStorage.getItem(
-              STORAGE_KEYS.THEME_MODE
-            );
-            if (
-              savedThemeMode &&
-              ["light", "dark", "system"].includes(savedThemeMode)
-            ) {
-              setThemeModeState(savedThemeMode as ThemeMode);
-            }
-
-            const savedThemeStyle = await mobileStorage.getItem(
-              STORAGE_KEYS.THEME_STYLE
-            );
-            if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
-              setThemeStyleState(savedThemeStyle);
-            }
+          const savedThemeStyle = await mobileStorage.getItem(
+            STORAGE_KEYS.THEME_STYLE
+          );
+          if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
+            setThemeStyleState(savedThemeStyle);
           }
         },
         {
@@ -112,7 +93,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadThemePreferences();
-  }, [executeWithLoading, profile]);
+  }, [executeWithLoading]);
 
   // Set theme mode with persistence
   const setThemeMode = useCallback(
@@ -121,10 +102,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         // Update local state immediately
         setThemeModeState(mode);
 
-        // Save to local storage as backup
+        // Save to local storage first (fast and immediate)
         await mobileStorage.setItem(STORAGE_KEYS.THEME_MODE, mode);
 
-        // Save to database if profile exists
+        // Save to database in background (only when user makes changes)
         if (profile?.id) {
           logger.debug("Saving theme_mode to database:", { mode });
           await updateProfile({ theme_mode: mode });
@@ -158,10 +139,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         // Update local state immediately
         setThemeStyleState(style);
 
-        // Save to local storage as backup
+        // Save to local storage first (fast and immediate)
         await mobileStorage.setItem(STORAGE_KEYS.THEME_STYLE, style);
 
-        // Save to database if profile exists
+        // Save to database in background (only when user makes changes)
         if (profile?.id) {
           logger.debug("Saving theme_style to database:", { style });
           await updateProfile({ theme_style: style });
