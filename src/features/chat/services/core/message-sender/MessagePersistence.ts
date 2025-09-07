@@ -3,7 +3,6 @@ import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
 
 import { getLogger } from "../../../../../shared/services/logger";
-import { ROOM_NAME_MAX_LENGTH } from "../../../constants";
 import { IMessageService } from "../../interfaces/IMessageService";
 import { RetryService } from "../RetryService";
 
@@ -90,7 +89,6 @@ export class MessagePersistence {
       // Update room metadata (non-critical operation)
       try {
         await this.chatRoomService.updateRoom(roomId, {
-          name: userMsg.content.slice(0, ROOM_NAME_MAX_LENGTH),
           updatedAt: new Date().toISOString(),
         });
       } catch (error) {

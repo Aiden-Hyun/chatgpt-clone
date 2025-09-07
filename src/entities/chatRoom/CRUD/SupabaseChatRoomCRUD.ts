@@ -21,10 +21,9 @@ export class SupabaseChatRoomService implements IChatRoomService {
       return existingEmptyRoom;
     }
 
-    // 2. Create new room (database constraint prevents duplicates)
+    // 2. Create new room with a default name (database will update it)
     logger.debug("No empty room found, creating new room");
-    const randomSuffix = Math.random().toString(36).slice(2, 6);
-    const defaultName = `Chat ${new Date().toLocaleString()} • ${randomSuffix}`;
+    const defaultName = "New Chat";
 
     const { data, error } = await supabase
       .from("chatrooms")
@@ -50,14 +49,6 @@ export class SupabaseChatRoomService implements IChatRoomService {
     }
   ): Promise<void> {
     const updateData: Record<string, string> = {};
-
-    // Only update name if it's provided and not empty
-    if (updates.name !== undefined && updates.name.trim()) {
-      // Make the name unique by adding a timestamp to avoid constraint violations
-      const timestamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-      const uniqueName = `${updates.name.slice(0, 80)} - ${timestamp}`;
-      updateData.name = uniqueName;
-    }
 
     if (updates.model !== undefined) updateData.model = updates.model;
     if (updates.updatedAt !== undefined)
