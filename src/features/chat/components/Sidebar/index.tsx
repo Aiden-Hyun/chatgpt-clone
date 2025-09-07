@@ -5,7 +5,7 @@ import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChatRooms } from "@/entities/chatRoom";
-import { useUserInfo } from "@/entities/user";
+import { useReadProfile } from "@/entities/user";
 import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
@@ -32,7 +32,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const theme = useAppTheme();
   const { t } = useLanguageContext();
   const { showSuccess } = useToast();
-  const { userName } = useUserInfo();
+  const { profile } = useReadProfile();
+  const userName = profile?.display_name || "User";
   const { rooms, deleteRoom, fetchRooms } = useChatRooms();
   const pathname = usePathname(); // ← Add this line
   const styles = createSidebarStyles(theme);

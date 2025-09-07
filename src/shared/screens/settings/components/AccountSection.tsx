@@ -2,8 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { View } from "react-native";
 
+import { useUpdateProfile } from "@/entities/user";
 import { useCustomAlert } from "@/features/alert";
-import { useUpdateProfile } from "@/features/auth";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Button, Card, Input, ListItem, Text } from "@/shared/components/ui";
@@ -23,7 +23,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
 }) => {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
-  const { updateProfile, isUpdating } = useUpdateProfile();
+  const { updateProfile, loading } = useUpdateProfile();
   const { showSuccessAlert, showErrorAlert } = useCustomAlert();
   const styles = createSettingsStyles(theme);
 
@@ -87,10 +87,10 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
             />
             <View style={styles.editButtons}>
               <Button
-                label={isUpdating ? t("common.loading") : t("common.save")}
+                label={loading ? t("common.loading") : t("common.save")}
                 onPress={handleNameSave}
-                disabled={isUpdating}
-                isLoading={isUpdating}
+                disabled={loading}
+                isLoading={loading}
                 size="sm"
                 containerStyle={styles.saveButton}
               />
