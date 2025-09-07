@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { getLogger } from "@/shared/services/logger";
+
 import { sendMessageHandler } from "../../../features/chat/services/sendMessage";
 import { generateMessageId } from "../../../features/chat/utils/messageIdGenerator";
 import type { ChatMessage } from "../model/types";
