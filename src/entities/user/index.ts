@@ -1,7 +1,8 @@
 // src/entities/user/index.ts
 
-export { useReadProfile } from "./hooks/useReadProfile";
-export { useReadUser } from "./hooks/useReadUser";
-export { useUpdateProfile } from "./hooks/useUpdateProfile";
+// Export all user types and constants
 export * from "./model/selectors";
 export * from "./model/types";
+
+// Export all hooks
+export * from "./hooks";

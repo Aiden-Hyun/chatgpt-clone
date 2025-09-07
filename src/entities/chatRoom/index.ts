@@ -5,8 +5,8 @@ export * from "./model/constants";
 export * from "./model/selectors";
 export * from "./model/types";
 
-// Export the main hook
-export { useChatRooms } from "./hooks/useChatRooms";
+// Export all hooks
+export * from "./hooks";
 
-// Export the service implementation
+// Export CRUD service for service configuration
 export { SupabaseChatRoomService } from "./CRUD/SupabaseChatRoomCRUD";

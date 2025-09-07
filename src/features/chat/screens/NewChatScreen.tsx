@@ -1,13 +1,15 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useRef } from "react";
 
+import { useCreateChatRoom } from "@/entities/chatRoom";
 import { useAuth } from "@/entities/session";
-import { DEFAULT_MODEL, ServiceFactory } from "@/features/chat";
+import { DEFAULT_MODEL } from "@/features/chat";
 import { LoadingWrapper } from "@/shared/components/layout/LoadingWrapper";
 import { getLogger } from "@/shared/services/logger";
 
 export const NewChatScreen = () => {
   const { session, isLoading } = useAuth();
+  const { createChatRoom, loading: createLoading } = useCreateChatRoom();
   const logger = getLogger("NewChatScreen");
 
   const hasAttemptedCreation = useRef(false);
@@ -48,11 +50,9 @@ export const NewChatScreen = () => {
           hasAttemptedCreation.current = true;
 
           // Create a real room up front and navigate directly to it
-          const chatRoomService = ServiceFactory.createChatRoomService();
-          const newRoomId = await chatRoomService.createRoom(
-            session.user.id,
-            DEFAULT_MODEL
-          );
+          const newRoomId = await createChatRoom({
+            model: DEFAULT_MODEL,
+          });
 
           if (!newRoomId) {
             throw new Error("Failed to create new chat room");
@@ -89,12 +89,12 @@ export const NewChatScreen = () => {
       // Reset the guard and create room
       hasAttemptedCreation.current = false;
       createNewChat();
-    }, [session, isLoading])
+    }, [session, isLoading, createChatRoom])
   );
 
   // Show loading only when auth is loading or when we're creating a room
   const isCreatingRoom = hasAttemptedCreation.current;
-  const shouldShowLoading = isLoading || isCreatingRoom;
+  const shouldShowLoading = isLoading || isCreatingRoom || createLoading;
 
   return (
     <LoadingWrapper loading={shouldShowLoading}>
