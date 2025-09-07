@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useChatRooms } from "@/entities/chatRoom";
+import { useDeleteChatRoom, useReadChatRooms } from "@/entities/chatRoom";
 import { useReadUser } from "@/entities/user";
 import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
@@ -33,10 +33,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { t } = useLanguageContext();
   const { showSuccess } = useToast();
   const { userName } = useReadUser();
-  const { rooms, deleteRoom, fetchRooms } = useChatRooms();
+  const { chatRooms, refetch } = useReadChatRooms();
+  const { deleteChatRoom } = useDeleteChatRoom();
   const pathname = usePathname(); // ← Add this line
   const styles = createSidebarStyles(theme);
   const logger = getLogger("Sidebar");
+
+  // Debug logging for chat rooms
+  logger.debug("Sidebar render", {
+    chatRoomsCount: chatRooms.length,
+    chatRooms: chatRooms.map((r) => ({ id: r.id, name: r.name })),
+  });
 
   // Local state for room drafts loaded from storage
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -46,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const loadDrafts = async () => {
       try {
         const entries = await Promise.all(
-          rooms.map(async (r) => {
+          chatRooms.map(async (r) => {
             const key = `chat_draft_${r.id}`;
             const value = await mobileStorage.getItem(key);
             return [r.id.toString(), value ?? ""] as const;
@@ -62,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
     };
     loadDrafts();
-  }, [rooms]);
+  }, [chatRooms]);
 
   const handleChatSelect = (roomId: string) => {
     logger.debug("Chat selected", { roomId });
@@ -112,9 +119,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleDelete = async (roomId: number) => {
     logger.debug("delete icon pressed", { roomId });
     try {
-      await deleteRoom(roomId);
+      await deleteChatRoom(roomId);
       showSuccess(t("chat.room_deleted"), 2500);
-      fetchRooms?.();
+      refetch();
     } catch (e) {
       logger.error("delete failed", { error: e });
     }
@@ -187,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           style={styles.chatHistory}
           showsVerticalScrollIndicator={false}
         >
-          {rooms.map((room) => {
+          {chatRooms.map((room) => {
             const isSelected = pathname?.includes(`/chat/${room.id}`); // ← Use pathname instead of router.pathname
             const draft = drafts[room.id.toString()];
             const hasDraft = draft && draft.trim().length > 0;

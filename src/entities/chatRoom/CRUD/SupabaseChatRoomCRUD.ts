@@ -8,18 +8,27 @@ const logger = getLogger("SupabaseChatRoomService");
 
 export class SupabaseChatRoomService implements IChatRoomService {
   async createRoom(userId: string, model: string): Promise<number | null> {
-    // Consolidated from legacy/createChatRoom.ts
-    // Make the default name unique to avoid user-level unique constraint collisions
+    logger.debug("createRoom called", { userId, model });
+
+    // 1. Check for existing empty room
+    const existingEmptyRoom = await this.getEmptyRoomForUser(userId);
+
+    if (existingEmptyRoom) {
+      logger.debug("Empty room exists, returning existing room", {
+        roomId: existingEmptyRoom,
+        userId,
+      });
+      return existingEmptyRoom;
+    }
+
+    // 2. Create new room (database constraint prevents duplicates)
+    logger.debug("No empty room found, creating new room");
     const randomSuffix = Math.random().toString(36).slice(2, 6);
     const defaultName = `Chat ${new Date().toLocaleString()} • ${randomSuffix}`;
 
-    // Use upsert to gracefully handle rare race conditions creating the same name simultaneously
     const { data, error } = await supabase
       .from("chatrooms")
-      .upsert(
-        { name: defaultName, user_id: userId, model },
-        { onConflict: "user_id,name" }
-      )
+      .insert({ name: defaultName, user_id: userId, model })
       .select("id")
       .single();
 
@@ -28,6 +37,7 @@ export class SupabaseChatRoomService implements IChatRoomService {
       return null;
     }
 
+    logger.debug("New room created successfully", { roomId: data.id, userId });
     return data.id;
   }
 
@@ -96,6 +106,75 @@ export class SupabaseChatRoomService implements IChatRoomService {
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };
+  }
+
+  async getRoomsForUser(userId: string): Promise<
+    {
+      id: number;
+      name: string;
+      model: string;
+      createdAt: string;
+      updatedAt: string;
+    }[]
+  > {
+    logger.debug("getRoomsForUser called", { userId });
+
+    const { data, error } = await supabase
+      .from("chatrooms")
+      .select("id, name, model, created_at, updated_at")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false });
+
+    if (error) {
+      logger.error("Failed to get rooms for user", { error, userId });
+      return [];
+    }
+
+    const rooms = (data || []).map((room) => ({
+      id: room.id,
+      name: room.name,
+      model: room.model,
+      createdAt: room.created_at,
+      updatedAt: room.updated_at,
+    }));
+
+    logger.debug("getRoomsForUser success", {
+      userId,
+      roomCount: rooms.length,
+    });
+    return rooms;
+  }
+
+  async getEmptyRoomForUser(userId: string): Promise<number | null> {
+    logger.debug("getEmptyRoomForUser called", { userId });
+
+    const { data, error } = await supabase.rpc("get_empty_room_for_user", {
+      user_uuid: userId,
+    });
+
+    if (error) {
+      logger.error("Failed to get empty room for user", { error, userId });
+      return null;
+    }
+
+    logger.debug("getEmptyRoomForUser result", { userId, emptyRoomId: data });
+    return data;
+  }
+
+  async isRoomEmpty(roomId: number): Promise<boolean> {
+    logger.debug("isRoomEmpty called", { roomId });
+
+    const { data, error } = await supabase.rpc("is_empty_room", {
+      room_id: roomId,
+    });
+
+    if (error) {
+      logger.error("Failed to check if room is empty", { error, roomId });
+      return false;
+    }
+
+    logger.debug("isRoomEmpty result", { roomId, isEmpty: data });
+    return data;
   }
 
   async deleteRoom(roomId: number): Promise<void> {
