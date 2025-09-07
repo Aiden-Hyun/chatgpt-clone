@@ -9,4 +9,4 @@ export * from "./model/types";
 export { useChatRooms } from "./hooks/useChatRooms";
 
 // Export the service implementation
-export { SupabaseChatRoomService } from "./services/SupabaseChatRoomService";
+export { SupabaseChatRoomService } from "./CRUD/SupabaseChatRoomCRUD";

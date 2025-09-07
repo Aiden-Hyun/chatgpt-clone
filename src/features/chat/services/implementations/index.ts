@@ -6,7 +6,7 @@ export * from "./MessageRegenerationService";
 export * from "./MessageStateService";
 export * from "./SupabaseAuthService";
 // SupabaseChatRoomService moved to @/entities/chatRoom
-export * from "./SupabaseMessageService";
+// SupabaseMessageService moved to @/entities/message/CRUD
 export * from "./TypingStateService";
 
 // Search service implementations

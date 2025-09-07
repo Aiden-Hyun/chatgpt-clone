@@ -13,3 +13,6 @@ export { useMessageActions } from "./hooks/useMessageActions";
 export { useMessageInput } from "./hooks/useMessageInput";
 export { useMessageLoader } from "./hooks/useMessageLoader";
 export { useRegenerationService } from "./hooks/useRegenerationService";
+
+// Export the CRUD implementation
+export { SupabaseMessageService } from "./CRUD/SupabaseMessageCRUD";

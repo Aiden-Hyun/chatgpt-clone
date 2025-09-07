@@ -3,9 +3,9 @@ import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
 import { getLogger } from "@/shared/services/logger";
 
-import { supabase } from "../../../../shared/lib/supabase";
-import { generateMessageId } from "../../utils/messageIdGenerator";
-import { IMessageService } from "../interfaces/IMessageService";
+import { IMessageService } from "../../../features/chat/services/interfaces/IMessageService";
+import { generateMessageId } from "../../../features/chat/utils/messageIdGenerator";
+import { supabase } from "../../../shared/lib/supabase";
 
 export class SupabaseMessageService implements IMessageService {
   private logger = getLogger("SupabaseMessageService");
