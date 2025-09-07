@@ -1,6 +1,6 @@
 import { Platform, SafeAreaView, ScrollView } from "react-native";
 
-import { useReadProfile } from "@/entities/user";
+import { useReadUser } from "@/entities/user";
 import { CustomAlert, useCustomAlert } from "@/features/alert";
 import { useLogout } from "@/features/auth";
 import { useLanguageContext } from "@/features/language";
@@ -20,9 +20,7 @@ import { createSettingsStyles } from "./SettingsScreen.styles";
 export const SettingsScreen = () => {
   const { t } = useLanguageContext();
   const theme = useAppTheme();
-  const { profile, refetch } = useReadProfile();
-  const userName = profile?.display_name || "User";
-  const email = profile?.email || null;
+  const { userName, email, refresh } = useReadUser();
   const { logout, isLoggingOut } = useLogout();
   const { alert, hideAlert } = useCustomAlert();
   const styles = createSettingsStyles(theme);
@@ -47,7 +45,7 @@ export const SettingsScreen = () => {
         alwaysBounceVertical={Platform.OS === "ios"}
       >
         {/* Account Section */}
-        <AccountSection userName={userName} email={email} onRefresh={refetch} />
+        <AccountSection userName={userName} email={email} onRefresh={refresh} />
 
         {/* Preferences Section */}
         <PreferencesSection onNavigateToThemes={navigateToThemes} />

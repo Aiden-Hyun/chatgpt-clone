@@ -44,7 +44,7 @@ export class SupabaseProfileCRUD {
         .from(this.tableName)
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         if (error.code === "PGRST116") {
@@ -109,13 +109,14 @@ export class SupabaseProfileCRUD {
     updates: UpdateProfileData
   ): Promise<UserProfile | null> {
     try {
+      // Use upsert instead of update to handle cases where profile doesn't exist yet
       const { data, error } = await supabase
         .from(this.tableName)
-        .update({
+        .upsert({
+          id: userId,
           ...updates,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", userId)
         .select()
         .single();
 
@@ -179,7 +180,7 @@ export class SupabaseProfileCRUD {
         .from(this.tableName)
         .select("theme_mode, theme_style, language")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         if (error.code === "PGRST116") {
@@ -214,13 +215,11 @@ export class SupabaseProfileCRUD {
     }
   ): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from(this.tableName)
-        .update({
-          ...preferences,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", userId);
+      const { error } = await supabase.from(this.tableName).upsert({
+        id: userId,
+        ...preferences,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         this.logger.error("Error updating user preferences", {
