@@ -139,15 +139,15 @@ function ProtectedRoutes() {
 export default function Layout() {
   return (
     <SafeAreaProvider>
-      <LanguageProvider>
-        <ThemeProvider>
-          <AuthProvider>
+      <AuthProvider>
+        <LanguageProvider>
+          <ThemeProvider>
             <ToastProvider>
               <AppContent />
             </ToastProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </LanguageProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

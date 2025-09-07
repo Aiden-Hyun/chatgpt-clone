@@ -6,7 +6,6 @@ import { useToast } from "@/features/alert";
 import { AppTheme, useAppTheme } from "@/features/theme";
 import type { DropdownItem } from "@/shared/components/ui";
 import { Dropdown } from "@/shared/components/ui";
-import { getLogger } from "@/shared/services/logger";
 
 import { useLanguageContext } from "./LanguageContext";
 
@@ -17,7 +16,6 @@ interface LanguageSelectorProps {
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   style,
 }) => {
-  const logger = getLogger("LanguageSelector");
   const { currentLanguage, setLanguage, t } = useLanguageContext();
   const { showSuccess } = useToast();
   const theme = useAppTheme();
@@ -31,11 +29,11 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const currentLanguageInfo =
     languages.find((lang) => lang.code === currentLanguage) || languages[0];
 
-  const handleLanguageChange = (item: DropdownItem) => {
+  const handleLanguageChange = async (item: DropdownItem) => {
     const newLanguage = item.value as string;
 
-    // Set the new language
-    setLanguage(newLanguage);
+    // Set the new language (now async)
+    await setLanguage(newLanguage);
 
     // Show toast in the new language
     const languageNames = {

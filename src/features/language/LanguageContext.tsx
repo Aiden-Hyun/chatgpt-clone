@@ -3,10 +3,12 @@ import React, {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 
+import { useReadProfile, useUpdateProfile } from "@/entities/user";
 import { getLogger } from "@/shared/services/logger";
 
 // Define the translation function type
@@ -650,7 +652,19 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   children,
 }) => {
   const logger = getLogger("LanguageContext");
+
+  // Database hooks for profile persistence
+  const { profile } = useReadProfile();
+  const { updateProfile } = useUpdateProfile();
+
   const [currentLanguage, setCurrentLanguage] = useState("en");
+
+  // Load language preference from database
+  useEffect(() => {
+    if (profile?.language && translations[profile.language]) {
+      setCurrentLanguage(profile.language);
+    }
+  }, [profile?.language]);
 
   // Memoize translation function to prevent recreation
   const t: TranslationFunction = useCallback(
@@ -663,11 +677,31 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   ); // Only recreate when language actually changes
 
   // Memoize setLanguage function to prevent recreation
-  const setLanguage = useCallback((language: string) => {
-    if (translations[language]) {
-      setCurrentLanguage(language);
-    }
-  }, []); // Stable function - no dependencies needed
+  const setLanguage = useCallback(
+    async (language: string) => {
+      if (translations[language]) {
+        // Update local state immediately
+        setCurrentLanguage(language);
+
+        // Save to database if profile exists
+        if (profile?.id) {
+          try {
+            logger.debug("Saving language to database:", { language });
+            await updateProfile({ language });
+            logger.debug("Language saved successfully");
+          } catch (error) {
+            logger.error(
+              "Failed to save language preference to database:",
+              error
+            );
+          }
+        } else {
+          logger.warn("No profile found, cannot save language to database");
+        }
+      }
+    },
+    [profile?.id, updateProfile, logger]
+  ); // Include dependencies for database operations
 
   // Memoize LanguageContext value to prevent unnecessary re-renders
   const value = useMemo(

@@ -8,11 +8,11 @@ import React, {
 } from "react";
 import { useColorScheme } from "react-native";
 
+import { useReadProfile, useUpdateProfile } from "../../../entities/user";
 import { useLoadingState } from "../../../shared/hooks/useLoadingState";
 import { mobileStorage, STORAGE_KEYS } from "../../../shared/lib/storage";
 import { errorHandler } from "../../../shared/services/error";
 import { getLogger } from "../../../shared/services/logger";
-
 import { AppTheme, ThemeMode, ThemeStyle } from "../theme.types";
 import { themeRegistry } from "../themeRegistry";
 
@@ -43,6 +43,10 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const logger = getLogger("ThemeContext");
 
+  // Database hooks for profile persistence
+  const { profile, loading: profileLoading } = useReadProfile();
+  const { updateProfile, loading: updateLoading } = useUpdateProfile();
+
   // State for theme mode (light, dark, system)
   const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
 
@@ -50,37 +54,53 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [themeStyle, setThemeStyleState] = useState<ThemeStyle>("default");
 
   // Enhanced loading state management
-  const {
-    loading: isLoading,
-    error: loadingError,
-    executeWithLoading,
-  } = useLoadingState({ initialLoading: true });
+  const { loading: isLoading, executeWithLoading } = useLoadingState({
+    initialLoading: true,
+  });
 
   // Get system color scheme
   const systemColorScheme = useColorScheme();
 
-  // Load saved theme preferences from storage
+  // Load saved theme preferences from database and local storage
   useEffect(() => {
     const loadThemePreferences = async () => {
       await executeWithLoading(
         async () => {
-          // Load theme mode
-          const savedThemeMode = await mobileStorage.getItem(
-            STORAGE_KEYS.THEME_MODE
-          );
-          if (
-            savedThemeMode &&
-            ["light", "dark", "system"].includes(savedThemeMode)
-          ) {
-            setThemeModeState(savedThemeMode as ThemeMode);
-          }
+          // First, try to load from database (profile)
+          if (profile) {
+            // Load theme mode from database
+            if (
+              profile.theme_mode &&
+              ["light", "dark", "system"].includes(profile.theme_mode)
+            ) {
+              setThemeModeState(profile.theme_mode as ThemeMode);
+            }
 
-          // Load theme style
-          const savedThemeStyle = await mobileStorage.getItem(
-            STORAGE_KEYS.THEME_STYLE
-          );
-          if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
-            setThemeStyleState(savedThemeStyle);
+            // Load theme style from database
+            if (
+              profile.theme_style &&
+              themeRegistry.hasTheme(profile.theme_style)
+            ) {
+              setThemeStyleState(profile.theme_style);
+            }
+          } else {
+            // Fallback to local storage if no profile
+            const savedThemeMode = await mobileStorage.getItem(
+              STORAGE_KEYS.THEME_MODE
+            );
+            if (
+              savedThemeMode &&
+              ["light", "dark", "system"].includes(savedThemeMode)
+            ) {
+              setThemeModeState(savedThemeMode as ThemeMode);
+            }
+
+            const savedThemeStyle = await mobileStorage.getItem(
+              STORAGE_KEYS.THEME_STYLE
+            );
+            if (savedThemeStyle && themeRegistry.hasTheme(savedThemeStyle)) {
+              setThemeStyleState(savedThemeStyle);
+            }
           }
         },
         {
@@ -92,45 +112,75 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadThemePreferences();
-  }, [executeWithLoading]);
+  }, [executeWithLoading, profile]);
 
   // Set theme mode with persistence
-  const setThemeMode = useCallback(async (mode: ThemeMode) => {
-    try {
-      await mobileStorage.setItem(STORAGE_KEYS.THEME_MODE, mode);
-      setThemeModeState(mode);
-    } catch (error) {
-      // Use unified error handling system
-      await errorHandler.handle(error, {
-        operation: "setThemeMode",
-        service: "theme",
-        component: "ThemeContext",
-        metadata: { mode },
-      });
-    }
-  }, []);
+  const setThemeMode = useCallback(
+    async (mode: ThemeMode) => {
+      try {
+        // Update local state immediately
+        setThemeModeState(mode);
+
+        // Save to local storage as backup
+        await mobileStorage.setItem(STORAGE_KEYS.THEME_MODE, mode);
+
+        // Save to database if profile exists
+        if (profile?.id) {
+          logger.debug("Saving theme_mode to database:", { mode });
+          await updateProfile({ theme_mode: mode });
+          logger.debug("Theme mode saved successfully");
+        } else {
+          logger.warn("No profile found, cannot save theme_mode to database");
+        }
+      } catch (error) {
+        // Use unified error handling system
+        await errorHandler.handle(error, {
+          operation: "setThemeMode",
+          service: "theme",
+          component: "ThemeContext",
+          metadata: { mode },
+        });
+      }
+    },
+    [profile?.id, updateProfile]
+  );
 
   // Set theme style with persistence
-  const setThemeStyle = useCallback(async (style: ThemeStyle) => {
-    // Validate that the theme exists
-    if (!themeRegistry.hasTheme(style)) {
-      logger.error(`Theme style "${style}" not found. Using default.`);
-      style = themeRegistry.getDefaultTheme().id;
-    }
+  const setThemeStyle = useCallback(
+    async (style: ThemeStyle) => {
+      // Validate that the theme exists
+      if (!themeRegistry.hasTheme(style)) {
+        logger.error(`Theme style "${style}" not found. Using default.`);
+        style = themeRegistry.getDefaultTheme().id;
+      }
 
-    try {
-      await mobileStorage.setItem(STORAGE_KEYS.THEME_STYLE, style);
-      setThemeStyleState(style);
-    } catch (error) {
-      // Use unified error handling system
-      await errorHandler.handle(error, {
-        operation: "setThemeStyle",
-        service: "theme",
-        component: "ThemeContext",
-        metadata: { style },
-      });
-    }
-  }, []);
+      try {
+        // Update local state immediately
+        setThemeStyleState(style);
+
+        // Save to local storage as backup
+        await mobileStorage.setItem(STORAGE_KEYS.THEME_STYLE, style);
+
+        // Save to database if profile exists
+        if (profile?.id) {
+          logger.debug("Saving theme_style to database:", { style });
+          await updateProfile({ theme_style: style });
+          logger.debug("Theme style saved successfully");
+        } else {
+          logger.warn("No profile found, cannot save theme_style to database");
+        }
+      } catch (error) {
+        // Use unified error handling system
+        await errorHandler.handle(error, {
+          operation: "setThemeStyle",
+          service: "theme",
+          component: "ThemeContext",
+          metadata: { style },
+        });
+      }
+    },
+    [profile?.id, updateProfile]
+  );
 
   // Determine current appearance based on mode and system preference
   const currentAppearance: "light" | "dark" = useMemo(() => {
@@ -161,7 +211,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setThemeStyle,
       currentTheme,
       availableThemes,
-      isLoading,
+      isLoading: isLoading || profileLoading || updateLoading,
     };
   }, [
     themeMode,
@@ -171,6 +221,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     currentTheme,
     availableThemes,
     isLoading,
+    profileLoading,
+    updateLoading,
   ]);
 
   return (
