@@ -16,8 +16,8 @@ import { navigationTracker } from "@/shared/lib/navigationTracker";
 import { getLogger } from "@/shared/services/logger";
 
 import { createChatStyles } from "./ChatScreen.styles";
-const logger = getLogger("ChatScreen");
-// �� CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
+const _logger = getLogger("ChatScreen");
+// 💬 CONTEXT ISOLATION: Pure ChatScreen component that receives props instead of consuming contexts
 interface ChatScreenProps {
   roomId?: string;
   isTemporaryRoom: boolean;
@@ -26,7 +26,6 @@ interface ChatScreenProps {
     inputRef: React.RefObject<TextInput>;
     maintainFocus: boolean;
     disableBackButton: boolean;
-    startNewChat: () => void;
   };
   logout: () => void;
   // Pass-through model selection props from parent
@@ -38,8 +37,8 @@ interface ChatScreenProps {
 const ChatScreenPure = React.memo(
   (props: ChatScreenProps) => {
     const {
-      roomId,
-      isTemporaryRoom,
+      roomId: _roomId,
+      isTemporaryRoom: _isTemporaryRoom,
       numericRoomId,
       chatScreenState: _chatScreenState,
       selectedModel,
@@ -119,8 +118,7 @@ const ChatScreenPure = React.memo(
       a === b ||
       (a?.inputRef === b?.inputRef &&
         a?.maintainFocus === b?.maintainFocus &&
-        a?.disableBackButton === b?.disableBackButton &&
-        a?.startNewChat === b?.startNewChat);
+        a?.disableBackButton === b?.disableBackButton);
 
     // Re-render when selected model changes so ChatInterface sees updated model
     const modelEqual = prev.selectedModel === next.selectedModel;
@@ -202,9 +200,6 @@ const ChatScreen = () => {
         onBack={() => {
           try {
           } catch {}
-        }}
-        onNewChat={() => {
-          chatScreenState.startNewChat();
         }}
         onChatSelect={(rid: string) => {
           try {

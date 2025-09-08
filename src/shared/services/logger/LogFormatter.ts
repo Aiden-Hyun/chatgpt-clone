@@ -1,4 +1,4 @@
-import { LogLevelString } from "../LogLevel";
+import { LogLevelString } from "./LogLevel";
 
 import {
   getColoredLevel,

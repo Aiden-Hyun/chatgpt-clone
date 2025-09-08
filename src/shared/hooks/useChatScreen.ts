@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-import { useChatRooms } from "../../features/chat/hooks";
-
 import { useBackButtonHandler, useInputFocus } from "./index";
 
 /**
@@ -17,7 +15,6 @@ export function useChatScreen() {
   // Initialize all hooks together
   const inputFocus = useInputFocus();
   const backButton = useBackButtonHandler({ enabled: true });
-  const chatRooms = useChatRooms();
 
   // Memoize the entire result to prevent recreation
   const chatScreenState = useMemo(() => {
@@ -28,15 +25,11 @@ export function useChatScreen() {
 
       // Back button state
       disableBackButton: backButton.disableBackButton,
-
-      // Chat rooms state
-      startNewChat: chatRooms.startNewChat,
     };
   }, [
     inputFocus.inputRef,
     inputFocus.maintainFocus,
     backButton.disableBackButton,
-    chatRooms.startNewChat,
   ]); // Only recreate when these actually change
 
   return chatScreenState;
