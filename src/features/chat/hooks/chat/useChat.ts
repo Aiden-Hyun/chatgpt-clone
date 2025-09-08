@@ -4,7 +4,6 @@ import { useCallback, useMemo } from "react";
 import { useMessageInput } from "@/entities/message";
 
 import { useChatActions } from "./useChatActions";
-import { useChatModel } from "./useChatModel";
 import { useChatSearch } from "./useChatSearch";
 import { useChatState } from "./useChatState";
 
@@ -40,11 +39,9 @@ export const useChat = (
   const regeneratingIndex =
     regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null;
 
-  // Model selection logic
-  const { selectedModel, updateModel } = useChatModel(
-    options?.selectedModel,
-    options?.setModel
-  );
+  // Model selection logic - direct implementation
+  const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
+  const updateModel = options?.setModel ?? (() => {});
 
   // Search mode logic
   const { isSearchMode, onSearchToggle } = useChatSearch(
