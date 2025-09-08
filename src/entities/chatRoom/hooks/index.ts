@@ -6,4 +6,5 @@ export { useDeleteChatRoom } from "./useDeleteChatRoom";
 export { useReadChatRoom } from "./useReadChatRoom";
 export { useReadChatRooms } from "./useReadChatRooms";
 export { useUpdateChatRoom } from "./useUpdateChatRoom";
+export { useChatRoomSearch } from "./useChatRoomSearch";
 

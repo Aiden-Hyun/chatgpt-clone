@@ -1,10 +1,10 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
 import { useCallback, useMemo } from "react";
 
+import { useChatRoomSearch } from "@/entities/chatRoom";
 import { useMessageInput } from "@/entities/message";
 
 import { useChatActions } from "./useChatActions";
-import { useChatSearch } from "./useChatSearch";
 import { useChatState } from "./useChatState";
 
 type UseChatOptions = {
@@ -44,7 +44,7 @@ export const useChat = (
   const updateModel = options?.setModel ?? (() => {});
 
   // Search mode logic
-  const { isSearchMode, onSearchToggle } = useChatSearch(
+  const { isSearchMode, onSearchToggle } = useChatRoomSearch(
     selectedModel,
     setMessages
   );
