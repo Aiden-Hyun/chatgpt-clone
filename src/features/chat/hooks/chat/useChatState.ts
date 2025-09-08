@@ -1,7 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { ChatMessage } from "@/entities/message";
-import { useMessageLoader } from "@/entities/message";
+import { useReadMessages } from "@/entities/message";
 import { getLogger } from "@/shared/services/logger";
 
 // Legacy interfaces - will be phased out in favor of state machine
@@ -162,13 +162,18 @@ export const useChatState = (roomId: number | null) => {
     [regeneratingIndices]
   );
 
-  // Load messages for this room (no optimistic path)
-  useMessageLoader({
-    roomId,
-    optimisticMessages: null,
-    setMessages,
-    setLoading,
-  });
+  // Load messages for this room using entity hook
+  const { messages: loadedMessages, loading: messagesLoading, refetch } = useReadMessages(roomId);
+  
+  // Update local state when messages are loaded
+  useEffect(() => {
+    setMessages(loadedMessages);
+  }, [loadedMessages, setMessages]);
+  
+  // Update loading state when messages are loading
+  useEffect(() => {
+    setLoading(messagesLoading);
+  }, [messagesLoading, setLoading]);
 
   return {
     // ✅ STATE MACHINE: Core state
@@ -190,5 +195,8 @@ export const useChatState = (roomId: number | null) => {
     startRegenerating,
     stopRegenerating,
     isRegenerating,
+    
+    // ✅ Entity hook integration
+    refetch,
   };
 };
