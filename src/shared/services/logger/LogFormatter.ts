@@ -1,10 +1,9 @@
-import { LogLevelString } from "./LogLevel";
-
 import {
   getColoredLevel,
   getColoredText,
   getContextColor,
 } from "./LogColorizer";
+import { LogLevelString } from "./LogLevel";
 import { formatFilePath, formatTimeEST, truncateFilePath } from "./utils";
 
 // Define column widths

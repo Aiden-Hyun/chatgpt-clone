@@ -1,8 +1,9 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
 import { useCallback, useMemo } from "react";
 
+import { useMessageInput } from "@/entities/message";
+
 import { useChatActions } from "./useChatActions";
-import { useChatInput } from "./useChatInput";
 import { useChatModel } from "./useChatModel";
 import { useChatSearch } from "./useChatSearch";
 import { useChatState } from "./useChatState";
@@ -51,9 +52,9 @@ export const useChat = (
     setMessages
   );
 
-  // Input management
+  // Input management - using entity hook directly
   const { input, drafts, setDrafts, handleInputChange, clearInput } =
-    useChatInput(numericRoomId);
+    useMessageInput(numericRoomId, false);
 
   // Message actions
   const { sendMessage: sendMessageAction, regenerateMessage } = useChatActions({
