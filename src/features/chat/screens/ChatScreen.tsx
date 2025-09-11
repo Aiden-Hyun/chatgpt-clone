@@ -13,7 +13,7 @@ import {
   useModelSelection,
 } from "@/features/chat";
 import { AppTheme, useAppTheme } from "@/features/theme";
-import { useChatScreen } from "@/shared/hooks";
+import { useBackButtonHandler, useInputFocus } from "@/shared/hooks";
 import { navigationTracker } from "@/shared/lib/navigationTracker";
 import { getLogger } from "@/shared/services/logger";
 
@@ -24,11 +24,9 @@ interface ChatScreenProps {
   roomId?: string;
   isTemporaryRoom: boolean;
   numericRoomId: number | null;
-  chatScreenState: {
-    inputRef: React.RefObject<TextInput | null>;
-    maintainFocus: () => void;
-    disableBackButton: () => () => void;
-  };
+  inputRef: React.RefObject<TextInput | null>;
+  maintainFocus: () => void;
+  disableBackButton: () => () => void;
   logout: () => void;
   // Pass-through model selection props from parent
   selectedModel?: string;
@@ -42,7 +40,9 @@ const ChatScreenPure = React.memo(
       roomId: _roomId,
       isTemporaryRoom: _isTemporaryRoom,
       numericRoomId,
-      chatScreenState: _chatScreenState,
+      inputRef: _inputRef,
+      maintainFocus: _maintainFocus,
+      disableBackButton: _disableBackButton,
       selectedModel,
       onChangeModel,
       theme,
@@ -173,14 +173,13 @@ const ChatScreenPure = React.memo(
     const functionsEqual =
       prev.logout === next.logout && prev.onChangeModel === next.onChangeModel;
 
-    // Shallow compare chatScreenState contents (allow different object wrapper if inner refs/functions unchanged)
-    const a = prev.chatScreenState;
-    const b = next.chatScreenState;
+    // Shallow compare individual props (allow different object wrapper if inner refs/functions unchanged)
+    const inputRefEqual = prev.inputRef === next.inputRef;
+    const maintainFocusEqual = prev.maintainFocus === next.maintainFocus;
+    const disableBackButtonEqual =
+      prev.disableBackButton === next.disableBackButton;
     const stateEqual =
-      a === b ||
-      (a?.inputRef === b?.inputRef &&
-        a?.maintainFocus === b?.maintainFocus &&
-        a?.disableBackButton === b?.disableBackButton);
+      inputRefEqual && maintainFocusEqual && disableBackButtonEqual;
 
     // Re-render when selected model changes so ChatInterface sees updated model
     const modelEqual = prev.selectedModel === next.selectedModel;
@@ -218,7 +217,8 @@ const ChatScreen = () => {
   renderCount.current += 1;
 
   // 🎯 CONTEXT CONSUMPTION: All context/hook consumption happens here
-  const chatScreenState = useChatScreen();
+  const inputFocus = useInputFocus();
+  const backButton = useBackButtonHandler({ enabled: true });
   const { logout } = useLogout();
   const theme = useAppTheme(); // ✅ Move theme consumption to parent
 
@@ -233,21 +233,25 @@ const ChatScreen = () => {
       roomId,
       isTemporaryRoom,
       numericRoomId,
-      chatScreenState,
       logout,
       theme, // ✅ Pass theme as prop
       selectedModel, // ✅ Include selectedModel in memoized props
       onChangeModel: updateModel, // ✅ Include onChangeModel in memoized props
+      inputRef: inputFocus.inputRef,
+      maintainFocus: inputFocus.maintainFocus,
+      disableBackButton: backButton.disableBackButton,
     };
   }, [
     roomId,
     isTemporaryRoom,
     numericRoomId,
-    chatScreenState,
     logout,
     theme,
     selectedModel,
     updateModel,
+    inputFocus.inputRef,
+    inputFocus.maintainFocus,
+    backButton.disableBackButton,
   ]);
 
   return (
