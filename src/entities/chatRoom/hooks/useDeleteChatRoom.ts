@@ -1,7 +1,6 @@
 // src/entities/chatRoom/hooks/useDeleteChatRoom.ts
 import { useCallback, useState } from "react";
 
-import { SupabaseMessageService } from "../../message/CRUD/SupabaseMessageCRUD";
 import { SupabaseChatRoomService } from "../CRUD/SupabaseChatRoomCRUD";
 
 export const useDeleteChatRoom = () => {
@@ -13,11 +12,7 @@ export const useDeleteChatRoom = () => {
     setError(null);
 
     try {
-      // First delete all messages in the room
-      const messageService = new SupabaseMessageService();
-      await messageService.deleteMessages(roomId);
-
-      // Then delete the room itself
+      // Delete the room; messages will be removed via ON DELETE CASCADE
       const chatRoomService = new SupabaseChatRoomService();
       await chatRoomService.deleteRoom(roomId);
     } catch (err) {
