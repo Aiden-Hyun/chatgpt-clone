@@ -1,13 +1,15 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import type { ChatMessage } from "@/entities/message";
 import { useLogout } from "@/features/auth";
 import {
   ChatHeader,
   ChatInputBar,
-  ChatInterface,
+  MessageList,
+  useChat,
   useModelSelection,
 } from "@/features/chat";
 import { AppTheme, useAppTheme } from "@/features/theme";
@@ -23,9 +25,9 @@ interface ChatScreenProps {
   isTemporaryRoom: boolean;
   numericRoomId: number | null;
   chatScreenState: {
-    inputRef: React.RefObject<TextInput>;
-    maintainFocus: boolean;
-    disableBackButton: boolean;
+    inputRef: React.RefObject<TextInput | null>;
+    maintainFocus: () => void;
+    disableBackButton: () => () => void;
   };
   logout: () => void;
   // Pass-through model selection props from parent
@@ -47,19 +49,60 @@ const ChatScreenPure = React.memo(
     } = props; // ✅ theme as prop
     const styles = createChatStyles(theme);
 
-    // Chat state from ChatInterface
-    const [chatState, setChatState] = useState<{
-      input: string;
-      handleInputChange: (text: string) => void;
-      sendMessage: () => void;
-      sending: boolean;
-      isTyping: boolean;
-      isSearchMode: boolean;
-      onSearchToggle: () => void;
-    } | null>(null);
+    // Direct chat hook usage (merged from ChatInterface)
+    const {
+      messages,
+      loading,
+      sending,
+      isTyping,
+      regeneratingIndex,
+      input,
+      handleInputChange,
+      sendMessage,
+      regenerateMessage,
+      editUserAndRegenerate,
+      setMessages,
+      isSearchMode,
+      onSearchToggle,
+    } = useChat(numericRoomId, { selectedModel, setModel: onChangeModel });
 
     // Create stable inputRef to prevent ChatInputBar re-renders
     const inputRef = useRef<TextInput | null>(null);
+
+    // Like/dislike handlers (moved from ChatInterface)
+    const handleLike = React.useCallback(
+      (messageId: string) => {
+        setMessages((prev: ChatMessage[]) =>
+          prev.map((msg: ChatMessage) =>
+            msg.id === messageId
+              ? {
+                  ...msg,
+                  isLiked: msg.isLiked ? false : true,
+                  isDisliked: false,
+                }
+              : msg
+          )
+        );
+      },
+      [setMessages]
+    );
+
+    const handleDislike = React.useCallback(
+      (messageId: string) => {
+        setMessages((prev: ChatMessage[]) =>
+          prev.map((msg: ChatMessage) =>
+            msg.id === messageId
+              ? {
+                  ...msg,
+                  isLiked: false,
+                  isDisliked: msg.isDisliked ? false : true,
+                }
+              : msg
+          )
+        );
+      },
+      [setMessages]
+    );
 
     if (__DEV__) {
       // Pure component render counter
@@ -75,28 +118,47 @@ const ChatScreenPure = React.memo(
           style={styles.container}
           keyboardVerticalOffset={90}
         >
-          <ChatInterface
-            roomId={numericRoomId ?? undefined}
-            showHeader={false}
-            selectedModel={selectedModel}
-            onChangeModel={onChangeModel}
-            onChatStateChange={setChatState}
-          />
-
-          {/* ChatInputBar moved to screen level for better layout control */}
-          {chatState && (
-            <ChatInputBar
-              input={chatState.input}
-              onChangeText={chatState.handleInputChange}
-              onSend={chatState.sendMessage}
-              sending={chatState.sending}
-              isTyping={chatState.isTyping}
-              inputRef={inputRef}
-              isSearchMode={chatState.isSearchMode}
-              onSearchToggle={chatState.onSearchToggle}
-              selectedModel={selectedModel}
-            />
+          {/* Messages using proven MessageList component (moved from ChatInterface) */}
+          {React.useMemo(
+            () => (
+              <MessageList
+                messages={messages}
+                regeneratingIndex={regeneratingIndex}
+                onRegenerate={regenerateMessage}
+                onUserEditRegenerate={async (
+                  userIndex: number,
+                  newText: string
+                ) => {
+                  await editUserAndRegenerate(userIndex, newText);
+                }}
+                showWelcomeText={messages.length === 0 && !loading}
+                onLike={handleLike}
+                onDislike={handleDislike}
+              />
+            ),
+            [
+              messages,
+              loading,
+              regeneratingIndex,
+              regenerateMessage,
+              editUserAndRegenerate,
+              handleLike,
+              handleDislike,
+            ]
           )}
+
+          {/* ChatInputBar with direct state usage */}
+          <ChatInputBar
+            input={input}
+            onChangeText={handleInputChange}
+            onSend={sendMessage}
+            sending={sending}
+            isTyping={isTyping}
+            inputRef={inputRef}
+            isSearchMode={isSearchMode}
+            onSearchToggle={onSearchToggle}
+            selectedModel={selectedModel}
+          />
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
@@ -196,15 +258,6 @@ const ChatScreen = () => {
           const currentPath = `/chat/${roomId}`;
           navigationTracker.setPreviousRoute(currentPath);
           router.push("/settings");
-        }}
-        onBack={() => {
-          try {
-          } catch {}
-        }}
-        onChatSelect={(rid: string) => {
-          try {
-            if (rid && rid !== roomId) router.push(`/chat/${rid}`);
-          } catch {}
         }}
         selectedModel={selectedModel}
         onModelChange={async (m: string) => {

@@ -2,7 +2,11 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { useChatRoomSearch } from "@/entities/chatRoom";
-import { useMessageActions, useMessageInput, useRegenerationService } from "@/entities/message";
+import {
+  useMessageActions,
+  useMessageInput,
+  useRegenerationService,
+} from "@/entities/message";
 import { getLogger } from "@/shared/services/logger";
 
 import { useChatState } from "./useChatState";
@@ -19,7 +23,7 @@ export const useChat = (
   options?: UseChatOptions
 ) => {
   const logger = getLogger("useChat");
-  
+
   // Core state management
   const chatState = useChatState(numericRoomId);
   const {
@@ -42,7 +46,7 @@ export const useChat = (
     regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null;
 
   // Model selection logic - direct implementation
-  const selectedModel = options?.selectedModel ?? 'gpt-3.5-turbo';
+  const selectedModel = options?.selectedModel ?? "gpt-3.5-turbo";
   const updateModel = options?.setModel ?? (() => {});
 
   // Search mode logic
@@ -113,7 +117,14 @@ export const useChat = (
       );
       handleInputChange(input);
     }
-  }, [input, numericRoomId, logger, clearInput, sendMessageToBackend, handleInputChange]);
+  }, [
+    input,
+    numericRoomId,
+    logger,
+    clearInput,
+    sendMessageToBackend,
+    handleInputChange,
+  ]);
 
   // Wrapper for regenerateMessage with error handling
   const regenerateMessage = useCallback(
