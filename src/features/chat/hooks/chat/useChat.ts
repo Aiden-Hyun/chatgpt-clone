@@ -1,10 +1,10 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { useChatRoomSearch } from "@/entities/chatRoom";
-import { useMessageInput } from "@/entities/message";
+import { useMessageActions, useMessageInput, useRegenerationService } from "@/entities/message";
+import { getLogger } from "@/shared/services/logger";
 
-import { useChatActions } from "./useChatActions";
 import { useChatState } from "./useChatState";
 
 type UseChatOptions = {
@@ -18,6 +18,8 @@ export const useChat = (
   numericRoomId: number | null,
   options?: UseChatOptions
 ) => {
+  const logger = getLogger("useChat");
+  
   // Core state management
   const chatState = useChatState(numericRoomId);
   const {
@@ -53,9 +55,20 @@ export const useChat = (
   const { input, drafts, setDrafts, handleInputChange, clearInput } =
     useMessageInput(numericRoomId, false);
 
-  // Message actions
-  const { sendMessage: sendMessageAction, regenerateMessage } = useChatActions({
-    numericRoomId,
+  // Log only when dependencies change, not on every render
+  useEffect(() => {
+    logger.debug(
+      `Chat actions dependencies updated: room ${
+        numericRoomId || "new"
+      }, model ${selectedModel}, search mode ${isSearchMode ? "on" : "off"}, ${
+        messages.length
+      } messages`
+    );
+  }, [numericRoomId, isSearchMode, selectedModel, messages.length, logger]);
+
+  // Message actions - direct service calls
+  const { sendMessage: sendMessageToBackend } = useMessageActions({
+    roomId: numericRoomId,
     messages,
     setMessages,
     startRegenerating,
@@ -66,10 +79,61 @@ export const useChat = (
     isSearchMode,
   });
 
-  // Wrapper for sendMessage that handles input clearing
+  // Use the dedicated regeneration service, wired with the current chat state
+  const { regenerateMessage: regenerateMessageInBackend } =
+    useRegenerationService(
+      numericRoomId,
+      {
+        messages,
+        setMessages,
+        startRegenerating,
+        stopRegenerating,
+      },
+      selectedModel,
+      isSearchMode
+    );
+
+  // Wrapper for sendMessage that handles input clearing and error recovery
   const sendMessage = useCallback(async () => {
-    await sendMessageAction(input, clearInput, handleInputChange);
-  }, [input, sendMessageAction, clearInput, handleInputChange]);
+    if (!input.trim()) return;
+    const currentRoomKey = numericRoomId ? numericRoomId.toString() : "new";
+    if (__DEV__) {
+      logger.debug(`Sending message from room ${currentRoomKey}`);
+    }
+
+    clearInput();
+
+    try {
+      await sendMessageToBackend(input);
+    } catch (error) {
+      logger.error(
+        `Failed to send message from room ${currentRoomKey}: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+      handleInputChange(input);
+    }
+  }, [input, numericRoomId, logger, clearInput, sendMessageToBackend, handleInputChange]);
+
+  // Wrapper for regenerateMessage with error handling
+  const regenerateMessage = useCallback(
+    async (index: number, overrideUserContent?: string) => {
+      if (index === undefined || index === null) {
+        logger.error(`Invalid regeneration index: ${index}`);
+        return;
+      }
+      try {
+        await regenerateMessageInBackend(index, overrideUserContent);
+      } catch (error) {
+        logger.error(
+          `Error regenerating message at index ${index}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+      }
+    },
+    [regenerateMessageInBackend, logger]
+  );
 
   // Edit a user message in place and regenerate the following assistant message using the edited text
   const editUserAndRegenerate = useCallback(
