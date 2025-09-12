@@ -8,10 +8,43 @@ import { useAuth } from "@/entities/session";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
-import { OpenAIResponseProcessor } from "@/features/chat/services/core/AIResponseProcessor";
 import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
 import { MessageStateManager } from "@/features/chat/services/MessageStateManager";
 import { generateMessageId } from "@/features/chat/utils/messageIdGenerator";
+
+// Inlined from AIResponseProcessor
+const validateResponse = (response: any): boolean => {
+  // Handle search responses (direct content format)
+  if (response.content) {
+    return true;
+  }
+
+  // Handle chat responses (choices format)
+  if (!response || !response.choices || !Array.isArray(response.choices)) {
+    return false;
+  }
+
+  const firstChoice = response.choices[0];
+  if (!firstChoice || !firstChoice.message || !firstChoice.message.content) {
+    return false;
+  }
+
+  return true;
+};
+
+const extractContent = (response: any): string | null => {
+  if (!validateResponse(response)) {
+    return null;
+  }
+
+  // Handle search responses (direct content format)
+  if (response.content) {
+    return response.content;
+  }
+
+  // Handle chat responses (choices format)
+  return response.choices![0].message.content;
+};
 
 // Merged from useChatState - Legacy interfaces
 interface LoadingStates {
@@ -301,7 +334,7 @@ export const useChat = (
       aiApiService: ServiceRegistry.createAIApiService(),
       messageService: ServiceRegistry.createMessageService(),
       animationService: ServiceRegistry.createAnimationService(setMessages),
-      responseProcessor: new OpenAIResponseProcessor(),
+      responseProcessor: { validateResponse, extractContent },
     };
   }, [setMessages, session]);
 

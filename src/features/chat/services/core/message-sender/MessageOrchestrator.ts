@@ -5,7 +5,6 @@ import {
   MESSAGE_SEND_MAX_RETRIES,
 } from "../../../constants";
 import { IAIApiService } from "../../interfaces/IAIApiService";
-import { IAIResponseProcessor } from "../AIResponseProcessor";
 import { RetryService } from "../RetryService";
 
 import { MessageAnimation } from "./MessageAnimation";
@@ -27,7 +26,7 @@ export class MessageOrchestrator {
 
   constructor(
     private aiApiService: IAIApiService,
-    private responseProcessor: IAIResponseProcessor,
+    private responseProcessor: { validateResponse: (response: any) => boolean; extractContent: (response: any) => string | null },
     chatRoomService: unknown,
     messageService: unknown,
     animationService: unknown,

@@ -10,12 +10,45 @@ import { errorHandler } from "@/shared/services/error";
 import { getLogger } from "@/shared/services/logger";
 
 // Import all the service classes (keeping them as classes)
-import { OpenAIResponseProcessor } from "@/features/chat/services/core/AIResponseProcessor";
 import { RetryService } from "@/features/chat/services/core/RetryService";
 import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
 import { MessageAnimation } from "@/features/chat/services/core/message-sender/MessageAnimation";
 import { MessagePersistence } from "@/features/chat/services/core/message-sender/MessagePersistence";
 import { MessageValidator } from "@/features/chat/services/core/message-sender/MessageValidator";
+
+// Inlined from AIResponseProcessor
+const validateResponse = (response: any): boolean => {
+  // Handle search responses (direct content format)
+  if (response.content) {
+    return true;
+  }
+
+  // Handle chat responses (choices format)
+  if (!response || !response.choices || !Array.isArray(response.choices)) {
+    return false;
+  }
+
+  const firstChoice = response.choices[0];
+  if (!firstChoice || !firstChoice.message || !firstChoice.message.content) {
+    return false;
+  }
+
+  return true;
+};
+
+const extractContent = (response: any): string | null => {
+  if (!validateResponse(response)) {
+    return null;
+  }
+
+  // Handle search responses (direct content format)
+  if (response.content) {
+    return response.content;
+  }
+
+  // Handle chat responses (choices format)
+  return response.choices![0].message.content;
+};
 
 export interface UseMessageOrchestratorProps {
   roomId: number | null;
@@ -65,7 +98,7 @@ export const useMessageOrchestrator = ({
         ServiceRegistry.createTypingStateService(() => {}) // No-op for typing
       ),
       aiApiService: ServiceRegistry.createAIApiService(),
-      responseProcessor: new OpenAIResponseProcessor(),
+      responseProcessor: { validateResponse, extractContent },
     };
   }, [setMessages]); // Only recreate if setMessages changes
 

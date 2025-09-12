@@ -1,11 +1,6 @@
 // src/features/chat/services/core/ServiceFactory.ts
 import type { ChatMessage } from "@/entities/message";
-import type { Session } from "@/entities/session";
 
-import { IAIApiService } from "../interfaces/IAIApiService";
-import { IMessageService } from "../interfaces/IMessageService";
-
-import { OpenAIResponseProcessor } from "./AIResponseProcessor";
 import { MessageOrchestrator } from "./message-sender";
 import { ServiceRegistry } from "./ServiceRegistry";
 
@@ -23,7 +18,17 @@ export class ServiceFactory {
     const messageService = ServiceRegistry.createMessageService();
     const aiApiService = ServiceRegistry.createAIApiService();
     const navigationService = ServiceRegistry.createNavigationService();
-    const responseProcessor = new OpenAIResponseProcessor();
+    // Response processor functions (inlined from AIResponseProcessor)
+    const validateResponse = (response: any): boolean => {
+      if (response.content) return true;
+      if (!response?.choices?.[0]?.message?.content) return false;
+      return true;
+    };
+    const extractContent = (response: any): string | null => {
+      if (!validateResponse(response)) return null;
+      return response.content || response.choices[0].message.content;
+    };
+    const responseProcessor = { validateResponse, extractContent };
 
     // Use the new, more focused services
     const messageStateService =
@@ -96,5 +101,4 @@ export class ServiceFactory {
   ) {
     return ServiceRegistry.createAnimationService(setMessages);
   }
-
 }

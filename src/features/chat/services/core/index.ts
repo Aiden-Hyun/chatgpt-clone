@@ -7,9 +7,5 @@ export {
 export { ServiceFactory } from "./ServiceFactory";
 
 // New core services
-export {
-  IAIResponseProcessor,
-  OpenAIResponseProcessor,
-} from "./AIResponseProcessor";
 export { RetryConfig, RetryService } from "./RetryService";
 export { ServiceConfig, ServiceRegistry } from "./ServiceRegistry";
