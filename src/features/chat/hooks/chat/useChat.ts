@@ -3,11 +3,13 @@ import { useCallback, useEffect, useMemo } from "react";
 
 import { useChatRoomSearch } from "@/entities/chatRoom";
 import {
-  useMessageActions,
   useMessageInput,
   useRegenerationService,
 } from "@/entities/message";
 import { getLogger } from "@/shared/services/logger";
+
+import { sendMessageHandler } from "../../services/sendMessage";
+import { generateMessageId } from "../../utils/messageIdGenerator";
 
 import { useChatState } from "./useChatState";
 
@@ -56,7 +58,7 @@ export const useChat = (
   );
 
   // Input management - using entity hook directly
-  const { input, drafts, setDrafts, handleInputChange, clearInput } =
+  const { input, drafts: _drafts, setDrafts, handleInputChange, clearInput } =
     useMessageInput(numericRoomId, false);
 
   // Log only when dependencies change, not on every render
@@ -70,18 +72,36 @@ export const useChat = (
     );
   }, [numericRoomId, isSearchMode, selectedModel, messages.length, logger]);
 
-  // Message actions - direct service calls
-  const { sendMessage: sendMessageToBackend } = useMessageActions({
-    roomId: numericRoomId,
-    messages,
-    setMessages,
-    startRegenerating,
-    stopRegenerating,
-    drafts,
-    setDrafts,
-    selectedModel,
-    isSearchMode,
-  });
+  // Message actions - inline implementation (merged from useMessageActions)
+  const sendMessageToBackend = useCallback(
+    async (userContent: string) => {
+      if (!userContent.trim()) return;
+
+      // Generate message ID for this send operation
+      const messageId = generateMessageId();
+
+      try {
+        await sendMessageHandler({
+          userContent: userContent.trim(),
+          numericRoomId,
+          messages,
+          setMessages, // Direct delegation - service layer handles state machine
+          setIsTyping: () => {}, // No-op - state machine handles typing state
+          setDrafts,
+          model: selectedModel,
+          messageId,
+          isSearchMode,
+        });
+      } catch (error) {
+        logger.error("Failed to send message", {
+          messageId,
+          error: error as Error,
+        });
+        throw error;
+      }
+    },
+    [numericRoomId, messages, setMessages, setDrafts, selectedModel, isSearchMode, logger]
+  );
 
   // Use the dedicated regeneration service, wired with the current chat state
   const { regenerateMessage: regenerateMessageInBackend } =
