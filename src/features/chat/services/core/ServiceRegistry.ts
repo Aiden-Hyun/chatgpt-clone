@@ -5,7 +5,6 @@ import type { Session } from "@/entities/session";
 
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IAnimationService } from "../interfaces/IAnimationService";
-import { IAuthService } from "../interfaces/IAuthService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { INavigationService } from "../interfaces/INavigationService";
@@ -35,7 +34,6 @@ export interface ServiceConfig {
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
     ): IAnimationService;
   };
-  authService: { new (): IAuthService };
 
   // Drafts are now handled in hooks (useMessageInput) with storage persistence
 }
@@ -111,8 +109,4 @@ export class ServiceRegistry {
   }
 
 
-  static createAuthService(): IAuthService {
-    const config = this.getConfig();
-    return new config.authService();
-  }
 }

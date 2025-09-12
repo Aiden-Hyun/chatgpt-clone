@@ -11,6 +11,7 @@ import { getLogger } from "@/shared/services/logger";
 
 // Import all the service classes (keeping them as classes)
 import { RetryService } from "@/features/chat/services/core/RetryService";
+import { getSession } from "@/shared/lib/supabase/getSession";
 import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
 import { MessageAnimation } from "@/features/chat/services/core/message-sender/MessageAnimation";
 import { MessagePersistence } from "@/features/chat/services/core/message-sender/MessagePersistence";
@@ -130,9 +131,8 @@ export const useMessageOrchestrator = ({
         // Step 1: Validate request and create message objects
         logger.debug("Validating message request", { requestId });
 
-        // Get user session
-        const authService = ServiceRegistry.createAuthService();
-        const session = await authService.getSession();
+        // Get user session directly
+        const session = await getSession();
 
         if (!session) {
           logger.warn("No active session, aborting message send", {

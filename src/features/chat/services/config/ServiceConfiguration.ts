@@ -8,7 +8,6 @@ import {
   ExpoRouterNavigationService,
   MessageAnimationService,
   MessageStateService,
-  SupabaseAuthService,
 } from "../implementations";
 
 export function configureServices(): void {
@@ -20,6 +19,5 @@ export function configureServices(): void {
     // New services
     messageStateService: MessageStateService,
     animationService: MessageAnimationService,
-    authService: SupabaseAuthService,
   });
 }

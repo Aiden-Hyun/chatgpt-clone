@@ -63,7 +63,7 @@ export const useReadChatRooms = () => {
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.id, logger]);
+  }, [session?.user?.id]);
 
   useEffect(() => {
     fetchChatRooms();

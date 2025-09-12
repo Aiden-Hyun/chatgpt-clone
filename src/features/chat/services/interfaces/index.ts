@@ -8,7 +8,6 @@ export * from "./IUIStateService";
 
 // New segregated interfaces
 export * from "./IAnimationService";
-export * from "./IAuthService";
 export * from "./IMessageStateService";
 export * from "./IRegenerationService";
 
