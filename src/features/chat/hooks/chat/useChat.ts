@@ -2,13 +2,14 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { useChatRoomSearch } from "@/entities/chatRoom";
-import {
-  useMessageInput,
-  useRegenerationService,
-} from "@/entities/message";
+import { useMessageInput, useRegenerationService } from "@/entities/message";
+import { errorHandler } from "@/shared/services/error";
 import { getLogger } from "@/shared/services/logger";
 
-import { sendMessageHandler } from "../../services/sendMessage";
+import { getModelInfo } from "../../constants/models";
+import { SendMessageRequest } from "../../services/core/message-sender";
+import { ServiceFactory } from "../../services/core/ServiceFactory";
+import { ServiceRegistry } from "../../services/core/ServiceRegistry";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 
 import { useChatState } from "./useChatState";
@@ -58,8 +59,13 @@ export const useChat = (
   );
 
   // Input management - using entity hook directly
-  const { input, drafts: _drafts, setDrafts, handleInputChange, clearInput } =
-    useMessageInput(numericRoomId, false);
+  const {
+    input,
+    drafts: _drafts,
+    setDrafts,
+    handleInputChange,
+    clearInput,
+  } = useMessageInput(numericRoomId, false);
 
   // Log only when dependencies change, not on every render
   useEffect(() => {
@@ -72,26 +78,122 @@ export const useChat = (
     );
   }, [numericRoomId, isSearchMode, selectedModel, messages.length, logger]);
 
-  // Message actions - inline implementation (merged from useMessageActions)
+  // Message actions - inline implementation (merged from useMessageActions + sendMessageHandler)
   const sendMessageToBackend = useCallback(
     async (userContent: string) => {
       if (!userContent.trim()) return;
 
       // Generate message ID for this send operation
       const messageId = generateMessageId();
+      const trimmedContent = userContent.trim();
+
+      logger.info("Message send initiated", {
+        messageId,
+        roomId: numericRoomId,
+        model: selectedModel,
+        isSearchMode,
+        messageLength: trimmedContent.length,
+      });
 
       try {
-        await sendMessageHandler({
-          userContent: userContent.trim(),
+        // Validate search mode is supported for this model
+        if (isSearchMode) {
+          const modelInfo = getModelInfo(selectedModel);
+          if (!modelInfo?.capabilities.search) {
+            const error = `Search is not supported for model: ${selectedModel}`;
+            await errorHandler.handle(new Error(error), {
+              operation: "validateSearchMode",
+              service: "chat",
+              component: "useChat",
+              metadata: { model: selectedModel, isSearchMode },
+            });
+            throw new Error(error);
+          }
+        }
+
+        // Get user session via ServiceRegistry
+        logger.debug("Getting user session for message send");
+        const authService = ServiceRegistry.createAuthService();
+        const session = await authService.getSession();
+
+        if (!session) {
+          logger.warn("No active session, aborting message send", {
+            messageId,
+            roomId: numericRoomId,
+          });
+          return;
+        }
+
+        logger.info("Session validated for message send", {
+          messageId,
+          userId: session.user.id,
+          roomId: numericRoomId,
+        });
+
+        // Create the MessageSenderService with all dependencies injected
+        logger.debug(
+          `Creating message sender service for room ${
+            numericRoomId || "new"
+          } with model ${selectedModel}`
+        );
+        const messageSender = ServiceFactory.createMessageSender(
+          setMessages,
+          () => {} // No-op for setIsTyping - state machine handles typing state
+        );
+
+        // Prepare the request
+        logger.debug(
+          `Preparing message request for room ${
+            numericRoomId || "new"
+          } with model ${selectedModel} (search: ${isSearchMode ? "on" : "off"})`
+        );
+
+        const request: SendMessageRequest = {
+          userContent: trimmedContent,
           numericRoomId,
           messages,
-          setMessages, // Direct delegation - service layer handles state machine
-          setIsTyping: () => {}, // No-op - state machine handles typing state
-          setDrafts,
           model: selectedModel,
+          regenerateIndex: undefined,
+          originalAssistantContent: undefined,
+          session,
           messageId,
           isSearchMode,
-        });
+        };
+
+        // Send the message using the SOLID architecture
+        logger.info(
+          `Sending message to AI service for room ${
+            numericRoomId || "new"
+          } with model ${selectedModel}`
+        );
+
+        const result = await messageSender.sendMessage(request);
+
+        if (!result.success && result.error) {
+          logger.error("Message send failed", {
+            messageId,
+            roomId: numericRoomId,
+            error: result.error,
+          });
+          await errorHandler.handle(new Error(result.error), {
+            operation: "sendMessage",
+            service: "chat",
+            component: "useChat",
+            metadata: {
+              numericRoomId,
+              model: selectedModel,
+              isSearchMode,
+              messageId,
+            },
+          });
+          throw new Error(result.error);
+        }
+
+        logger.info(
+          `Message send completed successfully for room ${
+            numericRoomId || "new"
+          } with model ${selectedModel}`
+        );
       } catch (error) {
         logger.error("Failed to send message", {
           messageId,
@@ -100,7 +202,15 @@ export const useChat = (
         throw error;
       }
     },
-    [numericRoomId, messages, setMessages, setDrafts, selectedModel, isSearchMode, logger]
+    [
+      numericRoomId,
+      messages,
+      setMessages,
+      setDrafts,
+      selectedModel,
+      isSearchMode,
+      logger,
+    ]
   );
 
   // Use the dedicated regeneration service, wired with the current chat state
