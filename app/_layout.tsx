@@ -11,15 +11,13 @@ import { LoadingScreen } from "@/shared/components/feedback/LoadingScreen";
 import { AuthProvider, useAuth } from "../src/entities/session";
 import { ToastContainer, ToastProvider } from "../src/features/alert";
 import { Sidebar } from "../src/features/chat/components/Sidebar";
-import { configureServices } from "../src/features/chat/services/config/ServiceConfiguration";
 import { LanguageProvider } from "../src/features/language";
 import { ThemeProvider, useThemeContext } from "../src/features/theme";
 import { navigationTracker } from "../src/shared/lib/navigationTracker";
 import { resetDebugGlobals } from "../src/shared/lib/resetDebugGlobals";
 import { getLogger } from "../src/shared/services/logger";
 
-// Initialize services
-configureServices();
+// Services are now instantiated directly where needed - no configuration required
 
 // Initialize console interceptor for centralized logging
 // ConsoleInterceptor.intercept(); // Temporarily disabled to fix circular dependency

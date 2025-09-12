@@ -8,4 +8,3 @@ export { ServiceFactory } from "./ServiceFactory";
 
 // New core services
 export { RetryConfig, RetryService } from "./RetryService";
-export { ServiceConfig, ServiceRegistry } from "./ServiceRegistry";

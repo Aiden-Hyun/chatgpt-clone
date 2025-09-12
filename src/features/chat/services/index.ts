@@ -11,4 +11,3 @@ export * from "./interfaces";
 export { SupabaseChatRoomService } from "@/entities/chatRoom";
 
 // Configuration
-export { configureServices } from "./config/ServiceConfiguration";
