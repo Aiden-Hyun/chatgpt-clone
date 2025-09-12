@@ -10,15 +10,15 @@ import { errorHandler } from "@/shared/services/error";
 import { getLogger } from "@/shared/services/logger";
 
 // Import all the service classes (keeping them as classes)
-import { RetryService } from "@/features/chat/services/core/RetryService";
-import { appConfig } from "@/shared/lib/config";
-import { getSession } from "@/shared/lib/supabase/getSession";
-import { fetchJson } from "@/features/chat/lib/fetch";
 import { getModelInfo } from "@/features/chat/constants/models";
+import { fetchJson } from "@/features/chat/lib/fetch";
+import { RetryService } from "@/features/chat/services/core/RetryService";
 import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
 import { MessageAnimation } from "@/features/chat/services/core/message-sender/MessageAnimation";
 import { MessagePersistence } from "@/features/chat/services/core/message-sender/MessagePersistence";
 import { MessageValidator } from "@/features/chat/services/core/message-sender/MessageValidator";
+import { appConfig } from "@/shared/lib/config";
+import { getSession } from "@/shared/lib/supabase/getSession";
 
 // Inlined from AIResponseProcessor
 const validateResponse = (response: any): boolean => {
@@ -61,7 +61,7 @@ const sendMessageToAPI = async (
   isSearchMode?: boolean
 ): Promise<any> => {
   const logger = getLogger("ChatAPIService");
-  
+
   // Get model configuration from client-side models
   const modelInfo = getModelInfo(request.model);
 
@@ -73,8 +73,7 @@ const sendMessageToAPI = async (
   // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
   const payload = isSearchMode
     ? {
-        question:
-          request.messages[request.messages.length - 1]?.content || "",
+        question: request.messages[request.messages.length - 1]?.content || "",
         model: request.model,
         modelConfig: {
           tokenParameter: modelInfo?.tokenParameter || "max_tokens",
@@ -99,11 +98,9 @@ const sendMessageToAPI = async (
       };
 
   logger.info(
-    `Making API call for ${
-      isSearchMode ? "search" : "chat"
-    } mode with model ${request.model} (${
-      request.messages.length
-    } messages, room ${request.roomId})`
+    `Making API call for ${isSearchMode ? "search" : "chat"} mode with model ${
+      request.model
+    } (${request.messages.length} messages, room ${request.roomId})`
   );
 
   logger.debug(
@@ -189,7 +186,6 @@ export const useMessageOrchestrator = ({
         ServiceRegistry.createMessageService()
       ),
       animation: new MessageAnimation(
-        ServiceRegistry.createAnimationService(setMessages),
         setMessages,
         { setTyping: () => {} } // No-op for typing - direct object
       ),
@@ -324,11 +320,7 @@ export const useMessageOrchestrator = ({
 
         const apiResponse = await services.retryService.retryOperation(
           () =>
-            sendMessageToAPI(
-              apiRequest,
-              session.access_token,
-              isSearchMode
-            ),
+            sendMessageToAPI(apiRequest, session.access_token, isSearchMode),
           "AI API call"
         );
 

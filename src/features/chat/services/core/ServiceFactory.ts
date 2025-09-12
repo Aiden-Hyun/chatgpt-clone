@@ -1,11 +1,11 @@
 // src/features/chat/services/core/ServiceFactory.ts
 import type { ChatMessage } from "@/entities/message";
 
-import { MessageOrchestrator } from "./message-sender";
 import { appConfig } from "@/shared/lib/config";
-import { fetchJson } from "../../lib/fetch";
-import { getModelInfo } from "../../constants/models";
 import { getLogger } from "@/shared/services/logger";
+import { getModelInfo } from "../../constants/models";
+import { fetchJson } from "../../lib/fetch";
+import { MessageOrchestrator } from "./message-sender";
 import { ServiceRegistry } from "./ServiceRegistry";
 
 /**
@@ -27,7 +27,7 @@ export class ServiceFactory {
       isSearchMode?: boolean
     ): Promise<any> => {
       const logger = getLogger("ChatAPIService");
-      
+
       // Get model configuration from client-side models
       const modelInfo = getModelInfo(request.model);
 
@@ -106,8 +106,6 @@ export class ServiceFactory {
 
     // Use the new, more focused services
     const typingStateService = { setTyping: setIsTyping }; // Direct object instead of service
-    const animationService =
-      ServiceRegistry.createAnimationService(setMessages);
 
     // Create and return the orchestrator with all dependencies injected
     return new MessageOrchestrator(
@@ -115,8 +113,7 @@ export class ServiceFactory {
       responseProcessor,
       chatRoomService,
       messageService,
-      animationService,
-      setMessages, // Pass setMessages directly instead of messageStateService
+      setMessages, // Pass setMessages directly instead of animationService
       typingStateService
     );
   }
@@ -131,8 +128,6 @@ export class ServiceFactory {
   static createMessageService() {
     return ServiceRegistry.createMessageService();
   }
-
-
 
   /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */
   static createUIStateService(
@@ -158,11 +153,5 @@ export class ServiceFactory {
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
   ) {
     return { setTyping: setIsTyping }; // Direct object instead of service class
-  }
-
-  static createAnimationService(
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
-  ) {
-    return ServiceRegistry.createAnimationService(setMessages);
   }
 }

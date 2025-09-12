@@ -1,5 +1,5 @@
-import { errorHandler } from "../../../../../shared/services/error";
 import type { ChatMessage } from "@/entities/message";
+import { errorHandler } from "../../../../../shared/services/error";
 
 import { getLogger } from "../../../../../shared/services/logger";
 import {
@@ -26,11 +26,17 @@ export class MessageOrchestrator {
   private readonly animation: MessageAnimation;
 
   constructor(
-    private sendMessageFn: (request: any, accessToken: string, isSearchMode?: boolean) => Promise<any>,
-    private responseProcessor: { validateResponse: (response: any) => boolean; extractContent: (response: any) => string | null },
+    private sendMessageFn: (
+      request: any,
+      accessToken: string,
+      isSearchMode?: boolean
+    ) => Promise<any>,
+    private responseProcessor: {
+      validateResponse: (response: any) => boolean;
+      extractContent: (response: any) => string | null;
+    },
     chatRoomService: any,
     messageService: any,
-    animationService: any,
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     typingStateService: any
   ) {
@@ -42,11 +48,7 @@ export class MessageOrchestrator {
 
     this.validator = new MessageValidator();
     this.persistence = new MessagePersistence(chatRoomService, messageService);
-    this.animation = new MessageAnimation(
-      animationService,
-      setMessages,
-      typingStateService
-    );
+    this.animation = new MessageAnimation(setMessages, typingStateService);
   }
 
   async sendMessage(request: SendMessageRequest): Promise<SendMessageResult> {
@@ -233,7 +235,9 @@ export class MessageOrchestrator {
 
       return { success: true, roomId };
     } catch (error) {
-      this.logger.error("Message send failed", { error: (error as Error).message });
+      this.logger.error("Message send failed", {
+        error: (error as Error).message,
+      });
 
       // Use unified error handling system
       const processedError = await errorHandler.handle(error, {

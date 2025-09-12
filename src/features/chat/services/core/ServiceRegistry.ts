@@ -1,9 +1,7 @@
 // src/features/chat/services/core/ServiceRegistry.ts
 import type { IChatRoomService } from "@/entities/chatRoom";
 import type { ChatMessage } from "@/entities/message";
-import type { Session } from "@/entities/session";
 
-import { IAnimationService } from "../interfaces/IAnimationService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
@@ -19,11 +17,6 @@ export interface ServiceConfig {
     ): IUIStateService;
   };
   // New services
-  animationService: {
-    new (
-      setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
-    ): IAnimationService;
-  };
 
   // Drafts are now handled in hooks (useMessageInput) with storage persistence
 }
@@ -42,7 +35,6 @@ export class ServiceRegistry {
     return this.config;
   }
 
-
   static createChatRoomService(): IChatRoomService {
     const config = this.getConfig();
     return new config.chatRoomService();
@@ -52,7 +44,6 @@ export class ServiceRegistry {
     const config = this.getConfig();
     return new config.messageService();
   }
-
 
   /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */
   static createUIStateService(
@@ -76,13 +67,4 @@ export class ServiceRegistry {
   ) {
     return { setTyping: setIsTyping }; // Direct object - no need for service class
   }
-
-  static createAnimationService(
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
-  ): IAnimationService {
-    const config = this.getConfig();
-    return new config.animationService(setMessages);
-  }
-
-
 }

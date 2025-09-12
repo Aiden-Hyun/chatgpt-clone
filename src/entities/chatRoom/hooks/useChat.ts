@@ -5,15 +5,20 @@ import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
 import type { AIApiRequest, ChatMessage } from "@/entities/message";
 import { useMessageInput, useReadMessages } from "@/entities/message";
 import { useAuth } from "@/entities/session";
+import { getModelInfo } from "@/features/chat/constants/models";
+import { fetchJson } from "@/features/chat/lib/fetch";
+import { appConfig } from "@/shared/lib/config";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
-import { appConfig } from "@/shared/lib/config";
-import { fetchJson } from "@/features/chat/lib/fetch";
-import { getModelInfo } from "@/features/chat/constants/models";
 
 import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
 import { MessageStateManager } from "@/features/chat/services/MessageStateManager";
 import { generateMessageId } from "@/features/chat/utils/messageIdGenerator";
+import {
+  TYPING_ANIMATION_CHUNK_SIZE,
+  TYPING_ANIMATION_MIN_TICK_MS,
+} from "@/features/chat/constants";
+import { computeAnimationParams } from "@/features/chat/services/core/AnimationPolicy";
 
 // Inlined from AIResponseProcessor
 const validateResponse = (response: any): boolean => {
@@ -56,7 +61,7 @@ const sendMessageToAPI = async (
   isSearchMode?: boolean
 ): Promise<any> => {
   const logger = getLogger("ChatAPIService");
-  
+
   // Get model configuration from client-side models
   const modelInfo = getModelInfo(request.model);
 
@@ -68,8 +73,7 @@ const sendMessageToAPI = async (
   // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
   const payload = isSearchMode
     ? {
-        question:
-          request.messages[request.messages.length - 1]?.content || "",
+        question: request.messages[request.messages.length - 1]?.content || "",
         model: request.model,
         modelConfig: {
           tokenParameter: modelInfo?.tokenParameter || "max_tokens",
@@ -94,11 +98,9 @@ const sendMessageToAPI = async (
       };
 
   logger.info(
-    `Making API call for ${
-      isSearchMode ? "search" : "chat"
-    } mode with model ${request.model} (${
-      request.messages.length
-    } messages, room ${request.roomId})`
+    `Making API call for ${isSearchMode ? "search" : "chat"} mode with model ${
+      request.model
+    } (${request.messages.length} messages, room ${request.roomId})`
   );
 
   logger.debug(
@@ -139,6 +141,49 @@ const sendMessageToAPI = async (
   }
 
   return response;
+};
+
+// Inlined animation helper for regeneration
+const startTypewriterAnimation = (
+  messageId: string,
+  fullContent: string,
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+  messageStateManager: MessageStateManager
+) => {
+  const { speedMs: computedSpeed, chunkSize } = computeAnimationParams(fullContent);
+  const effectiveSpeed = Math.max(TYPING_ANIMATION_MIN_TICK_MS, computedSpeed);
+  
+  let index = 0;
+  const tick = () => {
+    if (index < fullContent.length) {
+      let nextIndex = index;
+      const currentChar = fullContent[nextIndex];
+
+      if (/\s/.test(currentChar)) {
+        while (nextIndex < fullContent.length && /\s/.test(fullContent[nextIndex])) {
+          nextIndex++;
+        }
+      } else {
+        nextIndex = Math.min(fullContent.length, nextIndex + chunkSize);
+      }
+
+      const nextSlice = fullContent.slice(0, nextIndex);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, content: nextSlice, state: "animating" }
+            : msg
+        )
+      );
+      index = nextIndex;
+      setTimeout(tick, effectiveSpeed);
+    } else {
+      // Complete
+      messageStateManager.markCompleted(messageId);
+    }
+  };
+  
+  setTimeout(tick, effectiveSpeed);
 };
 
 // Merged from useChatState - Legacy interfaces
@@ -427,7 +472,6 @@ export const useChat = (
     return {
       messageStateManager: new MessageStateManager(setMessages),
       messageService: ServiceRegistry.createMessageService(),
-      animationService: ServiceRegistry.createAnimationService(setMessages),
       responseProcessor: { validateResponse, extractContent },
     };
   }, [setMessages, session]);
@@ -604,10 +648,7 @@ export const useChat = (
 
         // Drive UI state and animation
         messageStateManager.handleRegeneration(targetMessageId, newContent);
-        animationService.setMessageFullContentAndAnimate({
-          fullContent: newContent,
-          messageId: targetMessageId,
-        });
+        startTypewriterAnimation(targetMessageId, newContent, setMessages, messageStateManager);
 
         // Persist if room exists
         if (numericRoomId) {
