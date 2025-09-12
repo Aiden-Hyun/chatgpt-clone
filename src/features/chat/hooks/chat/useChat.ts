@@ -1,15 +1,10 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
 import { useCallback, useEffect, useMemo } from "react";
 
-import { useChatRoomSearch } from "@/entities/chatRoom";
+import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
 import { useMessageInput, useRegenerationService } from "@/entities/message";
-import { errorHandler } from "@/shared/services/error";
 import { getLogger } from "@/shared/services/logger";
 
-import { getModelInfo } from "../../constants/models";
-import { SendMessageRequest } from "../../services/core/message-sender";
-import { ServiceFactory } from "../../services/core/ServiceFactory";
-import { ServiceRegistry } from "../../services/core/ServiceRegistry";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 
 import { useChatState } from "./useChatState";
@@ -58,11 +53,20 @@ export const useChat = (
     setMessages
   );
 
+  // Message orchestrator - handles all the complex send logic
+  const { sendMessage: sendMessageViaOrchestrator } = useMessageOrchestrator({
+    roomId: numericRoomId,
+    messages,
+    setMessages,
+    selectedModel,
+    isSearchMode,
+  });
+
   // Input management - using entity hook directly
   const {
     input,
     drafts: _drafts,
-    setDrafts,
+    setDrafts: _setDrafts,
     handleInputChange,
     clearInput,
   } = useMessageInput(numericRoomId, false);
@@ -78,12 +82,11 @@ export const useChat = (
     );
   }, [numericRoomId, isSearchMode, selectedModel, messages.length, logger]);
 
-  // Message actions - inline implementation (merged from useMessageActions + sendMessageHandler)
+  // Message actions - simplified implementation using useMessageOrchestrator
   const sendMessageToBackend = useCallback(
     async (userContent: string) => {
       if (!userContent.trim()) return;
 
-      // Generate message ID for this send operation
       const messageId = generateMessageId();
       const trimmedContent = userContent.trim();
 
@@ -96,102 +99,21 @@ export const useChat = (
       });
 
       try {
-        // Validate search mode is supported for this model
-        if (isSearchMode) {
-          const modelInfo = getModelInfo(selectedModel);
-          if (!modelInfo?.capabilities.search) {
-            const error = `Search is not supported for model: ${selectedModel}`;
-            await errorHandler.handle(new Error(error), {
-              operation: "validateSearchMode",
-              service: "chat",
-              component: "useChat",
-              metadata: { model: selectedModel, isSearchMode },
-            });
-            throw new Error(error);
-          }
-        }
-
-        // Get user session via ServiceRegistry
-        logger.debug("Getting user session for message send");
-        const authService = ServiceRegistry.createAuthService();
-        const session = await authService.getSession();
-
-        if (!session) {
-          logger.warn("No active session, aborting message send", {
-            messageId,
-            roomId: numericRoomId,
-          });
-          return;
-        }
-
-        logger.info("Session validated for message send", {
-          messageId,
-          userId: session.user.id,
-          roomId: numericRoomId,
-        });
-
-        // Create the MessageSenderService with all dependencies injected
-        logger.debug(
-          `Creating message sender service for room ${
-            numericRoomId || "new"
-          } with model ${selectedModel}`
-        );
-        const messageSender = ServiceFactory.createMessageSender(
-          setMessages,
-          () => {} // No-op for setIsTyping - state machine handles typing state
-        );
-
-        // Prepare the request
-        logger.debug(
-          `Preparing message request for room ${
-            numericRoomId || "new"
-          } with model ${selectedModel} (search: ${isSearchMode ? "on" : "off"})`
-        );
-
-        const request: SendMessageRequest = {
-          userContent: trimmedContent,
-          numericRoomId,
-          messages,
-          model: selectedModel,
-          regenerateIndex: undefined,
-          originalAssistantContent: undefined,
-          session,
-          messageId,
-          isSearchMode,
-        };
-
-        // Send the message using the SOLID architecture
-        logger.info(
-          `Sending message to AI service for room ${
-            numericRoomId || "new"
-          } with model ${selectedModel}`
-        );
-
-        const result = await messageSender.sendMessage(request);
-
-        if (!result.success && result.error) {
+        const result = await sendMessageViaOrchestrator(trimmedContent);
+        
+        if (!result.success) {
+          const errorMessage = result.error || "Failed to send message";
           logger.error("Message send failed", {
             messageId,
             roomId: numericRoomId,
-            error: result.error,
+            error: errorMessage,
           });
-          await errorHandler.handle(new Error(result.error), {
-            operation: "sendMessage",
-            service: "chat",
-            component: "useChat",
-            metadata: {
-              numericRoomId,
-              model: selectedModel,
-              isSearchMode,
-              messageId,
-            },
-          });
-          throw new Error(result.error);
+          throw new Error(errorMessage);
         }
 
         logger.info(
           `Message send completed successfully for room ${
-            numericRoomId || "new"
+            result.roomId || numericRoomId || "new"
           } with model ${selectedModel}`
         );
       } catch (error) {
@@ -202,15 +124,7 @@ export const useChat = (
         throw error;
       }
     },
-    [
-      numericRoomId,
-      messages,
-      setMessages,
-      setDrafts,
-      selectedModel,
-      isSearchMode,
-      logger,
-    ]
+    [sendMessageViaOrchestrator, numericRoomId, selectedModel, isSearchMode, logger]
   );
 
   // Use the dedicated regeneration service, wired with the current chat state
