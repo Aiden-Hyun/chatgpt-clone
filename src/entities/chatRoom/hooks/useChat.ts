@@ -8,10 +8,10 @@ import { useAuth } from "@/entities/session";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
-import { OpenAIResponseProcessor } from "../../services/core/AIResponseProcessor";
-import { ServiceRegistry } from "../../services/core/ServiceRegistry";
-import { MessageStateManager } from "../../services/MessageStateManager";
-import { generateMessageId } from "../../utils/messageIdGenerator";
+import { OpenAIResponseProcessor } from "@/features/chat/services/core/AIResponseProcessor";
+import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
+import { MessageStateManager } from "@/features/chat/services/MessageStateManager";
+import { generateMessageId } from "@/features/chat/utils/messageIdGenerator";
 
 // Merged from useChatState - Legacy interfaces
 interface LoadingStates {
@@ -180,13 +180,17 @@ export const useChat = (
   );
 
   // Load messages for this room using entity hook
-  const { messages: loadedMessages, loading: messagesLoading, refetch } = useReadMessages(numericRoomId);
-  
+  const {
+    messages: loadedMessages,
+    loading: messagesLoading,
+    refetch,
+  } = useReadMessages(numericRoomId);
+
   // Update local state when messages are loaded
   useEffect(() => {
     setMessages(loadedMessages);
   }, [loadedMessages, setMessages]);
-  
+
   // Update loading state when messages are loading
   useEffect(() => {
     setLoading(messagesLoading);
@@ -247,9 +251,9 @@ export const useChat = (
 
       logger.info("Message send initiated", {
         messageId,
-    roomId: numericRoomId,
+        roomId: numericRoomId,
         model: selectedModel,
-    isSearchMode,
+        isSearchMode,
         messageLength: trimmedContent.length,
       });
 
@@ -661,7 +665,7 @@ export const useChat = (
 
       // State setters (for advanced usage)
       setMessages,
-      
+
       // Entity hook integration
       refetch,
     }),

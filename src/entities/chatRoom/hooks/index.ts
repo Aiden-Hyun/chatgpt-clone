@@ -5,6 +5,7 @@ export { useAIAPICall } from "./useAIAPICall";
 // export type { ChatRoomAPIParams } from "./useAPIForChatRoom";
 // export { useAPIForNewMessages } from "./useAPIForNewMessages";
 // export { useAPIForRegeneration } from "./useAPIForRegeneration";
+export { useChat } from "./useChat";
 export { useChatRoomSearch } from "./useChatRoomSearch";
 export { useCreateChatRoom } from "./useCreateChatRoom";
 export { useDeleteChatRoom } from "./useDeleteChatRoom";

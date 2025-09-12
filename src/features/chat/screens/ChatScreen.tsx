@@ -3,13 +3,13 @@ import React, { useRef } from "react";
 import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useChat } from "@/entities/chatRoom";
 import type { ChatMessage } from "@/entities/message";
 import { useLogout } from "@/features/auth";
 import {
   ChatHeader,
   ChatInputBar,
   MessageList,
-  useChat,
   useModelSelection,
 } from "@/features/chat";
 import { AppTheme, useAppTheme } from "@/features/theme";
