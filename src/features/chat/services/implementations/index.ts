@@ -1,6 +1,5 @@
 // src/features/chat/services/implementations/index.ts
 export * from "./ChatAPIService";
-export { ExpoRouterNavigationService } from "./ExpoRouterNavigationService";
 export * from "./MessageAnimationService";
 export * from "./MessageStateService";
 // SupabaseChatRoomService moved to @/entities/chatRoom

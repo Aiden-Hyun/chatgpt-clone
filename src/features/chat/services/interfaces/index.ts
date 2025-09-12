@@ -3,7 +3,6 @@ export * from "@/entities/message";
 export * from "./IAIApiService";
 // IChatRoomService moved to @/entities/chatRoom
 export * from "./IMessageService";
-export * from "./INavigationService";
 export * from "./IUIStateService";
 
 // New segregated interfaces

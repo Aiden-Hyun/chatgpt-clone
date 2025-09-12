@@ -17,7 +17,6 @@ export class ServiceFactory {
     const chatRoomService = ServiceRegistry.createChatRoomService();
     const messageService = ServiceRegistry.createMessageService();
     const aiApiService = ServiceRegistry.createAIApiService();
-    const navigationService = ServiceRegistry.createNavigationService();
     // Response processor functions (inlined from AIResponseProcessor)
     const validateResponse = (response: any): boolean => {
       if (response.content) return true;
@@ -45,8 +44,7 @@ export class ServiceFactory {
       messageService,
       animationService,
       messageStateService,
-      typingStateService,
-      navigationService
+      typingStateService
     );
   }
 
@@ -65,9 +63,6 @@ export class ServiceFactory {
     return ServiceRegistry.createAIApiService();
   }
 
-  static createNavigationService() {
-    return ServiceRegistry.createNavigationService();
-  }
 
   /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */
   static createUIStateService(

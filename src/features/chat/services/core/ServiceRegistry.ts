@@ -7,14 +7,12 @@ import { IAIApiService } from "../interfaces/IAIApiService";
 import { IAnimationService } from "../interfaces/IAnimationService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
-import { INavigationService } from "../interfaces/INavigationService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
 export interface ServiceConfig {
   aiApiService: { new (): IAIApiService };
   chatRoomService: { new (): IChatRoomService };
   messageService: { new (): IMessageService };
-  navigationService: { new (): INavigationService };
   /** @deprecated Use individual services instead */
   uiStateService?: {
     new (
@@ -67,10 +65,6 @@ export class ServiceRegistry {
     return new config.messageService();
   }
 
-  static createNavigationService(): INavigationService {
-    const config = this.getConfig();
-    return new config.navigationService();
-  }
 
   /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */
   static createUIStateService(
