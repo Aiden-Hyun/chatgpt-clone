@@ -11,7 +11,10 @@ import { getLogger } from "@/shared/services/logger";
 
 // Import all the service classes (keeping them as classes)
 import { RetryService } from "@/features/chat/services/core/RetryService";
+import { appConfig } from "@/shared/lib/config";
 import { getSession } from "@/shared/lib/supabase/getSession";
+import { fetchJson } from "@/features/chat/lib/fetch";
+import { getModelInfo } from "@/features/chat/constants/models";
 import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
 import { MessageAnimation } from "@/features/chat/services/core/message-sender/MessageAnimation";
 import { MessagePersistence } from "@/features/chat/services/core/message-sender/MessagePersistence";
@@ -49,6 +52,98 @@ const extractContent = (response: any): string | null => {
 
   // Handle chat responses (choices format)
   return response.choices![0].message.content;
+};
+
+// Inlined from ChatAPIService
+const sendMessageToAPI = async (
+  request: any,
+  accessToken: string,
+  isSearchMode?: boolean
+): Promise<any> => {
+  const logger = getLogger("ChatAPIService");
+  
+  // Get model configuration from client-side models
+  const modelInfo = getModelInfo(request.model);
+
+  // Validate search mode is supported for this model
+  if (isSearchMode && !modelInfo?.capabilities.search) {
+    throw new Error(`Search is not supported for model: ${request.model}`);
+  }
+
+  // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
+  const payload = isSearchMode
+    ? {
+        question:
+          request.messages[request.messages.length - 1]?.content || "",
+        model: request.model,
+        modelConfig: {
+          tokenParameter: modelInfo?.tokenParameter || "max_tokens",
+          supportsCustomTemperature:
+            modelInfo?.supportsCustomTemperature ?? true,
+          defaultTemperature: modelInfo?.defaultTemperature || 0.7,
+        },
+      }
+    : {
+        roomId: request.roomId,
+        messages: request.messages,
+        model: request.model,
+        modelConfig: {
+          tokenParameter: modelInfo?.tokenParameter || "max_tokens",
+          supportsCustomTemperature:
+            modelInfo?.supportsCustomTemperature ?? true,
+          defaultTemperature: modelInfo?.defaultTemperature || 0.7,
+        },
+        // Include idempotency and persistence control so the edge function can upsert reliably
+        clientMessageId: request.clientMessageId,
+        skipPersistence: request.skipPersistence,
+      };
+
+  logger.info(
+    `Making API call for ${
+      isSearchMode ? "search" : "chat"
+    } mode with model ${request.model} (${
+      request.messages.length
+    } messages, room ${request.roomId})`
+  );
+
+  logger.debug(
+    `Request payload details: clientMessageId ${request.clientMessageId}, skipPersistence ${request.skipPersistence}`
+  );
+
+  const url = isSearchMode
+    ? `${appConfig.edgeFunctionBaseUrl}/react-search`
+    : `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
+  const response = await fetchJson<any>(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+  });
+  logger.info(
+    `Received API response for ${
+      isSearchMode ? "search" : "chat"
+    } mode with model ${request.model} (response: ${
+      !!response ? "received" : "none"
+    })`
+  );
+
+  // Transform search response to match AIApiResponse format
+  if (isSearchMode) {
+    const searchResponse = response as {
+      final_answer_md: string;
+      citations: unknown[];
+      time_warning?: string;
+    };
+    return {
+      content: searchResponse.final_answer_md,
+      model: request.model, // Use the actual model instead of hardcoded 'react-search'
+      citations: searchResponse.citations,
+      time_warning: searchResponse.time_warning,
+    };
+  }
+
+  return response;
 };
 
 export interface UseMessageOrchestratorProps {
@@ -98,7 +193,6 @@ export const useMessageOrchestrator = ({
         ServiceRegistry.createMessageStateService(setMessages),
         { setTyping: () => {} } // No-op for typing - direct object
       ),
-      aiApiService: ServiceRegistry.createAIApiService(),
       responseProcessor: { validateResponse, extractContent },
     };
   }, [setMessages]); // Only recreate if setMessages changes
@@ -230,7 +324,7 @@ export const useMessageOrchestrator = ({
 
         const apiResponse = await services.retryService.retryOperation(
           () =>
-            services.aiApiService.sendMessage(
+            sendMessageToAPI(
               apiRequest,
               session.access_token,
               isSearchMode

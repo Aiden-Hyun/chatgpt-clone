@@ -2,6 +2,10 @@
 import type { ChatMessage } from "@/entities/message";
 
 import { MessageOrchestrator } from "./message-sender";
+import { appConfig } from "@/shared/lib/config";
+import { fetchJson } from "../../lib/fetch";
+import { getModelInfo } from "../../constants/models";
+import { getLogger } from "@/shared/services/logger";
 import { ServiceRegistry } from "./ServiceRegistry";
 
 /**
@@ -16,7 +20,78 @@ export class ServiceFactory {
     // Create all service instances using the registry
     const chatRoomService = ServiceRegistry.createChatRoomService();
     const messageService = ServiceRegistry.createMessageService();
-    const aiApiService = ServiceRegistry.createAIApiService();
+    // Inlined from ChatAPIService
+    const sendMessageFn = async (
+      request: any,
+      accessToken: string,
+      isSearchMode?: boolean
+    ): Promise<any> => {
+      const logger = getLogger("ChatAPIService");
+      
+      // Get model configuration from client-side models
+      const modelInfo = getModelInfo(request.model);
+
+      // Validate search mode is supported for this model
+      if (isSearchMode && !modelInfo?.capabilities.search) {
+        throw new Error(`Search is not supported for model: ${request.model}`);
+      }
+
+      // Consolidated from legacy/fetchOpenAIResponse.ts with abort + timeout support via fetchJson
+      const payload = isSearchMode
+        ? {
+            question:
+              request.messages[request.messages.length - 1]?.content || "",
+            model: request.model,
+            modelConfig: {
+              tokenParameter: modelInfo?.tokenParameter || "max_tokens",
+              supportsCustomTemperature:
+                modelInfo?.supportsCustomTemperature ?? true,
+              defaultTemperature: modelInfo?.defaultTemperature || 0.7,
+            },
+          }
+        : {
+            roomId: request.roomId,
+            messages: request.messages,
+            model: request.model,
+            modelConfig: {
+              tokenParameter: modelInfo?.tokenParameter || "max_tokens",
+              supportsCustomTemperature:
+                modelInfo?.supportsCustomTemperature ?? true,
+              defaultTemperature: modelInfo?.defaultTemperature || 0.7,
+            },
+            // Include idempotency and persistence control so the edge function can upsert reliably
+            clientMessageId: request.clientMessageId,
+            skipPersistence: request.skipPersistence,
+          };
+
+      const url = isSearchMode
+        ? `${appConfig.edgeFunctionBaseUrl}/react-search`
+        : `${appConfig.edgeFunctionBaseUrl}/ai-chat`;
+      const response = await fetchJson<any>(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Transform search response to match AIApiResponse format
+      if (isSearchMode) {
+        const searchResponse = response as {
+          final_answer_md: string;
+          citations: unknown[];
+          time_warning?: string;
+        };
+        return {
+          content: searchResponse.final_answer_md,
+          model: request.model,
+          citations: searchResponse.citations,
+          time_warning: searchResponse.time_warning,
+        };
+      }
+
+      return response;
+    };
     // Response processor functions (inlined from AIResponseProcessor)
     const validateResponse = (response: any): boolean => {
       if (response.content) return true;
@@ -38,7 +113,7 @@ export class ServiceFactory {
 
     // Create and return the orchestrator with all dependencies injected
     return new MessageOrchestrator(
-      aiApiService,
+      sendMessageFn,
       responseProcessor,
       chatRoomService,
       messageService,
@@ -59,9 +134,6 @@ export class ServiceFactory {
     return ServiceRegistry.createMessageService();
   }
 
-  static createAIApiService() {
-    return ServiceRegistry.createAIApiService();
-  }
 
 
   /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */

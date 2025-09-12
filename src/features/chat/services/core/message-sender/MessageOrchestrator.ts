@@ -4,7 +4,6 @@ import {
   DEFAULT_RETRY_DELAY_MS,
   MESSAGE_SEND_MAX_RETRIES,
 } from "../../../constants";
-import { IAIApiService } from "../../interfaces/IAIApiService";
 import { RetryService } from "../RetryService";
 
 import { MessageAnimation } from "./MessageAnimation";
@@ -25,7 +24,7 @@ export class MessageOrchestrator {
   private readonly animation: MessageAnimation;
 
   constructor(
-    private aiApiService: IAIApiService,
+    private sendMessageFn: (request: any, accessToken: string, isSearchMode?: boolean) => Promise<any>,
     private responseProcessor: { validateResponse: (response: any) => boolean; extractContent: (response: any) => string | null },
     chatRoomService: unknown,
     messageService: unknown,
@@ -144,7 +143,7 @@ export class MessageOrchestrator {
       );
       const apiResponse = await this.retryService.retryOperation(
         () =>
-          this.aiApiService.sendMessage(
+          this.sendMessageFn(
             apiRequest,
             request.session.access_token,
             request.isSearchMode

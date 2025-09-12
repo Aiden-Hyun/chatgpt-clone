@@ -1,6 +1,5 @@
 // src/features/chat/services/interfaces/index.ts
 export * from "@/entities/message";
-export * from "./IAIApiService";
 // IChatRoomService moved to @/entities/chatRoom
 export * from "./IMessageService";
 export * from "./IUIStateService";

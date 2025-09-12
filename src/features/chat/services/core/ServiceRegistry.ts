@@ -3,14 +3,12 @@ import type { IChatRoomService } from "@/entities/chatRoom";
 import type { ChatMessage } from "@/entities/message";
 import type { Session } from "@/entities/session";
 
-import { IAIApiService } from "../interfaces/IAIApiService";
 import { IAnimationService } from "../interfaces/IAnimationService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
 export interface ServiceConfig {
-  aiApiService: { new (): IAIApiService };
   chatRoomService: { new (): IChatRoomService };
   messageService: { new (): IMessageService };
   /** @deprecated Use individual services instead */
@@ -50,10 +48,6 @@ export class ServiceRegistry {
     return this.config;
   }
 
-  static createAIApiService(): IAIApiService {
-    const config = this.getConfig();
-    return new config.aiApiService();
-  }
 
   static createChatRoomService(): IChatRoomService {
     const config = this.getConfig();
