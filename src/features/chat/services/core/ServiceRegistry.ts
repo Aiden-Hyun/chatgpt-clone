@@ -9,7 +9,6 @@ import { IAuthService } from "../interfaces/IAuthService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { INavigationService } from "../interfaces/INavigationService";
-import { ITypingStateService } from "../interfaces/ITypingStateService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
 export interface ServiceConfig {
@@ -30,11 +29,6 @@ export interface ServiceConfig {
     new (
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
     ): IMessageStateService;
-  };
-  typingStateService: {
-    new (
-      setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
-    ): ITypingStateService;
   };
   animationService: {
     new (
@@ -105,9 +99,8 @@ export class ServiceRegistry {
 
   static createTypingStateService(
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
-  ): ITypingStateService {
-    const config = this.getConfig();
-    return new config.typingStateService(setIsTyping);
+  ) {
+    return { setTyping: setIsTyping }; // Direct object - no need for service class
   }
 
   static createAnimationService(

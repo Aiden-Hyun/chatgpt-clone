@@ -95,7 +95,7 @@ export const useMessageOrchestrator = ({
       animation: new MessageAnimation(
         ServiceRegistry.createAnimationService(setMessages),
         ServiceRegistry.createMessageStateService(setMessages),
-        ServiceRegistry.createTypingStateService(() => {}) // No-op for typing
+        { setTyping: () => {} } // No-op for typing - direct object
       ),
       aiApiService: ServiceRegistry.createAIApiService(),
       responseProcessor: { validateResponse, extractContent },

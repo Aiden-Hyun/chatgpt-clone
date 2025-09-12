@@ -9,7 +9,6 @@ import {
   MessageAnimationService,
   MessageStateService,
   SupabaseAuthService,
-  TypingStateService,
 } from "../implementations";
 
 export function configureServices(): void {
@@ -20,7 +19,6 @@ export function configureServices(): void {
     navigationService: ExpoRouterNavigationService,
     // New services
     messageStateService: MessageStateService,
-    typingStateService: TypingStateService,
     animationService: MessageAnimationService,
     authService: SupabaseAuthService,
   });

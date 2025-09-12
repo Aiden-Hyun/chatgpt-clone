@@ -3,7 +3,6 @@ import type { ChatMessage } from "@/entities/message";
 import { getLogger } from "../../../../../shared/services/logger";
 import { IAnimationService } from "../../interfaces/IAnimationService";
 import { IMessageStateService } from "../../interfaces/IMessageStateService";
-import { ITypingStateService } from "../../interfaces/ITypingStateService";
 
 export interface AnimationRequest {
   fullContent: string;
@@ -18,7 +17,7 @@ export class MessageAnimation {
   constructor(
     private animationService: IAnimationService,
     private messageStateService: IMessageStateService,
-    private typingStateService: ITypingStateService
+    private typingStateService: { setTyping: (isTyping: boolean) => void }
   ) {}
 
   updateUIState(request: {

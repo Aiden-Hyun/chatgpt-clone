@@ -11,6 +11,5 @@ export * from "./IAnimationService";
 export * from "./IAuthService";
 export * from "./IMessageStateService";
 export * from "./IRegenerationService";
-export * from "./ITypingStateService";
 
 // Search service interface

@@ -33,8 +33,7 @@ export class ServiceFactory {
     // Use the new, more focused services
     const messageStateService =
       ServiceRegistry.createMessageStateService(setMessages);
-    const typingStateService =
-      ServiceRegistry.createTypingStateService(setIsTyping);
+    const typingStateService = { setTyping: setIsTyping }; // Direct object instead of service
     const animationService =
       ServiceRegistry.createAnimationService(setMessages);
 
@@ -93,7 +92,7 @@ export class ServiceFactory {
   static createTypingStateService(
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
   ) {
-    return ServiceRegistry.createTypingStateService(setIsTyping);
+    return { setTyping: setIsTyping }; // Direct object instead of service class
   }
 
   static createAnimationService(
