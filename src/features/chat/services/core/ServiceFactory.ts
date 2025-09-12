@@ -4,7 +4,6 @@ import type { Session } from "@/entities/session";
 
 import { IAIApiService } from "../interfaces/IAIApiService";
 import { IMessageService } from "../interfaces/IMessageService";
-import { IRegenerationService } from "../interfaces/IRegenerationService";
 
 import { OpenAIResponseProcessor } from "./AIResponseProcessor";
 import { MessageOrchestrator } from "./message-sender";
@@ -98,27 +97,4 @@ export class ServiceFactory {
     return ServiceRegistry.createAnimationService(setMessages);
   }
 
-  static createRegenerationService(
-    messageStateManager: unknown, // Using unknown to avoid circular dependency
-    aiApiService: IAIApiService,
-    messageService: IMessageService,
-    animationService: unknown,
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-    session: Session,
-    selectedModel: string,
-    roomId: number | null,
-    isSearchMode: boolean = false
-  ): IRegenerationService {
-    return ServiceRegistry.createRegenerationService(
-      messageStateManager,
-      aiApiService,
-      messageService,
-      animationService,
-      setMessages,
-      session,
-      selectedModel,
-      roomId,
-      isSearchMode
-    );
-  }
 }

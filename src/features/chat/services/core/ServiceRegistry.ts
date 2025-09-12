@@ -9,7 +9,6 @@ import { IAuthService } from "../interfaces/IAuthService";
 import { IMessageService } from "../interfaces/IMessageService";
 import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { INavigationService } from "../interfaces/INavigationService";
-import { IRegenerationService } from "../interfaces/IRegenerationService";
 import { ITypingStateService } from "../interfaces/ITypingStateService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
@@ -41,19 +40,6 @@ export interface ServiceConfig {
     new (
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
     ): IAnimationService;
-  };
-  regenerationService: {
-    new (
-      messageStateManager: unknown, // Using unknown to avoid circular dependency
-      aiApiService: IAIApiService,
-      messageService: IMessageService,
-      animationService: IAnimationService,
-      setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-      session: Session,
-      selectedModel: string,
-      roomId: number | null,
-      isSearchMode: boolean
-    ): IRegenerationService;
   };
   authService: { new (): IAuthService };
 
@@ -131,30 +117,6 @@ export class ServiceRegistry {
     return new config.animationService(setMessages);
   }
 
-  static createRegenerationService(
-    messageStateManager: unknown, // Using unknown to avoid circular dependency
-    aiApiService: IAIApiService,
-    messageService: IMessageService,
-    animationService: IAnimationService,
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-    session: Session,
-    selectedModel: string,
-    roomId: number | null,
-    isSearchMode: boolean
-  ): IRegenerationService {
-    const config = this.getConfig();
-    return new config.regenerationService(
-      messageStateManager,
-      aiApiService,
-      messageService,
-      animationService,
-      setMessages,
-      session,
-      selectedModel,
-      roomId,
-      isSearchMode
-    );
-  }
 
   static createAuthService(): IAuthService {
     const config = this.getConfig();

@@ -7,7 +7,6 @@ import {
   ChatAPIService,
   ExpoRouterNavigationService,
   MessageAnimationService,
-  MessageRegenerationService,
   MessageStateService,
   SupabaseAuthService,
   TypingStateService,
@@ -23,7 +22,6 @@ export function configureServices(): void {
     messageStateService: MessageStateService,
     typingStateService: TypingStateService,
     animationService: MessageAnimationService,
-    regenerationService: MessageRegenerationService,
     authService: SupabaseAuthService,
   });
 }

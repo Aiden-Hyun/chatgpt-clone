@@ -3,10 +3,13 @@ import { useCallback, useEffect, useMemo } from "react";
 
 import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
 import { useMessageInput } from "@/entities/message";
+import type { AIApiRequest } from "@/entities/message";
 import { useAuth } from "@/entities/session";
+import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
-import { ServiceFactory } from "../../services/core/ServiceFactory";
+import { OpenAIResponseProcessor } from "../../services/core/AIResponseProcessor";
+import { ServiceRegistry } from "../../services/core/ServiceRegistry";
 import { MessageStateManager } from "../../services/MessageStateManager";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 
@@ -96,9 +99,9 @@ export const useChat = (
 
       logger.info("Message send initiated", {
         messageId,
-        roomId: numericRoomId,
+    roomId: numericRoomId,
         model: selectedModel,
-        isSearchMode,
+    isSearchMode,
         messageLength: trimmedContent.length,
       });
 
@@ -137,27 +140,18 @@ export const useChat = (
     ]
   );
 
-  // Create regeneration service - inline from useRegenerationService
-  const regenerationService = useMemo(() => {
+  // Create services for regeneration - direct instantiation
+  const regenerationServices = useMemo(() => {
     if (!session) return null;
 
-    const messageStateManager = new MessageStateManager(setMessages);
-    const aiApiService = ServiceFactory.createAIApiService();
-    const messageService = ServiceFactory.createMessageService();
-    const animationService = ServiceFactory.createAnimationService(setMessages);
-
-    return ServiceFactory.createRegenerationService(
-      messageStateManager,
-      aiApiService,
-      messageService,
-      animationService,
-      setMessages,
-      session,
-      selectedModel,
-      numericRoomId,
-      isSearchMode
-    );
-  }, [setMessages, session, selectedModel, numericRoomId, isSearchMode]);
+    return {
+      messageStateManager: new MessageStateManager(setMessages),
+      aiApiService: ServiceRegistry.createAIApiService(),
+      messageService: ServiceRegistry.createMessageService(),
+      animationService: ServiceRegistry.createAnimationService(setMessages),
+      responseProcessor: new OpenAIResponseProcessor(),
+    };
+  }, [setMessages, session]);
 
   // Wrapper for sendMessage that handles input clearing and error recovery
   const sendMessage = useCallback(async () => {
@@ -188,7 +182,7 @@ export const useChat = (
     handleInputChange,
   ]);
 
-  // Regenerate message - inline from useRegenerationService
+  // Regenerate message - inline from MessageRegenerationService
   const regenerateMessage = useCallback(
     async (index: number, overrideUserContent?: string) => {
       if (index === undefined || index === null) {
@@ -196,8 +190,8 @@ export const useChat = (
         return;
       }
 
-      if (!regenerationService || !session) {
-        console.warn("🔄 REGEN-HOOK: No regenerationService or session");
+      if (!regenerationServices || !session) {
+        console.warn("🔄 REGEN-HOOK: No regenerationServices or session");
         return;
       }
 
@@ -238,16 +232,189 @@ export const useChat = (
         return;
       }
 
+      const targetMessageId = targetMessage.id;
+      const {
+        messageStateManager,
+        aiApiService,
+        messageService,
+        animationService,
+        responseProcessor,
+      } = regenerationServices;
+
       // Start tracking regeneration for UI updates
       startRegenerating(index);
 
       try {
-        await regenerationService.regenerateMessage(
-          targetMessage.id,
-          messages,
-          overrideUserContent ?? userMessage.content,
-          targetMessage.content
+        // Set loading state (single atomic update using id)
+        messageStateManager.transition(targetMessageId, "loading");
+
+        // Prepare history from the snapshot (all messages before the assistant message)
+        // Filter only role, content, id to avoid UI-only fields affecting the prompt
+        const messageHistory = messages
+          .slice(0, index)
+          .map((m) => ({
+            role: m.role,
+            content: m.content || "",
+            id: m.id,
+            state: m.state,
+          }));
+
+        // If caller provided an override for the immediate previous user message, apply it
+        let finalHistory = messageHistory;
+        const userContent = overrideUserContent ?? userMessage.content;
+        if (userContent && userContent.trim().length > 0) {
+          const lastIdx = messageHistory.length - 1;
+          if (lastIdx >= 0 && messageHistory[lastIdx]?.role === "user") {
+            const overridden = {
+              ...messageHistory[lastIdx],
+              content: userContent,
+            };
+            finalHistory = messageHistory.slice(0, lastIdx).concat(overridden);
+          }
+        }
+
+        // Call AI API with idempotency and skipPersistence (server should not write on regen)
+        const apiRequest: AIApiRequest = {
+          roomId: numericRoomId!,
+          messages: finalHistory,
+          model: selectedModel,
+          clientMessageId: targetMessageId,
+          skipPersistence: true,
+        };
+
+        // Determine which token to use
+        let accessToken = session.access_token;
+
+        if (
+          session.expires_at &&
+          Math.floor(Date.now() / 1000) > session.expires_at
+        ) {
+          try {
+            const { data, error } = await supabase.auth.refreshSession();
+            if (!error && data.session) {
+              accessToken = data.session.access_token;
+            } else {
+              console.warn(
+                "🔄 REGEN-SERVICE: Session refresh failed, proceeding with existing token"
+              );
+            }
+          } catch {
+            console.warn(
+              "🔄 REGEN-SERVICE: Session refresh threw, proceeding with existing token"
+            );
+          }
+        }
+
+        const apiResponse = await aiApiService.sendMessage(
+          apiRequest,
+          accessToken,
+          isSearchMode
         );
+
+        // Use the same response processor as MessageSenderService for consistent handling
+        if (!responseProcessor.validateResponse(apiResponse)) {
+          console.error("🔄 REGEN-SERVICE: API response missing content");
+          throw new Error("No content in AI response");
+        }
+
+        const newContent = responseProcessor.extractContent(apiResponse);
+        if (!newContent) {
+          console.error(
+            "🔄 REGEN-SERVICE: No content extracted from API response"
+          );
+          throw new Error("No content in AI response");
+        }
+
+        // Drive UI state and animation
+        messageStateManager.handleRegeneration(targetMessageId, newContent);
+        animationService.setMessageFullContentAndAnimate({
+          fullContent: newContent,
+          messageId: targetMessageId,
+        });
+
+        // Persist if room exists
+        if (numericRoomId) {
+          try {
+            // Prefer updating by database id when available (ids loaded as `db:<id>`)
+            if (targetMessageId.startsWith("db:")) {
+              const dbIdStr = targetMessageId.slice(3);
+              const dbId = Number(dbIdStr);
+              if (
+                !Number.isNaN(dbId) &&
+                (
+                  messageService as {
+                    updateAssistantMessageByDbId?: unknown;
+                  }
+                ).updateAssistantMessageByDbId
+              ) {
+                await (
+                  messageService as {
+                    updateAssistantMessageByDbId: (
+                      params: unknown
+                    ) => Promise<unknown>;
+                  }
+                ).updateAssistantMessageByDbId({
+                  dbId,
+                  newContent,
+                  session: session,
+                });
+              }
+            } else if (
+              (
+                messageService as {
+                  updateAssistantMessageByClientId?: unknown;
+                }
+              ).updateAssistantMessageByClientId &&
+              numericRoomId
+            ) {
+              await (
+                messageService as {
+                  updateAssistantMessageByClientId: (
+                    params: unknown
+                  ) => Promise<unknown>;
+                }
+              ).updateAssistantMessageByClientId({
+                roomId: numericRoomId,
+                messageId: targetMessageId,
+                newContent,
+                session: session,
+              });
+            }
+
+            // Also persist edited user message if it came from DB and content changed
+            const userIndex = index - 1;
+            if (userIndex >= 0 && messages[userIndex]?.role === "user") {
+              const userMsg = messages[userIndex];
+              if (
+                userMsg?.id &&
+                typeof userMsg.id === "string" &&
+                userMsg.id.startsWith("db:") &&
+                userContent &&
+                userContent.trim().length > 0 &&
+                userContent !== userMsg.content &&
+                (messageService as { updateUserMessageByDbId?: unknown })
+                  .updateUserMessageByDbId
+              ) {
+                const userDbId = Number(userMsg.id.slice(3));
+                if (!Number.isNaN(userDbId)) {
+                  await (
+                    messageService as {
+                      updateUserMessageByDbId: (
+                        params: unknown
+                      ) => Promise<unknown>;
+                    }
+                  ).updateUserMessageByDbId({
+                    dbId: userDbId,
+                    newContent: userContent,
+                    session: session,
+                  });
+                }
+              }
+            }
+          } catch (dbError) {
+            console.error("🔄 REGEN-SERVICE: DB update failed", dbError);
+          }
+        }
       } catch (error) {
         logger.error(
           `Error regenerating message at index ${index}: ${
@@ -255,9 +422,22 @@ export const useChat = (
           }`
         );
         console.error(
-          "🔄 REGEN-HOOK: Error in regenerationService.regenerateMessage:",
-          error
+          "🔄 REGEN-SERVICE: Failed to regenerate message",
+          {
+            index,
+            error,
+          }
         );
+        // Best-effort error state using snapshot index fallback
+        setMessages((prev) => {
+          if (index < 0 || index >= prev.length) return prev;
+          const t = prev[index];
+          if (!t?.id) return prev;
+          const updated = prev.slice();
+          updated[index] = { ...t, state: "error" };
+          return updated;
+        });
+        throw error;
       } finally {
         // Always stop tracking regardless of success/failure
         stopRegenerating(index);
@@ -265,8 +445,12 @@ export const useChat = (
     },
     [
       messages,
-      regenerationService,
+      regenerationServices,
       session,
+      numericRoomId,
+      selectedModel,
+      isSearchMode,
+      setMessages,
       startRegenerating,
       stopRegenerating,
       logger,
