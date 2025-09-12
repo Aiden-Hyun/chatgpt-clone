@@ -1,4 +1,6 @@
 import { errorHandler } from "../../../../../shared/services/error";
+import type { ChatMessage } from "@/entities/message";
+
 import { getLogger } from "../../../../../shared/services/logger";
 import {
   DEFAULT_RETRY_DELAY_MS,
@@ -26,11 +28,11 @@ export class MessageOrchestrator {
   constructor(
     private sendMessageFn: (request: any, accessToken: string, isSearchMode?: boolean) => Promise<any>,
     private responseProcessor: { validateResponse: (response: any) => boolean; extractContent: (response: any) => string | null },
-    chatRoomService: unknown,
-    messageService: unknown,
-    animationService: unknown,
-    messageStateService: unknown,
-    typingStateService: unknown
+    chatRoomService: any,
+    messageService: any,
+    animationService: any,
+    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
+    typingStateService: any
   ) {
     this.retryService = new RetryService({
       maxRetries: MESSAGE_SEND_MAX_RETRIES,
@@ -42,7 +44,7 @@ export class MessageOrchestrator {
     this.persistence = new MessagePersistence(chatRoomService, messageService);
     this.animation = new MessageAnimation(
       animationService,
-      messageStateService,
+      setMessages,
       typingStateService
     );
   }
@@ -224,14 +226,14 @@ export class MessageOrchestrator {
         } catch (error) {
           this.logger.error("Database operations failed", {
             requestId,
-            error: error.message,
+            error: (error as Error).message,
           });
         }
       })();
 
       return { success: true, roomId };
     } catch (error) {
-      this.logger.error("Message send failed", { error: error.message });
+      this.logger.error("Message send failed", { error: (error as Error).message });
 
       // Use unified error handling system
       const processedError = await errorHandler.handle(error, {

@@ -190,7 +190,7 @@ export const useMessageOrchestrator = ({
       ),
       animation: new MessageAnimation(
         ServiceRegistry.createAnimationService(setMessages),
-        ServiceRegistry.createMessageStateService(setMessages),
+        setMessages,
         { setTyping: () => {} } // No-op for typing - direct object
       ),
       responseProcessor: { validateResponse, extractContent },

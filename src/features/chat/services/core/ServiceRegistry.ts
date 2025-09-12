@@ -5,7 +5,6 @@ import type { Session } from "@/entities/session";
 
 import { IAnimationService } from "../interfaces/IAnimationService";
 import { IMessageService } from "../interfaces/IMessageService";
-import { IMessageStateService } from "../interfaces/IMessageStateService";
 import { IUIStateService } from "../interfaces/IUIStateService";
 
 export interface ServiceConfig {
@@ -20,11 +19,6 @@ export interface ServiceConfig {
     ): IUIStateService;
   };
   // New services
-  messageStateService: {
-    new (
-      setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
-    ): IMessageStateService;
-  };
   animationService: {
     new (
       setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
@@ -76,12 +70,6 @@ export class ServiceRegistry {
   }
 
   // New service creators
-  static createMessageStateService(
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
-  ): IMessageStateService {
-    const config = this.getConfig();
-    return new config.messageStateService(setMessages);
-  }
 
   static createTypingStateService(
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>

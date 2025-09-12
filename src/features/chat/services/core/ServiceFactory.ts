@@ -105,8 +105,6 @@ export class ServiceFactory {
     const responseProcessor = { validateResponse, extractContent };
 
     // Use the new, more focused services
-    const messageStateService =
-      ServiceRegistry.createMessageStateService(setMessages);
     const typingStateService = { setTyping: setIsTyping }; // Direct object instead of service
     const animationService =
       ServiceRegistry.createAnimationService(setMessages);
@@ -118,7 +116,7 @@ export class ServiceFactory {
       chatRoomService,
       messageService,
       animationService,
-      messageStateService,
+      setMessages, // Pass setMessages directly instead of messageStateService
       typingStateService
     );
   }

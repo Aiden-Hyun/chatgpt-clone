@@ -5,7 +5,6 @@ import { SupabaseMessageService } from "@/entities/message";
 import { ServiceRegistry } from "../core/ServiceRegistry";
 import {
   MessageAnimationService,
-  MessageStateService,
 } from "../implementations";
 
 export function configureServices(): void {
@@ -13,7 +12,6 @@ export function configureServices(): void {
     chatRoomService: SupabaseChatRoomService,
     messageService: SupabaseMessageService,
     // New services
-    messageStateService: MessageStateService,
     animationService: MessageAnimationService,
   });
 }
