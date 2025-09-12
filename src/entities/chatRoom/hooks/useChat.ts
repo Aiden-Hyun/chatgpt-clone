@@ -11,7 +11,7 @@ import { appConfig } from "@/shared/lib/config";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
-import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
+import { SupabaseMessageService } from "@/entities/message/CRUD/SupabaseMessageCRUD";
 import { MessageStateManager } from "@/features/chat/services/MessageStateManager";
 import { generateMessageId } from "@/features/chat/utils/messageIdGenerator";
 import {
@@ -471,7 +471,7 @@ export const useChat = (
 
     return {
       messageStateManager: new MessageStateManager(setMessages),
-      messageService: ServiceRegistry.createMessageService(),
+      messageService: new SupabaseMessageService(),
       responseProcessor: { validateResponse, extractContent },
     };
   }, [setMessages, session]);

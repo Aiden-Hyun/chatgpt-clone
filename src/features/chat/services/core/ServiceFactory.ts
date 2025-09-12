@@ -6,7 +6,8 @@ import { getLogger } from "@/shared/services/logger";
 import { getModelInfo } from "../../constants/models";
 import { fetchJson } from "../../lib/fetch";
 import { MessageOrchestrator } from "./message-sender";
-import { ServiceRegistry } from "./ServiceRegistry";
+import { SupabaseChatRoomService } from "@/entities/chatRoom/CRUD/SupabaseChatRoomCRUD";
+import { SupabaseMessageService } from "@/entities/message/CRUD/SupabaseMessageCRUD";
 
 /**
  * Factory for creating service instances with proper dependency injection
@@ -17,9 +18,9 @@ export class ServiceFactory {
     setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
     setIsTyping: React.Dispatch<React.SetStateAction<boolean>>
   ): MessageOrchestrator {
-    // Create all service instances using the registry
-    const chatRoomService = ServiceRegistry.createChatRoomService();
-    const messageService = ServiceRegistry.createMessageService();
+    // Create all service instances directly
+    const chatRoomService = new SupabaseChatRoomService();
+    const messageService = new SupabaseMessageService();
     // Inlined from ChatAPIService
     const sendMessageFn = async (
       request: any,
@@ -122,31 +123,11 @@ export class ServiceFactory {
    * Creates individual services for testing or custom usage
    */
   static createChatRoomService() {
-    return ServiceRegistry.createChatRoomService();
+    return new SupabaseChatRoomService();
   }
 
   static createMessageService() {
-    return ServiceRegistry.createMessageService();
-  }
-
-  /** @deprecated Use createMessageStateService, createTypingStateService, etc. instead */
-  static createUIStateService(
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-    setIsTyping: React.Dispatch<React.SetStateAction<boolean>>,
-    setDrafts: React.Dispatch<React.SetStateAction<Record<string, string>>>
-  ) {
-    return ServiceRegistry.createUIStateService(
-      setMessages,
-      setIsTyping,
-      setDrafts
-    );
-  }
-
-  // New service creators
-  static createMessageStateService(
-    setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
-  ) {
-    return ServiceRegistry.createMessageStateService(setMessages);
+    return new SupabaseMessageService();
   }
 
   static createTypingStateService(

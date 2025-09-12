@@ -13,7 +13,8 @@ import { getLogger } from "@/shared/services/logger";
 import { getModelInfo } from "@/features/chat/constants/models";
 import { fetchJson } from "@/features/chat/lib/fetch";
 import { RetryService } from "@/features/chat/services/core/RetryService";
-import { ServiceRegistry } from "@/features/chat/services/core/ServiceRegistry";
+import { SupabaseChatRoomService } from "@/entities/chatRoom/CRUD/SupabaseChatRoomCRUD";
+import { SupabaseMessageService } from "@/entities/message/CRUD/SupabaseMessageCRUD";
 import { MessageAnimation } from "@/features/chat/services/core/message-sender/MessageAnimation";
 import { MessagePersistence } from "@/features/chat/services/core/message-sender/MessagePersistence";
 import { MessageValidator } from "@/features/chat/services/core/message-sender/MessageValidator";
@@ -182,8 +183,8 @@ export const useMessageOrchestrator = ({
       }),
       validator: new MessageValidator(),
       persistence: new MessagePersistence(
-        ServiceRegistry.createChatRoomService(),
-        ServiceRegistry.createMessageService()
+        new SupabaseChatRoomService(),
+        new SupabaseMessageService()
       ),
       animation: new MessageAnimation(
         setMessages,
