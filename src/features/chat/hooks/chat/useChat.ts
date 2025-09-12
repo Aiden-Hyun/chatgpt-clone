@@ -1,9 +1,9 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
-import { useMessageInput } from "@/entities/message";
-import type { AIApiRequest } from "@/entities/message";
+import type { AIApiRequest, ChatMessage } from "@/entities/message";
+import { useMessageInput, useReadMessages } from "@/entities/message";
 import { useAuth } from "@/entities/session";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
@@ -13,7 +13,16 @@ import { ServiceRegistry } from "../../services/core/ServiceRegistry";
 import { MessageStateManager } from "../../services/MessageStateManager";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 
-import { useChatState } from "./useChatState";
+// Merged from useChatState - Legacy interfaces
+interface LoadingStates {
+  regenerating?: Set<number>; // Only keep regeneration tracking by index
+}
+
+interface ChatState {
+  messages: ChatMessage[];
+  loadingStates: LoadingStates;
+  loading: boolean; // Only for initial room loading
+}
 
 type UseChatOptions = {
   selectedModel?: string;
@@ -29,20 +38,159 @@ export const useChat = (
   const logger = getLogger("useChat");
   const { session } = useAuth();
 
-  // Core state management
-  const chatState = useChatState(numericRoomId);
-  const {
-    messages,
-    loading,
-    regeneratingIndices,
-    getLoadingMessages,
-    getAnimatingMessages,
-    isNewMessageLoading,
-    setMessages,
-    startRegenerating,
-    stopRegenerating,
-    isRegenerating,
-  } = chatState;
+  // Merged from useChatState - Core state management
+  const [state, setState] = useState<ChatState>({
+    messages: [],
+    loadingStates: {
+      regenerating: new Set(),
+    },
+    loading: true,
+  });
+
+  // State getters
+  const { messages, loadingStates, loading } = state;
+  const regeneratingIndices = loadingStates.regenerating || new Set();
+
+  // State machine-based getters
+  const getLoadingMessages = useCallback(() => {
+    return messages.filter((msg) => msg.state === "loading");
+  }, [messages]);
+
+  const getAnimatingMessages = useCallback(() => {
+    return messages.filter((msg) => msg.state === "animating");
+  }, [messages]);
+
+  const isNewMessageLoading = useCallback(() => {
+    // Check if the last message is an assistant message in loading state
+    const lastMessage = messages[messages.length - 1];
+    return (
+      lastMessage?.role === "assistant" && lastMessage?.state === "loading"
+    );
+  }, [messages]);
+
+  // Single state setter to prevent multiple re-renders
+  const updateState = useCallback(
+    (
+      updates: Partial<{
+        messages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[]);
+        loadingStates:
+          | Partial<LoadingStates>
+          | ((prev: LoadingStates) => LoadingStates);
+        loading: boolean;
+      }>
+    ) => {
+      setState((prev) => {
+        const newState = { ...prev };
+
+        if (updates.messages !== undefined) {
+          newState.messages =
+            typeof updates.messages === "function"
+              ? updates.messages(prev.messages)
+              : updates.messages;
+        }
+
+        if (updates.loadingStates !== undefined) {
+          newState.loadingStates =
+            typeof updates.loadingStates === "function"
+              ? updates.loadingStates(prev.loadingStates)
+              : { ...prev.loadingStates, ...updates.loadingStates };
+        }
+
+        if (updates.loading !== undefined) {
+          newState.loading = updates.loading;
+        }
+
+        return newState;
+      });
+    },
+    []
+  );
+
+  // Legacy setters for backward compatibility
+  const setMessages = useCallback(
+    (newMessages: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => {
+      updateState({ messages: newMessages });
+    },
+    [updateState]
+  );
+
+  const _setLoadingStates = useCallback(
+    (
+      newLoadingStates:
+        | Partial<LoadingStates>
+        | ((prev: LoadingStates) => LoadingStates)
+    ) => {
+      updateState({ loadingStates: newLoadingStates });
+    },
+    [updateState]
+  );
+
+  const setLoading = useCallback(
+    (loading: boolean) => {
+      updateState({ loading });
+    },
+    [updateState]
+  );
+
+  const startRegenerating = useCallback(
+    (index: number) => {
+      logger.info("Starting message regeneration", {
+        roomId: numericRoomId,
+        messageIndex: index,
+        currentRegeneratingCount: regeneratingIndices.size,
+      });
+
+      updateState({
+        loadingStates: (prev) => ({
+          ...prev,
+          regenerating: new Set([
+            ...Array.from(prev.regenerating || new Set<number>()),
+            index,
+          ]),
+        }),
+      });
+    },
+    [updateState, logger, numericRoomId, regeneratingIndices.size]
+  );
+
+  const stopRegenerating = useCallback(
+    (index: number) => {
+      logger.info("Stopping message regeneration", {
+        roomId: numericRoomId,
+        messageIndex: index,
+        wasRegenerating: regeneratingIndices.has(index),
+      });
+
+      updateState({
+        loadingStates: (prev) => {
+          const newRegenerating = new Set(prev.regenerating || []);
+          newRegenerating.delete(index);
+          return { ...prev, regenerating: newRegenerating };
+        },
+      });
+    },
+    [updateState, logger, numericRoomId, regeneratingIndices]
+  );
+
+  const isRegenerating = useCallback(
+    (index: number) => {
+      return regeneratingIndices.has(index);
+    },
+    [regeneratingIndices]
+  );
+
+  // Load messages for this room using entity hook
+  const { messages: loadedMessages, loading: messagesLoading, refetch } = useReadMessages(numericRoomId);
+  
+  // Update local state when messages are loaded
+  useEffect(() => {
+    setMessages(loadedMessages);
+  }, [loadedMessages, setMessages]);
+  
+  // Update loading state when messages are loading
+  useEffect(() => {
+    setLoading(messagesLoading);
+  }, [messagesLoading, setLoading]);
 
   // Compute derived state
   const sending = getLoadingMessages().length > 0;
@@ -250,14 +398,12 @@ export const useChat = (
 
         // Prepare history from the snapshot (all messages before the assistant message)
         // Filter only role, content, id to avoid UI-only fields affecting the prompt
-        const messageHistory = messages
-          .slice(0, index)
-          .map((m) => ({
-            role: m.role,
-            content: m.content || "",
-            id: m.id,
-            state: m.state,
-          }));
+        const messageHistory = messages.slice(0, index).map((m) => ({
+          role: m.role,
+          content: m.content || "",
+          id: m.id,
+          state: m.state,
+        }));
 
         // If caller provided an override for the immediate previous user message, apply it
         let finalHistory = messageHistory;
@@ -421,13 +567,10 @@ export const useChat = (
             error instanceof Error ? error.message : "Unknown error"
           }`
         );
-        console.error(
-          "🔄 REGEN-SERVICE: Failed to regenerate message",
-          {
-            index,
-            error,
-          }
-        );
+        console.error("🔄 REGEN-SERVICE: Failed to regenerate message", {
+          index,
+          error,
+        });
         // Best-effort error state using snapshot index fallback
         setMessages((prev) => {
           if (index < 0 || index >= prev.length) return prev;
@@ -518,6 +661,9 @@ export const useChat = (
 
       // State setters (for advanced usage)
       setMessages,
+      
+      // Entity hook integration
+      refetch,
     }),
     [
       messages,
@@ -540,6 +686,7 @@ export const useChat = (
       isSearchMode,
       onSearchToggle,
       setMessages,
+      refetch,
     ]
   );
 
