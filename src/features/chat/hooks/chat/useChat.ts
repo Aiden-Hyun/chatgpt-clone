@@ -2,9 +2,12 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
-import { useMessageInput, useRegenerationService } from "@/entities/message";
+import { useMessageInput } from "@/entities/message";
+import { useAuth } from "@/entities/session";
 import { getLogger } from "@/shared/services/logger";
 
+import { ServiceFactory } from "../../services/core/ServiceFactory";
+import { MessageStateManager } from "../../services/MessageStateManager";
 import { generateMessageId } from "../../utils/messageIdGenerator";
 
 import { useChatState } from "./useChatState";
@@ -21,6 +24,7 @@ export const useChat = (
   options?: UseChatOptions
 ) => {
   const logger = getLogger("useChat");
+  const { session } = useAuth();
 
   // Core state management
   const chatState = useChatState(numericRoomId);
@@ -100,7 +104,7 @@ export const useChat = (
 
       try {
         const result = await sendMessageViaOrchestrator(trimmedContent);
-        
+
         if (!result.success) {
           const errorMessage = result.error || "Failed to send message";
           logger.error("Message send failed", {
@@ -124,22 +128,36 @@ export const useChat = (
         throw error;
       }
     },
-    [sendMessageViaOrchestrator, numericRoomId, selectedModel, isSearchMode, logger]
+    [
+      sendMessageViaOrchestrator,
+      numericRoomId,
+      selectedModel,
+      isSearchMode,
+      logger,
+    ]
   );
 
-  // Use the dedicated regeneration service, wired with the current chat state
-  const { regenerateMessage: regenerateMessageInBackend } =
-    useRegenerationService(
-      numericRoomId,
-      {
-        messages,
-        setMessages,
-        startRegenerating,
-        stopRegenerating,
-      },
+  // Create regeneration service - inline from useRegenerationService
+  const regenerationService = useMemo(() => {
+    if (!session) return null;
+
+    const messageStateManager = new MessageStateManager(setMessages);
+    const aiApiService = ServiceFactory.createAIApiService();
+    const messageService = ServiceFactory.createMessageService();
+    const animationService = ServiceFactory.createAnimationService(setMessages);
+
+    return ServiceFactory.createRegenerationService(
+      messageStateManager,
+      aiApiService,
+      messageService,
+      animationService,
+      setMessages,
+      session,
       selectedModel,
+      numericRoomId,
       isSearchMode
     );
+  }, [setMessages, session, selectedModel, numericRoomId, isSearchMode]);
 
   // Wrapper for sendMessage that handles input clearing and error recovery
   const sendMessage = useCallback(async () => {
@@ -170,24 +188,89 @@ export const useChat = (
     handleInputChange,
   ]);
 
-  // Wrapper for regenerateMessage with error handling
+  // Regenerate message - inline from useRegenerationService
   const regenerateMessage = useCallback(
     async (index: number, overrideUserContent?: string) => {
       if (index === undefined || index === null) {
         logger.error(`Invalid regeneration index: ${index}`);
         return;
       }
+
+      if (!regenerationService || !session) {
+        console.warn("🔄 REGEN-HOOK: No regenerationService or session");
+        return;
+      }
+
+      // Validate index is in range at time of click
+      if (typeof index !== "number" || index < 0 || index >= messages.length) {
+        console.warn(
+          "🔄 REGEN-HOOK: Invalid message index for regeneration:",
+          index
+        );
+        return;
+      }
+
+      const targetMessage = messages[index];
+      if (
+        !targetMessage ||
+        targetMessage.role !== "assistant" ||
+        !targetMessage.id
+      ) {
+        console.warn(
+          "🔄 REGEN-HOOK: Target message invalid for regeneration:",
+          targetMessage
+        );
+        return;
+      }
+
+      // Ensure there's a user message before this
+      const userMessage = index > 0 ? messages[index - 1] : null;
+      if (!userMessage || userMessage.role !== "user") {
+        console.warn(
+          "🔄 REGEN-HOOK: No user message found before assistant message"
+        );
+        return;
+      }
+
+      // Ensure we have user content to condition the regen prompt
+      if (!overrideUserContent && !userMessage.content) {
+        console.warn("🔄 REGEN-HOOK: Missing user content for regeneration");
+        return;
+      }
+
+      // Start tracking regeneration for UI updates
+      startRegenerating(index);
+
       try {
-        await regenerateMessageInBackend(index, overrideUserContent);
+        await regenerationService.regenerateMessage(
+          targetMessage.id,
+          messages,
+          overrideUserContent ?? userMessage.content,
+          targetMessage.content
+        );
       } catch (error) {
         logger.error(
           `Error regenerating message at index ${index}: ${
             error instanceof Error ? error.message : "Unknown error"
           }`
         );
+        console.error(
+          "🔄 REGEN-HOOK: Error in regenerationService.regenerateMessage:",
+          error
+        );
+      } finally {
+        // Always stop tracking regardless of success/failure
+        stopRegenerating(index);
       }
     },
-    [regenerateMessageInBackend, logger]
+    [
+      messages,
+      regenerationService,
+      session,
+      startRegenerating,
+      stopRegenerating,
+      logger,
+    ]
   );
 
   // Edit a user message in place and regenerate the following assistant message using the edited text
