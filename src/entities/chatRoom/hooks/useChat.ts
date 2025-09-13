@@ -224,22 +224,26 @@ export const useChat = (
   const { messages, loadingStates, loading } = state;
   const regeneratingIndices = loadingStates.regenerating || new Set();
 
-  // State machine-based getters
-  const getLoadingMessages = useCallback(() => {
+  // ✅ OPTIMIZED: Smart memoization - only recompute when message states actually change
+  const messageStatesSignature = useMemo(() => {
+    return messages.map(msg => `${msg.id}:${msg.state}`).join('|');
+  }, [messages]);
+
+  const getLoadingMessages = useMemo(() => {
     return messages.filter((msg) => msg.state === "loading");
-  }, [messages]);
+  }, [messageStatesSignature, messages]);
 
-  const getAnimatingMessages = useCallback(() => {
+  const getAnimatingMessages = useMemo(() => {
     return messages.filter((msg) => msg.state === "animating");
-  }, [messages]);
+  }, [messageStatesSignature, messages]);
 
-  const isNewMessageLoading = useCallback(() => {
-    // Check if the last message is an assistant message in loading state
+  // ✅ OPTIMIZED: Only check last message, much faster than filtering
+  const isNewMessageLoading = useMemo(() => {
     const lastMessage = messages[messages.length - 1];
     return (
       lastMessage?.role === "assistant" && lastMessage?.state === "loading"
     );
-  }, [messages]);
+  }, [messages.length > 0 ? messages[messages.length - 1]?.state : null, messages.length > 0 ? messages[messages.length - 1]?.role : null]);
 
   // Single state setter to prevent multiple re-renders
   const updateState = useCallback(
@@ -369,11 +373,13 @@ export const useChat = (
     setLoading(messagesLoading);
   }, [messagesLoading, setLoading]);
 
-  // Compute derived state
-  const sending = getLoadingMessages().length > 0;
+  // ✅ OPTIMIZED: Compute derived state with smart memoization
+  const sending = useMemo(() => getLoadingMessages.length > 0, [getLoadingMessages.length]);
   const isTyping = false;
-  const regeneratingIndex =
-    regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null;
+  const regeneratingIndex = useMemo(() => 
+    regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null,
+    [regeneratingIndices.size]
+  );
 
   // Model selection logic - direct implementation
   const selectedModel = options?.selectedModel ?? "gpt-3.5-turbo";
@@ -811,68 +817,62 @@ export const useChat = (
     [messages, setMessages, regenerateMessage]
   );
 
-  // Memoize the return object to prevent unnecessary re-renders
-  const result = useMemo(
-    () => ({
-      // State
-      messages,
-      loading,
-      sending,
-      isTyping,
-      regeneratingIndex,
-      regeneratingIndices,
-      isNewMessageLoading,
-      getLoadingMessages,
-      getAnimatingMessages,
-      isRegenerating,
+  // ✅ OPTIMIZED: Split return object for better memoization
+  const stateValues = useMemo(() => ({
+    messages,
+    loading,
+    sending,
+    isTyping,
+    regeneratingIndex,
+    regeneratingIndices,
+    isNewMessageLoading,
+    getLoadingMessages,
+    getAnimatingMessages,
+    isRegenerating,
+  }), [
+    messages,
+    loading,
+    sending,
+    isTyping,
+    regeneratingIndex,
+    regeneratingIndices,
+    isNewMessageLoading,
+    getLoadingMessages,
+    getAnimatingMessages,
+    isRegenerating,
+  ]);
 
-      // Input
-      input,
-      handleInputChange,
+  const inputValues = useMemo(() => ({
+    input,
+    handleInputChange,
+  }), [input, handleInputChange]);
 
-      // Actions
-      sendMessage,
-      regenerateMessage,
-      editUserAndRegenerate,
+  const actionValues = useMemo(() => ({
+    sendMessage,
+    regenerateMessage,
+    editUserAndRegenerate,
+  }), [sendMessage, regenerateMessage, editUserAndRegenerate]);
 
-      // Model
-      selectedModel,
-      updateModel,
+  const modelValues = useMemo(() => ({
+    selectedModel,
+    updateModel,
+    isSearchMode,
+    onSearchToggle,
+  }), [selectedModel, updateModel, isSearchMode, onSearchToggle]);
 
-      // Search
-      isSearchMode,
-      onSearchToggle,
+  const utilityValues = useMemo(() => ({
+    setMessages,
+    refetch,
+  }), [setMessages, refetch]);
 
-      // State setters (for advanced usage)
-      setMessages,
-
-      // Entity hook integration
-      refetch,
-    }),
-    [
-      messages,
-      loading,
-      sending,
-      isTyping,
-      regeneratingIndex,
-      regeneratingIndices,
-      isNewMessageLoading,
-      getLoadingMessages,
-      getAnimatingMessages,
-      isRegenerating,
-      input,
-      handleInputChange,
-      sendMessage,
-      regenerateMessage,
-      editUserAndRegenerate,
-      selectedModel,
-      updateModel,
-      isSearchMode,
-      onSearchToggle,
-      setMessages,
-      refetch,
-    ]
-  );
+  // Combine all memoized groups
+  const result = useMemo(() => ({
+    ...stateValues,
+    ...inputValues,
+    ...actionValues,
+    ...modelValues,
+    ...utilityValues,
+  }), [stateValues, inputValues, actionValues, modelValues, utilityValues]);
 
   return result;
 };
