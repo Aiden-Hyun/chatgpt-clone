@@ -409,7 +409,8 @@ export const useChat = (
     clearInput,
   } = useMessageInput(numericRoomId, false);
 
-  // Log only when dependencies change, not on every render
+  // ✅ OPTIMIZED: Log only when dependencies change, not on every render
+  // Removed logger from dependencies to prevent unnecessary effect runs
   useEffect(() => {
     logger.debug(
       `Chat actions dependencies updated: room ${
@@ -418,7 +419,7 @@ export const useChat = (
         messages.length
       } messages`
     );
-  }, [numericRoomId, isSearchMode, selectedModel, messages.length, logger]);
+  }, [numericRoomId, isSearchMode, selectedModel, messages.length]);
 
   // Message actions - simplified implementation using useMessageOrchestrator
   const sendMessageToBackend = useCallback(
