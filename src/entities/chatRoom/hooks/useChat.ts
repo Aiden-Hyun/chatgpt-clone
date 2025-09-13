@@ -1,5 +1,5 @@
 // useChat.ts - Coordinator hook that combines individual message hooks with state machine support
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
 import type { AIApiRequest, ChatMessage } from "@/entities/message";
@@ -465,16 +465,28 @@ export const useChat = (
     ]
   );
 
-  // Create services for regeneration - direct instantiation
-  const regenerationServices = useMemo(() => {
-    if (!session) return null;
+  // Create services for regeneration - stable instances with useRef
+  const regenerationServicesRef = useRef<{
+    messageStateManager: MessageStateManager;
+    messageService: SupabaseMessageService;
+    responseProcessor: { validateResponse: typeof validateResponse; extractContent: typeof extractContent };
+  } | null>(null);
 
-    return {
+  // Initialize services once and reuse them
+  if (!regenerationServicesRef.current && session) {
+    regenerationServicesRef.current = {
       messageStateManager: new MessageStateManager(setMessages),
       messageService: new SupabaseMessageService(),
       responseProcessor: { validateResponse, extractContent },
     };
-  }, [setMessages, session]);
+  }
+
+  // Clear services when session is lost
+  if (!session && regenerationServicesRef.current) {
+    regenerationServicesRef.current = null;
+  }
+
+  const regenerationServices = regenerationServicesRef.current;
 
   // Wrapper for sendMessage that handles input clearing and error recovery
   const sendMessage = useCallback(async () => {

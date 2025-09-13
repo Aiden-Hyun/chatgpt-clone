@@ -1,5 +1,5 @@
 import type { ChatMessage } from "@/entities/message";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
 import {
   DEFAULT_RETRY_DELAY_MS,
@@ -167,15 +167,24 @@ export const useMessageOrchestrator = ({
 }: UseMessageOrchestratorProps) => {
   const logger = getLogger("useMessageOrchestrator");
 
-  // ✅ MEMOIZED SERVICES: Create services once, reuse across renders
-  const services = useMemo(() => {
-    logger.debug("Creating message orchestrator services", {
+  // ✅ STABLE SERVICES: Create services once with useRef, never recreate
+  const servicesRef = useRef<{
+    retryService: RetryService;
+    validator: MessageValidator;
+    persistence: MessagePersistence;
+    animation: MessageAnimation;
+    responseProcessor: { validateResponse: typeof validateResponse; extractContent: typeof extractContent };
+  } | null>(null);
+
+  // Initialize services once and reuse them
+  if (!servicesRef.current) {
+    logger.debug("Creating message orchestrator services (one-time)", {
       roomId: roomId || "new",
       model: selectedModel,
       isSearchMode,
     });
 
-    return {
+    servicesRef.current = {
       retryService: new RetryService({
         maxRetries: MESSAGE_SEND_MAX_RETRIES,
         retryDelay: DEFAULT_RETRY_DELAY_MS,
@@ -192,7 +201,15 @@ export const useMessageOrchestrator = ({
       ),
       responseProcessor: { validateResponse, extractContent },
     };
-  }, [setMessages]); // Only recreate if setMessages changes
+  } else {
+    // Update animation with new setMessages function if it changed
+    servicesRef.current.animation = new MessageAnimation(
+      setMessages,
+      { setTyping: () => {} }
+    );
+  }
+
+  const services = servicesRef.current;
 
   // ✅ STABLE REQUEST ID GENERATOR
   const generateRequestId = useCallback(() => {
