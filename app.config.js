@@ -2,9 +2,16 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'chatgpt-clone',
-    slug: 'chatgpt-clone',
+    name: 'MalloAI',
+    slug: 'malloai',
     version: '1.0.0',
+    scheme: 'malloai',
+    ios: {
+      bundleIdentifier: 'com.aidenhyun.malloai',
+    },
+    android: {
+      package: 'com.aidenhyun.malloai',
+    },
     plugins: [
       'expo-secure-store'
     ],

@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		094411D0D6188E0474ED3783 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D53D0A36581FD433DC1A8F10 /* ExpoModulesProvider.swift */; };
+		10DD53D4C04306979B0FF439 /* libPods-chatgptclone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E316C742292E4260EBC8CE /* libPods-chatgptclone.a */; };
+		12AA0D799F60F2FA89F7AFB0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC21726C984712ABA563E16 /* ExpoModulesProvider.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		990CDF1251729A6E33AD6561 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A6D5B20E3332E043450C4C1B /* PrivacyInfo.xcprivacy */; };
-		B883423D086F1AD5D56E26FF /* Pods_chatgptclone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 439C0C2C115769A9BB105744 /* Pods_chatgptclone.framework */; };
+		A749AEE151E269510E7A0006 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5445F618D9631AED2FC87EEF /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -20,16 +20,16 @@
 		13B07F961A680F5B00A75B9A /* chatgptclone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chatgptclone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = chatgptclone/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = chatgptclone/Info.plist; sourceTree = "<group>"; };
-		31762E5BD490EF5282CE74CE /* Pods-chatgptclone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-chatgptclone.release.xcconfig"; path = "Target Support Files/Pods-chatgptclone/Pods-chatgptclone.release.xcconfig"; sourceTree = "<group>"; };
-		439C0C2C115769A9BB105744 /* Pods_chatgptclone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_chatgptclone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6D5B20E3332E043450C4C1B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = chatgptclone/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5445F618D9631AED2FC87EEF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = chatgptclone/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8EDFC1A0B170D21664B602A4 /* Pods-chatgptclone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-chatgptclone.debug.xcconfig"; path = "Target Support Files/Pods-chatgptclone/Pods-chatgptclone.debug.xcconfig"; sourceTree = "<group>"; };
+		98E316C742292E4260EBC8CE /* libPods-chatgptclone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-chatgptclone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = chatgptclone/SplashScreen.storyboard; sourceTree = "<group>"; };
-		AAE21C98F2201492C2EBB432 /* Pods-chatgptclone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-chatgptclone.debug.xcconfig"; path = "Target Support Files/Pods-chatgptclone/Pods-chatgptclone.debug.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		D53D0A36581FD433DC1A8F10 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-chatgptclone/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		CAC21726C984712ABA563E16 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-chatgptclone/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = chatgptclone/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* chatgptclone-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "chatgptclone-Bridging-Header.h"; path = "chatgptclone/chatgptclone-Bridging-Header.h"; sourceTree = "<group>"; };
+		FF3DC64E0FF5915FEC33FEE9 /* Pods-chatgptclone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-chatgptclone.release.xcconfig"; path = "Target Support Files/Pods-chatgptclone/Pods-chatgptclone.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,17 +37,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B883423D086F1AD5D56E26FF /* Pods_chatgptclone.framework in Frameworks */,
+				10DD53D4C04306979B0FF439 /* libPods-chatgptclone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0ADC99C137012FA852C998B0 /* chatgptclone */ = {
+		07364223408B1AC9DE940730 /* chatgptclone */ = {
 			isa = PBXGroup;
 			children = (
-				D53D0A36581FD433DC1A8F10 /* ExpoModulesProvider.swift */,
+				CAC21726C984712ABA563E16 /* ExpoModulesProvider.swift */,
 			);
 			name = chatgptclone;
 			sourceTree = "<group>";
@@ -61,36 +61,18 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				A6D5B20E3332E043450C4C1B /* PrivacyInfo.xcprivacy */,
+				5445F618D9631AED2FC87EEF /* PrivacyInfo.xcprivacy */,
 			);
 			name = chatgptclone;
-			sourceTree = "<group>";
-		};
-		2145130340849D8757FA0602 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				AAE21C98F2201492C2EBB432 /* Pods-chatgptclone.debug.xcconfig */,
-				31762E5BD490EF5282CE74CE /* Pods-chatgptclone.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				439C0C2C115769A9BB105744 /* Pods_chatgptclone.framework */,
+				98E316C742292E4260EBC8CE /* libPods-chatgptclone.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		6313BBD1236820672DC231EB /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				0ADC99C137012FA852C998B0 /* chatgptclone */,
-			);
-			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -107,8 +89,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				2145130340849D8757FA0602 /* Pods */,
-				6313BBD1236820672DC231EB /* ExpoModulesProviders */,
+				F5B2B3E2188EF135CB882CB8 /* Pods */,
+				E9AB39D0D322C93C0F660CD7 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -132,6 +114,24 @@
 			path = chatgptclone/Supporting;
 			sourceTree = "<group>";
 		};
+		E9AB39D0D322C93C0F660CD7 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				07364223408B1AC9DE940730 /* chatgptclone */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		F5B2B3E2188EF135CB882CB8 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8EDFC1A0B170D21664B602A4 /* Pods-chatgptclone.debug.xcconfig */,
+				FF3DC64E0FF5915FEC33FEE9 /* Pods-chatgptclone.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "chatgptclone" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				73017B722F0AAB12F54AAC9F /* [Expo] Configure project */,
+				C70315AB600FF0BEE086BCA0 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				7A64918D1C3D08D94700616D /* [CP] Embed Pods Frameworks */,
+				0FE34E498A64BD2600204059 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				990CDF1251729A6E33AD6561 /* PrivacyInfo.xcprivacy in Resources */,
+				A749AEE151E269510E7A0006 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,26 +240,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		73017B722F0AAB12F54AAC9F /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-chatgptclone/expo-configure-project.sh\"\n";
-		};
-		7A64918D1C3D08D94700616D /* [CP] Embed Pods Frameworks */ = {
+		0FE34E498A64BD2600204059 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -337,6 +318,25 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-chatgptclone/Pods-chatgptclone-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		C70315AB600FF0BEE086BCA0 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-chatgptclone/expo-configure-project.sh\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -345,7 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				094411D0D6188E0474ED3783 /* ExpoModulesProvider.swift in Sources */,
+				12AA0D799F60F2FA89F7AFB0 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,7 +354,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AAE21C98F2201492C2EBB432 /* Pods-chatgptclone.debug.xcconfig */;
+			baseConfigurationReference = 8EDFC1A0B170D21664B602A4 /* Pods-chatgptclone.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -378,19 +378,19 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.aidenhyun.aidengpt;
-				PRODUCT_NAME = chatgptclone;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.aidenhyun.malloai";
+				PRODUCT_NAME = "MalloAI";
 				SWIFT_OBJC_BRIDGING_HEADER = "chatgptclone/chatgptclone-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 31762E5BD490EF5282CE74CE /* Pods-chatgptclone.release.xcconfig */;
+			baseConfigurationReference = FF3DC64E0FF5915FEC33FEE9 /* Pods-chatgptclone.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -409,11 +409,11 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.aidenhyun.aidengpt;
-				PRODUCT_NAME = chatgptclone;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.aidenhyun.malloai";
+				PRODUCT_NAME = "MalloAI";
 				SWIFT_OBJC_BRIDGING_HEADER = "chatgptclone/chatgptclone-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -465,17 +465,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
-				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
@@ -535,17 +524,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
-					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
-				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,

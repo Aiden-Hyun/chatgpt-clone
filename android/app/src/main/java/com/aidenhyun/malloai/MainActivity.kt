@@ -1,4 +1,4 @@
-package com.aidenhyun.aidengpt
+package com.aidenhyun.malloai
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

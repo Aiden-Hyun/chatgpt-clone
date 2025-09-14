@@ -1,4 +1,4 @@
-package com.aidenhyun.aidengpt
+package com.aidenhyun.malloai
 
 import android.app.Application
 import android.content.res.Configuration
