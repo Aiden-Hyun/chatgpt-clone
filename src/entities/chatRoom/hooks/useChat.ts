@@ -4,21 +4,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChatRoomSearch, useMessageOrchestrator } from "@/entities/chatRoom";
 import type { AIApiRequest, ChatMessage } from "@/entities/message";
 import { useMessageInput, useReadMessages } from "@/entities/message";
+import { SupabaseMessageService } from "@/entities/message/CRUD/SupabaseMessageCRUD";
 import { useAuth } from "@/entities/session";
+import { TYPING_ANIMATION_MIN_TICK_MS } from "@/features/chat/constants";
 import { getModelInfo } from "@/features/chat/constants/models";
 import { fetchJson } from "@/features/chat/lib/fetch";
+import { computeAnimationParams } from "@/features/chat/services/core/AnimationPolicy";
+import { MessageStateManager } from "@/features/chat/services/MessageStateManager";
+import { generateMessageId } from "@/features/chat/utils/messageIdGenerator";
 import { appConfig } from "@/shared/lib/config";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
-
-import { SupabaseMessageService } from "@/entities/message/CRUD/SupabaseMessageCRUD";
-import { MessageStateManager } from "@/features/chat/services/MessageStateManager";
-import { generateMessageId } from "@/features/chat/utils/messageIdGenerator";
-import {
-  TYPING_ANIMATION_CHUNK_SIZE,
-  TYPING_ANIMATION_MIN_TICK_MS,
-} from "@/features/chat/constants";
-import { computeAnimationParams } from "@/features/chat/services/core/AnimationPolicy";
 
 // Inlined from AIResponseProcessor
 const validateResponse = (response: any): boolean => {
@@ -150,9 +146,10 @@ const startTypewriterAnimation = (
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   messageStateManager: MessageStateManager
 ) => {
-  const { speedMs: computedSpeed, chunkSize } = computeAnimationParams(fullContent);
+  const { speedMs: computedSpeed, chunkSize } =
+    computeAnimationParams(fullContent);
   const effectiveSpeed = Math.max(TYPING_ANIMATION_MIN_TICK_MS, computedSpeed);
-  
+
   let index = 0;
   const tick = () => {
     if (index < fullContent.length) {
@@ -160,7 +157,10 @@ const startTypewriterAnimation = (
       const currentChar = fullContent[nextIndex];
 
       if (/\s/.test(currentChar)) {
-        while (nextIndex < fullContent.length && /\s/.test(fullContent[nextIndex])) {
+        while (
+          nextIndex < fullContent.length &&
+          /\s/.test(fullContent[nextIndex])
+        ) {
           nextIndex++;
         }
       } else {
@@ -182,7 +182,7 @@ const startTypewriterAnimation = (
       messageStateManager.markCompleted(messageId);
     }
   };
-  
+
   setTimeout(tick, effectiveSpeed);
 };
 
@@ -226,7 +226,7 @@ export const useChat = (
 
   // ✅ OPTIMIZED: Smart memoization - only recompute when message states actually change
   const messageStatesSignature = useMemo(() => {
-    return messages.map(msg => `${msg.id}:${msg.state}`).join('|');
+    return messages.map((msg) => `${msg.id}:${msg.state}`).join("|");
   }, [messages]);
 
   const getLoadingMessages = useMemo(() => {
@@ -243,7 +243,10 @@ export const useChat = (
     return (
       lastMessage?.role === "assistant" && lastMessage?.state === "loading"
     );
-  }, [messages.length > 0 ? messages[messages.length - 1]?.state : null, messages.length > 0 ? messages[messages.length - 1]?.role : null]);
+  }, [
+    messages.length > 0 ? messages[messages.length - 1]?.state : null,
+    messages.length > 0 ? messages[messages.length - 1]?.role : null,
+  ]);
 
   // Single state setter to prevent multiple re-renders
   const updateState = useCallback(
@@ -374,10 +377,14 @@ export const useChat = (
   }, [messagesLoading, setLoading]);
 
   // ✅ OPTIMIZED: Compute derived state with smart memoization
-  const sending = useMemo(() => getLoadingMessages.length > 0, [getLoadingMessages.length]);
+  const sending = useMemo(
+    () => getLoadingMessages.length > 0,
+    [getLoadingMessages.length]
+  );
   const isTyping = false;
-  const regeneratingIndex = useMemo(() => 
-    regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null,
+  const regeneratingIndex = useMemo(
+    () =>
+      regeneratingIndices.size > 0 ? Array.from(regeneratingIndices)[0] : null,
     [regeneratingIndices.size]
   );
 
@@ -476,7 +483,10 @@ export const useChat = (
   const regenerationServicesRef = useRef<{
     messageStateManager: MessageStateManager;
     messageService: SupabaseMessageService;
-    responseProcessor: { validateResponse: typeof validateResponse; extractContent: typeof extractContent };
+    responseProcessor: {
+      validateResponse: typeof validateResponse;
+      extractContent: typeof extractContent;
+    };
   } | null>(null);
 
   // Initialize services once and reuse them
@@ -667,7 +677,12 @@ export const useChat = (
 
         // Drive UI state and animation
         messageStateManager.handleRegeneration(targetMessageId, newContent);
-        startTypewriterAnimation(targetMessageId, newContent, setMessages, messageStateManager);
+        startTypewriterAnimation(
+          targetMessageId,
+          newContent,
+          setMessages,
+          messageStateManager
+        );
 
         // Persist if room exists
         if (numericRoomId) {
@@ -819,61 +834,79 @@ export const useChat = (
   );
 
   // ✅ OPTIMIZED: Split return object for better memoization
-  const stateValues = useMemo(() => ({
-    messages,
-    loading,
-    sending,
-    isTyping,
-    regeneratingIndex,
-    regeneratingIndices,
-    isNewMessageLoading,
-    getLoadingMessages,
-    getAnimatingMessages,
-    isRegenerating,
-  }), [
-    messages,
-    loading,
-    sending,
-    isTyping,
-    regeneratingIndex,
-    regeneratingIndices,
-    isNewMessageLoading,
-    getLoadingMessages,
-    getAnimatingMessages,
-    isRegenerating,
-  ]);
+  const stateValues = useMemo(
+    () => ({
+      messages,
+      loading,
+      sending,
+      isTyping,
+      regeneratingIndex,
+      regeneratingIndices,
+      isNewMessageLoading,
+      getLoadingMessages,
+      getAnimatingMessages,
+      isRegenerating,
+    }),
+    [
+      messages,
+      loading,
+      sending,
+      isTyping,
+      regeneratingIndex,
+      regeneratingIndices,
+      isNewMessageLoading,
+      getLoadingMessages,
+      getAnimatingMessages,
+      isRegenerating,
+    ]
+  );
 
-  const inputValues = useMemo(() => ({
-    input,
-    handleInputChange,
-  }), [input, handleInputChange]);
+  const inputValues = useMemo(
+    () => ({
+      input,
+      handleInputChange,
+    }),
+    [input, handleInputChange]
+  );
 
-  const actionValues = useMemo(() => ({
-    sendMessage,
-    regenerateMessage,
-    editUserAndRegenerate,
-  }), [sendMessage, regenerateMessage, editUserAndRegenerate]);
+  const actionValues = useMemo(
+    () => ({
+      sendMessage,
+      regenerateMessage,
+      editUserAndRegenerate,
+    }),
+    [sendMessage, regenerateMessage, editUserAndRegenerate]
+  );
 
-  const modelValues = useMemo(() => ({
-    selectedModel,
-    updateModel,
-    isSearchMode,
-    onSearchToggle,
-  }), [selectedModel, updateModel, isSearchMode, onSearchToggle]);
+  const modelValues = useMemo(
+    () => ({
+      selectedModel,
+      updateModel,
+      isSearchMode,
+      onSearchToggle,
+    }),
+    [selectedModel, updateModel, isSearchMode, onSearchToggle]
+  );
 
-  const utilityValues = useMemo(() => ({
-    setMessages,
-    refetch,
-  }), [setMessages, refetch]);
+  const utilityValues = useMemo(
+    () => ({
+      setMessages,
+      refetch,
+    }),
+    [setMessages, refetch]
+  );
 
   // Combine all memoized groups
-  const result = useMemo(() => ({
-    ...stateValues,
-    ...inputValues,
-    ...actionValues,
-    ...modelValues,
-    ...utilityValues,
-  }), [stateValues, inputValues, actionValues, modelValues, utilityValues]);
+  const result = useMemo(
+    () => ({
+      ...stateValues,
+      ...inputValues,
+      ...actionValues,
+      ...modelValues,
+      ...utilityValues,
+    }),
+    [stateValues, inputValues, actionValues, modelValues, utilityValues]
+  );
 
   return result;
 };

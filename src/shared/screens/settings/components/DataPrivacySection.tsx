@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { router } from "expo-router";
 import { View } from "react-native";
 
 import { useLanguageContext } from "@/features/language";
@@ -24,7 +25,7 @@ export const DataPrivacySection: React.FC = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    // TODO: Implement privacy policy navigation
+    router.push("/settings/privacy");
   };
 
   return (

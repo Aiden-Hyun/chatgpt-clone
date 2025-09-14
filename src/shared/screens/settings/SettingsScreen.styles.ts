@@ -72,6 +72,11 @@ export const createSettingsStyles = (theme: AppTheme) => {
       marginTop: theme.spacing.xl,
       marginBottom: theme.spacing.xxl,
     },
+    termsText: {
+      lineHeight: theme.layout.typography.lineHeights.relaxed,
+      marginBottom: theme.spacing.lg,
+      textAlign: "left",
+    },
   });
 };
 
