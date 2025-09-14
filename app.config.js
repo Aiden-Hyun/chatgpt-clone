@@ -6,6 +6,7 @@ export default {
     slug: 'malloai',
     version: '1.0.0',
     scheme: 'malloai',
+    icon: './assets/malloai-icon.png',
     ios: {
       bundleIdentifier: 'com.aidenhyun.malloai',
     },
