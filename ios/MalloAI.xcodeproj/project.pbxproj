@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		4F0C5A39B90A8D7BC09FDA62 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822F97115FE2A7B4ACC797F9 /* ExpoModulesProvider.swift */; };
-		9E37D297BD827B128259819A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9874FD225D7B8AC19199FE82 /* PrivacyInfo.xcprivacy */; };
-		B3F7706DC8F1205FEAF4939F /* libPods-MalloAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 745BFADF2C93BBB70114928B /* libPods-MalloAI.a */; };
+		78E1198B0AD4EB02DE1A708D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E2EC7162EED15384756ED5E2 /* PrivacyInfo.xcprivacy */; };
+		B67AED43B478F5F438245274 /* libPods-MalloAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 209FDCDE24B0FC883B9B5504 /* libPods-MalloAI.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		CB9393C32D411DD8375D43B3 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5737AB1AAF29BC7EFA1C81A4 /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,13 +20,13 @@
 		13B07F961A680F5B00A75B9A /* MalloAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MalloAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MalloAI/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MalloAI/Info.plist; sourceTree = "<group>"; };
-		745BFADF2C93BBB70114928B /* libPods-MalloAI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MalloAI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		822F97115FE2A7B4ACC797F9 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MalloAI/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		9874FD225D7B8AC19199FE82 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = MalloAI/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		209FDCDE24B0FC883B9B5504 /* libPods-MalloAI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MalloAI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3BDC9A007F5ECE99781F83F1 /* Pods-MalloAI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MalloAI.debug.xcconfig"; path = "Target Support Files/Pods-MalloAI/Pods-MalloAI.debug.xcconfig"; sourceTree = "<group>"; };
+		3F0028609E014CDE0147080A /* Pods-MalloAI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MalloAI.release.xcconfig"; path = "Target Support Files/Pods-MalloAI/Pods-MalloAI.release.xcconfig"; sourceTree = "<group>"; };
+		5737AB1AAF29BC7EFA1C81A4 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MalloAI/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = MalloAI/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B7778C9FF2C31DC539B23689 /* Pods-MalloAI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MalloAI.debug.xcconfig"; path = "Target Support Files/Pods-MalloAI/Pods-MalloAI.debug.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		C60C8310012FA2C502E2EF47 /* Pods-MalloAI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MalloAI.release.xcconfig"; path = "Target Support Files/Pods-MalloAI/Pods-MalloAI.release.xcconfig"; sourceTree = "<group>"; };
+		E2EC7162EED15384756ED5E2 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = MalloAI/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MalloAI/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* MalloAI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MalloAI-Bridging-Header.h"; path = "MalloAI/MalloAI-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3F7706DC8F1205FEAF4939F /* libPods-MalloAI.a in Frameworks */,
+				B67AED43B478F5F438245274 /* libPods-MalloAI.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,15 +53,15 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				9874FD225D7B8AC19199FE82 /* PrivacyInfo.xcprivacy */,
+				E2EC7162EED15384756ED5E2 /* PrivacyInfo.xcprivacy */,
 			);
 			name = MalloAI;
 			sourceTree = "<group>";
 		};
-		288729FE9498E08F0EF03FF4 /* MalloAI */ = {
+		15BF44A6FFF082F734AAA1DD /* MalloAI */ = {
 			isa = PBXGroup;
 			children = (
-				822F97115FE2A7B4ACC797F9 /* ExpoModulesProvider.swift */,
+				5737AB1AAF29BC7EFA1C81A4 /* ExpoModulesProvider.swift */,
 			);
 			name = MalloAI;
 			sourceTree = "<group>";
@@ -70,17 +70,27 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				745BFADF2C93BBB70114928B /* libPods-MalloAI.a */,
+				209FDCDE24B0FC883B9B5504 /* libPods-MalloAI.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		6640B5291C35E6620B200EDB /* ExpoModulesProviders */ = {
+		6F92FAFBBD21DCD65A7FDA62 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				288729FE9498E08F0EF03FF4 /* MalloAI */,
+				15BF44A6FFF082F734AAA1DD /* MalloAI */,
 			);
 			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		6FC70903F43FE7E8BD542BDF /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3BDC9A007F5ECE99781F83F1 /* Pods-MalloAI.debug.xcconfig */,
+				3F0028609E014CDE0147080A /* Pods-MalloAI.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -97,8 +107,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				95B86A7EA01ABDA400A0BD85 /* Pods */,
-				6640B5291C35E6620B200EDB /* ExpoModulesProviders */,
+				6FC70903F43FE7E8BD542BDF /* Pods */,
+				6F92FAFBBD21DCD65A7FDA62 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -111,16 +121,6 @@
 				13B07F961A680F5B00A75B9A /* MalloAI.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		95B86A7EA01ABDA400A0BD85 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				B7778C9FF2C31DC539B23689 /* Pods-MalloAI.debug.xcconfig */,
-				C60C8310012FA2C502E2EF47 /* Pods-MalloAI.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MalloAI" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				B69F093BC669D9CBCECDD599 /* [Expo] Configure project */,
+				204965BFADBCF0CA38F272C1 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				C826A91B769AC08B34F15852 /* [CP] Embed Pods Frameworks */,
+				E88CB3908BDE08B32495C350 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				9E37D297BD827B128259819A /* PrivacyInfo.xcprivacy in Resources */,
+				78E1198B0AD4EB02DE1A708D /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +239,25 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		204965BFADBCF0CA38F272C1 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-MalloAI/expo-configure-project.sh\"\n";
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -300,26 +319,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MalloAI/Pods-MalloAI-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B69F093BC669D9CBCECDD599 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-MalloAI/expo-configure-project.sh\"\n";
-		};
-		C826A91B769AC08B34F15852 /* [CP] Embed Pods Frameworks */ = {
+		E88CB3908BDE08B32495C350 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -345,7 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				4F0C5A39B90A8D7BC09FDA62 /* ExpoModulesProvider.swift in Sources */,
+				CB9393C32D411DD8375D43B3 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,7 +354,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B7778C9FF2C31DC539B23689 /* Pods-MalloAI.debug.xcconfig */;
+			baseConfigurationReference = 3BDC9A007F5ECE99781F83F1 /* Pods-MalloAI.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -390,7 +390,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C60C8310012FA2C502E2EF47 /* Pods-MalloAI.release.xcconfig */;
+			baseConfigurationReference = 3F0028609E014CDE0147080A /* Pods-MalloAI.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

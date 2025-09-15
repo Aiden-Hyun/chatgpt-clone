@@ -14,7 +14,15 @@ export default {
       package: 'com.aidenhyun.malloai',
     },
     plugins: [
-      'expo-secure-store'
+      'expo-secure-store',
+      [
+        '@react-native-google-signin/google-signin',
+        {
+          androidClientId: '817884024065-8kuomphhggmd46vhfgb0br0b0o90f0lm.apps.googleusercontent.com',
+          iosClientId: '817884024065-5rhvlscksui31p2if3vi5nj92ds26u3h.apps.googleusercontent.com',
+          iosUrlScheme: 'com.googleusercontent.apps.817884024065-5rhvlscksui31p2if3vi5nj92ds26u3h',
+        },
+      ],
     ],
     extra: {
       supabaseUrl: process.env.SUPABASE_URL,
