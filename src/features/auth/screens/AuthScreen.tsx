@@ -1,4 +1,4 @@
-import Constants from "expo-constants";
+import * as Linking from "expo-linking";
 import { router, usePathname } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -136,16 +136,19 @@ export const AuthScreen = () => {
   };
 
   const handleGoogleLogin = async () => {
-    logger.info("Starting Google OAuth login", {
-      redirectUri: Constants.linkingUri,
-    });
+    const redirectUri =
+      Platform.OS === "web"
+        ? `${window.location.origin}/auth/callback`
+        : Linking.createURL("/auth/callback");
+
+    logger.info("Starting Google OAuth login", { redirectUri });
 
     try {
       startSigningInWithGoogle();
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${Constants.linkingUri}`,
+          redirectTo: redirectUri,
           queryParams: {
             prompt: "select_account",
           },

@@ -61,7 +61,7 @@ function ProtectedRoutes() {
   );
 
   // Define auth routes that don't require authentication
-  const authRoutes = ["/auth", "/signup", "/forgot-password"];
+  const authRoutes = ["/auth", "/signup", "/forgot-password", "/auth/callback"];
   const isAuthRoute = authRoutes.includes(pathname);
 
   const handleSettings = useCallback(() => {
