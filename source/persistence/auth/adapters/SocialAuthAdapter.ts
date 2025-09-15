@@ -1,4 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import { ConfigService, IConfigService } from '../../../service/shared/lib/config';
 import { createSupabaseClient } from '../../../service/shared/lib/supabase';
 import { Logger } from '../../../service/shared/utils/Logger';
@@ -279,10 +281,11 @@ export class SocialAuthAdapter {
    * Get default redirect URL
    */
   private getDefaultRedirectUrl(): string {
-    if (typeof window !== 'undefined') {
+    if (Platform.OS === 'web') {
       return `${window.location.origin}/auth/callback`;
     }
-    return 'http://localhost:3000/auth/callback';
+    // Use Expo Linking to create a native deep link
+    return Linking.createURL('/auth/callback');
   }
 
   /**

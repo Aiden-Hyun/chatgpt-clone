@@ -1,4 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 
 import { useToast } from '../../alert/toast';
 import { useBusinessContext } from '../../shared/BusinessContextProvider';
@@ -17,6 +19,15 @@ export function useSocialAuth() {
     useCaseFactory.createSocialAuthUseCase(), [useCaseFactory]
   );
 
+  // Generate native-safe redirect URL
+  const getRedirectUrl = useCallback((path: string = '/auth/callback') => {
+    if (Platform.OS === 'web') {
+      return `${window.location.origin}${path}`;
+    }
+    // Use Expo Linking to create a native deep link
+    return Linking.createURL(path);
+  }, []);
+
   // Authenticate with a social provider
   const authenticateWithProvider = useCallback(async (provider: string, options: {
     redirectUrl?: string;
@@ -29,7 +40,7 @@ export function useSocialAuth() {
 
       const result = await socialAuthUseCase.execute({
         provider,
-        redirectUrl: options.redirectUrl || `${window.location.origin}/auth/callback`,
+        redirectUrl: options.redirectUrl || getRedirectUrl('/auth/callback'),
         scopes: options.scopes || []
       });
 
@@ -68,7 +79,7 @@ export function useSocialAuth() {
     } finally {
       setIsLoading(false);
     }
-  }, [socialAuthUseCase, showSuccess, showError, showInfo]);
+  }, [socialAuthUseCase, showSuccess, showError, showInfo, getRedirectUrl]);
 
   // Authenticate with Google
   const authenticateWithGoogle = useCallback(async (options: {

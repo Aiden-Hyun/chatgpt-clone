@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+import * as Linking from 'expo-linking';
 import { supabase } from "../../../service/shared/lib/supabase";
 import {
   SupabaseAuthResult,
@@ -400,8 +402,12 @@ export class SupabaseAuthAdapter {
         email
       );
 
+      const redirectTo = Platform.OS === 'web' 
+        ? `${window.location.origin}/reset-password`
+        : Linking.createURL('/reset-password');
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo,
       });
 
       if (error) {
