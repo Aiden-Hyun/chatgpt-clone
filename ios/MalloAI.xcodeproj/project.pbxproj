@@ -7,29 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10DD53D4C04306979B0FF439 /* libPods-chatgptclone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E316C742292E4260EBC8CE /* libPods-chatgptclone.a */; };
-		12AA0D799F60F2FA89F7AFB0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC21726C984712ABA563E16 /* ExpoModulesProvider.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		1449AB56ED74868EDFBDCAB4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 4AB976E42FD7FD5FDF4470CA /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		A749AEE151E269510E7A0006 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5445F618D9631AED2FC87EEF /* PrivacyInfo.xcprivacy */; };
+		5894244F201B87167FD49A59 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C5EE864161882BCF3E08EC /* ExpoModulesProvider.swift */; };
+		92BDEC95EF3368742DD762D0 /* libPods-MalloAI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8796C4143554775A547EBD25 /* libPods-MalloAI.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* chatgptclone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = chatgptclone.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = chatgptclone/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = chatgptclone/Info.plist; sourceTree = "<group>"; };
-		5445F618D9631AED2FC87EEF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = chatgptclone/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8EDFC1A0B170D21664B602A4 /* Pods-chatgptclone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-chatgptclone.debug.xcconfig"; path = "Target Support Files/Pods-chatgptclone/Pods-chatgptclone.debug.xcconfig"; sourceTree = "<group>"; };
-		98E316C742292E4260EBC8CE /* libPods-chatgptclone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-chatgptclone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = chatgptclone/SplashScreen.storyboard; sourceTree = "<group>"; };
+		02C5EE864161882BCF3E08EC /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MalloAI/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* MalloAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MalloAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MalloAI/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MalloAI/Info.plist; sourceTree = "<group>"; };
+		4AB976E42FD7FD5FDF4470CA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = MalloAI/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		8796C4143554775A547EBD25 /* libPods-MalloAI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MalloAI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = MalloAI/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B534E9FFBA28B81DFAA1A8A9 /* Pods-MalloAI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MalloAI.release.xcconfig"; path = "Target Support Files/Pods-MalloAI/Pods-MalloAI.release.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		CAC21726C984712ABA563E16 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-chatgptclone/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = chatgptclone/AppDelegate.swift; sourceTree = "<group>"; };
-		F11748442D0722820044C1D9 /* chatgptclone-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "chatgptclone-Bridging-Header.h"; path = "chatgptclone/chatgptclone-Bridging-Header.h"; sourceTree = "<group>"; };
-		FF3DC64E0FF5915FEC33FEE9 /* Pods-chatgptclone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-chatgptclone.release.xcconfig"; path = "Target Support Files/Pods-chatgptclone/Pods-chatgptclone.release.xcconfig"; sourceTree = "<group>"; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MalloAI/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* MalloAI-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MalloAI-Bridging-Header.h"; path = "MalloAI/MalloAI-Bridging-Header.h"; sourceTree = "<group>"; };
+		FAF083EEEE6FB71585D7BFCA /* Pods-MalloAI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MalloAI.debug.xcconfig"; path = "Target Support Files/Pods-MalloAI/Pods-MalloAI.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,42 +37,60 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				10DD53D4C04306979B0FF439 /* libPods-chatgptclone.a in Frameworks */,
+				92BDEC95EF3368742DD762D0 /* libPods-MalloAI.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		07364223408B1AC9DE940730 /* chatgptclone */ = {
+		02092E5E5EB9AAF5C411BFC5 /* MalloAI */ = {
 			isa = PBXGroup;
 			children = (
-				CAC21726C984712ABA563E16 /* ExpoModulesProvider.swift */,
+				02C5EE864161882BCF3E08EC /* ExpoModulesProvider.swift */,
 			);
-			name = chatgptclone;
+			name = MalloAI;
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* chatgptclone */ = {
+		0D76DDD18486CE5B8294E1B0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FAF083EEEE6FB71585D7BFCA /* Pods-MalloAI.debug.xcconfig */,
+				B534E9FFBA28B81DFAA1A8A9 /* Pods-MalloAI.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		13B07FAE1A68108700A75B9A /* MalloAI */ = {
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
-				F11748442D0722820044C1D9 /* chatgptclone-Bridging-Header.h */,
+				F11748442D0722820044C1D9 /* MalloAI-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				5445F618D9631AED2FC87EEF /* PrivacyInfo.xcprivacy */,
+				4AB976E42FD7FD5FDF4470CA /* PrivacyInfo.xcprivacy */,
 			);
-			name = chatgptclone;
+			name = MalloAI;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				98E316C742292E4260EBC8CE /* libPods-chatgptclone.a */,
+				8796C4143554775A547EBD25 /* libPods-MalloAI.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		389AC5752305EBDA92F4ADA2 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				02092E5E5EB9AAF5C411BFC5 /* MalloAI */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -85,12 +103,12 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* chatgptclone */,
+				13B07FAE1A68108700A75B9A /* MalloAI */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				F5B2B3E2188EF135CB882CB8 /* Pods */,
-				E9AB39D0D322C93C0F660CD7 /* ExpoModulesProviders */,
+				0D76DDD18486CE5B8294E1B0 /* Pods */,
+				389AC5752305EBDA92F4ADA2 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -100,7 +118,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* chatgptclone.app */,
+				13B07F961A680F5B00A75B9A /* MalloAI.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,50 +129,32 @@
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
 			);
 			name = Supporting;
-			path = chatgptclone/Supporting;
-			sourceTree = "<group>";
-		};
-		E9AB39D0D322C93C0F660CD7 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				07364223408B1AC9DE940730 /* chatgptclone */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		F5B2B3E2188EF135CB882CB8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				8EDFC1A0B170D21664B602A4 /* Pods-chatgptclone.debug.xcconfig */,
-				FF3DC64E0FF5915FEC33FEE9 /* Pods-chatgptclone.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
+			path = MalloAI/Supporting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* chatgptclone */ = {
+		13B07F861A680F5B00A75B9A /* MalloAI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "chatgptclone" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MalloAI" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				C70315AB600FF0BEE086BCA0 /* [Expo] Configure project */,
+				4A6BD82439B04B845E22F600 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				0FE34E498A64BD2600204059 /* [CP] Embed Pods Frameworks */,
+				6E54229CC60B787827225D0B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = chatgptclone;
-			productName = chatgptclone;
-			productReference = 13B07F961A680F5B00A75B9A /* chatgptclone.app */;
+			name = MalloAI;
+			productName = MalloAI;
+			productReference = 13B07F961A680F5B00A75B9A /* MalloAI.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -170,7 +170,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "chatgptclone" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "MalloAI" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -183,7 +183,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* chatgptclone */,
+				13B07F861A680F5B00A75B9A /* MalloAI */,
 			);
 		};
 /* End PBXProject section */
@@ -196,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				A749AEE151E269510E7A0006 /* PrivacyInfo.xcprivacy in Resources */,
+				1449AB56ED74868EDFBDCAB4 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,20 +233,39 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-chatgptclone-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MalloAI-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0FE34E498A64BD2600204059 /* [CP] Embed Pods Frameworks */ = {
+		4A6BD82439B04B845E22F600 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-MalloAI/expo-configure-project.sh\"\n";
+		};
+		6E54229CC60B787827225D0B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-chatgptclone/Pods-chatgptclone-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MalloAI/Pods-MalloAI-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -255,7 +274,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-chatgptclone/Pods-chatgptclone-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MalloAI/Pods-MalloAI-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
@@ -264,7 +283,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-chatgptclone/Pods-chatgptclone-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MalloAI/Pods-MalloAI-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/AppAuth/AppAuthCore_Privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
@@ -315,27 +334,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-chatgptclone/Pods-chatgptclone-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MalloAI/Pods-MalloAI-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		C70315AB600FF0BEE086BCA0 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-chatgptclone/expo-configure-project.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -345,7 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				12AA0D799F60F2FA89F7AFB0 /* ExpoModulesProvider.swift in Sources */,
+				5894244F201B87167FD49A59 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,18 +354,18 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EDFC1A0B170D21664B602A4 /* Pods-chatgptclone.debug.xcconfig */;
+			baseConfigurationReference = FAF083EEEE6FB71585D7BFCA /* Pods-MalloAI.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = chatgptclone/chatgptclone.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MalloAI/MalloAI.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				INFOPLIST_FILE = chatgptclone/Info.plist;
+				INFOPLIST_FILE = MalloAI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -378,25 +378,25 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.aidenhyun.malloai";
-				PRODUCT_NAME = "MalloAI";
-				SWIFT_OBJC_BRIDGING_HEADER = "chatgptclone/chatgptclone-Bridging-Header.h";
+				PRODUCT_BUNDLE_IDENTIFIER = com.aidenhyun.malloai;
+				PRODUCT_NAME = MalloAI;
+				SWIFT_OBJC_BRIDGING_HEADER = "MalloAI/MalloAI-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FF3DC64E0FF5915FEC33FEE9 /* Pods-chatgptclone.release.xcconfig */;
+			baseConfigurationReference = B534E9FFBA28B81DFAA1A8A9 /* Pods-MalloAI.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = chatgptclone/chatgptclone.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MalloAI/MalloAI.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = chatgptclone/Info.plist;
+				INFOPLIST_FILE = MalloAI/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -409,11 +409,11 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.aidenhyun.malloai";
-				PRODUCT_NAME = "MalloAI";
-				SWIFT_OBJC_BRIDGING_HEADER = "chatgptclone/chatgptclone-Bridging-Header.h";
+				PRODUCT_BUNDLE_IDENTIFIER = com.aidenhyun.malloai;
+				PRODUCT_NAME = MalloAI;
+				SWIFT_OBJC_BRIDGING_HEADER = "MalloAI/MalloAI-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -545,7 +545,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "chatgptclone" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MalloAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -554,7 +554,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "chatgptclone" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "MalloAI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
