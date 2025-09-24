@@ -14,7 +14,7 @@ module.exports = function(api) {
         },
       ],
       ['./babel-plugins/inject-fileline.js', { devOnly: true }],
-      'react-native-reanimated/plugin',
+      'react-native-worklets/plugin',
     ],
   };
 };

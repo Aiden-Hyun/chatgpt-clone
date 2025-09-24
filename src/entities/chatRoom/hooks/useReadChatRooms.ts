@@ -38,11 +38,14 @@ export const useReadChatRooms = () => {
       logger.debug("Creating chat room service and fetching rooms");
       const chatRoomService = new SupabaseChatRoomService();
       const allRooms = await chatRoomService.getRoomsForUser(session.user.id);
+      logger.debug("Fetched rooms from service", { count: allRooms.length });
 
       // Filter out empty rooms (rooms without messages)
-      const roomsWithMessages = [];
+      const roomsWithMessages = [] as ChatRoom[];
       for (const room of allRooms) {
+        logger.debug("Checking if room is empty", { roomId: room.id });
         const isEmpty = await chatRoomService.isRoomEmpty(room.id);
+        logger.debug("isRoomEmpty returned", { roomId: room.id, isEmpty });
         if (!isEmpty) {
           roomsWithMessages.push(room);
         }

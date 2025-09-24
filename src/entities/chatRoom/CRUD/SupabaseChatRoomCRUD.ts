@@ -129,6 +129,13 @@ export class SupabaseChatRoomService implements IChatRoomService {
       updatedAt: room.updated_at,
     }));
 
+    logger.debug("getRoomsForUser response", {
+      userId,
+      rawCount: (data || []).length,
+      mappedCount: rooms.length,
+      sample: rooms.slice(0, 3).map((r) => ({ id: r.id, name: r.name })),
+    });
+
     logger.debug("getRoomsForUser success", {
       userId,
       roomCount: rooms.length,

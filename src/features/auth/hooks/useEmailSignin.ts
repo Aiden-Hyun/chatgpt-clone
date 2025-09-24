@@ -1,5 +1,6 @@
 import type { AuthResponse } from "@supabase/supabase-js";
 
+import { appConfig } from "../../../shared/lib/config";
 import { supabase } from "../../../shared/lib/supabase";
 import { getLogger } from "../../../shared/services/logger";
 
@@ -20,6 +21,12 @@ export const useEmailSignin = () => {
     operation: async ({ email, password }) => {
       logger.info(`User login attempt for ${email}`);
 
+      // Extra diagnostics for Android network issues
+      logger.debug("Auth endpoint diagnostics (pre-request)", {
+        supabaseUrl: appConfig.supabaseUrl,
+        supabaseAuthUrl: `${appConfig.supabaseUrl}/auth/v1/token?grant_type=password`,
+      });
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -27,7 +34,8 @@ export const useEmailSignin = () => {
 
       if (error) {
         logger.error(
-          `Login failed for ${email}: ${error.message} (code: ${error.status})`
+          `Login failed for ${email}: ${error.message} (code: ${error.status})`,
+          { isFetchError: (error as any)?.name === "TypeError" }
         );
         throw error;
       }

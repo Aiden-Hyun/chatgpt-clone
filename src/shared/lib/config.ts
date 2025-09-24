@@ -15,7 +15,13 @@ function getRequiredConfig(key: string): string {
     throw new Error(errorMessage);
   }
   if (__DEV__) {
-    logger.debug(`Successfully loaded config: ${key}`, { key });
+    // Log sanitized values to verify runtime configuration on device/emulator
+    const isSecret = key.toLowerCase().includes("key");
+    const loggedValue = isSecret ? "[REDACTED]" : value;
+    logger.debug(`Successfully loaded config: ${key}`, {
+      key,
+      value: loggedValue,
+    });
   }
   return value;
 }
@@ -26,3 +32,28 @@ export const appConfig = {
   supabaseAnonKey: getRequiredConfig("supabaseAnonKey"),
   edgeFunctionBaseUrl: getRequiredConfig("edgeFunctionBaseUrl"),
 };
+
+if (__DEV__) {
+  const logger = getLogger("Config");
+  try {
+    const supabaseUrl = new URL(appConfig.supabaseUrl);
+    const edgeUrl = new URL(appConfig.edgeFunctionBaseUrl);
+    logger.info("Resolved endpoints for runtime", {
+      supabase: {
+        protocol: supabaseUrl.protocol,
+        host: supabaseUrl.host,
+        href: appConfig.supabaseUrl,
+      },
+      edge: {
+        protocol: edgeUrl.protocol,
+        host: edgeUrl.host,
+        href: appConfig.edgeFunctionBaseUrl,
+      },
+    });
+  } catch (_err) {
+    logger.warn("Failed to parse one or more endpoint URLs", {
+      supabaseUrl: appConfig.supabaseUrl,
+      edgeFunctionBaseUrl: appConfig.edgeFunctionBaseUrl,
+    });
+  }
+}

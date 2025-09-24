@@ -2,7 +2,7 @@
 import { useFonts } from "expo-font";
 import { usePathname, useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { AppState } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -25,11 +25,22 @@ import { getLogger } from "../src/shared/services/logger";
 function AppContent() {
   const logger = getLogger("AppContent");
   const [fontsLoaded] = useFonts({
+    // Load fonts but do not block app render on Android
     CascadiaMono: require("../assets/fonts/Cascadia/CascadiaMono.ttf"),
     CascadiaMonoBold: require("../assets/fonts/Cascadia/CascadiaMono-Bold.otf"),
   });
 
   const { isLoading: themeLoading } = useThemeContext();
+
+  // Only gate the very first render on theme readiness; never re-gate after app shown
+  const hasShownAppRef = useRef(false);
+  useEffect(() => {
+    if (!themeLoading) {
+      hasShownAppRef.current = true;
+    }
+  }, [themeLoading]);
+
+  const shouldShowLoading = themeLoading && !hasShownAppRef.current;
 
   logger.debug(
     `Loading states: fonts ${fontsLoaded ? "loaded" : "loading"}, theme ${
@@ -37,13 +48,13 @@ function AppContent() {
     }`
   );
 
-  // Wait for both fonts and theme to be ready
-  if (!fontsLoaded || themeLoading) {
+  // Only block before first successful theme-ready render
+  if (shouldShowLoading) {
     logger.debug("Showing loading screen");
     return <LoadingScreen />;
   }
 
-  logger.debug("Both fonts and theme ready, rendering app");
+  logger.debug("Theme ready, rendering app");
   return <ProtectedRoutes />;
 }
 
