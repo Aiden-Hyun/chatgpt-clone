@@ -64,6 +64,7 @@ const ChatScreenPure = React.memo(
       setMessages,
       isSearchMode,
       onSearchToggle,
+      refetch,
     } = useChat(numericRoomId, { selectedModel, setModel: onChangeModel });
 
     // Create stable inputRef to prevent ChatInputBar re-renders
@@ -134,6 +135,8 @@ const ChatScreenPure = React.memo(
                 showWelcomeText={messages.length === 0 && !loading}
                 onLike={handleLike}
                 onDislike={handleDislike}
+                refreshing={loading}
+                onRefresh={refetch}
               />
             ),
             [
@@ -144,6 +147,7 @@ const ChatScreenPure = React.memo(
               editUserAndRegenerate,
               handleLike,
               handleDislike,
+              refetch,
             ]
           )}
 

@@ -1,7 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, usePathname } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useDeleteChatRoom, useReadChatRooms } from "@/entities/chatRoom";
@@ -33,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { t } = useLanguageContext();
   const { showSuccess } = useToast();
   const { userName } = useReadUser();
-  const { chatRooms, refetch } = useReadChatRooms();
+  const { chatRooms, loading, refetch } = useReadChatRooms();
   const { deleteChatRoom } = useDeleteChatRoom();
   const pathname = usePathname(); // ← Add this line
   const styles = createSidebarStyles(theme);
@@ -184,6 +189,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <ScrollView
           style={styles.chatHistory}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={refetch}
+              tintColor={theme.colors.primary}
+              colors={[theme.colors.primary]}
+            />
+          }
         >
           {chatRooms.map((room) => {
             const isSelected = pathname?.includes(`/chat/${room.id}`); // ← Use pathname instead of router.pathname

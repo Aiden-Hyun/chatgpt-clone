@@ -4,6 +4,7 @@ import {
   Animated,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
@@ -31,6 +32,9 @@ interface MessageListProps {
   // Like/dislike handlers
   onLike?: (messageId: string) => void;
   onDislike?: (messageId: string) => void;
+  // Pull-to-refresh props
+  refreshing?: boolean;
+  onRefresh?: () => void;
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
@@ -41,6 +45,8 @@ export const MessageList: React.FC<MessageListProps> = ({
   showWelcomeText,
   onLike,
   onDislike,
+  refreshing = false,
+  onRefresh,
 }) => {
   const flatListRef = useRef<FlashListRef<ChatMessage>>(null);
   const theme = useAppTheme();
@@ -391,6 +397,17 @@ export const MessageList: React.FC<MessageListProps> = ({
       contentContainerStyle={styles.container}
       ref={flatListRef}
       extraData={extraDataArray}
+      // Pull-to-refresh functionality
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.primary}
+            colors={[theme.colors.primary]}
+          />
+        ) : undefined
+      }
       // 🚀 FlashList Optimization (estimatedItemSize not available in this version)
       onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
         const contentHeight = e.nativeEvent.contentSize.height;
