@@ -178,15 +178,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onPress={handleNewChat}
             containerStyle={styles.newChatButton}
           />
-
-          {/* Test Button for New Source Implementation */}
-          <TouchableOpacity
-            style={styles.testButton}
-            onPress={() => router.push("/source-test")}
-          >
-            <Ionicons name="flask-outline" size={16} color="#FF6B35" />
-            <Text style={styles.testButtonText}>🧪 Test New Features</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Chat History */}

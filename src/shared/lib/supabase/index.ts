@@ -1,4 +1,5 @@
 // src/lib/supabase/index.ts
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 
 import { getLogger } from "../../services/logger";
@@ -79,6 +80,8 @@ export const supabase = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
+      // Configure AsyncStorage for session persistence on mobile
+      storage: AsyncStorage,
     },
     // Add React Native specific options
     global: {

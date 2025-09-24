@@ -62,23 +62,5 @@ export const createSidebarStyles = (theme: AppTheme) => {
       paddingVertical: 2,
       borderRadius: theme.borders.radius.sm,
     },
-    testButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      marginTop: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.sm,
-      backgroundColor: "rgba(255, 107, 53, 0.1)",
-      borderRadius: theme.borders.radius.md,
-      borderWidth: 1,
-      borderColor: "#FF6B35",
-    },
-    testButtonText: {
-      marginLeft: theme.spacing.xs,
-      fontSize: 12,
-      fontWeight: "600",
-      color: "#FF6B35",
-    },
   });
 };
