@@ -1,6 +1,6 @@
-import * as Linking from "expo-linking";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { router, usePathname } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -27,6 +27,16 @@ import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
 import { createAuthStyles } from "./AuthScreen.styles";
+
+// Configure Google Sign-In
+GoogleSignin.configure({
+  scopes: [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+  ],
+  webClientId:
+    "817884024065-m9cpgjg71js0hi98jkq05toaht10r4hg.apps.googleusercontent.com", // Web client ID (works for both iOS and Android)
+});
 
 export const AuthScreen = () => {
   const { session } = useAuth();
@@ -136,31 +146,78 @@ export const AuthScreen = () => {
   };
 
   const handleGoogleLogin = async () => {
-    const redirectUri =
-      Platform.OS === "web"
-        ? `${window.location.origin}/auth/callback`
-        : Linking.createURL("/auth/callback");
-
-    logger.info("Starting Google OAuth login", { redirectUri });
+    logger.info("Starting native Google Sign-In");
 
     try {
       startSigningInWithGoogle();
-      await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: redirectUri,
-          queryParams: {
-            prompt: "select_account",
-          },
-        },
+
+      // Check if Google Play Services are available
+      logger.info("Checking Google Play Services availability");
+      await GoogleSignin.hasPlayServices();
+      logger.info("Google Play Services are available");
+
+      // Sign in with Google
+      logger.info("Initiating Google Sign-In");
+      const userInfo = await GoogleSignin.signIn();
+      logger.info("Google Sign-In successful", {
+        hasIdToken: !!userInfo.data?.idToken,
+        hasUser: !!userInfo.data?.user,
+        userId: userInfo.data?.user?.id,
+        userEmail: userInfo.data?.user?.email,
+        idTokenLength: userInfo.data?.idToken?.length,
       });
 
-      logger.info("Google OAuth login initiated successfully");
-    } catch (error) {
-      logger.error("Google OAuth login failed", {
-        error: error instanceof Error ? error.message : "Unknown error",
+      if (!userInfo.data?.idToken) {
+        logger.error("No ID token received from Google", {
+          userInfo: userInfo.data,
+        });
+        throw new Error("No ID token received from Google");
+      }
+
+      // Sign in with Supabase using the ID token
+      logger.info("Authenticating with Supabase using ID token");
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token: userInfo.data.idToken,
       });
-      showError(t("auth.google_login_failed"));
+
+      if (error) {
+        logger.error("Supabase authentication failed", {
+          error: error.message,
+          status: error.status,
+          name: error.name,
+        });
+        throw error;
+      }
+
+      logger.info("Supabase authentication successful", {
+        userId: data.user?.id,
+        email: data.user?.email,
+        hasSession: !!data.session,
+      });
+
+      showSuccess(t("auth.login_successful") || "Login successful!");
+      router.replace("/");
+    } catch (error: any) {
+      logger.error("Google Sign-In failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        code: error?.code,
+        name: error?.name,
+        status: error?.status,
+        stack: error?.stack,
+      });
+
+      if (error?.code === "SIGN_IN_CANCELLED") {
+        logger.info("User cancelled Google Sign-In");
+      } else {
+        const errorMessage = error?.message || "Google Sign-In failed";
+        showError(
+          `${
+            t("auth.google_login_failed") || "Google Sign-In failed"
+          }: ${errorMessage}`
+        );
+      }
+
       stopSigningInWithGoogle();
     }
   };

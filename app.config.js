@@ -13,6 +13,7 @@ export default {
     android: {
       package: 'com.aidenhyun.malloai',
     },
+    newArchEnabled: true,
     plugins: [
       'expo-secure-store',
       [
@@ -27,15 +28,12 @@ export default {
             buildToolsVersion: '36.0.0',
             minSdkVersion: 24,
             gradlePluginVersion: '8.4.0',
-            newArchEnabled: true,
           },
         },
       ],
       [
-        '@react-native-google-signin/google-signin/app.plugin.js',
+        '@react-native-google-signin/google-signin',
         {
-          androidClientId: '817884024065-8kuomphhggmd46vhfgb0br0b0o90f0lm.apps.googleusercontent.com',
-          iosClientId: '817884024065-5rhvlscksui31p2if3vi5nj92ds26u3h.apps.googleusercontent.com',
           iosUrlScheme: 'com.googleusercontent.apps.817884024065-5rhvlscksui31p2if3vi5nj92ds26u3h',
         },
       ],
