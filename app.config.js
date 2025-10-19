@@ -42,6 +42,9 @@ export default {
       'expo-web-browser',
     ],
     extra: {
+      eas: {
+        projectId: 'f3fa234f-7fbf-4867-88ec-6cc945a5dcbb',
+      },
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
       edgeFunctionBaseUrl: process.env.EDGE_FUNCTION_BASE_URL,
