@@ -23,11 +23,13 @@ export default {
             // Force the entire build to use Kotlin 2.1.20, required by RN 0.81+
             kotlinVersion: '2.1.20',
             // Pin other SDK versions for consistency
-            compileSdkVersion: 36,
-            targetSdkVersion: 36,
-            buildToolsVersion: '36.0.0',
+            compileSdkVersion: 35,
+            targetSdkVersion: 35,
+            buildToolsVersion: '35.0.0',
             minSdkVersion: 24,
-            gradlePluginVersion: '8.4.0',
+            gradlePluginVersion: '8.3.0',
+            // Enable AndroidX
+            usesCleartextTraffic: true,
           },
         },
       ],
