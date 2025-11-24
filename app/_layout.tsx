@@ -111,19 +111,25 @@ function ProtectedRoutes() {
     };
   }, []);
 
+  const shouldRedirectToAuth = !session && !isAuthRoute;
+
   useEffect(() => {
-    if (!isLoading && !session && !isAuthRoute) {
+    if (shouldRedirectToAuth) {
       logger.debug(
         `Redirecting to auth - no session (current path: ${pathname})`
       );
-      // Only redirect to auth if user is not on an auth route
       router.replace("/auth");
     }
-  }, [isLoading, session, pathname, isAuthRoute, router, logger]);
+  }, [shouldRedirectToAuth, pathname, router, logger]);
 
-  if (isLoading) {
-    logger.debug("Showing loading screen");
-    return <LoadingScreen />;
+  if (!session) {
+    if (isAuthRoute) {
+      // Allow auth stack to render while unauthenticated
+      logger.debug("Rendering auth routes (unauthenticated user)");
+    } else {
+      logger.debug("Unauthenticated and not on auth route, showing loader");
+      return <LoadingScreen />;
+    }
   }
 
   return (
