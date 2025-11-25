@@ -5,179 +5,188 @@ export interface PrivacyContent {
   paragraphs: string[];
 }
 
-const formatDate = (locale: string) =>
-  new Date("2024-03-14").toLocaleDateString(locale, {
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-  });
+// We use the full text from docs/privacy/policy.md directly here
+// so the in-app experience is complete and offline-friendly.
 
-/**
- * ENTERPRISE-GRADE PRIVACY POLICY (no bullets; numbered sections; global compliance scaffolding).
- * Fill in: [Company Name], [Legal Entity], [Support Email], [Postal Address], [DPO Email], [EEA Representative], [UK Representative].
- * Notes:
- * - Model improvement is strictly opt-in.
- * - No “sale” or “share” under CPRA by default; if you later add ads, revise Section 12 and add opt-out links.
- * - Québec Law 25 disclosures included (incident response, cross-border, privacy by default).
- */
 export const getPrivacyContentByLanguage = (
   language: SupportedLanguage
 ): PrivacyContent => {
-  if (language === "es") {
-    return {
-      title: "POLÍTICA DE PRIVACIDAD",
-      paragraphs: [
-        `Última actualización: ${formatDate("es-ES")}`,
+  // Fallback to English for non-localized languages
+  // Ideally, you would translate this full text for es/ko as well.
+  
+  const fullEnglishPolicy = [
+    "Last Update: November 22, 2024",
 
-        "1. QUIÉNES SOMOS. Esta Política de Privacidad describe cómo [Legal Entity] que opera como [Company Name] (“la Compañía”, “nosotros”) trata los datos personales cuando usted utiliza nuestra aplicación y servicios de conversación con IA (el “Servicio”). A efectos del RGPD/UK RGPD, el responsable del tratamiento es [Legal Entity]. Para consultas de privacidad, incluido el Delegado de Protección de Datos, escriba a [DPO Email] o a [Support Email].",
+    "MalloAI and its affiliates ('we,' 'our,' or 'us') value the privacy of individuals who use our mobile applications, website, and related services (collectively, our 'Services'). The Services provide an AI-powered chat application that helps customers leverage multiple large language models (LLMs) to accomplish work and general information retrieval. We collect data to perform these Services, to understand how our consumers use the service, to identify new features and opportunities, debug platform issues, and to protect the platform from fraud and abuse. Such data processing is conducted for the following reasons:",
 
-        "2. ALCANCE Y RELACIÓN DE PARTES. Esta Política se aplica al uso individual del Servicio. Para cuentas empresariales, si su organización controla las cuentas de los usuarios finales, su organización es el responsable del tratamiento y nosotros actuamos como encargado; en ese caso, también se aplicarán los acuerdos de tratamiento de datos y las instrucciones de su organización.",
+    "• When we have a legal duty.\n• To fulfill our contract with you.\n• When it is in our legitimate interests, data processing is necessary to achieve those interests and our interests are not overridden by your interests or fundamental rights and freedoms.\n• With your consent, when needed and if applicable.",
 
-        "3. DEFINICIONES OPERATIVAS. “Datos de Cuenta” son datos de registro, identificación y contacto. “Contenido del Usuario” son entradas, archivos y materiales que usted envía al Servicio. “Salida de IA” son respuestas generadas por modelos. “Datos de Uso” son métricas, acciones dentro del producto y telemetría técnica. “Subencargados” son proveedores que procesan datos en nuestro nombre.",
+    "The section titled 'How We Share the Information We Collect' in this Privacy Policy provides information on the Affiliates, Service Providers, and third parties with whom we share information.",
 
-        "4. CATEGORÍAS DE DATOS QUE TRATAMOS. Tratamos Datos de Cuenta como nombre, correo electrónico y credenciales; Contenido del Usuario como texto, archivos e instrucciones; Salida de IA generada para usted; Datos de Uso e información del dispositivo como identificadores, sistema operativo, zona horaria y direcciones IP truncadas; registros técnicos y de seguridad. No solicitamos categorías especiales salvo que usted decida proporcionarlas en el Contenido del Usuario.",
+    "This privacy policy (the 'Privacy Policy') explains how we collect, use, and share information from or about MalloAI users ('Users' or 'you' or 'your') or their devices. By using our Services, you acknowledge the collection, use, disclosure, and procedures this Privacy Policy describes. Beyond the Privacy Policy, your use of our Services is also subject to our Terms of Service.",
 
-        "5. FUENTES DE DATOS. Recibimos datos directamente de usted cuando crea una cuenta o utiliza el Servicio; de forma automática mediante cookies o tecnologías similares; y de terceros limitados como proveedores de autenticación, pagos y análisis cuando usted los utiliza con el Servicio.",
+    "Unless otherwise specified herein, this Privacy Policy applies to all users of our Services, including paid subscribers to our Services such as Pro Plan or Team Plan subscribers (our 'Paid Subscribers'), if and when such subscription tiers are made available. In the event of a conflict between the terms of this Privacy Policy and the terms of a Paid Subscriber's subscription agreement, the terms of the latter will control.",
 
-        "6. FINES Y BASES LEGALES. Tratamos datos para prestar y mantener el Servicio y cumplir el contrato con usted; para seguridad, prevención de fraude, integridad y disponibilidad basados en intereses legítimos; para comunicación del Servicio y atención al cliente; para cumplir con obligaciones legales y regulatorias; y con su consentimiento para funciones opcionales como marketing o mejora de modelos. Cuando la ley lo exija, usted puede retirar el consentimiento en cualquier momento sin afectar la licitud del tratamiento previo.",
+    "Finally, as noted in our Terms of Service, this Privacy Policy assumes that in accessing our Services you will not include in any prompts (or disclose, send or transmit to MalloAI), or upload any sensitive, personal information or personally identifiable information that is subject to specific regulations or laws that impose increased protections and/or obligations with respect to handling that type of information (including, but not limited to, personal financial, health, social security numbers or other government identification numbers, ethnicity, sexual orientation and political affiliations), such as HIPAA or GLBA, or under international regulations such as GDPR, or any other information where unauthorized disclosure could cause material or severe harm or impact to MalloAI or third parties. Please do not enter such sensitive personal information in prompts or otherwise share such information that could enter our systems.",
 
-        "7. MEJORA DE MODELOS Y REVISIÓN HUMANA. No utilizamos su Contenido del Usuario ni su Salida de IA para entrenar nuestros modelos a menos que usted opte expresamente por participar cuando dicha opción esté disponible. La revisión humana puede utilizarse de forma limitada para resolver problemas de seguridad, fraude o abuso y para soporte cuando usted lo solicite.",
+    "INFORMATION WE COLLECT",
 
-        "8. DECISIONES AUTOMATIZADAS. El Servicio genera Salida de IA automatizada, pero no adoptamos decisiones con efectos legales o similares sin intervención humana. Usted debe verificar la exactitud y el uso legal de cualquier Salida de IA antes de confiar en ella.",
+    "We collect any information that you provide to us, including when you create your account, submit your preferences, or contact us. We also collect information about your device and the ways you use and interact with our Services.",
 
-        "9. CONSERVACIÓN. Conservamos los Datos de Cuenta durante la vigencia de su cuenta y conforme a los requisitos legales. Conservamos Contenido del Usuario según lo necesario para prestar el Servicio y a elección del usuario cuando se proporcionan controles de eliminación. Conservamos registros y telemetría por un periodo limitado y proporcional a fines de seguridad, auditoría y continuidad del negocio. Cuando ya no sean necesarios, eliminamos o anonimizamos los datos de forma segura.",
+    "We may collect a variety of information from or about you or your devices from various sources, as described below.",
 
-        "10. TRANSFERENCIAS INTERNACIONALES. Podemos transferir datos a países fuera de su jurisdicción. Cuando se requiera, utilizamos Cláusulas Contractuales Tipo de la UE y el Addendum del Reino Unido, así como salvaguardias adicionales. Para Canadá, cumplimos la Ley de Protección de Información Personal y los documentos electrónicos (PIPEDA) y la Ley 25 de Quebec para las transferencias extraterritoriales.",
+    "If you do not provide your information when requested, you may not be able to use our Services if that information is necessary to provide you with our Services or if we are legally required to collect it.",
 
-        "11. DIVULGACIONES A TERCEROS. Compartimos datos con proveedores de servicios y subencargados que prestan funciones de alojamiento, procesamiento, seguridad, facturación y soporte, conforme a contratos que exigen confidencialidad y uso limitado. También compartimos datos cuando la ley lo exige, para proteger derechos, seguridad y cumplimiento, o en operaciones corporativas como reorganización o adquisición, en cuyo caso se aplicarán salvaguardas equivalentes.",
+    "Registration and Profile Information. When you sign up for an account, we ask you for your name and email address.",
 
-        "12. VENTA O COMPARTICIÓN SEGÚN CPRA. No vendemos datos personales ni los “compartimos” para publicidad conductual de contexto cruzado según la CPRA. Si en el futuro ofrecemos publicidad basada en intereses, proporcionaremos mecanismos de exclusión aplicables y actualizaremos esta Política.",
+    "Information We Obtain from Third Parties. If you choose to connect your account on a third-party platform or network to the Services, like using your Google account to access your MalloAI account, we receive information from Google. For example, this information may include your Google username, profile picture, and other profile information. You can see Google's Privacy Policy here: https://policies.google.com/privacy. In the future, we may allow other services to provide log-in services. If so, we will share log-in credentials with the provider and receive information you have shared with the log-in provider.",
 
-        "13. COOKIES Y TECNOLOGÍAS SIMILARES. Utilizamos cookies esenciales para autenticación y seguridad, así como cookies opcionales de análisis y rendimiento. Puede gestionar preferencias a través de la configuración del navegador o controles dentro del producto cuando estén disponibles, y el uso del Servicio puede verse afectado si desactiva ciertas cookies.",
+    "Third Party Service Collections. We will not use any third-party services (e.g. DropBox, Google Drive, or Microsoft Sharepoint, etc.) to collect information without explicit permission. Personal data collected through these services may include information to help us identify your account, prompts, content created or shared by you, or feedback that you provide to our Services. This data will not be used for developing, improving, or training third party AI and/or ML models. To the extent we transfer any data to our third-party AI providers, it is solely data which our users have represented they have the right to transfer, and to which transfer our users consent. For instance, if a user creates a document on a platform like Google or Microsoft, the user represents that he/she has the ownership and/or rights in that document to upload it to our app, and by uploading it, the user consents based on our internal processes to share it with our third-party AI providers.",
 
-        "14. SEGURIDAD. Mantenemos medidas técnicas y organizativas razonables diseñadas para proteger los datos frente a acceso, uso o divulgación no autorizados. A pesar de nuestros esfuerzos, ningún método es completamente seguro. Notificaremos incidentes conforme a las leyes aplicables, incluida la Ley 25 de Quebec y el RGPD.",
+    "Device Information. We receive information about the device and software you use to access our Services, including internet protocol (IP) address, web browser type, operating system version, and device identifiers.",
 
-        "15. SUS DERECHOS. Dependiendo de su jurisdicción, puede solicitar acceso, corrección, eliminación, restricción u oposición; portabilidad; retirada del consentimiento; y apelación en caso de denegación. En California puede solicitar acceso, eliminación y corrección, así como conocer categorías y fines; no discriminamos por ejercer derechos. En Brasil puede ejercer derechos de confirmación, acceso, corrección, anonimización, bloqueo, portabilidad, eliminación, información sobre compartición y revocación del consentimiento. Presentaremos respuestas verificables dentro de los plazos legales. Para ejercerlos, contacte [Support Email] o utilice los controles dentro del producto cuando estén disponibles.",
+    "Usage Information. To help us understand how you use our Services, to better personalize them to you, to help us improve them, and to communicate and market to you in the most relevant ways, we automatically receive information about your interactions with our Services, like the pages or other content you view, chat rooms you create, messages you send, and the dates and times of your visits.",
 
-        "16. MENORES. El Servicio no está dirigido a menores de 13 años ni recopilamos conscientemente datos de menores. Si cree que un menor nos proporcionó datos, contáctenos para eliminarlos.",
+    "Chat Content. We collect and store the chat messages, prompts, and AI-generated responses that you create and receive through our Services. This content is stored in our database to enable you to access your chat history and to provide continuity in your conversations.",
 
-        "17. CONTROLES DEL USUARIO Y ELECCIONES. Puede actualizar el perfil, gestionar preferencias de comunicación, descargar o eliminar ciertos contenidos y cerrar la cuenta. Si cierra la cuenta, conservaremos la información estrictamente necesaria para obligaciones legales, resolución de disputas y cumplimiento de contratos.",
+    "Fraud Detection. MalloAI collects user telemetry for abuse and security monitoring purposes. Telemetry might include IP address, client identification signals such as browser user-agent, and actions performed on the platform.",
 
-        "18. PROVEEDORES, SUBENCARGADOS Y TRANSSPARENCIA. Podemos publicar una lista de subencargados principales o proporcionar dicha información previa solicitud. Exigimos obligaciones de confidencialidad y compromisos equivalentes de seguridad y privacidad.",
+    "Payment Information. We may receive your payment details if you purchase services or to access services. Payment processing is handled by third-party payment processors as described in the 'How We Share the Information We Collect' section below.",
 
-        "19. AVISOS ESPECÍFICOS PARA CANADÁ. Para residentes en Canadá, cumplimos PIPEDA y la Ley 25 de Quebec. Puede presentar quejas ante la Oficina del Comisionado de Privacidad de Canadá o la autoridad de su provincia. Responderemos a solicitudes de acceso conforme a los plazos legales.",
+    "Information from Cookies and Similar Technologies. We collect information using only first-party cookies and similar technologies. On mobile applications, we use secure storage mechanisms provided by the operating system to maintain your session and preferences.",
 
-        "20. AVISOS PARA EL EEE Y EL REINO UNIDO. Puede contactar a nuestro Representante en la UE en [EEA Representative] y a nuestro Representante en el Reino Unido en [UK Representative]. Tiene derecho a presentar reclamaciones ante su autoridad de protección de datos.",
+    "HOW WE USE THE INFORMATION WE COLLECT",
 
-        "21. CAMBIOS EN ESTA POLÍTICA. Podremos actualizar esta Política para reflejar cambios en prácticas o requisitos legales. Cuando la ley lo exija, proporcionaremos aviso con antelación razonable. El uso continuado tras la fecha efectiva implica aceptación.",
+    "We use your information primarily to provide, personalize, maintain the security of, and improve the Services you use. We also use your information to communicate with you and to carry out our marketing; to protect you and others; and to exercise, defend or establish our rights.",
 
-        "22. CONTACTO. Para cuestiones de privacidad, para ejercer derechos o para contactar a nuestro DPO, escriba a [DPO Email] o [Support Email], o envíe correspondencia a [Postal Address].",
-      ],
-    };
-  }
+    "We use the information we collect:\n• To provide, maintain, improve, and enhance our Services;\n• To understand and analyze how you use our Services and develop new products, services, features, and functionality;\n• To personalize our services to our members;\n• To communicate with you and provide you with updates and other information relating to our Services, provide information that you request, respond to comments and questions, and otherwise provide customer support;\n• To process payments;\n• For marketing purposes, such as developing and providing promotional materials that may be useful, relevant, valuable or otherwise of interest to you;\n• To generate anonymized, aggregate data containing only de-identified, non-personal information that we may use for any lawful purpose;\n• To find and prevent fraud, and respond to trust and safety issues that may arise;\n• For compliance purposes, including enforcing our Terms of Service or other legal rights, or as may be required by applicable laws and regulations or requested by any judicial process or governmental agency; and\n• For other purposes for which we provide specific notice at the time the information is collected.",
 
-  if (language === "ko") {
-    return {
-      title: "개인정보 처리방침",
-      paragraphs: [
-        `최종 업데이트: ${formatDate("ko-KR")}`,
+    "You are in control of your profile information and email preferences:\n• You can unsubscribe from our promotional emails via the link provided in the emails. Even if you opt-out of receiving promotional messages from us, you will continue to receive administrative messages from us.\n• You can request the deletion of your user profile and all data associated to it by emailing us at support@malloai.app.",
 
-        "1. 회사 소개. 본 개인정보 처리방침은 [Company Name]을 운영하는 [Legal Entity](이하 “회사”)가 인공지능 대화 서비스(이하 “서비스”) 이용과 관련하여 개인정보를 어떻게 처리하는지 설명합니다. RGPD/영국 RGPD 상의 개인정보처리자는 [Legal Entity]입니다. 개인정보 문의 및 개인정보보호책임자(DPO) 연락처는 [DPO Email] 또는 [Support Email]입니다.",
+    "HOW WE SHARE THE INFORMATION WE COLLECT",
 
-        "2. 적용 범위 및 역할. 본 방침은 개인 사용자에게 적용됩니다. 조직이 계정을 관리하는 기업용 환경에서는 조직이 개인정보처리자이고 회사는 수탁자로서 처리하며, 별도의 데이터 처리계약과 조직의 지시에 따릅니다.",
+    "We share your information with third party vendors who help us to provide and enhance our Services and marketing. We share information with the following categories of third parties.",
 
-        "3. 용어 정의. “계정 데이터”는 등록·식별·연락처 정보입니다. “사용자 콘텐츠”는 사용자가 서비스에 입력·업로드하는 자료입니다. “AI 생성물”은 모델이 산출한 결과입니다. “사용 데이터”는 제품 내 활동, 성능 및 기술 로그입니다. “하위수탁자”는 당사를 대신해 데이터를 처리하는 공급업체입니다.",
+    "Who we share with. We may share any information we receive with vendors and service providers retained in connection with the provision of our Services. We have agreements in place with vendors and service providers to address how they may use your information.",
 
-        "4. 처리하는 개인정보. 회사는 계정 데이터로서 이름, 이메일, 자격증명 등을, 사용자 콘텐츠로서 텍스트 및 파일 등을, AI 생성물을, 사용 데이터 및 기기 정보로서 식별자, OS, 시간대, 마스킹된 IP, 보안 및 성능 로그 등을 처리합니다. 민감정보는 원칙적으로 요청하지 않으며, 사용자가 자발적으로 제공하는 경우 해당 법령에 따라 보호합니다.",
+    "Affiliates. Our corporate parent, subsidiaries, and affiliates, for purposes consistent with this Privacy Policy.",
 
-        "5. 수집 경로. 회사는 귀하가 계정을 생성하거나 서비스를 이용할 때 직접 정보를 수집하며, 쿠키 등 유사 기술을 통해 자동으로 수집하고, 인증·결제·분석 등 제3자와의 연동을 통해 필요한 범위 내에서 수집합니다.",
+    "Service providers. Companies and individuals that provide services on our behalf or help us operate the Services or our business (such as hosting, information technology, customer support, email delivery, communications channels and website analytics services).",
 
-        "6. 이용 목적 및 법적 근거. 회사는 계약의 이행과 서비스 제공·유지, 보안·사기 방지·무단사용 방지를 위한 정당한 이익, 서비스 관련 소통과 지원, 법적 의무 준수, 그리고 귀하의 동의가 있는 선택 기능(예: 마케팅, 모델 개선)을 위해 개인정보를 처리합니다. 동의는 언제든 철회할 수 있으며 철회 이전의 처리의 적법성에는 영향을 미치지 않습니다.",
+    "We have service provider relationships and use various Large Language Model (LLM) providers including OpenAI and Anthropic. We use Supabase for authentication, database hosting, and backend infrastructure. We use Google Sign-In for authentication services. We use Stripe for payment processing.",
 
-        "7. 모델 개선 및 사람 검토. 회사는 귀하가 명시적으로 옵트인하지 않는 한 사용자 콘텐츠나 AI 생성물을 모델 학습에 사용하지 않습니다. 보안·사기·오용 대응 또는 귀하의 요청에 따른 지원을 위해 제한적으로 사람이 검토할 수 있습니다.",
+    "We provide these vendor details to provide additional transparency but don't guarantee that this list is current or complete.",
 
-        "8. 자동화 의사결정. 서비스는 자동으로 AI 생성물을 제공하지만, 법적 또는 유사하게 중대한 효과를 갖는 결정을 사람의 개입 없이 내리지 않습니다. 귀하는 생성물의 정확성과 적법성을 스스로 확인해야 합니다.",
+    "Professional advisors. Professional advisors, such as lawyers, auditors, bankers and insurers, where necessary in the course of the professional services that they render to us.",
 
-        "9. 보유 기간. 회사는 계정 유지기간 동안 계정 데이터를 보유하며 법적 의무 이행을 위해 필요한 범위에서 추가 보관할 수 있습니다. 사용자 콘텐츠는 서비스 제공에 필요한 기간 또는 이용자가 삭제할 때까지 보관합니다. 보안·감사·연속성 확보를 위한 로그는 합리적인 기간 보관 후 안전하게 삭제 또는 비식별화합니다.",
+    "Authorities and others. Law enforcement, government authorities, and private parties, as we believe in good faith to be necessary or appropriate for the compliance and protection purposes described above.",
 
-        "10. 국외 이전. 회사는 데이터가 귀하의 거주 국가 밖으로 이전될 수 있으며, 필요한 경우 EU 표준계약조항과 영국 애드덤을 포함한 적정한 보호조치를 적용합니다. 캐나다 및 퀘벡 거주자의 경우 PIPEDA와 퀘벡 법률 25에 따른 이전 요구사항을 준수합니다.",
+    "Business transferees. Acquirers and other relevant participants in business transactions (or negotiations for such transactions) involving a corporate divestiture, merger, consolidation, acquisition, reorganization, sale or other disposition of all or any portion of the business or assets of, or equity interests (including, in connection with a bankruptcy or similar proceedings).",
 
-        "11. 제3자 제공. 회사는 호스팅, 처리, 보안, 결제, 지원을 수행하는 서비스 제공업체와 계약에 따라 필요한 범위에서 데이터를 공유합니다. 또한 법률상 요구, 권리·안전 보호, 기업거래(합병·양도 등) 시점에 필요한 경우 공유할 수 있으며, 이 경우 동등한 보호조치를 적용합니다.",
+    "As Required By Law and Similar Disclosures. We may access, preserve, and disclose your information if we believe doing so is required or appropriate to: (a) comply with law enforcement or otherwise lawful requests and legal process, such as a court order or subpoena by public authorities to meet national security or law enforcement requirements; (b) respond to your requests; or (c) protect your, our, or others' rights, property, or safety.",
 
-        "12. CPRA상 판매/공유 여부. 회사는 CPRA에서 정의하는 개인 정보의 “판매” 또는 맥락 교차 광고 목적의 “공유”를 수행하지 않습니다. 향후 광고 기능을 도입할 경우 관련 옵트아웃 수단을 제공하고 본 방침을 업데이트합니다.",
+    "Merger, Sale, or Other Asset Transfers. We may disclose and transfer your information to service providers, advisors, potential transactional partners, or other third parties in connection with the consideration, negotiation, or completion of a corporate transaction in which we are acquired by or merged with another company or we sell, liquidate, or transfer all or a portion of our business or assets.",
 
-        "13. 쿠키. 회사는 인증과 보안을 위한 필수 쿠키와 분석·성능 개선을 위한 선택 쿠키를 사용할 수 있습니다. 브라우저 또는 제품 내 설정을 통해 관리할 수 있으며, 일부 기능은 비활성화 시 제한될 수 있습니다.",
+    "Consent. We may disclose information from or about you or your devices with your permission.",
 
-        "14. 보안. 회사는 합리적인 기술적·관리적 보호조치를 유지합니다. 완전한 보안을 보장할 수는 없으며, 관련 법에 따라 사고 발생 시 통지 의무를 이행합니다.",
+    "Links to Other Websites or LLM Tools. Our Services contain links to other websites that are not owned or controlled by us, such as 3rd party websites in chat responses and other business partners. This Policy only applies to information collected by our Services. We have no control over these third party websites, and your use of third party websites and features are subject to privacy policies posted on those websites. We are not responsible or liable for the privacy or business practices of any third party websites linked to our Services. Your use of third parties' websites linked to our Services is at your own risk, so we encourage you to read the privacy policies of any linked third party websites when you leave one of our Services.",
 
-        "15. 이용자의 권리. 관할지에 따라 접근, 정정, 삭제, 처리 제한 또는 반대, 이동권, 동의 철회, 이의제기 및 거절 결정에 대한 이의신청 권리를 행사할 수 있습니다. 캘리포니아 거주자는 접근·삭제·정정 및 범주 통지 권리를, 브라질 거주자는 확인·접근·정정·익명화·차단·이동·삭제·공유 정보·동의 철회 권리를 보유합니다. 권리 행사는 [Support Email] 또는 제품 내 제공되는 도구를 통해 요청할 수 있습니다.",
+    "YOUR RIGHTS REGARDING YOUR DATA",
 
-        "16. 아동. 서비스는 만 13세 미만을 대상으로 하지 않으며, 아동의 개인정보를 고의로 수집하지 않습니다. 관련 사실을 알게 되면 지체 없이 삭제합니다.",
+    "As explained below, MalloAI provides ways for you to access and delete your personal information as well as exercise applicable data rights that give you certain control over your information. Please note that we are subject to the investigatory and enforcement powers of the United States' Federal Trade Commission (FTC).",
 
-        "17. 사용자 선택. 귀하는 프로필 업데이트, 알림 설정, 데이터 다운로드 또는 삭제, 계정 해지 등 다양한 선택권을 행사할 수 있습니다. 계정 해지 후에도 법적 의무 이행 및 분쟁 해결을 위해 필요한 최소한의 정보는 보관될 수 있습니다.",
+    "A) All Users",
 
-        "18. 공급업체 및 하위수탁자. 회사는 주요 하위수탁자 목록을 공개하거나 요청 시 제공할 수 있습니다. 모든 하위수탁자는 비밀유지 및 보안 의무를 부담합니다.",
+    "Email Subscriptions. You can always unsubscribe from our commercial or promotional emails by clicking unsubscribe in those messages. We will still send you transactional and relational emails about your use of the MalloAI Services.",
 
-        "19. 캐나다 관련 고지. 캐나다 거주자는 PIPEDA 및 퀘벡 법률 25에 따른 권리를 행사할 수 있으며, 개인정보보호위원회 등 감독기관에 불만을 제기할 수 있습니다.",
+    "Push Notifications. You can opt out of receiving push notifications through your app settings. Please note that opting out of receiving push notifications may impact your use of the MalloAI Services (such as notice of Services enhancements).",
 
-        "20. EEA 및 영국 고지. EU 내 대표자는 [EEA Representative], 영국 내 대표자는 [UK Representative]입니다. 귀하는 해당 지역 감독기관에 불만을 제기할 권리가 있습니다.",
+    "Profile Information. You can review and edit certain account information you have chosen to add to your profile by logging in to your account settings and profile.",
 
-        "21. 본 방침의 변경. 회사는 관행 또는 법령 변경을 반영하기 위해 본 방침을 수정할 수 있습니다. 법이 요구하는 경우 합리적 사전 고지를 제공합니다. 효력 발생일 이후 서비스 이용은 변경에 대한 동의를 의미합니다.",
+    "Location Information. We do not collect precise location information. If we begin to collect such information in the future, you can prevent your device from sharing location information through your device's system settings. But if you do, this may impact MalloAI's ability to provide you our full range of features and services.",
 
-        "22. 연락처. 권리 행사, 문의 또는 DPO 연락을 위해 [DPO Email] 또는 [Support Email]로 연락하거나 [Postal Address]로 우편을 발송해 주십시오.",
-      ],
-    };
-  }
+    "Accessing Your Information. If you would like to access your information, please email us at support@malloai.app. You can also see information we have about you by logging into your account and viewing things like your profile, settings, and preferences.",
+
+    "Deleting Your Account. If you would like to delete your MalloAI account, please email us at support@malloai.app. In some cases, we will be unable to delete your account, such as if there is an issue with your account related to trust, safety, or fraud. When we delete your account, we may retain certain information for legitimate business purposes or to comply with legal or regulatory obligations. For example, we may retain your information because we may be obligated to do so as part of an open legal claim. When we retain such data, we do so in ways designed to prevent its use for other purposes.",
+
+    "Regardless of where you live, and subject to our obligations under applicable laws, you may have certain rights and choices regarding your information. For example, in addition to choices described elsewhere in this Privacy Policy, you may have some or all of the following rights and choices in general:",
+
+    "B) General Regional Rights",
+
+    "Access Rights: You may have the right to receive certain information, such as the following (these rights, and the applicable types of data and time periods, will vary depending on the laws applicable to the state or country in which you reside):\n• The categories of information we have collected or disclosed about you; the categories of sources of such information; the business or commercial purpose for collecting your information; and the categories of third parties with whom we shared your information.\n• Access to and/or a copy of certain information we hold about you.\n• In some circumstances, you may have the right to obtain certain information in a portable format.",
+
+    "Erasure: You may have the right to request that we delete certain information we have about you. We may either decide to delete your information entirely, or we may anonymize or aggregate your information such that it no longer reasonably identifies you, and may use it to improve our Services. Certain information may be exempt from such requests under applicable law. For example, we need certain types of information so that we can provide our Services to you, we may be required to retain certain information for legal purposes, and there may be other reasons we may need to keep certain information under various applicable laws. In addition, if you ask us to delete your information, you may no longer be able to access or use some of our Services.",
+
+    "Correction: You may have the right to request that we correct certain information we hold about you.",
+
+    "Limitation of Processing: Certain laws may allow you to object to or limit the manner in which we process some of your information, including the ways in which we use or share it. For example, you may have these rights if the processing was undertaken without your consent and without a legitimate business interest (although we may not be required to cease or limit processing in cases where our interests are balanced against your privacy interests).",
+
+    "Regulator Contact: You may have the right to contact or file a complaint with regulators or supervisory authorities about our processing of information. To do so, please contact your local data protection or consumer protection authority.",
+
+    "Postings by Minors: Users of our Services under the age of 18 in certain jurisdictions have the right to require that we delete any content they have posted on one of our Services.",
+
+    "Other: You may have the right to receive information about any financial incentives that we may offer to you, if any. You may also have the right to not be discriminated against (as provided for in applicable law) for exercising certain of your rights.",
+
+    "If you believe that you have specific rights under your jurisdiction and you would like to exercise any of these rights, please submit a support request via email to us at support@malloai.app. Other than a simple marketing opt-out, you will be required to verify your identity before we fulfill your request. In certain jurisdictions, you may be able to designate an authorized agent to make a request on your behalf, subject to certain requirements of your applicable law. We may require that you provide the email address we have on file for you (and verify that you can access that email account) as well as an address, phone number, or other data we have on file, in order to verify your identity. If an agent is submitting the request on your behalf, we reserve the right to validate the agent's authority to act on your behalf, and we may be required to take additional verification measures under applicable law.",
+
+    "C) Important Information for EU and United Kingdom Users",
+
+    "If you are a user from the European Union or United Kingdom you should be aware that we are joint controllers of your information (Data Controller) under the EU General Data Protection Regulation ('GDPR'), the UK General Data Protection Regulation ('UK GDPR'), and such similar laws promulgated in the various EU countries.",
+
+    "You may have certain additional rights regarding your information (as defined in the GDPR and UK GDPR, for instance), including the right to:\n• access your information;\n• rectify your information if it is incorrect or incomplete;\n• have your personally identifiable information erased ('right to be forgotten') if certain grounds are met;\n• withdraw your consent to our processing of your information at any time, but only if our processing is based on consent;\n• object to our processing of your information, if our processing is based on legitimate interests;\n• object to our processing of your information for direct marketing purposes; and\n• receive your information from us in a structured, commonly used, and machine-readable format, and\n• the right to transmit your information to another controller without hindrance from us (data portability).",
+
+    "There is no charge for any of these requests. To make a request, please contact us at support@malloai.app. We try to respond to such requests in a timely manner, but in no event longer than one month.",
+
+    "When we collect your information, we maintain and store it for as long as we determine reasonably necessary to provide our Services to you, unless you exercise your right to erasure described above, or to comply with applicable legal requirements.",
+
+    "If you are a citizen of the European Union or United Kingdom, when we process your information, we will only do so in the following situations:\n• We have a contractual obligation.\n• You have provided your consent. You are able to remove your consent at any time, and you may do this by contacting us at support@malloai.app.\n• We have a legal obligation.\n• We have a legitimate business interest in processing your information. For example, we may process your information to send you marketing communications, relevant content, products or events invitations, or to communicate with you about changes to our Services, and to provide, secure, or improve our Services.",
+
+    "You should be aware that information that you provide to us may be transferred out of the country in which you reside to servers in a country that may not guarantee the same level of protection as the one in which you reside. We do this for a legitimate business purpose in providing the Services as permitted under UK and EU privacy laws, and therefore specific consent is not required under the EU and UK legal schema. We will take all steps reasonably necessary to ensure that your information is treated securely in accordance with this Privacy Policy, and no transfer of your information will take place to a third party unless there are adequate controls in place to protect your information and/or you have provided contractual consent by becoming a User.",
+
+    "If you are a User in the European Union or United Kingdom and have a concern about our processing of personal information that we are not able to resolve, you have the right to lodge a complaint with the data privacy authority where you reside.",
+
+    "D) Information for U.S. Residents",
+
+    "Various U.S. states (e.g., as of the date of this Policy, California, Colorado, Connecticut, Delaware, Indiana, Iowa, Kentucky, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon, Tennessee, Texas, Utah and Virginia) currently allow or will soon allow consumers to opt out of sharing of their data. As such, residents of those states may request that we:\n• Disclose the sources, categories, and specific pieces of information we have collected about you, how that information is used, and with whom we share it\n• Disclose the purpose for collecting your information\n• Disclose the categories of third parties with whom we share your information\n• Delete/rectify/restrict personally identifiable information, subject to certain exceptions (right of rectification not applicable to Utah residents)\n• Though not specifically applicable to us, to disclose, for any 'sales' of personal information, the categories of personal information collected and sold and to what categories of third parties it was sold\n• Though not specifically applicable to us, to opt you out of sales of your information (if any) or subject certain information to automated decision-making algorithms (not applicable to Utah residents)\n• Provide a copy of your information in a readily usable format that allows the information to be transmitted to others",
+
+    "Residents in these states may not be discriminated against for exercising any of the rights described above. Residents of these states may exercise these rights by emailing us at support@malloai.app. Note that if a state law has been ratified but not yet effective, we reserve the right to deny your request as it pertains to that state.",
+
+    "We do not process any data of children.",
+
+    "In general, we, including our vendors and service providers, collect the following California regulated categories of personal information (PI) from you:\n• Identifiers (Yes)\n• Internet or other similar network activity (Yes)\n• Sensory data (Yes)\n• Inferences drawn from other PI (Yes)\n\nWe do NOT collect:\n• PI categories listed in the California Customer Records statute\n• Protected classification characteristics\n• Commercial information\n• Biometric information\n• Geolocation data (precise)\n• Professional or employment-related information\n• Non-public education information",
+
+    "Sharing Your Information for a Business Purpose\nIn the preceding twelve (12) months, we have disclosed the following categories of Personal Information for a business purpose with our Affiliates and Service Providers:\n• Identifiers\n• Internet or other similar network activity\n• Sensory data\n• Inferences drawn from other PI",
+
+    "Shine Your Light Law. Under California law, California residents are entitled, once per calendar year, to ask us for a notice identifying the categories of personal customer information that we share with certain third parties for the third parties' direct marketing purposes, and providing contact information (i.e., names and addresses) for these third parties. If you are a California resident and would like a copy of this notice, please submit a written request to us via email at support@malloai.app.",
+
+    "Opt-Out of Sale in U.S. We do not currently 'sell' (as defined by the California Consumer Privacy Act and other U.S. state laws) any personal information subject to this Privacy Policy, and we do not exchange information for any type of financial incentive.",
+
+    "Do Not Track. Some Internet browsers may be configured to send 'Do Not Track' signals to the online services that you visit. We currently do not respond to 'Do Not Track' or similar signals.",
+
+    "CHILDREN'S PRIVACY",
+
+    "We do not knowingly collect, maintain, or use personal information from children under 18 years of age, and no part of our Services are directed to children. If you learn that a child you are a guardian or parent of has provided us with personal information in violation of this Privacy Policy, then you may alert us at support@malloai.app.",
+
+    "SECURITY",
+
+    "We work hard to protect your information. We make reasonable efforts to protect your information by using physical and electronic safeguards designed to improve the security of the information we maintain. However, as our Services are hosted electronically, we can make no guarantees as to the security or privacy of your information.",
+
+    "As part of our security program, we use vendors with recognized world-class security such as Supabase, Stripe, and Google. We also limit the type and amount of personal information we collect in the first place. All our communications and websites are encrypted (using transport layer security, or TLS, a leading encryption protocol).",
+
+    "CHANGES TO THIS PRIVACY POLICY",
+
+    "We will let you know about any material changes to this Privacy Policy. We will post any adjustments to the Privacy Policy on this page, and the revised version will be effective when it is posted. If we materially change the ways in which we use or share personal information previously collected from you through the Services, we will notify you through the Services, by email, or other communication (such as posting on this website).",
+
+    "CONTACT INFORMATION, INQUIRIES OR COMPLAINTS",
+
+    "You can contact us with your questions, comments, or concerns. Please contact us at:\nEmail: support@malloai.app",
+
+    "For privacy-related inquiries, data deletion requests, or to exercise your rights under applicable privacy laws, please email us at support@malloai.app. We will respond to your request within a reasonable timeframe and in accordance with applicable law."
+  ];
 
   return {
     title: "PRIVACY POLICY",
-    paragraphs: [
-      `Last Updated: ${formatDate("en-US")}`,
-
-      "1. WHO WE ARE. This Privacy Policy explains how [Legal Entity] operating as [Company Name] (“Company,” “we,” “us”) handles personal data when you use our AI conversational application and related services (the “Service”). For GDPR and UK GDPR, the data controller is [Legal Entity]. You may contact our Data Protection Officer at [DPO Email] or our privacy team at [Support Email].",
-
-      "2. SCOPE AND ROLES. This Policy applies to individual use of the Service. For enterprise or workspace accounts where your organization administers end-user accounts, your organization is the controller and we act as processor; in that case, our data processing agreement and your organization’s instructions also apply.",
-
-      "3. OPERATING DEFINITIONS. “Account Data” means registration, identity, and contact data. “User Content” means inputs, files, and materials you submit. “AI Output” means model-generated responses for you. “Usage Data” means product interactions, telemetry, and device information. “Subprocessors” are vendors that process data on our behalf under contract.",
-
-      "4. CATEGORIES OF PERSONAL DATA. We process Account Data such as name, email, and credentials; User Content such as prompts, files, and context you choose to provide; AI Output generated for you; Usage Data and device information such as identifiers, operating system, time zone, and truncated IP addresses; and security, performance, and audit logs. We do not intentionally request special categories unless you choose to provide them in User Content.",
-
-      "5. SOURCES OF DATA. We collect data directly from you when you create an account or use the Service; automatically via cookies and similar technologies; and from limited third parties such as authentication, billing, and analytics providers when you enable them with the Service.",
-
-      "6. PURPOSES AND LEGAL BASES. We process data to provide, maintain, and improve the Service and to perform our contract with you; to protect security, prevent fraud and abuse, and ensure integrity based on our legitimate interests; to communicate about the Service and provide support; to comply with legal and regulatory obligations; and with your consent for optional features such as marketing or model improvement. Where required, you may withdraw consent at any time without affecting prior lawful processing.",
-
-      "7. MODEL IMPROVEMENT AND HUMAN REVIEW. We do not use your User Content or AI Output to train our models unless you explicitly opt in when that choice is offered. Limited human review may occur to address security, fraud, or abuse, or to provide support where you request it.",
-
-      "8. AUTOMATED DECISION-MAKING. The Service generates AI Output automatically, but we do not make decisions with legal or similarly significant effects without human involvement. You are responsible for validating the accuracy and legality of any use of AI Output.",
-
-      "9. RETENTION. We retain Account Data for the life of your account and as required by law. We retain User Content as needed to provide the Service and at your direction where deletion controls are available. We retain logs and telemetry for a limited, proportionate duration for security, audit, and business continuity. When data are no longer needed, we delete or anonymize them securely.",
-
-      "10. INTERNATIONAL TRANSFERS. We may transfer data outside your jurisdiction. Where required, we use EU Standard Contractual Clauses and the UK Addendum, along with additional safeguards. For Canada, we comply with PIPEDA and Québec Law 25 for cross-border disclosures.",
-
-      "11. DISCLOSURES TO THIRD PARTIES. We disclose data to service providers and subprocessors that perform hosting, processing, security, billing, support, and related functions under contracts requiring confidentiality and limited use. We also disclose data where required by law, to protect rights and safety, or in connection with corporate transactions such as reorganization or acquisition, subject to equivalent protections.",
-
-      "12. CPRA SALE/SHARE STATUS. We do not sell personal information or “share” it for cross-context behavioral advertising under the CPRA. If we later introduce interest-based advertising, we will provide applicable opt-out mechanisms and update this Policy.",
-
-      "13. COOKIES AND SIMILAR TECHNOLOGIES. We use essential cookies for authentication and security and optional analytics and performance technologies. You may control preferences through your browser and, where available, in-product settings; disabling certain cookies may affect Service functionality.",
-
-      "14. SECURITY. We maintain reasonable technical and organizational measures designed to protect data against unauthorized access, use, or disclosure. No method is perfectly secure. We will provide breach notifications in accordance with applicable laws, including Québec Law 25 and GDPR.",
-
-      "15. YOUR RIGHTS. Depending on your location, you may request access, rectification, deletion, restriction or objection, portability, withdrawal of consent, and the right to appeal adverse decisions. In California, you may request access, deletion, and correction and receive information about categories and purposes; we do not discriminate for exercising rights. In Brazil, you may request confirmation, access, correction, anonymization, blocking, portability, deletion, information on sharing, and consent revocation. We will respond within applicable timelines upon a verifiable request via [Support Email] or in-product tools where provided.",
-
-      "16. CHILDREN. The Service is not directed to children under 13 and we do not knowingly collect their data. If you believe a child has provided personal data, please contact us so we can delete it.",
-
-      "17. USER CONTROLS AND CHOICES. You may update your profile, manage communications, download or delete certain content, and close your account. Upon closure, we will retain only what is necessary to meet legal obligations, resolve disputes, and enforce agreements.",
-
-      "18. VENDORS, SUBPROCESSORS, AND TRANSPARENCY. We may publish a list of principal subprocessors or provide it on request. All subprocessors are bound by confidentiality and security commitments equivalent to ours.",
-
-      "19. CANADA-SPECIFIC NOTICES. For Canadian residents, we comply with PIPEDA and Québec Law 25. You may bring complaints to the Office of the Privacy Commissioner of Canada or your provincial authority. We will respond to access requests within statutory timelines.",
-
-      "20. EEA AND UK NOTICES. You may contact our EU Representative at [EEA Representative] and our UK Representative at [UK Representative]. You have the right to lodge a complaint with your supervisory authority.",
-
-      "21. CHANGES TO THIS POLICY. We may update this Policy to reflect changes in practices or legal requirements. Where required by law, we will provide reasonable advance notice. Continued use after the effective date constitutes acceptance.",
-
-      "22. CONTACT. To exercise rights or contact our DPO, email [DPO Email] or [Support Email], or write to [Postal Address].",
-    ],
+    paragraphs: fullEnglishPolicy,
   };
 };
 
