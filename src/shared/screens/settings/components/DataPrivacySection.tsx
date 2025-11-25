@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useCallback } from "react";
 import { router } from "expo-router";
-import { View } from "react-native";
+import { Alert, Linking, View } from "react-native";
 
+import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Card, ListItem, Text } from "@/shared/components/ui";
@@ -10,10 +11,17 @@ import { getLogger } from "@/shared/services/logger";
 
 import { createSettingsStyles } from "../SettingsScreen.styles";
 
-export const DataPrivacySection: React.FC = () => {
+interface DataPrivacySectionProps {
+  userEmail?: string | null;
+}
+
+export const DataPrivacySection: React.FC<DataPrivacySectionProps> = ({
+  userEmail,
+}) => {
   const logger = getLogger("DataPrivacySection");
   const { t } = useLanguageContext();
   const theme = useAppTheme();
+  const { showError, showInfo } = useToast();
   const styles = createSettingsStyles(theme);
 
   const handleExportData = () => {
@@ -27,6 +35,53 @@ export const DataPrivacySection: React.FC = () => {
   const handlePrivacyPolicy = () => {
     router.push("/settings/privacy");
   };
+
+  const requestAccountDeletion = useCallback(async () => {
+    const subject = encodeURIComponent(
+      t("settings.delete_account_email_subject")
+    );
+    const bodyLines = [
+      t("settings.delete_account_email_body"),
+      userEmail ? `\nAccount email: ${userEmail}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const mailtoUrl = `mailto:support@malloai.app?subject=${subject}&body=${encodeURIComponent(
+      bodyLines
+    )}`;
+
+    try {
+      const supported = await Linking.canOpenURL(mailtoUrl);
+      if (!supported) {
+        throw new Error("Email client unavailable");
+      }
+      showInfo(t("settings.delete_account_launch_email"));
+      await Linking.openURL(mailtoUrl);
+    } catch (error) {
+      logger.error("Failed to launch email client for deletion", { error });
+      showError(t("settings.delete_account_email_error"));
+      Alert.alert(
+        t("settings.delete_account"),
+        t("settings.delete_account_email_error")
+      );
+    }
+  }, [logger, showError, showInfo, t, userEmail]);
+
+  const handleDeleteAccount = useCallback(() => {
+    Alert.alert(
+      t("settings.delete_account_confirm_title"),
+      t("settings.delete_account_confirm_message"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("settings.delete_account_confirm_action"),
+          style: "destructive",
+          onPress: requestAccountDeletion,
+        },
+      ]
+    );
+  }, [requestAccountDeletion, t]);
 
   return (
     <View style={styles.section}>
@@ -90,6 +145,26 @@ export const DataPrivacySection: React.FC = () => {
             />
           }
           onPress={handlePrivacyPolicy}
+        />
+        <ListItem
+          variant="settings"
+          title={t("settings.delete_account")}
+          description={t("settings.delete_account_description")}
+          leftElement={
+            <Ionicons
+              name="alert-circle-outline"
+              size={24}
+              color={theme.colors.status.error.primary}
+            />
+          }
+          rightElement={
+            <Ionicons
+              name="chevron-forward-outline"
+              size={20}
+              color={theme.colors.text.tertiary}
+            />
+          }
+          onPress={handleDeleteAccount}
         />
       </Card>
     </View>

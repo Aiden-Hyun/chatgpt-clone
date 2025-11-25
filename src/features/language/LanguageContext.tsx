@@ -115,6 +115,19 @@ const translations: Record<string, Record<string, string>> = {
     "settings.export_data": "Export Data",
     "settings.clear_conversations": "Clear All Conversations",
     "settings.privacy_policy": "Privacy Policy",
+    "settings.delete_account": "Delete Account",
+    "settings.delete_account_description":
+      "Request permanent deletion of your account and chat history.",
+    "settings.delete_account_confirm_title": "Delete your account?",
+    "settings.delete_account_confirm_message":
+      "We'll open your email app so you can request deletion from support@malloai.app. Deletion may take up to 30 days.",
+    "settings.delete_account_confirm_action": "Request deletion",
+    "settings.delete_account_email_subject": "Account deletion request",
+    "settings.delete_account_email_body":
+      "Hello MalloAI team,\n\nI would like to permanently delete my account and all associated data.",
+    "settings.delete_account_launch_email": "Opening your email app…",
+    "settings.delete_account_email_error":
+      "Couldn't open an email app. Please contact support@malloai.app from your account email.",
     "settings.version": "Version",
     "settings.terms_of_service": "Terms of Service",
     "settings.support": "Support",
@@ -320,6 +333,19 @@ const translations: Record<string, Record<string, string>> = {
     "settings.export_data": "Exportar Datos",
     "settings.clear_conversations": "Borrar Todas las Conversaciones",
     "settings.privacy_policy": "Política de Privacidad",
+    "settings.delete_account": "Eliminar Cuenta",
+    "settings.delete_account_description":
+      "Solicita la eliminación permanente de tu cuenta y de tus chats.",
+    "settings.delete_account_confirm_title": "¿Eliminar tu cuenta?",
+    "settings.delete_account_confirm_message":
+      "Abriremos tu aplicación de correo para que envíes una solicitud a support@malloai.app. El proceso puede tardar hasta 30 días.",
+    "settings.delete_account_confirm_action": "Solicitar eliminación",
+    "settings.delete_account_email_subject": "Solicitud de eliminación de cuenta",
+    "settings.delete_account_email_body":
+      "Hola equipo de MalloAI,\n\nDeseo eliminar de forma permanente mi cuenta y todos los datos asociados.",
+    "settings.delete_account_launch_email": "Abriendo tu aplicación de correo…",
+    "settings.delete_account_email_error":
+      "No pudimos abrir una aplicación de correo. Envía un mensaje a support@malloai.app desde tu correo registrado.",
     "settings.version": "Versión",
     "settings.terms_of_service": "Términos de Servicio",
     "settings.support": "Soporte",
@@ -525,6 +551,19 @@ const translations: Record<string, Record<string, string>> = {
     "settings.export_data": "데이터 내보내기",
     "settings.clear_conversations": "모든 대화 삭제",
     "settings.privacy_policy": "개인정보 처리방침",
+    "settings.delete_account": "계정 삭제",
+    "settings.delete_account_description":
+      "계정과 채팅 기록을 영구적으로 삭제하도록 요청합니다.",
+    "settings.delete_account_confirm_title": "계정을 삭제할까요?",
+    "settings.delete_account_confirm_message":
+      "support@malloai.app으로 삭제 요청 이메일을 보냅니다. 처리는 최대 30일이 걸릴 수 있습니다.",
+    "settings.delete_account_confirm_action": "삭제 요청 보내기",
+    "settings.delete_account_email_subject": "계정 삭제 요청",
+    "settings.delete_account_email_body":
+      "안녕하세요, MalloAI 팀.\n\n제 계정과 모든 데이터를 영구적으로 삭제해 주세요.",
+    "settings.delete_account_launch_email": "메일 앱을 여는 중…",
+    "settings.delete_account_email_error":
+      "메일 앱을 열 수 없습니다. 등록된 이메일로 support@malloai.app 에 직접 연락해 주세요.",
     "settings.version": "버전",
     "settings.terms_of_service": "서비스 약관",
     "settings.support": "지원",
