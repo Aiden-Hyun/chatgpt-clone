@@ -51,7 +51,7 @@ export const SettingsScreen = () => {
         <PreferencesSection onNavigateToThemes={navigateToThemes} />
 
         {/* Data & Privacy Section */}
-        <DataPrivacySection userEmail={email} />
+        <DataPrivacySection />
 
         {/* About Section */}
         <AboutSection />

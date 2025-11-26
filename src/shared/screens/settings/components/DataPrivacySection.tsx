@@ -1,28 +1,27 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { router } from "expo-router";
-import { Alert, Linking, View } from "react-native";
+import { Alert, View } from "react-native";
 
 import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Card, ListItem, Text } from "@/shared/components/ui";
+import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
 import { createSettingsStyles } from "../SettingsScreen.styles";
 
-interface DataPrivacySectionProps {
-  userEmail?: string | null;
-}
-
-export const DataPrivacySection: React.FC<DataPrivacySectionProps> = ({
-  userEmail,
-}) => {
+export const DataPrivacySection: React.FC = () => {
   const logger = getLogger("DataPrivacySection");
-  const { t } = useLanguageContext();
+  const { t, currentLanguage } = useLanguageContext();
   const theme = useAppTheme();
-  const { showError, showInfo } = useToast();
+  const { showError, showSuccess } = useToast();
   const styles = createSettingsStyles(theme);
+  const [isSchedulingDeletion, setIsSchedulingDeletion] = useState(false);
+  const [pendingDeletionDate, setPendingDeletionDate] = useState<
+    string | null
+  >(null);
 
   const handleExportData = () => {
     // TODO: Implement data export functionality
@@ -36,37 +35,90 @@ export const DataPrivacySection: React.FC<DataPrivacySectionProps> = ({
     router.push("/settings/privacy");
   };
 
-  const requestAccountDeletion = useCallback(async () => {
-    const subject = encodeURIComponent(
-      t("settings.delete_account_email_subject")
-    );
-    const bodyLines = [
-      t("settings.delete_account_email_body"),
-      userEmail ? `\nAccount email: ${userEmail}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    const mailtoUrl = `mailto:support@malloai.app?subject=${subject}&body=${encodeURIComponent(
-      bodyLines
-    )}`;
-
-    try {
-      const supported = await Linking.canOpenURL(mailtoUrl);
-      if (!supported) {
-        throw new Error("Email client unavailable");
+  const formatDateForUser = useCallback(
+    (isoDate?: string | null) => {
+      if (!isoDate) return "";
+      try {
+        return new Date(isoDate).toLocaleString(currentLanguage || "en", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        });
+      } catch {
+        return isoDate;
       }
-      showInfo(t("settings.delete_account_launch_email"));
-      await Linking.openURL(mailtoUrl);
-    } catch (error) {
-      logger.error("Failed to launch email client for deletion", { error });
-      showError(t("settings.delete_account_email_error"));
-      Alert.alert(
-        t("settings.delete_account"),
-        t("settings.delete_account_email_error")
+    },
+    [currentLanguage]
+  );
+
+  const refreshDeletionStatus = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "account-deletion",
+        {
+          body: { action: "status" },
+        }
       );
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.status === "pending") {
+        setPendingDeletionDate(data?.scheduled_for ?? null);
+      } else {
+        setPendingDeletionDate(null);
+      }
+    } catch (error) {
+      logger.warn("Failed to refresh deletion status", { error });
     }
-  }, [logger, showError, showInfo, t, userEmail]);
+  }, [logger]);
+
+  useEffect(() => {
+    refreshDeletionStatus();
+  }, [refreshDeletionStatus]);
+
+  const requestAccountDeletion = useCallback(async () => {
+    setIsSchedulingDeletion(true);
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "account-deletion",
+        {
+          body: { action: "request" },
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      const scheduledFor: string | undefined = data?.scheduled_for;
+      if (scheduledFor) {
+        setPendingDeletionDate(scheduledFor);
+        const formatted = formatDateForUser(scheduledFor);
+        showSuccess(
+          t("settings.delete_account_request_success").replace(
+            "{date}",
+            formatted
+          )
+        );
+        await refreshDeletionStatus();
+      } else {
+        showSuccess(t("settings.delete_account_request_success_generic"));
+      }
+    } catch (error) {
+      logger.error("Failed to schedule account deletion", { error });
+      showError(t("settings.delete_account_request_error"));
+    } finally {
+      setIsSchedulingDeletion(false);
+    }
+  }, [
+    formatDateForUser,
+    logger,
+    refreshDeletionStatus,
+    showError,
+    showSuccess,
+    t,
+  ]);
 
   const handleDeleteAccount = useCallback(() => {
     Alert.alert(
@@ -82,6 +134,13 @@ export const DataPrivacySection: React.FC<DataPrivacySectionProps> = ({
       ]
     );
   }, [requestAccountDeletion, t]);
+
+  const deleteDescription = pendingDeletionDate
+    ? t("settings.delete_account_pending").replace(
+        "{date}",
+        formatDateForUser(pendingDeletionDate)
+      )
+    : t("settings.delete_account_description");
 
   return (
     <View style={styles.section}>
@@ -149,7 +208,7 @@ export const DataPrivacySection: React.FC<DataPrivacySectionProps> = ({
         <ListItem
           variant="settings"
           title={t("settings.delete_account")}
-          description={t("settings.delete_account_description")}
+          description={deleteDescription}
           leftElement={
             <Ionicons
               name="alert-circle-outline"
@@ -164,7 +223,27 @@ export const DataPrivacySection: React.FC<DataPrivacySectionProps> = ({
               color={theme.colors.text.tertiary}
             />
           }
-          onPress={handleDeleteAccount}
+          disabled={isSchedulingDeletion}
+          onPress={() => {
+            if (pendingDeletionDate) {
+              Alert.alert(
+                t("settings.delete_account"),
+                deleteDescription,
+                [
+                  {
+                    text: t("common.ok"),
+                  },
+                  {
+                    text: t("settings.delete_account_confirm_action"),
+                    style: "destructive",
+                    onPress: requestAccountDeletion,
+                  },
+                ]
+              );
+            } else {
+              handleDeleteAccount();
+            }
+          }}
         />
       </Card>
     </View>

@@ -117,17 +117,19 @@ const translations: Record<string, Record<string, string>> = {
     "settings.privacy_policy": "Privacy Policy",
     "settings.delete_account": "Delete Account",
     "settings.delete_account_description":
-      "Request permanent deletion of your account and chat history.",
+      "Schedule permanent deletion in 14 days. You can continue using the app until then.",
+    "settings.delete_account_pending":
+      "Deletion scheduled for {date}. You can cancel before the deadline.",
     "settings.delete_account_confirm_title": "Delete your account?",
     "settings.delete_account_confirm_message":
-      "We'll open your email app so you can request deletion from support@malloai.app. Deletion may take up to 30 days.",
-    "settings.delete_account_confirm_action": "Request deletion",
-    "settings.delete_account_email_subject": "Account deletion request",
-    "settings.delete_account_email_body":
-      "Hello MalloAI team,\n\nI would like to permanently delete my account and all associated data.",
-    "settings.delete_account_launch_email": "Opening your email app…",
-    "settings.delete_account_email_error":
-      "Couldn't open an email app. Please contact support@malloai.app from your account email.",
+      "We'll schedule your account for deletion in 14 days. You'll remain signed in until the deletion is processed.",
+    "settings.delete_account_confirm_action": "Schedule deletion",
+    "settings.delete_account_request_success":
+      "Deletion scheduled for {date}.",
+    "settings.delete_account_request_success_generic":
+      "Deletion request scheduled.",
+    "settings.delete_account_request_error":
+      "Couldn't schedule deletion. Please try again later.",
     "settings.version": "Version",
     "settings.terms_of_service": "Terms of Service",
     "settings.support": "Support",
@@ -335,17 +337,19 @@ const translations: Record<string, Record<string, string>> = {
     "settings.privacy_policy": "Política de Privacidad",
     "settings.delete_account": "Eliminar Cuenta",
     "settings.delete_account_description":
-      "Solicita la eliminación permanente de tu cuenta y de tus chats.",
+      "Programa la eliminación permanente en 14 días. Puedes seguir usando la app hasta entonces.",
+    "settings.delete_account_pending":
+      "Eliminación programada para {date}. Puedes cancelarla antes de la fecha límite.",
     "settings.delete_account_confirm_title": "¿Eliminar tu cuenta?",
     "settings.delete_account_confirm_message":
-      "Abriremos tu aplicación de correo para que envíes una solicitud a support@malloai.app. El proceso puede tardar hasta 30 días.",
-    "settings.delete_account_confirm_action": "Solicitar eliminación",
-    "settings.delete_account_email_subject": "Solicitud de eliminación de cuenta",
-    "settings.delete_account_email_body":
-      "Hola equipo de MalloAI,\n\nDeseo eliminar de forma permanente mi cuenta y todos los datos asociados.",
-    "settings.delete_account_launch_email": "Abriendo tu aplicación de correo…",
-    "settings.delete_account_email_error":
-      "No pudimos abrir una aplicación de correo. Envía un mensaje a support@malloai.app desde tu correo registrado.",
+      "Programaremos tu cuenta para su eliminación en 14 días. Permanecerás conectado hasta que el proceso finalice.",
+    "settings.delete_account_confirm_action": "Programar eliminación",
+    "settings.delete_account_request_success":
+      "Eliminación programada para {date}.",
+    "settings.delete_account_request_success_generic":
+      "Solicitud de eliminación programada.",
+    "settings.delete_account_request_error":
+      "No se pudo programar la eliminación. Inténtalo de nuevo más tarde.",
     "settings.version": "Versión",
     "settings.terms_of_service": "Términos de Servicio",
     "settings.support": "Soporte",
@@ -553,17 +557,19 @@ const translations: Record<string, Record<string, string>> = {
     "settings.privacy_policy": "개인정보 처리방침",
     "settings.delete_account": "계정 삭제",
     "settings.delete_account_description":
-      "계정과 채팅 기록을 영구적으로 삭제하도록 요청합니다.",
+      "14일 후 자동으로 영구 삭제됩니다. 그때까지 앱을 계속 사용할 수 있습니다.",
+    "settings.delete_account_pending":
+      "{date}에 삭제가 예정되어 있습니다. 마감 전 언제든 취소할 수 있습니다.",
     "settings.delete_account_confirm_title": "계정을 삭제할까요?",
     "settings.delete_account_confirm_message":
-      "support@malloai.app으로 삭제 요청 이메일을 보냅니다. 처리는 최대 30일이 걸릴 수 있습니다.",
-    "settings.delete_account_confirm_action": "삭제 요청 보내기",
-    "settings.delete_account_email_subject": "계정 삭제 요청",
-    "settings.delete_account_email_body":
-      "안녕하세요, MalloAI 팀.\n\n제 계정과 모든 데이터를 영구적으로 삭제해 주세요.",
-    "settings.delete_account_launch_email": "메일 앱을 여는 중…",
-    "settings.delete_account_email_error":
-      "메일 앱을 열 수 없습니다. 등록된 이메일로 support@malloai.app 에 직접 연락해 주세요.",
+      "계정을 14일 후 삭제하도록 예약합니다. 삭제가 완료될 때까지 로그인 상태가 유지됩니다.",
+    "settings.delete_account_confirm_action": "삭제 예약",
+    "settings.delete_account_request_success":
+      "{date}에 삭제가 예약되었습니다.",
+    "settings.delete_account_request_success_generic":
+      "삭제 요청이 예약되었습니다.",
+    "settings.delete_account_request_error":
+      "삭제 예약에 실패했습니다. 잠시 후 다시 시도해 주세요.",
     "settings.version": "버전",
     "settings.terms_of_service": "서비스 약관",
     "settings.support": "지원",
