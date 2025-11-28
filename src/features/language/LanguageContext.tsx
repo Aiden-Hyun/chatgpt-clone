@@ -130,6 +130,33 @@ const translations: Record<string, Record<string, string>> = {
       "Deletion request scheduled.",
     "settings.delete_account_request_error":
       "Couldn't schedule deletion. Please try again later.",
+    "settings.delete_account_screen_title": "Delete Account",
+    "settings.delete_account_info_headline":
+      "Your account will be permanently deleted after 14 days.",
+    "settings.delete_account_info_bullet_chats":
+      "All chats and messages will be removed.",
+    "settings.delete_account_info_bullet_irreversible":
+      "This action cannot be undone after 14 days.",
+    "settings.delete_account_info_bullet_cancel":
+      "Logging back in within 14 days automatically cancels the request.",
+    "settings.delete_account_password_label": "Enter your password to confirm",
+    "settings.delete_account_password_required": "Password is required.",
+    "settings.delete_account_incorrect_password":
+      "Incorrect password. Please try again.",
+    "settings.delete_account_oauth_notice":
+      "You signed in with {provider}. Tap Continue to confirm.",
+    "settings.delete_account_checkbox_label":
+      "I understand my account will be deleted after 14 days unless I log back in.",
+    "settings.delete_account_button": "Schedule Deletion",
+    "settings.delete_account_pending_title": "Deletion Scheduled",
+    "settings.delete_account_pending_message":
+      "Your account is scheduled for deletion on {date}.",
+    "settings.delete_account_cancel_hint":
+      "Log back in anytime before this date to cancel.",
+    "settings.delete_account_cancel_button": "Cancel Deletion Request",
+    "settings.delete_account_cancelled": "Deletion request cancelled.",
+    "settings.delete_account_cancel_error":
+      "Couldn't cancel deletion. Please try again.",
     "settings.version": "Version",
     "settings.terms_of_service": "Terms of Service",
     "settings.support": "Support",
@@ -350,6 +377,34 @@ const translations: Record<string, Record<string, string>> = {
       "Solicitud de eliminación programada.",
     "settings.delete_account_request_error":
       "No se pudo programar la eliminación. Inténtalo de nuevo más tarde.",
+    "settings.delete_account_screen_title": "Eliminar Cuenta",
+    "settings.delete_account_info_headline":
+      "Tu cuenta se eliminará permanentemente después de 14 días.",
+    "settings.delete_account_info_bullet_chats":
+      "Todos los chats y mensajes serán eliminados.",
+    "settings.delete_account_info_bullet_irreversible":
+      "Esta acción no se puede deshacer después de 14 días.",
+    "settings.delete_account_info_bullet_cancel":
+      "Iniciar sesión dentro de 14 días cancela automáticamente la solicitud.",
+    "settings.delete_account_password_label":
+      "Ingresa tu contraseña para confirmar",
+    "settings.delete_account_password_required": "Se requiere contraseña.",
+    "settings.delete_account_incorrect_password":
+      "Contraseña incorrecta. Por favor intenta de nuevo.",
+    "settings.delete_account_oauth_notice":
+      "Iniciaste sesión con {provider}. Toca Continuar para confirmar.",
+    "settings.delete_account_checkbox_label":
+      "Entiendo que mi cuenta será eliminada después de 14 días a menos que inicie sesión.",
+    "settings.delete_account_button": "Programar Eliminación",
+    "settings.delete_account_pending_title": "Eliminación Programada",
+    "settings.delete_account_pending_message":
+      "Tu cuenta está programada para eliminarse el {date}.",
+    "settings.delete_account_cancel_hint":
+      "Inicia sesión en cualquier momento antes de esta fecha para cancelar.",
+    "settings.delete_account_cancel_button": "Cancelar Solicitud de Eliminación",
+    "settings.delete_account_cancelled": "Solicitud de eliminación cancelada.",
+    "settings.delete_account_cancel_error":
+      "No se pudo cancelar la eliminación. Por favor intenta de nuevo.",
     "settings.version": "Versión",
     "settings.terms_of_service": "Términos de Servicio",
     "settings.support": "Soporte",
@@ -570,6 +625,33 @@ const translations: Record<string, Record<string, string>> = {
       "삭제 요청이 예약되었습니다.",
     "settings.delete_account_request_error":
       "삭제 예약에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+    "settings.delete_account_screen_title": "계정 삭제",
+    "settings.delete_account_info_headline":
+      "14일 후 계정이 영구적으로 삭제됩니다.",
+    "settings.delete_account_info_bullet_chats":
+      "모든 채팅과 메시지가 삭제됩니다.",
+    "settings.delete_account_info_bullet_irreversible":
+      "14일 이후에는 이 작업을 취소할 수 없습니다.",
+    "settings.delete_account_info_bullet_cancel":
+      "14일 이내에 다시 로그인하면 요청이 자동으로 취소됩니다.",
+    "settings.delete_account_password_label": "확인을 위해 비밀번호를 입력하세요",
+    "settings.delete_account_password_required": "비밀번호가 필요합니다.",
+    "settings.delete_account_incorrect_password":
+      "비밀번호가 올바르지 않습니다. 다시 시도해 주세요.",
+    "settings.delete_account_oauth_notice":
+      "{provider}로 로그인하셨습니다. 계속을 눌러 확인하세요.",
+    "settings.delete_account_checkbox_label":
+      "14일 이내에 다시 로그인하지 않으면 계정이 삭제된다는 것을 이해합니다.",
+    "settings.delete_account_button": "삭제 예약",
+    "settings.delete_account_pending_title": "삭제 예약됨",
+    "settings.delete_account_pending_message":
+      "계정이 {date}에 삭제되도록 예약되었습니다.",
+    "settings.delete_account_cancel_hint":
+      "이 날짜 전에 언제든지 로그인하면 취소됩니다.",
+    "settings.delete_account_cancel_button": "삭제 요청 취소",
+    "settings.delete_account_cancelled": "삭제 요청이 취소되었습니다.",
+    "settings.delete_account_cancel_error":
+      "삭제 취소에 실패했습니다. 다시 시도해 주세요.",
     "settings.version": "버전",
     "settings.terms_of_service": "서비스 약관",
     "settings.support": "지원",

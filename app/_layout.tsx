@@ -128,7 +128,7 @@ function ProtectedRoutes() {
       logger.debug("Rendering auth routes (unauthenticated user)");
     } else {
       logger.debug("Unauthenticated and not on auth route, showing loader");
-      return <LoadingScreen />;
+    return <LoadingScreen />;
     }
   }
 

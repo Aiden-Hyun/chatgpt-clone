@@ -1,9 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useState } from "react";
 import { router } from "expo-router";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
-import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
 import { Card, ListItem, Text } from "@/shared/components/ui";
@@ -16,9 +15,7 @@ export const DataPrivacySection: React.FC = () => {
   const logger = getLogger("DataPrivacySection");
   const { t, currentLanguage } = useLanguageContext();
   const theme = useAppTheme();
-  const { showError, showSuccess } = useToast();
   const styles = createSettingsStyles(theme);
-  const [isSchedulingDeletion, setIsSchedulingDeletion] = useState(false);
   const [pendingDeletionDate, setPendingDeletionDate] = useState<
     string | null
   >(null);
@@ -77,63 +74,9 @@ export const DataPrivacySection: React.FC = () => {
     refreshDeletionStatus();
   }, [refreshDeletionStatus]);
 
-  const requestAccountDeletion = useCallback(async () => {
-    setIsSchedulingDeletion(true);
-    try {
-      const { data, error } = await supabase.functions.invoke(
-        "account-deletion",
-        {
-          body: { action: "request" },
-        }
-      );
-
-      if (error) {
-        throw error;
-      }
-
-      const scheduledFor: string | undefined = data?.scheduled_for;
-      if (scheduledFor) {
-        setPendingDeletionDate(scheduledFor);
-        const formatted = formatDateForUser(scheduledFor);
-        showSuccess(
-          t("settings.delete_account_request_success").replace(
-            "{date}",
-            formatted
-          )
-        );
-        await refreshDeletionStatus();
-      } else {
-        showSuccess(t("settings.delete_account_request_success_generic"));
-      }
-    } catch (error) {
-      logger.error("Failed to schedule account deletion", { error });
-      showError(t("settings.delete_account_request_error"));
-    } finally {
-      setIsSchedulingDeletion(false);
-    }
-  }, [
-    formatDateForUser,
-    logger,
-    refreshDeletionStatus,
-    showError,
-    showSuccess,
-    t,
-  ]);
-
   const handleDeleteAccount = useCallback(() => {
-    Alert.alert(
-      t("settings.delete_account_confirm_title"),
-      t("settings.delete_account_confirm_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("settings.delete_account_confirm_action"),
-          style: "destructive",
-          onPress: requestAccountDeletion,
-        },
-      ]
-    );
-  }, [requestAccountDeletion, t]);
+    router.push("/settings/delete-account");
+  }, []);
 
   const deleteDescription = pendingDeletionDate
     ? t("settings.delete_account_pending").replace(
@@ -223,27 +166,7 @@ export const DataPrivacySection: React.FC = () => {
               color={theme.colors.text.tertiary}
             />
           }
-          disabled={isSchedulingDeletion}
-          onPress={() => {
-            if (pendingDeletionDate) {
-              Alert.alert(
-                t("settings.delete_account"),
-                deleteDescription,
-                [
-                  {
-                    text: t("common.ok"),
-                  },
-                  {
-                    text: t("settings.delete_account_confirm_action"),
-                    style: "destructive",
-                    onPress: requestAccountDeletion,
-                  },
-                ]
-              );
-            } else {
-              handleDeleteAccount();
-            }
-          }}
+          onPress={handleDeleteAccount}
         />
       </Card>
     </View>

@@ -18,7 +18,9 @@ serve(async (req) => {
 
   try {
     const contentType = req.headers.get("content-type") || "";
-    const body = contentType.includes("application/json") ? await req.json() : {};
+    const body = contentType.includes("application/json")
+      ? await req.json()
+      : {};
     const action = body?.action ?? "request";
 
     if (action === "request") {
@@ -151,10 +153,7 @@ async function handleCancellation(req: Request): Promise<Response> {
   }
 
   if (!existing) {
-    return jsonResponse(
-      { message: "No pending deletion request found." },
-      404
-    );
+    return jsonResponse({ message: "No pending deletion request found." }, 404);
   }
 
   const { error: updateError } = await serviceClient
@@ -295,4 +294,3 @@ function jsonResponse(body: unknown, status = 200): Response {
     },
   });
 }
-
