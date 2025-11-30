@@ -91,6 +91,31 @@ export function AuthProvider({ children }: Props) {
             `User signed in successfully: ${session?.user?.email} (ID: ${session?.user?.id})`
           );
           setSession(session);
+
+          // Auto-cancel any pending deletion request on sign-in
+          if (session) {
+            supabase.functions
+              .invoke("account-deletion", { body: { action: "cancel" } })
+              .then(({ data, error }) => {
+                if (error) {
+                  // 404 means no pending request - that's fine
+                  if (!error.message?.includes("404")) {
+                    logger.warn("Failed to auto-cancel deletion request", {
+                      error,
+                    });
+                  }
+                } else if (data?.status === "cancelled") {
+                  logger.info(
+                    "Auto-cancelled pending account deletion on sign-in"
+                  );
+                }
+              })
+              .catch((err) => {
+                logger.warn("Error checking deletion status on sign-in", {
+                  err,
+                });
+              });
+          }
         } else {
           logger.debug(
             `Auth state changed: ${event} (session: ${
