@@ -9,62 +9,29 @@ import {
   View,
 } from "react-native";
 
-import { useAuth } from "@/entities/session";
 import { useToast } from "@/features/alert";
 import { useLanguageContext } from "@/features/language";
 import { useAppTheme } from "@/features/theme";
-import { Button, Card, Input, Text } from "@/shared/components/ui";
+import { Button, Card, Text } from "@/shared/components/ui";
 import { supabase } from "@/shared/lib/supabase";
 import { getLogger } from "@/shared/services/logger";
 
 import { SettingsHeader } from "./components";
 import { createDeleteAccountStyles } from "./DeleteAccountScreen.styles";
 
-type AuthProvider = "email" | "google" | "apple" | "other";
-
 export const DeleteAccountScreen = () => {
   const logger = getLogger("DeleteAccountScreen");
   const { t, currentLanguage } = useLanguageContext();
   const theme = useAppTheme();
-  const { session } = useAuth();
   const { showError, showSuccess } = useToast();
   const styles = createDeleteAccountStyles(theme);
 
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState<string | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [pendingDeletionDate, setPendingDeletionDate] = useState<string | null>(
     null
   );
   const [isCancelling, setIsCancelling] = useState(false);
-
-  // Detect auth provider
-  const getAuthProvider = useCallback((): AuthProvider => {
-    if (!session?.user) return "email";
-
-    const identities = session.user.identities;
-    if (identities && identities.length > 0) {
-      const provider = identities[0].provider;
-      if (provider === "google") return "google";
-      if (provider === "apple") return "apple";
-      if (provider === "email") return "email";
-      return "other";
-    }
-
-    // Fallback: check app_metadata
-    const appMetaProvider = session.user.app_metadata?.provider;
-    if (appMetaProvider === "google") return "google";
-    if (appMetaProvider === "apple") return "apple";
-    if (appMetaProvider === "email") return "email";
-
-    return "email";
-  }, [session]);
-
-  const authProvider = getAuthProvider();
-  const isEmailUser = authProvider === "email";
-  const userEmail = session?.user?.email || "";
-
   const formatDateForUser = useCallback(
     (isoDate?: string | null) => {
       if (!isoDate) return "";
@@ -110,37 +77,23 @@ export const DeleteAccountScreen = () => {
 
   const handleScheduleDeletion = useCallback(async () => {
     setIsLoading(true);
-    setPasswordError(null);
 
     try {
-      // Re-authenticate if email user
-      if (isEmailUser) {
-        if (!password.trim()) {
-          setPasswordError(t("settings.delete_account_password_required"));
-          setIsLoading(false);
-          return;
-        }
-
-        const { error: authError } = await supabase.auth.signInWithPassword({
-          email: userEmail,
-          password,
-        });
-
-        if (authError) {
-          logger.warn("Re-authentication failed", { error: authError.message });
-          setPasswordError(t("settings.delete_account_incorrect_password"));
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // Schedule deletion
+      // Schedule deletion - user is already authenticated via their session
       const { data, error } = await supabase.functions.invoke(
         "account-deletion",
         { body: { action: "request" } }
       );
 
-      if (error) throw error;
+      if (error) {
+        // Log the actual error details
+        logger.error("Edge function error", { 
+          error,
+          message: error?.message,
+          context: error?.context 
+        });
+        throw error;
+      }
 
       const scheduledFor: string | undefined = data?.scheduled_for;
       if (scheduledFor) {
@@ -163,9 +116,6 @@ export const DeleteAccountScreen = () => {
       setIsLoading(false);
     }
   }, [
-    isEmailUser,
-    password,
-    userEmail,
     formatDateForUser,
     logger,
     showError,
@@ -193,18 +143,7 @@ export const DeleteAccountScreen = () => {
     }
   }, [logger, showError, showSuccess, t]);
 
-  const canSubmit = isConfirmed && (isEmailUser ? password.trim() : true);
-
-  const getProviderDisplayName = (provider: AuthProvider): string => {
-    switch (provider) {
-      case "google":
-        return "Google";
-      case "apple":
-        return "Apple";
-      default:
-        return provider;
-    }
-  };
+  const canSubmit = isConfirmed;
 
   // Pending deletion view
   if (pendingDeletionDate) {
@@ -343,39 +282,6 @@ export const DeleteAccountScreen = () => {
               </View>
             </View>
           </Card>
-
-          {/* Password input for email users */}
-          {isEmailUser ? (
-            <View style={styles.inputSection}>
-              <Input
-                label={t("settings.delete_account_password_label")}
-                placeholder={t("auth.placeholder.password")}
-                value={password}
-                onChangeText={(text) => {
-                  setPassword(text);
-                  setPasswordError(null);
-                }}
-                secureTextEntry
-                status={passwordError ? "error" : "default"}
-                errorText={passwordError || undefined}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
-          ) : (
-            <Card
-              variant="default"
-              padding="md"
-              containerStyle={styles.oauthCard}
-            >
-              <Text variant="body" style={styles.oauthNotice}>
-                {t("settings.delete_account_oauth_notice").replace(
-                  "{provider}",
-                  getProviderDisplayName(authProvider)
-                )}
-              </Text>
-            </Card>
-          )}
 
           {/* Confirmation checkbox */}
           <TouchableOpacity
