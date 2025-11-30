@@ -108,7 +108,9 @@ export const DeleteAccountScreen = () => {
         showSuccess(t("settings.delete_account_request_success_generic"));
       }
 
-      router.replace("/settings");
+      // Log out the user after scheduling deletion
+      await supabase.auth.signOut();
+      // Navigation will be handled by auth state change listener
     } catch (error) {
       logger.error("Failed to schedule account deletion", { error });
       showError(t("settings.delete_account_request_error"));
