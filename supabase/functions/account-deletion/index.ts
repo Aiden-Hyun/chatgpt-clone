@@ -156,16 +156,13 @@ async function handleCancellation(req: Request): Promise<Response> {
     return jsonResponse({ message: "No pending deletion request found." }, 404);
   }
 
-  const { error: updateError } = await serviceClient
+  const { error: deleteError } = await serviceClient
     .from("account_deletion_requests")
-    .update({
-      status: "cancelled",
-      cancelled_at: new Date().toISOString(),
-    })
+    .delete()
     .eq("id", existing.id);
 
-  if (updateError) {
-    throw updateError;
+  if (deleteError) {
+    throw deleteError;
   }
 
   return jsonResponse({
