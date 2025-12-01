@@ -44,7 +44,7 @@ This document captures the personal and device data handled by the MalloAI app t
 
 - Deleting a chat room removes associated messages from Supabase.
 - Logging out clears Supabase session tokens from AsyncStorage.
-- Full account deletion flow is **not yet implemented**; users must contact support (to be defined) for manual removal. This needs to be addressed in a later task.
+- Account deletion is available in Settings → Delete Account. Users have a 14-day grace period during which they can cancel by logging back in. After 14 days, a scheduled cron job permanently deletes the user and all associated data.
 
 ### 7. Data Not Collected
 
