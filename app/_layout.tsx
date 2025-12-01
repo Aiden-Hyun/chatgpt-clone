@@ -111,7 +111,8 @@ function ProtectedRoutes() {
     };
   }, []);
 
-  const shouldRedirectToAuth = !session && !isAuthRoute;
+  // Only redirect to auth AFTER loading is complete and we know there's no session
+  const shouldRedirectToAuth = !isLoading && !session && !isAuthRoute;
 
   useEffect(() => {
     if (shouldRedirectToAuth) {
@@ -122,13 +123,19 @@ function ProtectedRoutes() {
     }
   }, [shouldRedirectToAuth, pathname, router, logger]);
 
+  // Show loading screen while auth is initializing
+  if (isLoading) {
+    logger.debug("Auth loading, showing loading screen");
+    return <LoadingScreen />;
+  }
+
   if (!session) {
     if (isAuthRoute) {
       // Allow auth stack to render while unauthenticated
       logger.debug("Rendering auth routes (unauthenticated user)");
     } else {
       logger.debug("Unauthenticated and not on auth route, showing loader");
-    return <LoadingScreen />;
+      return <LoadingScreen />;
     }
   }
 
