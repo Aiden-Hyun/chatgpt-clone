@@ -40,7 +40,7 @@ export class SupabaseMessageService implements IMessageService {
           user_id: args.session.user.id,
           role: "user",
           content: args.userMessage.content,
-          client_id: args.assistantMessage.id || null,
+          client_id: args.userMessage.id || generateMessageId(),
         },
         assistantRow,
       ]);
