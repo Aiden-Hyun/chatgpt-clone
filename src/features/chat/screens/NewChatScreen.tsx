@@ -86,8 +86,6 @@ export const NewChatScreen = () => {
         }
       };
 
-      // Reset the guard and create room
-      hasAttemptedCreation.current = false;
       createNewChat();
     }, [session, isLoading, createChatRoom])
   );
