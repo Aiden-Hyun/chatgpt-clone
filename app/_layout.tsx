@@ -12,6 +12,7 @@ import { AuthProvider, useAuth } from "../src/entities/session";
 import { ToastContainer, ToastProvider } from "../src/features/alert";
 import { Sidebar } from "../src/features/chat/components/Sidebar";
 import { LanguageProvider } from "../src/features/language";
+import { SubscriptionProvider, useSubscription, PaywallScreen } from "../src/features/subscription";
 import { ThemeProvider, useThemeContext } from "../src/features/theme";
 import { navigationTracker } from "../src/shared/lib/navigationTracker";
 import { resetDebugGlobals } from "../src/shared/lib/resetDebugGlobals";
@@ -31,6 +32,7 @@ function AppContent() {
   });
 
   const { isLoading: themeLoading } = useThemeContext();
+  const { status: subscriptionStatus, isLoading: subscriptionLoading } = useSubscription();
 
   // Only gate the very first render on theme readiness; never re-gate after app shown
   const hasShownAppRef = useRef(false);
@@ -40,12 +42,12 @@ function AppContent() {
     }
   }, [themeLoading]);
 
-  const shouldShowLoading = themeLoading && !hasShownAppRef.current;
+  const shouldShowLoading = (themeLoading && !hasShownAppRef.current) || subscriptionLoading;
 
   logger.debug(
     `Loading states: fonts ${fontsLoaded ? "loaded" : "loading"}, theme ${
       themeLoading ? "loading" : "ready"
-    }`
+    }, subscription ${subscriptionStatus} (loading: ${subscriptionLoading})`
   );
 
   // Only block before first successful theme-ready render
@@ -54,7 +56,13 @@ function AppContent() {
     return <LoadingScreen />;
   }
 
-  logger.debug("Theme ready, rendering app");
+  // Show paywall if no active subscription
+  if (subscriptionStatus !== 'active') {
+    logger.debug("No active subscription, showing paywall");
+    return <PaywallScreen />;
+  }
+
+  logger.debug("Theme ready and subscription active, rendering app");
   return <ProtectedRoutes />;
 }
 
@@ -161,15 +169,17 @@ function ProtectedRoutes() {
 export default function Layout() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <LanguageProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              <AppContent />
-            </ToastProvider>
-          </ThemeProvider>
-        </LanguageProvider>
-      </AuthProvider>
+      <SubscriptionProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <AppContent />
+              </ToastProvider>
+            </ThemeProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </SubscriptionProvider>
     </SafeAreaProvider>
   );
 }

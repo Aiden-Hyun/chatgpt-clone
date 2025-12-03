@@ -50,6 +50,9 @@ export default {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
       edgeFunctionBaseUrl: process.env.EDGE_FUNCTION_BASE_URL,
+      // RevenueCat API keys - set these in EAS secrets or .env
+      revenueCatAndroidKey: process.env.REVENUECAT_ANDROID_KEY,
+      revenueCatIosKey: process.env.REVENUECAT_IOS_KEY,
     },
     // Use the Expo Router app directory
     root: './app',
