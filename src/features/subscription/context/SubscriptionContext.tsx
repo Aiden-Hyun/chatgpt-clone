@@ -2,9 +2,22 @@
 import Constants from 'expo-constants';
 import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { Platform } from 'react-native';
-import Purchases, { CustomerInfo, PurchasesPackage, LOG_LEVEL } from 'react-native-purchases';
 
 import { getLogger } from '@/shared/services/logger';
+
+// Conditionally import RevenueCat only on native platforms
+let Purchases: any = null;
+let CustomerInfo: any = null;
+let PurchasesPackage: any = null;
+let LOG_LEVEL: any = null;
+
+if (Platform.OS !== 'web') {
+  const RC = require('react-native-purchases');
+  Purchases = RC.default;
+  CustomerInfo = RC.CustomerInfo;
+  PurchasesPackage = RC.PurchasesPackage;
+  LOG_LEVEL = RC.LOG_LEVEL;
+}
 
 const logger = getLogger('SubscriptionContext');
 
@@ -13,9 +26,9 @@ export type SubscriptionStatus = 'loading' | 'active' | 'expired' | 'none';
 interface SubscriptionContextType {
   status: SubscriptionStatus;
   isLoading: boolean;
-  customerInfo: CustomerInfo | null;
-  packages: PurchasesPackage[];
-  purchase: (pkg: PurchasesPackage) => Promise<boolean>;
+  customerInfo: any | null;
+  packages: any[];
+  purchase: (pkg: any) => Promise<boolean>;
   restore: () => Promise<boolean>;
   refresh: () => Promise<void>;
 }
@@ -40,6 +53,14 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   useEffect(() => {
     const initRevenueCat = async () => {
       try {
+        // Web platform: Always grant access (subscriptions only for mobile)
+        if (Platform.OS === 'web') {
+          logger.info('Web platform detected: Granting access without subscription');
+          setStatus('active');
+          setIsLoading(false);
+          return;
+        }
+
         const androidKey = Constants.expoConfig?.extra?.revenueCatAndroidKey;
         const iosKey = Constants.expoConfig?.extra?.revenueCatIosKey;
 
@@ -58,7 +79,14 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
           return;
         }
 
-        // Configure RevenueCat
+        // Configure RevenueCat (only available on native platforms)
+        if (!Purchases) {
+          logger.error('RevenueCat not available on this platform');
+          setStatus('none');
+          setIsLoading(false);
+          return;
+        }
+
         Purchases.setLogLevel(LOG_LEVEL.DEBUG);
         await Purchases.configure({ apiKey });
         setIsConfigured(true);
@@ -108,6 +136,8 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   }, []);
 
   const fetchOfferings = useCallback(async () => {
+    if (!Purchases) return;
+
     try {
       const offerings = await Purchases.getOfferings();
 
@@ -122,8 +152,8 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
     }
   }, []);
 
-  const purchase = useCallback(async (pkg: PurchasesPackage): Promise<boolean> => {
-    if (!isConfigured) {
+  const purchase = useCallback(async (pkg: any): Promise<boolean> => {
+    if (!isConfigured || !Purchases) {
       logger.warn('RevenueCat not configured, cannot purchase');
       return false;
     }
@@ -154,7 +184,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   }, [isConfigured, updateSubscriptionStatus]);
 
   const restore = useCallback(async (): Promise<boolean> => {
-    if (!isConfigured) {
+    if (!isConfigured || !Purchases) {
       logger.warn('RevenueCat not configured, cannot restore');
       return false;
     }
@@ -179,7 +209,7 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   }, [isConfigured, updateSubscriptionStatus]);
 
   const refresh = useCallback(async () => {
-    if (!isConfigured) return;
+    if (!isConfigured || !Purchases) return;
 
     try {
       const info = await Purchases.getCustomerInfo();
